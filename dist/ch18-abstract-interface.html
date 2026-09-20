@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 18 — Abstract class và Interface — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link active" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 18 — Abstract class và Interface</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Viết và dùng <strong>abstract class</strong>: khung chung, thành viên <code>abstract</code>, <strong>template method</strong>.</li>
+<li>Viết và cài đặt <strong>interface</strong>: hợp đồng, nhiều interface, <strong>default interface method</strong>, <strong>explicit implementation</strong>.</li>
+<li>Chọn đúng giữa abstract class và interface.</li>
+<li>Hiểu vì sao lập trình theo interface làm code linh hoạt, dễ kiểm thử.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch18-abstract-interface/"><code>code/ch18-abstract-interface/</code></a>.</p>
+<h2>Abstract class</h2>
+<p><strong>Abstract class</strong> là lớp <strong>không tạo được đối tượng trực tiếp</strong> (<code>new BaoCao()</code> là lỗi), chỉ để kế thừa. Nó có thể
+chứa cả phần <strong>đã cài đặt</strong> lẫn phần <strong>chỉ khai báo</strong> (<code>abstract</code>) buộc lớp con phải hoàn thành.</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">BaoCao</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> tieuDe</span>)</span>
+{
+    <span class="hljs-keyword">protected</span> <span class="hljs-built_in">string</span> TieuDe { <span class="hljs-keyword">get</span>; } = tieuDe;
+
+    <span class="hljs-comment">// Template method: khung cố định, các bước con thay đổi</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> <span class="hljs-title">Xuat</span>()</span> =&gt; <span class="hljs-string">$&quot;<span class="hljs-subst">{DauTrang()}</span>\n<span class="hljs-subst">{TieuDe}</span>\n<span class="hljs-subst">{ChanTrang()}</span>&quot;</span>;
+
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">abstract</span> <span class="hljs-built_in">string</span> <span class="hljs-title">DauTrang</span>()</span>;                    <span class="hljs-comment">// BẮT BUỘC con cài đặt</span>
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">virtual</span> <span class="hljs-built_in">string</span> <span class="hljs-title">ChanTrang</span>()</span> =&gt; <span class="hljs-string">&quot;-- het --&quot;</span>;     <span class="hljs-comment">// mặc định, con có thể ghi đè</span>
+}
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">BaoCaoText</span>(<span class="hljs-title">string</span> <span class="hljs-title">tieuDe</span>) : <span class="hljs-title">BaoCao</span>(<span class="hljs-title">tieuDe</span>)
+{
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-built_in">string</span> <span class="hljs-title">DauTrang</span>()</span> =&gt; <span class="hljs-string">&quot;=== BAO CAO ===&quot;</span>;
+}
+</code></pre>
+<p><code>Xuat()</code> là <strong>Template Method</strong>: quy trình định sẵn ở lớp cha, chỗ thay đổi do lớp con quyết định. Đây là một
+design pattern quen thuộc (Chương 41).</p>
+<p>Dùng abstract class khi các lớp con <strong>thực sự chia sẻ trạng thái/code</strong> và có quan hệ &quot;là một&quot; rõ ràng (<code>Hinh</code>, <code>BaoCao</code>).</p>
+<h2>Interface</h2>
+<p><strong>Interface</strong> là một <strong>hợp đồng</strong>: liệt kê &quot;làm được gì&quot; mà không nói &quot;làm thế nào&quot;. Class nào cài đặt interface
+cam kết cung cấp đủ các thành viên đó.</p>
+<pre class="hljs"><code><span class="hljs-keyword">interface</span> <span class="hljs-title">IThanhToan</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">ThanhToan</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> soTien</span>)</span>;
+    <span class="hljs-function"><span class="hljs-built_in">decimal</span> <span class="hljs-title">TinhPhi</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> soTien</span>)</span> =&gt; <span class="hljs-number">0m</span>;   <span class="hljs-comment">// default interface method</span>
+}
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">TheTinDung</span>(<span class="hljs-title">string</span> <span class="hljs-title">soThe</span>) : <span class="hljs-title">IThanhToan</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">ThanhToan</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> soTien</span>)</span> =&gt; Console.WriteLine(<span class="hljs-string">$&quot;The <span class="hljs-subst">{soThe}</span>: tra <span class="hljs-subst">{soTien:N0}</span>&quot;</span>);
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> <span class="hljs-title">TinhPhi</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> soTien</span>)</span> =&gt; soTien * <span class="hljs-number">0.02m</span>;
+}
+</code></pre>
+<p>Quy ước đặt tên: bắt đầu bằng chữ <strong><code>I</code></strong> (<code>IThanhToan</code>). Thành viên interface mặc định là <code>public</code>. Interface
+không chứa field, không có constructor.</p>
+<h3>Nhiều interface</h3>
+<p>Một class chỉ kế thừa <strong>một</strong> lớp cha nhưng cài đặt <strong>nhiều</strong> interface:</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">ViDienTu</span> : <span class="hljs-title">IThanhToan</span>, <span class="hljs-title">ILuuVet</span> { ... }
+</code></pre>
+<p>Đây là cách C# đạt &quot;đa kế thừa hành vi&quot; một cách an toàn.</p>
+<h3>Default interface method (C# 8)</h3>
+<p>Interface có thể cung cấp cài đặt mặc định cho một thành viên (<code>TinhPhi</code> ở trên). Lớp cài đặt có thể dùng luôn
+hoặc ghi đè. Hữu ích để <strong>thêm phương thức mới vào interface mà không làm vỡ</strong> các class đã cài đặt cũ. Lưu ý phương
+thức mặc định chỉ gọi được <strong>qua biến kiểu interface</strong> (<code>IThanhToan c = ...; c.TinhPhi(...)</code>).</p>
+<h3>Explicit implementation</h3>
+<p>Khi hai interface có phương thức trùng tên nhưng nghĩa khác nhau:</p>
+<pre class="hljs"><code><span class="hljs-keyword">interface</span> <span class="hljs-title">IBay</span> { <span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">DiChuyen</span>()</span>; }
+<span class="hljs-keyword">interface</span> <span class="hljs-title">IBoi</span> { <span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">DiChuyen</span>()</span>; }
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">ChimCanhCut</span> : <span class="hljs-title">IBay</span>, <span class="hljs-title">IBoi</span>
+{
+    <span class="hljs-built_in">string</span> IBay.DiChuyen() =&gt; <span class="hljs-string">&quot;Bay&quot;</span>;
+    <span class="hljs-built_in">string</span> IBoi.DiChuyen() =&gt; <span class="hljs-string">&quot;Boi&quot;</span>;
+}
+
+IBay may = <span class="hljs-keyword">new</span> ChimCanhCut();
+may.DiChuyen();   <span class="hljs-comment">// &quot;Bay&quot;</span>
+</code></pre>
+<p>Thành viên khai báo tường minh <strong>chỉ gọi được qua kiểu interface</strong>, không qua kiểu class.</p>
+<h2>Abstract class hay Interface?</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Abstract class</th>
+<th>Interface</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quan hệ</td>
+<td>&quot;là một&quot; (cùng họ)</td>
+<td>&quot;có khả năng&quot; (cùng hợp đồng)</td>
+</tr>
+<tr>
+<td>Kế thừa/cài đặt</td>
+<td>1 lớp cha</td>
+<td>nhiều interface</td>
+</tr>
+<tr>
+<td>Trạng thái (field)</td>
+<td>có</td>
+<td>không</td>
+</tr>
+<tr>
+<td>Constructor</td>
+<td>có</td>
+<td>không</td>
+</tr>
+<tr>
+<td>Code dùng chung</td>
+<td>có</td>
+<td>chỉ mặc định (hạn chế)</td>
+</tr>
+<tr>
+<td>Dùng khi</td>
+<td>chia sẻ code &amp; trạng thái, có khung xử lý</td>
+<td>định nghĩa hợp đồng, tách rời phụ thuộc</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Quy tắc thực dụng:</strong> bắt đầu bằng interface. Chỉ dùng abstract class khi có phần code/trạng thái dùng chung đáng kể.
+Hai thứ dùng chung được: interface mô tả hợp đồng, abstract class cung cấp cài đặt gốc để tiện kế thừa.</p>
+<h2>Lập trình theo interface</h2>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">DonHang</span>(<span class="hljs-title">IThanhToan</span> <span class="hljs-title">thanhToan</span>)
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">ThanhToan</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> soTien</span>)</span> =&gt; thanhToan.ThanhToan(soTien);
+}
+</code></pre>
+<p><code>DonHang</code> chỉ biết <code>IThanhToan</code>, không biết thẻ, ví hay tiền mặt. Hệ quả:</p>
+<ul>
+<li><strong>Linh hoạt</strong>: thêm hình thức thanh toán mới không sửa <code>DonHang</code>.</li>
+<li><strong>Dễ kiểm thử</strong>: khi test, truyền vào một đối tượng giả (mock) thay cho cổng thanh toán thật (Chương 38).</li>
+<li><strong>Nền của Dependency Injection</strong> (<a href="http://ASP.NET">ASP.NET</a> Core, Tập 2): framework cấp phát đối tượng cài đặt interface cho bạn.</li>
+</ul>
+<p>Đây là ý tưởng cốt lõi của kiến trúc hiện đại: <em>phụ thuộc vào trừu tượng, không phụ thuộc vào chi tiết</em> (Chương 42).</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>CS0534: 'X' does not implement inherited abstract member 'Y'</code> — chưa <code>override</code> đủ thành viên <code>abstract</code>.</li>
+<li><code>CS0144: Cannot create an instance of the abstract type</code> — cố <code>new</code> một abstract class hoặc interface.</li>
+<li><code>CS0737: does not implement interface member ... not public</code> — quên <code>public</code> khi cài đặt (implicit implementation
+phải <code>public</code>).</li>
+<li>Interface quá to (&quot;fat interface&quot;) ép class phải cài đặt những thứ không cần — nên tách nhỏ.</li>
+<li>Gọi default interface method qua biến kiểu class: <code>new TienMat().TinhPhi(1)</code> báo lỗi vì class không &quot;thừa hưởng&quot; nó.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Tạo interface <code>IDocDuLieu&lt;T&gt;</code>-đơn-giản: <code>string Doc()</code>, cài đặt <code>DocFile</code> và <code>DocMang</code> (trả dữ liệu cố định).</li>
+<li>Viết abstract class <code>NhacCu</code> có <code>abstract string ChoiNhac()</code> và template method <code>BieuDien()</code> (chào + chơi + cảm ơn).</li>
+<li>Thêm hình thức thanh toán <code>ChuyenKhoan</code> vào code mẫu mà <strong>không sửa</strong> vòng lặp gọi <code>ThanhToan</code>.</li>
+<li>Cho <code>interface IHinh { double DienTich(); }</code> — cài đặt bằng <code>record</code> và bằng <code>class</code>; so sánh.</li>
+<li>Thêm một phương thức mới vào <code>ILuuVet</code> bằng default method và xác nhận <code>ViDienTu</code> không cần sửa.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch17-da-hinh.html">&larr; 17. Đa hình</a><a class="nav-next" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

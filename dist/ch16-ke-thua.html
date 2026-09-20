@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 16 — Kế thừa — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 16 — Kế thừa</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Dùng kế thừa (<code>:</code>) để tái sử dụng code và mô hình quan hệ <strong>&quot;là một&quot;</strong> (is-a).</li>
+<li>Gọi constructor lớp cha bằng <code>base</code>, hiểu <strong>thứ tự khởi tạo</strong>.</li>
+<li>Phân biệt <code>virtual</code>/<code>override</code>, <code>new</code> (che giấu), <code>sealed</code>, <code>protected</code>.</li>
+<li>Biết khi nào nên dùng <strong>composition</strong> (&quot;có một&quot;) thay vì kế thừa.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch16-ke-thua/"><code>code/ch16-ke-thua/</code></a>.</p>
+<h2>Kế thừa là gì?</h2>
+<p>Lớp con <strong>nhận lại</strong> mọi thành viên (không <code>private</code>) của lớp cha rồi thêm hoặc điều chỉnh. Cú pháp <code>class Con : Cha</code>.</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">Nguoi</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Ten { <span class="hljs-keyword">get</span>; }
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> NamSinh { <span class="hljs-keyword">get</span>; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Nguoi</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ten, <span class="hljs-built_in">int</span> namSinh</span>)</span> { Ten = ten; NamSinh = namSinh; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">virtual</span> <span class="hljs-built_in">string</span> <span class="hljs-title">GioiThieu</span>()</span> =&gt; <span class="hljs-string">$&quot;Toi la <span class="hljs-subst">{Ten}</span>, sinh nam <span class="hljs-subst">{NamSinh}</span>&quot;</span>;
+}
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">NhanVien</span> : <span class="hljs-title">Nguoi</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> PhongBan { <span class="hljs-keyword">get</span>; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">NhanVien</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ten, <span class="hljs-built_in">int</span> namSinh, <span class="hljs-built_in">string</span> phongBan</span>) : <span class="hljs-title">base</span>(<span class="hljs-params">ten, namSinh</span>)</span>
+        =&gt; PhongBan = phongBan;
+}
+</code></pre>
+<pre class="mermaid">classDiagram
+    Nguoi &lt;|-- NhanVien
+    NhanVien &lt;|-- QuanLy
+    class Nguoi { +Ten +NamSinh +GioiThieu() }
+    class NhanVien { +PhongBan +TinhLuong() }
+    class QuanLy { +SoNguoiQuanLy }
+</pre>
+<p><code>NhanVien</code> có sẵn <code>Ten</code>, <code>NamSinh</code>, <code>GioiThieu()</code> mà không viết lại. Mỗi lớp chỉ <strong>một lớp cha trực tiếp</strong>
+(C# không đa kế thừa lớp), nhưng chuỗi cha–con–cháu tuỳ ý. Mọi class cuối cùng đều kế thừa <code>object</code>.</p>
+<p><strong>Kiểm tra bằng câu &quot;là một&quot;:</strong> &quot;Nhân viên <em>là một</em> người&quot; ✔ → kế thừa hợp lý. &quot;Xe hơi <em>là một</em> động cơ&quot; ✘ → sai.</p>
+<h2><code>base</code> và thứ tự constructor</h2>
+<p>Constructor của lớp con <strong>bắt buộc gọi</strong> constructor lớp cha (trước tiên) để cha khởi tạo phần của nó:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">NhanVien</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ten, <span class="hljs-built_in">int</span> namSinh, <span class="hljs-built_in">string</span> phongBan</span>) : <span class="hljs-title">base</span>(<span class="hljs-params">ten, namSinh</span>)
+</span></code></pre>
+<p>Thứ tự thực thi khi <code>new QuanLy(...)</code>: <code>Nguoi</code> → <code>NhanVien</code> → <code>QuanLy</code> (cha trước, con sau). Chạy code mẫu để thấy
+dòng in theo đúng thứ tự đó. Nếu lớp cha chỉ có constructor có tham số mà con không viết <code>: base(...)</code> → <code>CS7036</code>.</p>
+<p><code>base.TenPhuongThuc()</code> gọi phiên bản của cha từ trong con:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-built_in">string</span> <span class="hljs-title">GioiThieu</span>()</span> =&gt; <span class="hljs-string">$&quot;<span class="hljs-subst">{<span class="hljs-keyword">base</span>.GioiThieu()}</span>, phong <span class="hljs-subst">{PhongBan}</span>&quot;</span>;
+</code></pre>
+<h2><code>virtual</code> và <code>override</code></h2>
+<p>Để lớp con <strong>thay đổi hành vi</strong> của phương thức cha:</p>
+<ul>
+<li>Cha đánh dấu <code>virtual</code> (cho phép ghi đè).</li>
+<li>Con dùng <code>override</code> (ghi đè).</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">virtual</span> <span class="hljs-built_in">decimal</span> <span class="hljs-title">TinhLuong</span>()</span> =&gt; LuongCoBan;                            <span class="hljs-comment">// NhanVien</span>
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-built_in">decimal</span> <span class="hljs-title">TinhLuong</span>()</span> =&gt; LuongCoBan + SoNguoiQuanLy * <span class="hljs-number">2_000_000m</span>;   <span class="hljs-comment">// QuanLy</span>
+</code></pre>
+<p>Phương thức không <code>virtual</code> thì không ghi đè được. Property cũng có thể <code>virtual/override</code>.
+<code>abstract</code> (Chương 18) là dạng <code>virtual</code> bắt buộc con phải ghi đè.</p>
+<p><strong>Override khác overload:</strong> <em>overload</em> = cùng tên khác tham số trong một class (Chương 10);
+<em>override</em> = con viết lại phương thức cùng chữ ký của cha.</p>
+<h2><code>new</code> — che giấu, không phải ghi đè</h2>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">Cha</span> { <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">virtual</span> <span class="hljs-built_in">string</span> <span class="hljs-title">Ma</span>()</span> =&gt; <span class="hljs-string">&quot;Cha.Ma&quot;</span>; <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> <span class="hljs-title">Ten</span>()</span> =&gt; <span class="hljs-string">&quot;Cha.Ten&quot;</span>; }
+<span class="hljs-keyword">class</span> <span class="hljs-title">Con</span> : <span class="hljs-title">Cha</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-built_in">string</span> <span class="hljs-title">Ma</span>()</span> =&gt; <span class="hljs-string">&quot;Con.Ma&quot;</span>;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">string</span> <span class="hljs-title">Ten</span>()</span> =&gt; <span class="hljs-string">&quot;Con.Ten&quot;</span>;
+}
+
+Cha cha = <span class="hljs-keyword">new</span> Con();
+cha.Ma();    <span class="hljs-comment">// &quot;Con.Ma&quot;  — override: quyết định theo đối tượng THẬT</span>
+cha.Ten();   <span class="hljs-comment">// &quot;Cha.Ten&quot; — new: quyết định theo KIỂU KHAI BÁO</span>
+</code></pre>
+<p><code>new</code> tạo ra một phương thức mới <em>che</em> phương thức cha; gọi qua biến kiểu cha vẫn ra bản cha. Đây hầu như luôn là
+bẫy — nếu muốn thay đổi hành vi, hãy dùng <code>virtual/override</code>. Nếu quên <code>new</code>, trình biên dịch cảnh báo <code>CS0108</code>.</p>
+<h2><code>protected</code> và <code>sealed</code></h2>
+<ul>
+<li><code>protected</code>: thành viên lớp con truy cập được nhưng bên ngoài thì không. Ví dụ <code>LuongCoBan</code> trong <code>NhanVien</code>.
+Đừng lạm dụng — mọi <code>protected</code> là một phần giao diện với lớp con, khó đổi về sau.</li>
+<li><code>sealed class X</code> cấm kế thừa <code>X</code>; <code>sealed override</code> cấm con của con ghi đè tiếp. Nên <code>sealed</code> các class không
+được thiết kế để kế thừa (giúp an toàn và tối ưu).</li>
+</ul>
+<h2>Composition thay vì kế thừa</h2>
+<p>Kế thừa gắn chặt con với cha: đổi cha là ảnh hưởng mọi con; cây kế thừa sâu rất khó hiểu. Lời khuyên nổi tiếng:
+<strong>&quot;ưu tiên composition hơn kế thừa&quot;</strong> — quan hệ <strong>&quot;có một&quot;</strong>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">XeHoi</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> DongCo _dongCo = <span class="hljs-keyword">new</span>();
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Chay</span>()</span> { _dongCo.Khoi(); Console.WriteLine(<span class="hljs-string">&quot;Xe dang chay&quot;</span>); }
+}
+</code></pre>
+<p><code>XeHoi</code> <em>có một</em> <code>DongCo</code> và giao việc cho nó; đổi loại động cơ không ảnh hưởng cây kế thừa của xe. Dùng kế thừa
+khi thật sự là quan hệ &quot;là một&quot; <em>và</em> muốn đa hình; còn để tái sử dụng code thì composition (và interface, Chương 18)
+thường linh hoạt hơn.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>CS7036</code> — quên gọi <code>: base(...)</code> khi lớp cha không có constructor mặc định.</li>
+<li>Quên <code>virtual</code> ở cha rồi thắc mắc vì sao <code>override</code> báo lỗi <code>CS0506</code>.</li>
+<li>Dùng <code>new</code> (che giấu) mà tưởng đã override: kết quả khác nhau tuỳ kiểu khai báo.</li>
+<li>Cây kế thừa quá sâu (&gt; 3 tầng) hoặc kế thừa chỉ để lấy vài hàm tiện ích.</li>
+<li>Kế thừa sai quan hệ (<code>Hinh vuong : HinhChuNhat</code> có vấn đề khi lớp con cho phép sửa riêng chiều rộng — vi phạm
+nguyên lý Liskov, Chương 42).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Tạo <code>PhuongTien</code> → <code>XeMay</code>, <code>OTo</code>; mỗi loại có <code>TinhPhiDangKy()</code> khác nhau (<code>virtual/override</code>).</li>
+<li>Trong code mẫu, thêm <code>class GiamDoc : QuanLy</code>. Đoán thứ tự dòng in khi tạo <code>GiamDoc</code> rồi chạy kiểm tra.</li>
+<li>Đổi <code>Ma()</code> thành không <code>virtual</code> (bỏ <code>override</code>, dùng <code>new</code>), quan sát kết quả <code>cha.Ma()</code>.</li>
+<li>Đánh dấu <code>QuanLy</code> là <code>sealed</code> rồi thử tạo lớp kế thừa nó — đọc thông báo lỗi.</li>
+<li>Viết lại ví dụ <code>XeHoi</code> bằng kế thừa sai (<code>XeHoi : DongCo</code>) và nêu vì sao thiết kế đó tệ.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch15-namespace-using.html">&larr; 15. Namespace, using và tổ chức project</a><a class="nav-next" href="ch17-da-hinh.html">17. Đa hình &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

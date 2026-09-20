@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 20 — Lớp `object`, `struct` và `record` — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link active" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 20 — Lớp <code>object</code>, <code>struct</code> và <code>record</code></h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <code>object</code> là gốc của mọi kiểu và các phương thức nó cung cấp (<code>ToString</code>, <code>Equals</code>, <code>GetHashCode</code>).</li>
+<li>Định nghĩa <strong>bằng nhau</strong> đúng cách: <code>Equals</code> + <code>GetHashCode</code>, <code>IEquatable&lt;T&gt;</code>.</li>
+<li>Phân biệt <strong><code>struct</code> (kiểu giá trị)</strong> và <strong><code>class</code> (kiểu tham chiếu)</strong>.</li>
+<li>Dùng <strong><code>record</code></strong> cho dữ liệu bất biến: so sánh theo giá trị, <code>with</code>, deconstruct.</li>
+<li>Sắp xếp bằng <code>IComparable&lt;T&gt;</code> và <code>IComparer&lt;T&gt;</code>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch20-object-struct-record/"><code>code/ch20-object-struct-record/</code></a>.</p>
+<h2><code>object</code> — gốc của mọi thứ</h2>
+<p>Mọi kiểu trong C# (kể cả <code>int</code>) đều kế thừa trực tiếp/gián tiếp từ <code>System.Object</code>. Ba phương thức bạn hay ghi đè:</p>
+<table>
+<thead>
+<tr>
+<th>Phương thức</th>
+<th>Mặc định</th>
+<th>Ghi đè để</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ToString()</code></td>
+<td>tên kiểu</td>
+<td>in dạng dễ đọc</td>
+</tr>
+<tr>
+<td><code>Equals(object?)</code></td>
+<td>so sánh <strong>tham chiếu</strong> (class)</td>
+<td>so sánh theo nội dung</td>
+</tr>
+<tr>
+<td><code>GetHashCode()</code></td>
+<td>dựa trên tham chiếu</td>
+<td>băm theo nội dung, nhất quán với <code>Equals</code></td>
+</tr>
+</tbody>
+</table>
+<p>Ngoài ra <code>GetType()</code> cho kiểu thật lúc chạy.</p>
+<h2>Bằng nhau: tham chiếu hay giá trị?</h2>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> s1 = <span class="hljs-keyword">new</span> SinhVienClass(<span class="hljs-string">&quot;An&quot;</span>, <span class="hljs-number">1</span>);
+<span class="hljs-keyword">var</span> s2 = <span class="hljs-keyword">new</span> SinhVienClass(<span class="hljs-string">&quot;An&quot;</span>, <span class="hljs-number">1</span>);
+s1.Equals(s2);   <span class="hljs-comment">// false: hai đối tượng khác nhau (mặc định so sánh tham chiếu)</span>
+</code></pre>
+<p>Để hai đối tượng &quot;cùng nội dung thì bằng nhau&quot;, phải tự định nghĩa:</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">DiemTuDinhNghia</span>(<span class="hljs-title">int</span> <span class="hljs-title">x</span>, <span class="hljs-title">int</span> <span class="hljs-title">y</span>) : <span class="hljs-title">IEquatable</span>&lt;<span class="hljs-title">DiemTuDinhNghia</span>&gt;
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> X { <span class="hljs-keyword">get</span>; } = x;
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> Y { <span class="hljs-keyword">get</span>; } = y;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">Equals</span>(<span class="hljs-params">DiemTuDinhNghia? other</span>)</span> =&gt; other <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span> &amp;&amp; X == other.X &amp;&amp; Y == other.Y;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">Equals</span>(<span class="hljs-params"><span class="hljs-built_in">object</span>? obj</span>)</span> =&gt; Equals(obj <span class="hljs-keyword">as</span> DiemTuDinhNghia);
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-built_in">int</span> <span class="hljs-title">GetHashCode</span>()</span> =&gt; HashCode.Combine(X, Y);
+}
+</code></pre>
+<h3>Quy tắc vàng: <code>Equals</code> và <code>GetHashCode</code> đi đôi</h3>
+<p>Nếu <code>a.Equals(b)</code> là <code>true</code> thì <strong>bắt buộc</strong> <code>a.GetHashCode() == b.GetHashCode()</code>. Vi phạm sẽ làm <code>HashSet</code> và
+<code>Dictionary</code> hoạt động sai (không tìm thấy phần tử vốn đã có) — Chương 26 giải thích cơ chế. Vì vậy <strong>luôn ghi đè cả hai</strong>.
+<code>HashCode.Combine(...)</code> là cách viết mã băm gọn và đúng. Chỉ dùng các trường <strong>bất biến</strong> để tính mã băm; nếu trường đổi giá trị
+sau khi đối tượng nằm trong <code>HashSet</code>, nó sẽ &quot;lạc&quot; mất.</p>
+<p>Viết tay như vậy rất dài dòng — đó là lý do <code>record</code> ra đời (bên dưới).</p>
+<h2><code>struct</code> — kiểu giá trị</h2>
+<pre class="hljs"><code><span class="hljs-keyword">struct</span> ToaDo { <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> X; <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> Y; }
+
+<span class="hljs-keyword">var</span> p1 = <span class="hljs-keyword">new</span> ToaDo { X = <span class="hljs-number">1</span>, Y = <span class="hljs-number">2</span> };
+<span class="hljs-keyword">var</span> p2 = p1;      <span class="hljs-comment">// SAO CHÉP toàn bộ dữ liệu</span>
+p2.X = <span class="hljs-number">99</span>;        <span class="hljs-comment">// p1.X vẫn là 1</span>
+</code></pre>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>class</code></th>
+<th><code>struct</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Loại</td>
+<td>tham chiếu</td>
+<td>giá trị</td>
+</tr>
+<tr>
+<td>Gán / truyền</td>
+<td>sao chép địa chỉ</td>
+<td>sao chép dữ liệu</td>
+</tr>
+<tr>
+<td>Có thể <code>null</code></td>
+<td>có</td>
+<td>không (trừ <code>Nullable&lt;T&gt;</code>, <code>?</code>)</td>
+</tr>
+<tr>
+<td>Kế thừa</td>
+<td>có</td>
+<td>không (chỉ cài interface)</td>
+</tr>
+<tr>
+<td>Bộ nhớ</td>
+<td>heap (có GC)</td>
+<td>thường trên stack / nằm trong đối tượng chứa nó</td>
+</tr>
+</tbody>
+</table>
+<p>Dùng <code>struct</code> cho kiểu <strong>nhỏ, bất biến, hành xử như một giá trị</strong> (toạ độ, tiền, màu, <code>DateTime</code>, <code>Guid</code>). Kích
+thước nên ≲ 16 byte. Dùng <code>readonly struct</code> để bảo đảm bất biến. Không dùng <code>struct</code> cho đối tượng lớn hoặc cần
+danh tính riêng — sao chép sẽ tốn kém và gây nhầm lẫn.</p>
+<h2><code>record</code> — kiểu dữ liệu hiện đại</h2>
+<p><code>record</code> là class (hoặc struct) với <strong>so sánh, <code>ToString</code>, sao chép, deconstruct tự sinh</strong>, dùng cho dữ liệu bất biến:</p>
+<pre class="hljs"><code><span class="hljs-keyword">record</span> <span class="hljs-title">NguoiRecord</span>(<span class="hljs-title">string</span> <span class="hljs-title">Ten</span>, <span class="hljs-title">int</span> <span class="hljs-title">Tuoi</span>);   <span class="hljs-comment">// 1 dòng thay cho cả chục dòng</span>
+
+<span class="hljs-keyword">var</span> a = <span class="hljs-keyword">new</span> NguoiRecord(<span class="hljs-string">&quot;An&quot;</span>, <span class="hljs-number">20</span>);
+<span class="hljs-keyword">var</span> b = <span class="hljs-keyword">new</span> NguoiRecord(<span class="hljs-string">&quot;An&quot;</span>, <span class="hljs-number">20</span>);
+Console.WriteLine(a == b);    <span class="hljs-comment">// True — so sánh THEO GIÁ TRỊ</span>
+Console.WriteLine(a);         <span class="hljs-comment">// NguoiRecord { Ten = An, Tuoi = 20 }</span>
+
+<span class="hljs-keyword">var</span> c = a <span class="hljs-keyword">with</span> { Tuoi = <span class="hljs-number">21</span> };   <span class="hljs-comment">// sao chép, đổi một phần → bản mới, a không đổi</span>
+<span class="hljs-keyword">var</span> (ten, tuoi) = a;            <span class="hljs-comment">// deconstruct</span>
+</code></pre>
+<p>Trình biên dịch tự sinh: property <code>init</code>, <code>Equals</code>/<code>GetHashCode</code>/<code>==</code>, <code>ToString</code>, <code>Deconstruct</code>, và hỗ trợ <code>with</code>.</p>
+<ul>
+<li><code>record</code> (= <code>record class</code>): kiểu tham chiếu, bất biến theo mặc định, hợp DTO, message, value object.</li>
+<li><code>record struct</code> / <code>readonly record struct</code>: kiểu giá trị (<code>readonly record struct DiemRS(int X, int Y);</code>).</li>
+</ul>
+<p>Trong <a href="http://ASP.NET">ASP.NET</a> Core (Tập 2) <code>record</code> là lựa chọn quen thuộc cho DTO/request/response. Khi cần đối tượng có <strong>danh tính
+và trạng thái thay đổi</strong> (entity, <code>TaiKhoan</code>), vẫn dùng <code>class</code>.</p>
+<h2>Sắp xếp: <code>IComparable&lt;T&gt;</code> và <code>IComparer&lt;T&gt;</code></h2>
+<ul>
+<li><strong><code>IComparable&lt;T&gt;</code></strong>: đối tượng biết &quot;so với chính mình&quot; — <strong>thứ tự tự nhiên</strong> (một kiểu chỉ có một):</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">record</span> <span class="hljs-title">SanPham</span>(<span class="hljs-title">string</span> <span class="hljs-title">Ten</span>, <span class="hljs-title">decimal</span> <span class="hljs-title">Gia</span>) : <span class="hljs-title">IComparable</span>&lt;<span class="hljs-title">SanPham</span>&gt;
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> <span class="hljs-title">CompareTo</span>(<span class="hljs-params">SanPham? other</span>)</span> =&gt; other <span class="hljs-keyword">is</span> <span class="hljs-literal">null</span> ? <span class="hljs-number">1</span> : Gia.CompareTo(other.Gia);
+}
+ds.Sort();   <span class="hljs-comment">// theo giá</span>
+</code></pre>
+<ul>
+<li><strong><code>IComparer&lt;T&gt;</code></strong>: lớp so sánh <strong>bên ngoài</strong>, cho phép nhiều cách sắp xếp khác nhau:</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">SoSanhTheoTen</span> : <span class="hljs-title">IComparer</span>&lt;<span class="hljs-title">SanPham</span>&gt; { ... }
+ds.Sort(<span class="hljs-keyword">new</span> SoSanhTheoTen());
+ds.Sort((x, y) =&gt; y.Gia.CompareTo(x.Gia));   <span class="hljs-comment">// hoặc dùng lambda</span>
+</code></pre>
+<p>Quy ước giá trị trả về: âm (nhỏ hơn), 0 (bằng), dương (lớn hơn). Chương 27 sẽ kết hợp với LINQ (<code>OrderBy</code>).</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Ghi đè <code>Equals</code> mà quên <code>GetHashCode</code> (cảnh báo <code>CS0659</code>) → <code>HashSet</code>/<code>Dictionary</code> lỗi ngầm.</li>
+<li>Mã băm dựa trên trường <strong>thay đổi được</strong>.</li>
+<li>Dùng <code>==</code> cho <code>class</code> thường và tưởng so sánh nội dung.</li>
+<li>Struct lớn có thể thay đổi (<code>mutable struct</code>): sao chép ngầm gây bug rất khó thấy. Ưu tiên <code>readonly struct</code>.</li>
+<li>Boxing: gán struct cho biến <code>object</code> hay interface sẽ bọc vào heap — tốn hiệu năng nếu lặp nhiều.</li>
+<li>Nhầm <code>record</code> với &quot;class bất biến hoàn toàn&quot;: các thuộc tính kiểu tham chiếu bên trong (List, class khác) vẫn có thể đổi.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết <code>record TienTe(decimal SoTien, string Loai)</code> và kiểm tra <code>==</code>, <code>with</code>, <code>ToString</code>.</li>
+<li>Tạo <code>HashSet&lt;DiemTuDinhNghia&gt;</code> rồi cố tình bỏ <code>GetHashCode</code> và quan sát <code>Contains</code> — vì sao sai?</li>
+<li>So sánh <code>struct</code> và <code>class</code> cho <code>ToaDo</code>: mảng 1 triệu phần tử, thử đo bộ nhớ/thời gian tạo (gợi ý <code>Stopwatch</code>, <code>GC.GetTotalMemory</code>).</li>
+<li>Cài <code>IComparable&lt;SinhVien&gt;</code> sắp xếp theo điểm giảm dần, ưu tiên tên khi điểm bằng nhau.</li>
+<li>Viết <code>record NguoiDung(string Ten, string Email)</code> rồi giải thích khi nào nên đổi thành <code>class</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch19-static-extension-enum.html">&larr; 19. Static, partial, extension method, enum</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

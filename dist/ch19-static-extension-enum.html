@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 19 — Static, partial, extension method, enum — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link active" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 19 — Static, partial, extension method, enum</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Viết <strong>static class</strong> và hiểu khi nào phù hợp.</li>
+<li>Viết <strong>extension method</strong> để &quot;mở rộng&quot; kiểu có sẵn (nền tảng của LINQ).</li>
+<li>Dùng <strong>enum</strong> và <code>[Flags]</code> để biểu diễn tập giá trị có tên.</li>
+<li>Biết <code>partial class</code> và <strong>lớp lồng nhau</strong> (nested class).</li>
+</ul>
+<p>Code mẫu: <a href="code/ch19-static-extension-enum/"><code>code/ch19-static-extension-enum/</code></a>.</p>
+<h2>Static class</h2>
+<p>Static class chỉ chứa thành viên <code>static</code>, không tạo đối tượng, không kế thừa. Hợp cho tiện ích không có trạng thái:</p>
+<pre class="hljs"><code><span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ToanHoc</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> <span class="hljs-title">BinhPhuong</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> x</span>)</span> =&gt; x * x;
+}
+
+Console.WriteLine(ToanHoc.BinhPhuong(<span class="hljs-number">9</span>));
+</code></pre>
+<p><code>Math</code>, <code>Console</code>, <code>File</code> đều là static class. <strong>Đừng lạm dụng</strong>: nhồi mọi thứ vào static class biến chương trình
+thành lập trình thủ tục, khó kiểm thử vì không thay thế được (không có interface). Nghiệp vụ nên nằm trong đối
+tượng; static chỉ dành cho hàm thuần tuý và tiện ích.</p>
+<h2>Extension method</h2>
+<p>Cho phép &quot;thêm&quot; phương thức cho một kiểu <strong>mà không sửa hay kế thừa</strong> kiểu đó (kể cả <code>string</code>, <code>int</code>, kiểu của thư viện):</p>
+<pre class="hljs"><code><span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title">MoRong</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">LaSoChan</span>(<span class="hljs-params"><span class="hljs-keyword">this</span> <span class="hljs-built_in">int</span> n</span>)</span> =&gt; n % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">string</span> <span class="hljs-title">VietHoaChuDau</span>(<span class="hljs-params"><span class="hljs-keyword">this</span> <span class="hljs-built_in">string</span> s</span>)</span> { ... }
+}
+
+Console.WriteLine(<span class="hljs-number">5.L</span>aSoChan());                  <span class="hljs-comment">// false</span>
+Console.WriteLine(<span class="hljs-string">&quot;hello world&quot;</span>.VietHoaChuDau());  <span class="hljs-comment">// &quot;Hello World&quot;</span>
+</code></pre>
+<p>Quy tắc: khai báo trong <strong>static class</strong> không lồng nhau; tham số đầu có từ khoá <strong><code>this</code></strong> chỉ ra kiểu được mở rộng;
+namespace chứa nó phải được <code>using</code> để &quot;thấy&quot; phương thức. Thực chất chỉ là đường cú pháp cho lời gọi phương thức
+static (<code>MoRong.LaSoChan(5)</code>).</p>
+<p>Extension method là cách toàn bộ <strong>LINQ</strong> (<code>Where</code>, <code>Select</code>, <code>OrderBy</code>... — Chương 30) được viết, và cách cấu hình
+<code>builder.Services.AddXxx()</code> trong <a href="http://ASP.NET">ASP.NET</a> Core. Nguyên tắc: dùng khi phương thức thật sự &quot;thuộc về&quot; kiểu đó về mặt
+khái niệm và bạn không sở hữu mã nguồn; đừng tạo hàng loạt extension trên <code>object</code>/<code>string</code> cho mọi việc vặt.</p>
+<p>Lưu ý: nếu kiểu đã có phương thức cùng chữ ký, phương thức của kiểu <strong>luôn thắng</strong> extension.</p>
+<h2>Enum</h2>
+<p><strong>Enum</strong> là tập hợp các hằng số có tên, thay cho &quot;số ma thuật&quot;:</p>
+<pre class="hljs"><code><span class="hljs-built_in">enum</span> TrangThaiDon
+{
+    ChoXacNhan = <span class="hljs-number">1</span>,
+    DangGiao = <span class="hljs-number">2</span>,
+    DaGiao = <span class="hljs-number">3</span>,
+}
+
+<span class="hljs-keyword">var</span> tt = TrangThaiDon.DangGiao;
+Console.WriteLine(<span class="hljs-string">$&quot;<span class="hljs-subst">{tt}</span> = <span class="hljs-subst">{(<span class="hljs-built_in">int</span>)tt}</span>&quot;</span>);       <span class="hljs-comment">// DangGiao = 2</span>
+</code></pre>
+<p>So với <code>int trangThai = 2;</code> thì <code>TrangThaiDon.DangGiao</code> tự mô tả, và trình biên dịch chặn gán giá trị lung tung
+(<code>switch</code> có thể cảnh báo thiếu nhánh).</p>
+<p>Thao tác hữu ích:</p>
+<pre class="hljs"><code>Enum.Parse&lt;TrangThaiDon&gt;(<span class="hljs-string">&quot;DaGiao&quot;</span>);                   <span class="hljs-comment">// ném lỗi nếu sai</span>
+Enum.TryParse(<span class="hljs-string">&quot;KhongCo&quot;</span>, <span class="hljs-keyword">out</span> TrangThaiDon kq);         <span class="hljs-comment">// false</span>
+<span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> v <span class="hljs-keyword">in</span> Enum.GetValues&lt;TrangThaiDon&gt;()) ...   <span class="hljs-comment">// liệt kê</span>
+</code></pre>
+<p>Enum mặc định là <code>int</code>, bắt đầu từ <code>0</code>, tăng dần nếu không gán. Ép số bất kỳ sang enum (<code>(TrangThaiDon)99</code>) <strong>không
+báo lỗi</strong> — dùng <code>Enum.IsDefined</code> để kiểm tra. Gắn thêm hành vi cho enum bằng <strong>extension method</strong> (như <code>MoTa()</code> trong mã mẫu).</p>
+<h3><code>[Flags]</code> — tổ hợp nhiều giá trị</h3>
+<p>Khi các giá trị có thể <strong>kết hợp</strong> (quyền hạn, tuỳ chọn), dùng luỹ thừa của 2 và thuộc tính <code>[Flags]</code>:</p>
+<pre class="hljs"><code>[<span class="hljs-meta">Flags</span>]
+<span class="hljs-built_in">enum</span> Quyen { Khong = <span class="hljs-number">0</span>, Doc = <span class="hljs-number">1</span>, Ghi = <span class="hljs-number">2</span>, Xoa = <span class="hljs-number">4</span>, TatCa = Doc | Ghi | Xoa }
+
+<span class="hljs-keyword">var</span> q = Quyen.Doc | Quyen.Ghi;          <span class="hljs-comment">// bật 2 cờ  → &quot;Doc, Ghi&quot;</span>
+q.HasFlag(Quyen.Ghi);                    <span class="hljs-comment">// true</span>
+(q &amp; Quyen.Xoa) != <span class="hljs-number">0</span>;                    <span class="hljs-comment">// false</span>
+q |= Quyen.Xoa;                          <span class="hljs-comment">// bật thêm</span>
+q &amp;= ~Quyen.Doc;                         <span class="hljs-comment">// tắt Doc</span>
+</code></pre>
+<p>Đây chính là toán tử bit đã giới thiệu ở Chương 6: <code>|</code> để bật, <code>&amp;</code> để kiểm tra, <code>~</code> để đảo mặt nạ.</p>
+<h2>Partial class</h2>
+<p><code>partial</code> cho phép chia <strong>một</strong> class thành nhiều đoạn/file, gộp lại lúc biên dịch:</p>
+<pre class="hljs"><code><span class="hljs-keyword">partial</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SinhVien</span> { <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Ten { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-string">&quot;&quot;</span>; }
+<span class="hljs-keyword">partial</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SinhVien</span> { <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-built_in">string</span> <span class="hljs-title">ToString</span>()</span> =&gt; Ten; }
+</code></pre>
+<p>Ít dùng trong code bình thường. Nó chủ yếu để <strong>tách code do công cụ sinh ra</strong> khỏi code bạn viết tay (ví dụ
+source generator, một số tệp do IDE/framework sinh). Điều quan trọng là nhận ra <code>partial</code> khi gặp.</p>
+<h2>Lớp lồng nhau (nested class)</h2>
+<p>Class khai báo bên trong class khác. Nếu để <code>private</code>, chỉ class chứa nó thấy được — hợp cho chi tiết cài đặt:</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">DanhSachLienKet</span>
+{
+    <span class="hljs-keyword">private</span> Nut? _dau;
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Nut</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> giaTri</span>)          <span class="hljs-comment">// chỉ DanhSachLienKet dùng được</span></span>
+    {
+        <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> GiaTri { <span class="hljs-keyword">get</span>; } = giaTri;
+        <span class="hljs-keyword">public</span> Nut? Tiep { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+    }
+}
+</code></pre>
+<p>Dùng khi lớp nhỏ chỉ có nghĩa trong ngữ cảnh lớp cha (nút của danh sách, bộ duyệt...). Gọi từ ngoài (nếu <code>public</code>):
+<code>DanhSachLienKet.Nut</code>. Lớp lồng truy cập được cả thành viên <code>private</code> của lớp bao ngoài.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Extension method không xuất hiện: thiếu <code>using</code> namespace, hoặc không đặt trong static class.</li>
+<li>Ép số vào enum không hợp lệ mà không kiểm tra (<code>Enum.IsDefined</code>).</li>
+<li>Quên gán giá trị luỹ thừa của 2 cho enum <code>[Flags]</code> (<code>Doc=1, Ghi=2, Xoa=3</code> sai → 3 = Doc|Ghi).</li>
+<li>Trộn tiện ích tĩnh và trạng thái toàn cục (<code>static</code> field thay đổi được) → lỗi khó truy vết, nhất là đa luồng.</li>
+<li>Đặt <code>partial</code> cho class mà chưa cần — chỉ làm code khó tìm.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết extension <code>DemTu(this string s)</code> trả số từ trong chuỗi và <code>Chia&lt;T&gt;(this IEnumerable&lt;T&gt;, int n)</code> (tuỳ chọn).</li>
+<li>Định nghĩa enum <code>NgayTrongTuan</code> và extension <code>LaCuoiTuan()</code>.</li>
+<li>Tạo <code>[Flags] enum TuyChonIn { None = 0, DamNet = 1, Nghieng = 2, GachChan = 4 }</code>, in ra tổ hợp và kiểm tra từng cờ.</li>
+<li>Viết <code>static class DinhDang</code> có <code>Tien(decimal)</code> và <code>Ngay(DateTime)</code>; cân nhắc: nên là static class hay class thường có interface? Vì sao?</li>
+<li>Viết thêm nested class <code>DuyetVien</code> bên trong <code>DanhSachLienKet</code> để duyệt danh sách.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch18-abstract-interface.html">&larr; 18. Abstract class và Interface</a><a class="nav-next" href="ch20-object-struct-record.html">20. Lớp object, struct và record &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
