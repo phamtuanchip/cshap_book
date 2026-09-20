@@ -1,0 +1,7 @@
+@page "{id:int}"
+@model WebForm.Pages.ThanhCongModel
+@{
+    ViewData["Title"] = "Đăng ký thành công";
+}
+<h1>Đăng ký thành công 🎉</h1>
+<p class="flash">Chào mừng <strong>@Model.HoTen</strong> (mã thành viên #@Model.Id)!</p>

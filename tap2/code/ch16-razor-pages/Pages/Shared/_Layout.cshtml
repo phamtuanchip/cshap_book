@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Cửa hàng</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav>
+            <a asp-page="/Index">Trang chủ</a>
+            <a asp-page="/SanPhams/Index">Sản phẩm</a>
+            <a asp-page="/SanPhams/Create">Thêm mới</a>
+        </nav>
+    </header>
+    <main>
+        <partial name="_ThongBao" />
+        @RenderBody()
+    </main>
+    <footer>© @DateTime.Now.Year Cửa hàng mẫu (Razor Pages)</footer>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

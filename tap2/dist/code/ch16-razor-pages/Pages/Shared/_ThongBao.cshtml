@@ -1,0 +1,5 @@
+@* Partial view: doan giao dien dung lai. TempData chi ton tai qua DUNG MOT redirect. *@
+@if (TempData["ThongBao"] is string tb)
+{
+    <p class="flash">@tb</p>
+}

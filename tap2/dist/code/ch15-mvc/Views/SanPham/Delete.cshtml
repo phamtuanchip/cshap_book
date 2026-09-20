@@ -1,0 +1,13 @@
+@model SanPham
+@{
+    ViewData["Title"] = "Xoá sản phẩm";
+}
+
+<h1>Xoá sản phẩm?</h1>
+<p>Bạn sắp xoá <strong>@Model.Ten</strong> (@Model.Ma). Hành động này không thể hoàn tác.</p>
+
+@* Xoa PHAI la POST (khong bao gio de GET lam thay doi du lieu - Chuong 1) *@
+<form method="post" asp-action="Delete" asp-route-id="@Model.Id">
+    <button type="submit" class="btn nguy-hiem">Xoá</button>
+    <a asp-action="Index">Huỷ</a>
+</form>

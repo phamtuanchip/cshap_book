@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Cửa hàng</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav>
+            <a asp-controller="Home" asp-action="Index">Cửa hàng</a>
+            <a asp-controller="SanPham" asp-action="Index">Sản phẩm</a>
+            <a asp-controller="SanPham" asp-action="Create">Thêm mới</a>
+        </nav>
+    </header>
+    <main>
+        @if (TempData["ThongBao"] is string tb)
+        {
+            <p class="flash">@tb</p>
+        }
+        @RenderBody()
+    </main>
+    <footer>© @DateTime.Now.Year Cửa hàng mẫu</footer>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

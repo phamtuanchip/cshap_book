@@ -1,0 +1,53 @@
+@page
+@model WebRazor.Pages.SanPhams.IndexModel
+@{
+    ViewData["Title"] = "Sản phẩm";
+}
+
+<h1>Sản phẩm</h1>
+
+<form method="get" class="tim-kiem">
+    <input type="search" asp-for="TuKhoa" placeholder="Tìm theo tên hoặc mã…" />
+    <button type="submit">Tìm</button>
+</form>
+
+@if (Model.SanPhams.Count == 0)
+{
+    <p><em>Không có sản phẩm nào.</em></p>
+}
+else
+{
+    <table>
+        <thead><tr><th>Mã</th><th>Tên</th><th>Nhóm</th><th class="so">Giá</th><th class="so">Tồn</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var sp in Model.SanPhams)
+        {
+            <tr>
+                <td>@sp.Ma</td>
+                <td><a asp-page="Details" asp-route-id="@sp.Id">@sp.Ten</a></td>
+                <td>@sp.Nhom.Ten</td>
+                <td class="so">@sp.Gia.ToString("N0")</td>
+                <td class="so">@sp.Ton</td>
+                <td>
+                    <a asp-page="Edit" asp-route-id="@sp.Id">Sửa</a>
+                    <form method="post" asp-page-handler="Xoa" asp-route-id="@sp.Id" asp-route-trang="@Model.Trang" asp-route-tuKhoa="@Model.TuKhoa" style="display:inline">
+                        <button type="submit" class="btn nguy-hiem">Xoá</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <nav class="phan-trang" aria-label="Phân trang">
+        @if (Model.Trang > 1)
+        {
+            <a asp-page="Index" asp-route-tuKhoa="@Model.TuKhoa" asp-route-trang="@(Model.Trang - 1)">« Trước</a>
+        }
+        <span>Trang @Model.Trang / @Model.TongTrang</span>
+        @if (Model.Trang < Model.TongTrang)
+        {
+            <a asp-page="Index" asp-route-tuKhoa="@Model.TuKhoa" asp-route-trang="@(Model.Trang + 1)">Sau »</a>
+        }
+    </nav>
+}

@@ -1,0 +1,15 @@
+@model SanPham
+@{
+    ViewData["Title"] = Model.Ten;
+}
+
+<h1>@Model.Ten</h1>
+<dl>
+    <dt>Mã</dt><dd>@Model.Ma</dd>
+    <dt>Giá</dt><dd>@Model.Gia.ToString("N0") đồng</dd>
+    <dt>Tồn kho</dt><dd>@Model.Ton</dd>
+</dl>
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Sửa</a> |
+    <a asp-action="Index">Về danh sách</a>
+</p>

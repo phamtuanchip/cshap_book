@@ -1,0 +1,14 @@
+body { font-family: system-ui, sans-serif; max-width: 52rem; margin: 0 auto; padding: 1rem; color: #222; }
+nav a { margin-right: 1rem; text-decoration: none; font-weight: 600; }
+table { border-collapse: collapse; width: 100%; }
+th, td { padding: .4rem .6rem; border-bottom: 1px solid #ddd; text-align: left; }
+.so { text-align: right; }
+.het-hang td { color: #a00; }
+.flash { background: #e6f7e6; padding: .5rem 1rem; border-radius: 4px; }
+.loi, .field-validation-error, .validation-summary-errors { color: #b00020; }
+.truong { margin-bottom: .8rem; }
+.truong label { display: block; font-weight: 600; }
+.btn { background: #0b57d0; color: #fff; padding: .4rem 1rem; border: 0; border-radius: 4px; text-decoration: none; cursor: pointer; }
+.nguy-hiem { background: #b00020; }
+.phan-trang { margin-top: 1rem; }
+footer { margin-top: 2rem; color: #777; font-size: .85rem; }

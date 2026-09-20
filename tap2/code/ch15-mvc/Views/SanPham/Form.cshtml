@@ -1,0 +1,36 @@
+@model SanPhamForm
+@{
+    bool laSua = Model.Id != 0;
+    ViewData["Title"] = laSua ? "Sửa sản phẩm" : "Thêm sản phẩm";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@* Tag helper form tu them token chong CSRF (Chuong 17). asp-action bo trong => gui ve chinh URL hien tai *@
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="loi"></div>
+
+    <div class="truong">
+        <label asp-for="Ma"></label>
+        <input asp-for="Ma" />
+        <span asp-validation-for="Ma" class="loi"></span>
+    </div>
+    <div class="truong">
+        <label asp-for="Ten"></label>
+        <input asp-for="Ten" />
+        <span asp-validation-for="Ten" class="loi"></span>
+    </div>
+    <div class="truong">
+        <label asp-for="Gia"></label>
+        <input asp-for="Gia" />
+        <span asp-validation-for="Gia" class="loi"></span>
+    </div>
+    <div class="truong">
+        <label asp-for="Ton"></label>
+        <input asp-for="Ton" />
+        <span asp-validation-for="Ton" class="loi"></span>
+    </div>
+
+    <button type="submit" class="btn">Lưu</button>
+    <a asp-action="Index">Huỷ</a>
+</form>

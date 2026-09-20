@@ -1,0 +1,14 @@
+@page "{id:int}"
+@model WebRazor.Pages.SanPhams.EditModel
+@{
+    ViewData["Title"] = "Sửa sản phẩm";
+    ViewData["Nhom"] = Model.DanhSachNhom;
+}
+
+<h1>Sửa sản phẩm</h1>
+
+<form method="post">
+    <partial name="_Form" for="Input" view-data="ViewData" />
+    <button type="submit" class="btn">Lưu</button>
+    <a asp-page="Index">Huỷ</a>
+</form>

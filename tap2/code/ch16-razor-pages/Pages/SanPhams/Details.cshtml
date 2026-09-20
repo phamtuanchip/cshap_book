@@ -1,0 +1,14 @@
+@page "{id:int}"
+@model WebRazor.Pages.SanPhams.DetailsModel
+@{
+    ViewData["Title"] = Model.SanPham.Ten;
+}
+
+<h1>@Model.SanPham.Ten</h1>
+<dl>
+    <dt>Mã</dt><dd>@Model.SanPham.Ma</dd>
+    <dt>Nhóm</dt><dd>@Model.SanPham.Nhom.Ten</dd>
+    <dt>Giá</dt><dd>@Model.SanPham.Gia.ToString("N0") đồng</dd>
+    <dt>Tồn kho</dt><dd>@Model.SanPham.Ton</dd>
+</dl>
+<p><a asp-page="Edit" asp-route-id="@Model.SanPham.Id">Sửa</a> | <a asp-page="Index">Về danh sách</a></p>

@@ -1,0 +1,49 @@
+@page
+@model WebForm.Pages.DangKyModel
+@{
+    ViewData["Title"] = "Đăng ký";
+}
+
+<h1>Đăng ký tài khoản</h1>
+
+@* <form method="post"> + tag helper: tu chen <input type="hidden" name="__RequestVerificationToken"> (chong CSRF) *@
+<form method="post" novalidate>
+    <div asp-validation-summary="ModelOnly" class="loi"></div>
+
+    <div class="truong">
+        <label asp-for="Input.HoTen"></label>
+        <input asp-for="Input.HoTen" autocomplete="name" />
+        <span asp-validation-for="Input.HoTen" class="loi"></span>
+    </div>
+    <div class="truong">
+        <label asp-for="Input.Email"></label>
+        <input asp-for="Input.Email" type="email" autocomplete="email" />
+        <span asp-validation-for="Input.Email" class="loi"></span>
+    </div>
+    <div class="truong">
+        <label asp-for="Input.NgaySinh"></label>
+        <input asp-for="Input.NgaySinh" type="date" />
+        <span asp-validation-for="Input.NgaySinh" class="loi"></span>
+    </div>
+    <div class="truong">
+        <label asp-for="Input.MatKhau"></label>
+        <input asp-for="Input.MatKhau" autocomplete="new-password" />   @* type=password tu DataType; KHONG dien lai gia tri *@
+        <span asp-validation-for="Input.MatKhau" class="loi"></span>
+    </div>
+    <div class="truong">
+        <label asp-for="Input.XacNhan"></label>
+        <input asp-for="Input.XacNhan" autocomplete="new-password" />
+        <span asp-validation-for="Input.XacNhan" class="loi"></span>
+    </div>
+    <div class="truong">
+        <label><input asp-for="Input.DongY" /> @Html.DisplayNameFor(m => m.Input.DongY)</label>
+        <span asp-validation-for="Input.DongY" class="loi"></span>
+    </div>
+
+    <button type="submit" class="btn">Đăng ký</button>
+</form>
+
+@section Scripts {
+    @* Validation phia client (jQuery Validation + Unobtrusive) la TUY CHON, chi de UX tot hon.
+       Server LUON validate lai. Them bang: <partial name="_ValidationScriptsPartial" /> khi da co thu vien. *@
+}
