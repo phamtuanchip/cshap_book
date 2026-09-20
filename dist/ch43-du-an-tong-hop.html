@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 43 — Dự án tổng hợp Tập 1: Quản lý kho hàng — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch31-delegate-event-lambda.html">31. Delegate, event và lambda</a></li><li><a class="chapter-link" href="ch32-csharp-hien-dai.html">32. Record, pattern matching và cú pháp mới</a></li><li><a class="chapter-link" href="ch33-async-await.html">33. Lập trình bất đồng bộ async/await</a></li><li><a class="chapter-link" href="ch34-da-luong.html">34. Đa luồng và đồng bộ hoá</a></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><a class="chapter-link" href="ch35-file-io.html">35. File I/O</a></li><li><a class="chapter-link" href="ch36-json-csv.html">36. JSON và CSV</a></li><li><a class="chapter-link" href="ch37-reflection-attribute.html">37. Reflection, Attribute và Serialization</a></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><a class="chapter-link" href="ch38-unit-test.html">38. Unit test với xUnit</a></li><li><a class="chapter-link" href="ch39-debug-logging.html">39. Debug và logging</a></li><li><a class="chapter-link" href="ch40-git-nuget-cau-hinh.html">40. Git, NuGet và cấu hình</a></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch41-design-pattern.html">41. Design pattern cơ bản</a></li><li><a class="chapter-link" href="ch42-solid.html">42. Nguyên lý SOLID</a></li><li><a class="chapter-link active" href="ch43-du-an-tong-hop.html">43. Dự án tổng hợp Tập 1</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch44-phu-luc-a-loi-thuong-gap.html">44. Phụ lục A — Lỗi thường gặp</a></li><li><a class="chapter-link" href="ch45-phu-luc-b-tai-lieu.html">45. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch46-phu-luc-c-cheat-sheet.html">46. Phụ lục C — Cheat sheet C#</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 43 — Dự án tổng hợp Tập 1: Quản lý kho hàng</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Ghép toàn bộ kiến thức Tập 1 thành <strong>một ứng dụng hoàn chỉnh</strong>: OOP, record, collection, LINQ, async, JSON, exception, interface/DI, unit test.</li>
+<li>Biết <strong>quy trình</strong> đi từ yêu cầu đến thiết kế, cài đặt và kiểm thử.</li>
+<li>Tổ chức solution nhiều project theo hướng <strong>tách nghiệp vụ khỏi giao diện và lưu trữ</strong>.</li>
+<li>Có một dự án nền để mở rộng và mang lên web ở Tập 2.</li>
+</ul>
+<p>Code đầy đủ: <a href="code/ch43-du-an-tong-hop/"><code>code/ch43-du-an-tong-hop/</code></a>.</p>
+<h2>Bài toán</h2>
+<p>Cửa hàng nhỏ cần một chương trình console <strong>quản lý kho hàng</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Yêu cầu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Quản lý sản phẩm: mã (duy nhất), tên, nhóm hàng, đơn giá, tồn kho, mức cảnh báo</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Nhập kho</strong> (tăng tồn) và <strong>xuất kho</strong> (giảm tồn; không được xuất quá số đang có)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Ghi <strong>lịch sử giao dịch</strong> (thời điểm, loại, số lượng, ghi chú)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Tìm kiếm theo tên/mã, liệt kê sản phẩm <strong>sắp hết hàng</strong></td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Báo cáo</strong> theo nhóm: số sản phẩm, tổng tồn, tổng giá trị</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Lưu bền</strong> dữ liệu vào file JSON, mở lại vẫn còn</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Nhập liệu thân thiện: sai dữ liệu thì báo lỗi rõ ràng, không sập chương trình</td>
+</tr>
+</tbody>
+</table>
+<h2>Bước 1 — Phân tích và thiết kế</h2>
+<p>Áp dụng cách nghĩ của Chương 12: tìm <strong>danh từ</strong> → class; <strong>động từ</strong> → phương thức.</p>
+<ul>
+<li>Danh từ: <strong>sản phẩm</strong>, <strong>giao dịch</strong>, <strong>kho</strong>, <strong>nhóm hàng</strong>.</li>
+<li>Động từ: thêm, nhập, xuất, tìm, báo cáo, lưu.</li>
+<li>Quy tắc nghiệp vụ (đây là &quot;bất biến&quot; cần bảo vệ): mã không trùng, số lượng nhập/xuất &gt; 0, <strong>tồn không âm</strong>.</li>
+</ul>
+<h3>Kiến trúc phân lớp</h3>
+<pre class="mermaid">flowchart LR
+    App[&quot;QuanLyKho.App&lt;br/&gt;(console: menu, nhập/xuất)&quot;] --&gt; Svc[&quot;KhoService&lt;br/&gt;(nghiệp vụ)&quot;]
+    Svc --&gt;|&quot;phụ thuộc interface&quot;| Repo[&quot;IKhoRepository&quot;]
+    Json[&quot;JsonKhoRepository&lt;br/&gt;(file JSON)&quot;] -.-&gt;|&quot;cài đặt&quot;| Repo
+    Test[&quot;QuanLyKho.Tests&quot;] --&gt; Svc
+    Test --&gt; Fake[&quot;RepoTrongBoNho&lt;br/&gt;(giả)&quot;]
+    Fake -.-&gt;|&quot;cài đặt&quot;| Repo
+</pre>
+<p>Ba project trong một solution (Chương 4, 15):</p>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>Vai trò</th>
+<th>Phụ thuộc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>QuanLyKho.Core</code></td>
+<td>mô hình + nghiệp vụ + interface lưu trữ + cài đặt JSON</td>
+<td>không</td>
+</tr>
+<tr>
+<td><code>QuanLyKho.App</code></td>
+<td>giao diện console, <strong>composition root</strong></td>
+<td><code>Core</code></td>
+</tr>
+<tr>
+<td><code>QuanLyKho.Tests</code></td>
+<td>unit test xUnit</td>
+<td><code>Core</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nguyên tắc dẫn đường:</strong> <code>Core</code> <strong>không biết</strong> console hay file JSON tồn tại — chỉ biết interface <code>IKhoRepository</code>
+(Dependency Inversion, Chương 42). Nhờ vậy: đổi JSON sang SQL/Web chỉ viết thêm một lớp; test thay bằng repository giả trong bộ nhớ; và
+nghiệp vụ dùng lại nguyên vẹn cho ứng dụng web ở Tập 2.</p>
+<h2>Bước 2 — Mô hình dữ liệu (record)</h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">record</span> <span class="hljs-title">SanPham</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> Ma, <span class="hljs-built_in">string</span> Ten, <span class="hljs-built_in">string</span> Nhom, <span class="hljs-built_in">decimal</span> DonGia, <span class="hljs-built_in">int</span> TonKho, <span class="hljs-built_in">int</span> MucCanhBao = <span class="hljs-number">5</span></span>)</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> GiaTriTon =&gt; DonGia * TonKho;      <span class="hljs-comment">// thuộc tính tính toán</span>
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-built_in">enum</span> LoaiGiaoDich { Nhap, Xuat }
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">record</span> <span class="hljs-title">GiaoDich</span>(<span class="hljs-params">DateTime ThoiGian, <span class="hljs-built_in">string</span> MaSanPham, LoaiGiaoDich Loai, <span class="hljs-built_in">int</span> SoLuong, <span class="hljs-built_in">string</span>? GhiChu</span>)</span>;
+</code></pre>
+<p>Vì sao <strong><code>record</code> bất biến</strong>: (Chương 14, 20) đối tượng không bị sửa tuỳ tiện từ bên ngoài; &quot;thay đổi&quot; là tạo bản mới bằng <code>with</code>:
+<code>sp with { TonKho = sp.TonKho + soLuong }</code>. Dùng <code>decimal</code> cho tiền (Chương 5), <code>enum</code> cho loại giao dịch (Chương 19),
+tham số mặc định cho <code>MucCanhBao</code>.</p>
+<p>Lỗi nghiệp vụ dùng exception riêng (Chương 21):</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">KhoException</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>) : <span class="hljs-title">Exception</span>(<span class="hljs-params">message</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">KhongTimThayException</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ma</span>) : <span class="hljs-title">KhoException</span>(<span class="hljs-params"><span class="hljs-string">$&quot;Khong tim thay san pham <span class="hljs-subst">{ma}</span>&quot;</span></span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">KhongDuHangException</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ma, <span class="hljs-built_in">int</span> can, <span class="hljs-built_in">int</span> con</span>) : <span class="hljs-title">KhoException</span>(<span class="hljs-params">...</span>)</span> { <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> Can {...} <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> Con {...} }
+</code></pre>
+<p>Lớp gốc <code>KhoException</code> cho phép giao diện <code>catch (KhoException)</code> một lần để hiển thị mọi lỗi nghiệp vụ — còn lỗi hệ thống (file hỏng, hết bộ nhớ)
+không bị &quot;nuốt&quot; nhầm.</p>
+<h2>Bước 3 — Nghiệp vụ: <code>KhoService</code></h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">KhoService</span>(<span class="hljs-params">IKhoRepository repo, TimeProvider dongHo</span>)   <span class="hljs-comment">// nhận phụ thuộc qua constructor</span></span>
+{
+    <span class="hljs-keyword">private</span> DuLieuKho _du = <span class="hljs-keyword">new</span>();
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">XuatKhoAsync</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ma, <span class="hljs-built_in">int</span> soLuong, <span class="hljs-built_in">string</span>? ghiChu = <span class="hljs-literal">null</span>, CancellationToken ct = <span class="hljs-literal">default</span></span>)</span>
+    {
+        <span class="hljs-keyword">if</span> (soLuong &lt;= <span class="hljs-number">0</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> KhoException(<span class="hljs-string">&quot;So luong xuat phai lon hon 0&quot;</span>);
+        <span class="hljs-keyword">var</span> sp = LayHoacNem(ma);
+        <span class="hljs-keyword">if</span> (sp.TonKho &lt; soLuong) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> KhongDuHangException(sp.Ma, soLuong, sp.TonKho);   <span class="hljs-comment">// bảo vệ bất biến</span>
+
+        CapNhat(sp <span class="hljs-keyword">with</span> { TonKho = sp.TonKho - soLuong });
+        GhiGiaoDich(sp.Ma, LoaiGiaoDich.Xuat, soLuong, ghiChu);
+        <span class="hljs-keyword">await</span> repo.LuuAsync(_du, ct);          <span class="hljs-comment">// lưu SAU KHI thay đổi hợp lệ</span>
+    }
+    ...
+}
+</code></pre>
+<p>Những kiến thức được dùng trong lớp này:</p>
+<ul>
+<li><strong>Validate trước, thay đổi sau</strong> (guard clauses, Chương 21): dữ liệu sai không bao giờ lọt vào trạng thái.</li>
+<li><strong>Async</strong> (Chương 33): lưu file là I/O nên <code>async Task</code>, nhận <code>CancellationToken</code>.</li>
+<li><strong><code>TimeProvider</code></strong> (đồng hồ trừu tượng): test có thể &quot;đóng băng&quot; thời gian thay vì phụ thuộc <code>DateTime.Now</code>.</li>
+<li><strong>LINQ</strong> (Chương 30) cho truy vấn:</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;SanPham&gt; <span class="hljs-title">SapHet</span>()</span>
+    =&gt; _du.SanPham.Where(s =&gt; s.TonKho &lt;= s.MucCanhBao).OrderBy(s =&gt; s.TonKho);
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;NhomBaoCao&gt; <span class="hljs-title">BaoCaoTheoNhom</span>()</span>
+    =&gt; _du.SanPham
+        .GroupBy(s =&gt; s.Nhom)
+        .Select(g =&gt; <span class="hljs-keyword">new</span> NhomBaoCao(g.Key, g.Count(), g.Sum(s =&gt; s.TonKho), g.Sum(s =&gt; s.GiaTriTon)))
+        .OrderByDescending(x =&gt; x.GiaTri);
+</code></pre>
+<ul>
+<li><strong>So sánh chuỗi</strong> bằng <code>StringComparison.OrdinalIgnoreCase</code> (Chương 11): mã <code>a1</code> và <code>A1</code> là một.</li>
+<li>Trả <code>IReadOnlyList&lt;SanPham&gt; TatCa</code> thay vì <code>List</code> để bên ngoài không phá dữ liệu (Chương 14).</li>
+</ul>
+<h2>Bước 4 — Lưu trữ: interface và cài đặt JSON</h2>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IKhoRepository</span>
+{
+    <span class="hljs-function">Task&lt;DuLieuKho&gt; <span class="hljs-title">TaiAsync</span>(<span class="hljs-params">CancellationToken ct = <span class="hljs-literal">default</span></span>)</span>;
+    <span class="hljs-function">Task <span class="hljs-title">LuuAsync</span>(<span class="hljs-params">DuLieuKho duLieu, CancellationToken ct = <span class="hljs-literal">default</span></span>)</span>;
+}
+</code></pre>
+<p><code>JsonKhoRepository</code> cài đặt bằng <code>System.Text.Json</code> (Chương 36) và <strong>ghi qua file tạm rồi đổi tên</strong> (Chương 35) để không hỏng dữ liệu
+nếu chương trình sập giữa lúc ghi:</p>
+<pre class="hljs"><code><span class="hljs-built_in">string</span> tam = duongDan + <span class="hljs-string">&quot;.tmp&quot;</span>;
+<span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> (<span class="hljs-keyword">var</span> fs = File.Create(tam))
+    <span class="hljs-keyword">await</span> JsonSerializer.SerializeAsync(fs, duLieu, Options, ct);
+File.Move(tam, duongDan, overwrite: <span class="hljs-literal">true</span>);
+</code></pre>
+<p><code>JsonSerializerOptions</code> được tạo <strong>một lần</strong> (<code>static readonly</code>) và dùng <code>JsonStringEnumConverter</code> để <code>Nhap/Xuat</code> hiện thành chữ trong file.</p>
+<h2>Bước 5 — Ứng dụng console và composition root</h2>
+<p><code>Program.cs</code> là <strong>nơi duy nhất</strong> biết lớp cụ thể nào được dùng — nơi lắp ráp (composition root):</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> dichVuKho = <span class="hljs-keyword">new</span> KhoService(<span class="hljs-keyword">new</span> JsonKhoRepository(duongDan), TimeProvider.System);
+<span class="hljs-keyword">await</span> dichVuKho.KhoiTaoAsync();
+</code></pre>
+<ul>
+<li><strong>Chế độ <code>--demo</code></strong>: chạy kịch bản có sẵn với file tạm rồi xoá — để xem chương trình hoạt động ngay, cũng là &quot;bản chạy thử&quot; của CI.</li>
+<li><strong>Chế độ menu</strong>: vòng <code>while (true)</code>, <code>switch</code> trên lựa chọn (Chương 7, 8), đọc số an toàn bằng <code>TryParse</code> trong vòng lặp cho đến khi hợp lệ (Chương 5).</li>
+<li><strong>Xử lý lỗi ở biên giới</strong> (Chương 21): <code>catch (KhoException e)</code> ngay trong vòng menu để in thông báo thân thiện và tiếp tục, thay vì sập.</li>
+</ul>
+<p>Chạy thử:</p>
+<pre class="hljs"><code>dotnet run --project QuanLyKho.App -- --demo
+</code></pre>
+<p>Dữ liệu tương tác lưu vào <code>ApplicationData/QuanLyKho/kho.json</code>; đổi bằng <code>--file duong-dan.json</code>.</p>
+<h2>Bước 6 — Kiểm thử</h2>
+<p><code>KhoService</code> phụ thuộc interface, nên test thay lưu trữ thật bằng một repository <strong>trong bộ nhớ</strong> (Chương 38):</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">RepoTrongBoNho</span> : <span class="hljs-title">IKhoRepository</span>
+{
+    <span class="hljs-keyword">public</span> DuLieuKho DuLieu { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">private</span> <span class="hljs-keyword">set</span>; } = <span class="hljs-keyword">new</span>();
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> SoLanLuu { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">private</span> <span class="hljs-keyword">set</span>; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Task&lt;DuLieuKho&gt; <span class="hljs-title">TaiAsync</span>(<span class="hljs-params">CancellationToken ct = <span class="hljs-literal">default</span></span>)</span> =&gt; Task.FromResult(DuLieu);
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Task <span class="hljs-title">LuuAsync</span>(<span class="hljs-params">DuLieuKho duLieu, CancellationToken ct = <span class="hljs-literal">default</span></span>)</span> { DuLieu = duLieu; SoLanLuu++; <span class="hljs-keyword">return</span> Task.CompletedTask; }
+}
+
+[<span class="hljs-meta">Fact</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">XuatKho_KhongDuHang_NemLoiVaTonKhongDoi</span>()</span>
+{
+    <span class="hljs-keyword">await</span> _kho.ThemSanPhamAsync(SanPhamMau(<span class="hljs-string">&quot;A1&quot;</span>, ton: <span class="hljs-number">3</span>));
+
+    <span class="hljs-keyword">var</span> loi = <span class="hljs-keyword">await</span> Assert.ThrowsAsync&lt;KhongDuHangException&gt;(() =&gt; _kho.XuatKhoAsync(<span class="hljs-string">&quot;A1&quot;</span>, <span class="hljs-number">10</span>));
+
+    Assert.Equal(<span class="hljs-number">3</span>, _kho.Tim(<span class="hljs-string">&quot;A1&quot;</span>)!.TonKho);       <span class="hljs-comment">// tồn KHÔNG bị thay đổi khi lỗi</span>
+}
+</code></pre>
+<p>Bộ test phủ: thêm hợp lệ / trùng mã, nhập, xuất đủ/thiếu hàng, số lượng không dương (<code>[Theory]</code>), sản phẩm không tồn tại, sắp hết,
+báo cáo nhóm, tìm kiếm. Chạy <code>dotnet test</code> — mọi thay đổi sau này đều có lưới an toàn.</p>
+<h2>Đối chiếu kiến thức Tập 1</h2>
+<table>
+<thead>
+<tr>
+<th>Chương</th>
+<th>Ở đâu trong dự án</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5–11 Nền tảng</td>
+<td>biến, <code>decimal</code>, chuỗi, vòng lặp, <code>switch</code>, phương thức trong <code>Program.cs</code></td>
+</tr>
+<tr>
+<td>12–15 OOP cơ bản</td>
+<td>class, property, namespace/project (<code>Core</code>/<code>App</code>/<code>Tests</code>)</td>
+</tr>
+<tr>
+<td>16–20 OOP nâng cao</td>
+<td>interface <code>IKhoRepository</code>, kế thừa exception, <code>record</code>, <code>enum</code></td>
+</tr>
+<tr>
+<td>21 Exception</td>
+<td><code>KhoException</code> và hai lớp con, guard clause</td>
+</tr>
+<tr>
+<td>22–23 Generics, null</td>
+<td><code>Task&lt;T&gt;</code>, <code>IEnumerable&lt;T&gt;</code>, <code>string?</code>, <code>SanPham?</code></td>
+</tr>
+<tr>
+<td>24–30 Collection, LINQ</td>
+<td><code>List</code>, <code>GroupBy</code>, <code>Where</code>, <code>OrderBy</code>, <code>Sum</code></td>
+</tr>
+<tr>
+<td>31–34 Delegate, async</td>
+<td>lambda trong LINQ, <code>async/await</code>, <code>CancellationToken</code></td>
+</tr>
+<tr>
+<td>35–37 I/O, JSON</td>
+<td><code>JsonKhoRepository</code>, file tạm, options</td>
+</tr>
+<tr>
+<td>38–40 Test, cấu hình</td>
+<td>xUnit, repo giả, tham số dòng lệnh/đường dẫn</td>
+</tr>
+<tr>
+<td>41–42 Pattern, SOLID</td>
+<td>Repository, DI qua constructor, SRP/DIP</td>
+</tr>
+</tbody>
+</table>
+<h2>Mở rộng (bài tập lớn)</h2>
+<p>Chọn tối thiểu ba việc:</p>
+<ol>
+<li><strong>Cấu hình</strong>: đọc đường dẫn file, ngưỡng cảnh báo mặc định từ <code>appsettings.json</code> (Chương 40).</li>
+<li><strong>Logging</strong>: thay <code>Console.WriteLine</code> trong nghiệp vụ bằng <code>ILogger</code> (Chương 39).</li>
+<li><strong>Xoá/sửa sản phẩm</strong>, đổi tên nhóm; có test cho từng tính năng.</li>
+<li><strong>Xuất báo cáo CSV</strong> (Chương 36) cho báo cáo nhóm và lịch sử.</li>
+<li><strong>Nhiều kho</strong> (<code>MaKho</code>) — thiết kế lại mô hình và migrate file JSON cũ.</li>
+<li><strong>Strategy</strong> tính giá bán theo nhóm (Chương 41): giá vốn + lợi nhuận theo quy tắc khác nhau.</li>
+<li><strong>Repository SQLite</strong>: viết <code>SqliteKhoRepository</code> cài đặt <code>IKhoRepository</code> (chuẩn bị cho EF Core ở Tập 2) — không sửa <code>KhoService</code>!</li>
+<li><strong>Giao dịch song song</strong>: hai người cùng xuất một mặt hàng — dùng <code>SemaphoreSlim</code>/khoá để bảo đảm tồn không âm (Chương 34).</li>
+</ol>
+<h2>Hướng tới Tập 2</h2>
+<p>Cùng lớp <code>QuanLyKho.Core</code> này sẽ được <strong>dùng lại nguyên vẹn</strong> trong một dự án <strong><a href="http://ASP.NET">ASP.NET</a> Core Web API</strong>: <code>KhoService</code> được
+đăng ký vào DI container, <code>IKhoRepository</code> được cài đặt bằng <strong>Entity Framework Core</strong>, và menu console được thay bằng các endpoint
+HTTP. Đó là phần thưởng của thiết kế tách lớp: nghiệp vụ không phụ thuộc giao diện.</p>
+<p><strong>Chúc mừng bạn đã hoàn thành Tập 1!</strong> Bạn đã có nền tảng vững chắc của C# và .NET — sẵn sàng bước vào web với <a href="http://ASP.NET">ASP.NET</a> Core.</p>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch42-solid.html">&larr; 42. Nguyên lý SOLID</a><a class="nav-next" href="ch44-phu-luc-a-loi-thuong-gap.html">44. Phụ lục A — Lỗi thường gặp &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

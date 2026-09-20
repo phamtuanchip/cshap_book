@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phụ lục A — Bảng lỗi thường gặp và cách xử lý — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch31-delegate-event-lambda.html">31. Delegate, event và lambda</a></li><li><a class="chapter-link" href="ch32-csharp-hien-dai.html">32. Record, pattern matching và cú pháp mới</a></li><li><a class="chapter-link" href="ch33-async-await.html">33. Lập trình bất đồng bộ async/await</a></li><li><a class="chapter-link" href="ch34-da-luong.html">34. Đa luồng và đồng bộ hoá</a></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><a class="chapter-link" href="ch35-file-io.html">35. File I/O</a></li><li><a class="chapter-link" href="ch36-json-csv.html">36. JSON và CSV</a></li><li><a class="chapter-link" href="ch37-reflection-attribute.html">37. Reflection, Attribute và Serialization</a></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><a class="chapter-link" href="ch38-unit-test.html">38. Unit test với xUnit</a></li><li><a class="chapter-link" href="ch39-debug-logging.html">39. Debug và logging</a></li><li><a class="chapter-link" href="ch40-git-nuget-cau-hinh.html">40. Git, NuGet và cấu hình</a></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch41-design-pattern.html">41. Design pattern cơ bản</a></li><li><a class="chapter-link" href="ch42-solid.html">42. Nguyên lý SOLID</a></li><li><a class="chapter-link" href="ch43-du-an-tong-hop.html">43. Dự án tổng hợp Tập 1</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch44-phu-luc-a-loi-thuong-gap.html">44. Phụ lục A — Lỗi thường gặp</a></li><li><a class="chapter-link" href="ch45-phu-luc-b-tai-lieu.html">45. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch46-phu-luc-c-cheat-sheet.html">46. Phụ lục C — Cheat sheet C#</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Phụ lục A — Bảng lỗi thường gặp và cách xử lý</h1>
+<p>Tra cứu nhanh theo <strong>triệu chứng</strong> (thông báo lỗi). Có hai nhóm: <strong>lỗi biên dịch</strong> (mã <code>CSxxxx</code>, trình biên dịch báo ngay) và <strong>ngoại lệ lúc
+chạy</strong> (chương trình đã chạy rồi mới ném lỗi). Cột cuối chỉ chương liên quan.</p>
+<h2>A.1 Đọc thông báo lỗi thế nào</h2>
+<ol>
+<li>Đọc <strong>dòng đầu</strong>: mã lỗi + mô tả. Mã lỗi (<code>CS0103</code>...) tra được trên <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/compiler-messages/">learn.microsoft.com</a>.</li>
+<li>Xem <strong>vị trí</strong>: <code>Program.cs(12,5)</code> = dòng 12, cột 5. Lỗi thật đôi khi nằm <strong>ngay trước</strong> dòng đó (thiếu <code>;</code>, thiếu <code>}</code>).</li>
+<li>Sửa lỗi <strong>đầu tiên</strong> rồi biên dịch lại — các lỗi sau thường là hệ quả dây chuyền.</li>
+<li>Với ngoại lệ lúc chạy: đọc <strong>StackTrace</strong>, tìm dòng đầu tiên thuộc code của bạn.</li>
+</ol>
+<h2>A.2 Lỗi biên dịch thường gặp</h2>
+<table>
+<thead>
+<tr>
+<th>Thông báo</th>
+<th>Nguyên nhân thường gặp</th>
+<th>Cách xử lý</th>
+<th>Chương</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CS1002: ; expected</code></td>
+<td>thiếu dấu <code>;</code> cuối lệnh</td>
+<td>thêm <code>;</code> (kiểm tra cả dòng trước)</td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>CS1513: } expected</code></td>
+<td>thiếu/dư ngoặc nhọn</td>
+<td>căn thụt lề, để IDE định dạng lại (<code>Ctrl+K,D</code>)</td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>CS0103: The name 'x' does not exist in the current context</code></td>
+<td>sai tên/hoa thường, biến ngoài phạm vi</td>
+<td>kiểm tra chính tả; khai báo biến ở đúng scope</td>
+<td>5, 10</td>
+</tr>
+<tr>
+<td><code>CS0246: type or namespace 'X' could not be found</code></td>
+<td>thiếu <code>using</code>/tham chiếu project/gói NuGet</td>
+<td>thêm <code>using</code>; <code>dotnet add reference/package</code></td>
+<td>4, 15</td>
+</tr>
+<tr>
+<td><code>CS0266: Cannot implicitly convert 'double' to 'int'</code></td>
+<td>ép kiểu mất dữ liệu</td>
+<td>ép tường minh <code>(int)</code> hoặc <code>Math.Round</code></td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>CS0165: Use of unassigned local variable</code></td>
+<td>dùng biến chưa gán</td>
+<td>gán giá trị khởi tạo</td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>CS0136: A local variable named 'x' cannot be declared in this scope</code></td>
+<td>trùng tên biến với scope ngoài</td>
+<td>đổi tên</td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>CS0161: not all code paths return a value</code></td>
+<td>có nhánh không <code>return</code></td>
+<td>thêm <code>return</code>/<code>throw</code> cho mọi nhánh</td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>CS7036: There is no argument that corresponds to the required parameter</code></td>
+<td>gọi constructor/phương thức thiếu đối số</td>
+<td>truyền đủ đối số hoặc thêm constructor</td>
+<td>13, 16</td>
+</tr>
+<tr>
+<td><code>CS1061: 'X' does not contain a definition for 'Y'</code></td>
+<td>gọi thành viên không có (sai tên, sai kiểu, thiếu <code>using</code> cho extension method)</td>
+<td>kiểm tra kiểu và tên; <code>using System.Linq;</code></td>
+<td>17, 19</td>
+</tr>
+<tr>
+<td><code>CS0122: 'X' is inaccessible due to its protection level</code></td>
+<td>truy cập thành viên <code>private</code>/<code>internal</code></td>
+<td>đổi access modifier hoặc dùng property</td>
+<td>14</td>
+</tr>
+<tr>
+<td><code>CS0120: An object reference is required for the non-static field</code></td>
+<td>gọi thành viên thường từ <code>static</code></td>
+<td>tạo đối tượng, hoặc đổi thành <code>static</code></td>
+<td>13</td>
+</tr>
+<tr>
+<td><code>CS0534: does not implement inherited abstract member</code></td>
+<td>chưa <code>override</code> đủ thành viên abstract</td>
+<td>cài đặt đủ</td>
+<td>18</td>
+</tr>
+<tr>
+<td><code>CS0535: does not implement interface member</code></td>
+<td>chưa cài đủ interface</td>
+<td>cài đủ (nhớ <code>public</code>)</td>
+<td>18</td>
+</tr>
+<tr>
+<td><code>CS0144: Cannot create an instance of the abstract type or interface</code></td>
+<td><code>new</code> một abstract class/interface</td>
+<td><code>new</code> lớp cụ thể</td>
+<td>18</td>
+</tr>
+<tr>
+<td><code>CS0506: cannot override because it is not marked virtual</code></td>
+<td>lớp cha thiếu <code>virtual</code></td>
+<td>thêm <code>virtual</code> ở lớp cha</td>
+<td>16</td>
+</tr>
+<tr>
+<td><code>CS0108: hides inherited member</code></td>
+<td>vô tình che thành viên cha</td>
+<td>dùng <code>override</code> hoặc <code>new</code> có chủ đích</td>
+<td>16</td>
+</tr>
+<tr>
+<td><code>CS0104: 'X' is an ambiguous reference</code></td>
+<td>hai namespace cùng có tên <code>X</code></td>
+<td>dùng tên đầy đủ/alias</td>
+<td>15</td>
+</tr>
+<tr>
+<td><code>CS8600/CS8602/CS8604: possible null ...</code></td>
+<td>cảnh báo nullable</td>
+<td>kiểm tra null, dùng <code>?.</code>/<code>??</code>, hoặc đổi kiểu <code>T?</code></td>
+<td>23</td>
+</tr>
+<tr>
+<td><code>CS8618: Non-nullable property must contain a non-null value</code></td>
+<td>property <code>string</code> chưa khởi tạo</td>
+<td>khởi tạo, <code>required</code>, hoặc <code>?</code></td>
+<td>14, 23</td>
+</tr>
+<tr>
+<td><code>CS1503: cannot convert from 'X' to 'Y'</code> (đối số)</td>
+<td>truyền sai kiểu</td>
+<td>ép/chuyển đổi đúng kiểu</td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>CS0029: Cannot implicitly convert type</code></td>
+<td>gán sai kiểu</td>
+<td>chuyển đổi tường minh</td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>CS4014: the call is not awaited</code> (cảnh báo)</td>
+<td>gọi <code>async</code> mà quên <code>await</code></td>
+<td>thêm <code>await</code> (hoặc xử lý có chủ đích)</td>
+<td>33</td>
+</tr>
+<tr>
+<td><code>CS4033: 'await' operator can only be used within an async method</code></td>
+<td>thiếu <code>async</code> ở phương thức</td>
+<td>thêm <code>async Task</code></td>
+<td>33</td>
+</tr>
+<tr>
+<td><code>CS0019: Operator cannot be applied to operands</code></td>
+<td>toán tử với kiểu không phù hợp (vd <code>T &gt; T</code>)</td>
+<td>dùng <code>IComparable&lt;T&gt;</code>, ép kiểu</td>
+<td>6, 22</td>
+</tr>
+<tr>
+<td><code>CS0029/CS0037: Cannot convert null to non-nullable value type</code></td>
+<td>gán <code>null</code> cho <code>int</code>...</td>
+<td>dùng <code>int?</code></td>
+<td>23</td>
+</tr>
+<tr>
+<td><code>CS8509: switch expression does not handle all possible values</code></td>
+<td>thiếu nhánh <code>_</code></td>
+<td>thêm nhánh mặc định</td>
+<td>7</td>
+</tr>
+<tr>
+<td><code>CS8120: The switch case is unreachable / already handled</code></td>
+<td>nhánh cụ thể đặt sau nhánh tổng quát</td>
+<td>đổi thứ tự (cụ thể trước)</td>
+<td>7, 17</td>
+</tr>
+<tr>
+<td><code>CS0017: more than one entry point</code></td>
+<td>nhiều <code>Main</code>/top-level statements</td>
+<td>chỉ giữ một</td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>CS9035: Required member must be set</code></td>
+<td>quên gán property <code>required</code></td>
+<td>gán trong object initializer</td>
+<td>14, 32</td>
+</tr>
+</tbody>
+</table>
+<h2>A.3 Ngoại lệ lúc chạy thường gặp</h2>
+<table>
+<thead>
+<tr>
+<th>Ngoại lệ</th>
+<th>Nguyên nhân</th>
+<th>Cách xử lý / phòng tránh</th>
+<th>Chương</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NullReferenceException</code></td>
+<td>dùng đối tượng đang <code>null</code></td>
+<td>bật nullable; <code>?.</code>, <code>??</code>; kiểm tra <code>is null</code>; xem StackTrace</td>
+<td>13, 23</td>
+</tr>
+<tr>
+<td><code>IndexOutOfRangeException</code></td>
+<td>chỉ số ngoài mảng</td>
+<td>duyệt <code>&lt; Length</code>; kiểm tra biên</td>
+<td>9</td>
+</tr>
+<tr>
+<td><code>ArgumentOutOfRangeException</code></td>
+<td>chỉ số/giá trị ngoài phạm vi (<code>List</code>, <code>Substring</code>)</td>
+<td>kiểm tra <code>Count</code>, độ dài trước</td>
+<td>11, 25</td>
+</tr>
+<tr>
+<td><code>KeyNotFoundException</code></td>
+<td><code>dict[key]</code> khi khoá chưa có</td>
+<td><code>TryGetValue</code>, <code>ContainsKey</code></td>
+<td>26</td>
+</tr>
+<tr>
+<td><code>InvalidCastException</code></td>
+<td>ép kiểu sai</td>
+<td>dùng <code>is</code>/<code>as</code></td>
+<td>17</td>
+</tr>
+<tr>
+<td><code>FormatException</code></td>
+<td><code>int.Parse(&quot;abc&quot;)</code></td>
+<td><code>TryParse</code></td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>OverflowException</code></td>
+<td>tràn số trong <code>checked</code> / chuyển kiểu</td>
+<td>dùng kiểu lớn hơn, kiểm tra</td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>DivideByZeroException</code></td>
+<td>chia số nguyên cho 0</td>
+<td>kiểm tra mẫu số</td>
+<td>6</td>
+</tr>
+<tr>
+<td><code>InvalidOperationException: Collection was modified</code></td>
+<td>thêm/xoá khi đang <code>foreach</code></td>
+<td>duyệt ngược, <code>RemoveAll</code>, duyệt bản sao <code>ToList()</code></td>
+<td>25, 26</td>
+</tr>
+<tr>
+<td><code>InvalidOperationException: Sequence contains no elements</code></td>
+<td><code>First()</code>/<code>Max()</code> trên dãy rỗng</td>
+<td><code>FirstOrDefault</code>, <code>Any()</code></td>
+<td>30</td>
+</tr>
+<tr>
+<td><code>InvalidOperationException: Nullable object must have a value</code></td>
+<td><code>.Value</code> trên <code>int?</code> đang null</td>
+<td>kiểm tra <code>HasValue</code>/<code>??</code></td>
+<td>23</td>
+</tr>
+<tr>
+<td><code>ArgumentNullException</code></td>
+<td>truyền <code>null</code> vào tham số không cho phép</td>
+<td>kiểm tra đầu vào; <code>ThrowIfNull</code></td>
+<td>21</td>
+</tr>
+<tr>
+<td><code>ArgumentException</code></td>
+<td>đối số không hợp lệ / khoá trùng trong <code>Dictionary.Add</code></td>
+<td>kiểm tra trước, dùng <code>TryAdd</code>/<code>dict[k]=v</code></td>
+<td>21, 26</td>
+</tr>
+<tr>
+<td><code>StackOverflowException</code></td>
+<td>đệ quy không điều kiện dừng / quá sâu</td>
+<td>thêm điều kiện dừng, chuyển sang vòng lặp/<code>Stack</code></td>
+<td>10, 29</td>
+</tr>
+<tr>
+<td><code>OutOfMemoryException</code></td>
+<td>nạp quá nhiều dữ liệu vào bộ nhớ</td>
+<td>xử lý theo luồng/lười (<code>ReadLines</code>, <code>yield</code>)</td>
+<td>27, 35</td>
+</tr>
+<tr>
+<td><code>FileNotFoundException</code> / <code>DirectoryNotFoundException</code></td>
+<td>đường dẫn sai, cwd khác dự kiến</td>
+<td>kiểm tra đường dẫn tuyệt đối, <code>Path.Combine</code></td>
+<td>35</td>
+</tr>
+<tr>
+<td><code>UnauthorizedAccessException</code></td>
+<td>thiếu quyền, hoặc đường dẫn là thư mục</td>
+<td>ghi vào thư mục được phép</td>
+<td>35</td>
+</tr>
+<tr>
+<td><code>IOException</code> (file in use)</td>
+<td>file đang bị chương trình khác/ chính bạn khoá</td>
+<td>đóng bằng <code>using</code>; <code>FileShare</code></td>
+<td>35</td>
+</tr>
+<tr>
+<td><code>JsonException</code></td>
+<td>JSON sai cú pháp/sai kiểu</td>
+<td>kiểm tra đầu vào; bắt và báo lỗi</td>
+<td>36</td>
+</tr>
+<tr>
+<td><code>OperationCanceledException</code></td>
+<td>tác vụ bị huỷ (<code>CancellationToken</code>)</td>
+<td>bắt riêng; thường là hợp lệ</td>
+<td>33</td>
+</tr>
+<tr>
+<td><code>TaskCanceledException</code>/<code>TimeoutException</code></td>
+<td>hết hạn chờ</td>
+<td>thử lại/báo người dùng</td>
+<td>33</td>
+</tr>
+<tr>
+<td><code>AggregateException</code></td>
+<td>lỗi gộp từ nhiều Task / <code>.Result</code></td>
+<td><code>await</code> (lỗi được &quot;mở&quot; ra); xem <code>InnerExceptions</code></td>
+<td>33</td>
+</tr>
+<tr>
+<td><code>ObjectDisposedException</code></td>
+<td>dùng đối tượng đã <code>Dispose</code></td>
+<td>giữ phạm vi <code>using</code> đủ rộng</td>
+<td>21</td>
+</tr>
+<tr>
+<td><code>NotImplementedException</code></td>
+<td>phần chưa viết</td>
+<td>cài đặt</td>
+<td>18</td>
+</tr>
+<tr>
+<td><code>NotSupportedException</code></td>
+<td>thao tác không hỗ trợ (vd sửa collection chỉ đọc)</td>
+<td>dùng cấu trúc phù hợp</td>
+<td>18</td>
+</tr>
+<tr>
+<td><code>SwitchExpressionException</code></td>
+<td>switch expression không khớp nhánh nào</td>
+<td>thêm nhánh <code>_</code></td>
+<td>7</td>
+</tr>
+<tr>
+<td><code>TypeInitializationException</code></td>
+<td>lỗi trong hàm khởi tạo tĩnh (<code>static</code>)</td>
+<td>xem <code>InnerException</code></td>
+<td>13</td>
+</tr>
+</tbody>
+</table>
+<h2>A.4 Lỗi logic — &quot;không báo lỗi nhưng kết quả sai&quot;</h2>
+<table>
+<thead>
+<tr>
+<th>Triệu chứng</th>
+<th>Nguyên nhân</th>
+<th>Chương</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1 / 2</code> ra <code>0</code></td>
+<td>chia nguyên</td>
+<td>6</td>
+</tr>
+<tr>
+<td><code>0.1 + 0.2 != 0.3</code></td>
+<td>sai số số thực</td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>int.MaxValue + 1</code> ra số âm</td>
+<td>tràn số không báo lỗi</td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>s.Trim();</code> mà <code>s</code> không đổi</td>
+<td><code>string</code> bất biến, quên gán kết quả</td>
+<td>11</td>
+</tr>
+<tr>
+<td>Sửa <code>b</code> mà <code>a</code> cũng đổi</td>
+<td>class/mảng là kiểu tham chiếu</td>
+<td>9, 13</td>
+</tr>
+<tr>
+<td>Hai đối tượng &quot;giống nhau&quot; nhưng <code>==</code> ra <code>false</code></td>
+<td>so sánh tham chiếu</td>
+<td>13, 20</td>
+</tr>
+<tr>
+<td><code>HashSet.Contains</code> không tìm thấy phần tử vốn có</td>
+<td>thiếu <code>Equals</code>/<code>GetHashCode</code></td>
+<td>20, 26</td>
+</tr>
+<tr>
+<td>Truy vấn LINQ cho kết quả khác dự đoán / chạy lại nhiều lần</td>
+<td>thực thi trì hoãn</td>
+<td>27, 30</td>
+</tr>
+<tr>
+<td><code>dem++</code> từ nhiều thread ra kết quả nhỏ hơn</td>
+<td>race condition</td>
+<td>34</td>
+</tr>
+<tr>
+<td>Lệnh sau <code>async</code> chạy trước khi xong</td>
+<td>quên <code>await</code></td>
+<td>33</td>
+</tr>
+<tr>
+<td>Số/ngày in ra dấu sai trên máy khác</td>
+<td>khác culture</td>
+<td>11, 36</td>
+</tr>
+<tr>
+<td>Tiếng Việt vỡ dấu khi đọc/ghi file</td>
+<td>sai mã hoá</td>
+<td>35</td>
+</tr>
+<tr>
+<td>Cấu hình đọc ra rỗng/mặc định</td>
+<td>sai khoá, sai môi trường</td>
+<td>40</td>
+</tr>
+<tr>
+<td>Test lúc đạt lúc hỏng</td>
+<td>phụ thuộc thứ tự/thời gian/trạng thái chung</td>
+<td>38</td>
+</tr>
+</tbody>
+</table>
+<h2>A.5 Quy trình khi gặp lỗi mà bạn chưa hiểu</h2>
+<ol>
+<li>Copy <strong>nguyên văn</strong> thông báo lỗi (kèm mã) và tìm kiếm — thường đã có người gặp.</li>
+<li>Thu nhỏ vấn đề: tạo project console mới, tái hiện lỗi bằng vài dòng.</li>
+<li>Dùng debugger (Chương 39) thay vì đoán.</li>
+<li>Hỏi (Stack Overflow, cộng đồng): nêu <strong>phiên bản .NET</strong>, đoạn code tối thiểu, thông báo lỗi đầy đủ, điều đã thử.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch43-du-an-tong-hop.html">&larr; 43. Dự án tổng hợp Tập 1</a><a class="nav-next" href="ch45-phu-luc-b-tai-lieu.html">45. Phụ lục B — Tài liệu tham khảo &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

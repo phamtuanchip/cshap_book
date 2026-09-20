@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 42 — Nguyên lý SOLID — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch31-delegate-event-lambda.html">31. Delegate, event và lambda</a></li><li><a class="chapter-link" href="ch32-csharp-hien-dai.html">32. Record, pattern matching và cú pháp mới</a></li><li><a class="chapter-link" href="ch33-async-await.html">33. Lập trình bất đồng bộ async/await</a></li><li><a class="chapter-link" href="ch34-da-luong.html">34. Đa luồng và đồng bộ hoá</a></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><a class="chapter-link" href="ch35-file-io.html">35. File I/O</a></li><li><a class="chapter-link" href="ch36-json-csv.html">36. JSON và CSV</a></li><li><a class="chapter-link" href="ch37-reflection-attribute.html">37. Reflection, Attribute và Serialization</a></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><a class="chapter-link" href="ch38-unit-test.html">38. Unit test với xUnit</a></li><li><a class="chapter-link" href="ch39-debug-logging.html">39. Debug và logging</a></li><li><a class="chapter-link" href="ch40-git-nuget-cau-hinh.html">40. Git, NuGet và cấu hình</a></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch41-design-pattern.html">41. Design pattern cơ bản</a></li><li><a class="chapter-link active" href="ch42-solid.html">42. Nguyên lý SOLID</a></li><li><a class="chapter-link" href="ch43-du-an-tong-hop.html">43. Dự án tổng hợp Tập 1</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch44-phu-luc-a-loi-thuong-gap.html">44. Phụ lục A — Lỗi thường gặp</a></li><li><a class="chapter-link" href="ch45-phu-luc-b-tai-lieu.html">45. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch46-phu-luc-c-cheat-sheet.html">46. Phụ lục C — Cheat sheet C#</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 42 — Nguyên lý SOLID</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu và áp dụng 5 nguyên lý <strong>SOLID</strong> qua ví dụ tái cấu trúc thực tế.</li>
+<li>Nhận ra &quot;mùi&quot; code vi phạm từng nguyên lý.</li>
+<li>Thấy mối liên hệ giữa SOLID, interface, đa hình, <strong>Dependency Injection</strong> và khả năng <strong>kiểm thử</strong>.</li>
+<li>Biết khi nào áp dụng vừa đủ, không &quot;quá tay&quot;.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch42-solid/"><code>code/ch42-solid/</code></a> — mỗi nguyên lý có cặp &quot;Xấu&quot; và &quot;Tốt&quot;.</p>
+<h2>SOLID là gì?</h2>
+<p>Năm nguyên lý thiết kế hướng đối tượng giúp code <strong>dễ hiểu, dễ sửa, dễ mở rộng, dễ kiểm thử</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Chữ</th>
+<th>Nguyên lý</th>
+<th>Một câu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>S</strong></td>
+<td>Single Responsibility</td>
+<td>Một lớp chỉ có <strong>một lý do để thay đổi</strong></td>
+</tr>
+<tr>
+<td><strong>O</strong></td>
+<td>Open/Closed</td>
+<td><strong>Mở</strong> để mở rộng, <strong>đóng</strong> để sửa đổi</td>
+</tr>
+<tr>
+<td><strong>L</strong></td>
+<td>Liskov Substitution</td>
+<td>Lớp con phải <strong>thay thế được</strong> lớp cha mà không phá hành vi</td>
+</tr>
+<tr>
+<td><strong>I</strong></td>
+<td>Interface Segregation</td>
+<td>Nhiều interface <strong>nhỏ</strong> tốt hơn một interface to</td>
+</tr>
+<tr>
+<td><strong>D</strong></td>
+<td>Dependency Inversion</td>
+<td>Phụ thuộc vào <strong>trừu tượng</strong>, không vào chi tiết cụ thể</td>
+</tr>
+</tbody>
+</table>
+<p>Đây là <em>nguyên tắc chỉ đạo</em>, không phải luật cứng: dùng để đánh giá thiết kế, cân nhắc chi phí/lợi ích.</p>
+<h2>S — Single Responsibility (đơn trách nhiệm)</h2>
+<p><strong>Vi phạm:</strong> một lớp vừa tính thuế, vừa định dạng, vừa in, vừa lưu CSDL. Đổi cách in cũng phải mở lớp tính thuế → dễ làm hỏng chỗ khác.</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">HoaDonXau</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">InVaLuu</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> tien</span>)</span>
+    {
+        <span class="hljs-built_in">decimal</span> thue = tien * <span class="hljs-number">0.1m</span>;                    <span class="hljs-comment">// logic thuế</span>
+        <span class="hljs-built_in">string</span> s = <span class="hljs-string">$&quot;Hoa don: <span class="hljs-subst">{tien + thue:N0}</span>&quot;</span>;       <span class="hljs-comment">// định dạng</span>
+        Console.WriteLine(s);                          <span class="hljs-comment">// in</span>
+        <span class="hljs-comment">// ... rồi lưu CSDL, gửi email ...</span>
+    }
+}
+</code></pre>
+<p><strong>Tái cấu trúc:</strong> tách theo <strong>lý do thay đổi</strong> (thuế đổi / mẫu in đổi / nơi lưu đổi):</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">HoaDonService</span>(<span class="hljs-title">ITinhThue</span> <span class="hljs-title">thue</span>, <span class="hljs-title">IInHoaDon</span> <span class="hljs-title">inAn</span>, <span class="hljs-title">ILuuTru</span> <span class="hljs-title">luu</span>)
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">XuLy</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> tien</span>)</span>
+    {
+        <span class="hljs-built_in">string</span> noiDung = <span class="hljs-string">$&quot;Hoa don: <span class="hljs-subst">{tien + thue.Thue(tien):N0}</span>&quot;</span>;
+        inAn.In(noiDung);
+        luu.Luu(noiDung);
+    }
+}
+</code></pre>
+<p><code>HoaDonService</code> chỉ <strong>điều phối</strong>. Dấu hiệu vi phạm: tên lớp có &quot;Manager/Helper/Utils&quot; ôm mọi thứ; lớp dài hàng nghìn dòng; phải mô tả
+bằng chữ &quot;và&quot;. Đừng cực đoan: một &quot;trách nhiệm&quot; là <em>một lý do thay đổi</em>, không phải một phương thức.</p>
+<h2>O — Open/Closed (đóng–mở)</h2>
+<p><strong>Vi phạm:</strong> mỗi lần thêm loại khách phải <strong>sửa</strong> hàm cũ (đã chạy tốt, đã test):</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-built_in">decimal</span> <span class="hljs-title">Giam</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> loai, <span class="hljs-built_in">decimal</span> tien</span>)</span> =&gt; loai <span class="hljs-keyword">switch</span>
+{
+    <span class="hljs-string">&quot;vip&quot;</span> =&gt; tien * <span class="hljs-number">0.8m</span>,
+    <span class="hljs-string">&quot;sinhvien&quot;</span> =&gt; tien * <span class="hljs-number">0.9m</span>,
+    _ =&gt; tien,      <span class="hljs-comment">// thêm &quot;nhanvien&quot;? phải sửa hàm này (rủi ro hồi quy)</span>
+};
+</code></pre>
+<p><strong>Tái cấu trúc:</strong> đa hình — thêm lớp mới thay vì sửa lớp cũ:</p>
+<pre class="hljs"><code><span class="hljs-keyword">interface</span> <span class="hljs-title">IGiamGia</span> { <span class="hljs-function"><span class="hljs-built_in">decimal</span> <span class="hljs-title">Giam</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> tien</span>)</span>; }
+<span class="hljs-keyword">class</span> <span class="hljs-title">GiamVip</span> : <span class="hljs-title">IGiamGia</span> { <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> <span class="hljs-title">Giam</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> t</span>)</span> =&gt; t * <span class="hljs-number">0.8m</span>; }
+<span class="hljs-keyword">class</span> <span class="hljs-title">GiamSinhVien</span> : <span class="hljs-title">IGiamGia</span> { <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> <span class="hljs-title">Giam</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> t</span>)</span> =&gt; t * <span class="hljs-number">0.9m</span>; }
+<span class="hljs-comment">// Thêm GiamNhanVien? Chỉ VIẾT lớp mới, code đang chạy không đổi.</span>
+</code></pre>
+<p>Nền tảng: đa hình (Chương 17), interface (18), Strategy (41). Không cần &quot;thiết kế mở&quot; cho mọi thứ — chỉ ở những điểm <strong>đã từng/hay đổi</strong>. Lần
+đầu cứ viết đơn giản; khi thấy <code>switch</code> thứ hai cùng kiểu xuất hiện, hãy tách.</p>
+<h2>L — Liskov Substitution (thay thế Liskov)</h2>
+<p>Nếu <code>B</code> kế thừa <code>A</code> thì <strong>mọi nơi dùng <code>A</code> phải chạy đúng khi truyền <code>B</code></strong>. Ví dụ kinh điển: Hình vuông &quot;là một&quot; hình chữ nhật?</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">HCNXau</span> { <span class="hljs-keyword">public</span> <span class="hljs-keyword">virtual</span> <span class="hljs-built_in">double</span> Rong { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } <span class="hljs-keyword">public</span> <span class="hljs-keyword">virtual</span> <span class="hljs-built_in">double</span> Cao { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">double</span> <span class="hljs-title">DienTich</span>()</span> =&gt; Rong * Cao; }
+<span class="hljs-keyword">class</span> <span class="hljs-title">VuongXau</span> : <span class="hljs-title">HCNXau</span> { <span class="hljs-comment">/* đặt Rong thì Cao đổi theo, và ngược lại */</span> }
+
+HCNXau h = <span class="hljs-keyword">new</span> VuongXau();
+h.Rong = <span class="hljs-number">2</span>; h.Cao = <span class="hljs-number">3</span>;
+h.DienTich();    <span class="hljs-comment">// mong 6, nhưng ra 9 → phá vỡ hợp đồng của HCNXau</span>
+</code></pre>
+<p>Trong toán &quot;vuông là chữ nhật&quot;, nhưng với đối tượng <strong>có thể thay đổi</strong>, hành vi khác nhau → kế thừa sai. Sửa: bỏ quan hệ kế thừa; cùng cài một
+interface chung nhỏ:</p>
+<pre class="hljs"><code><span class="hljs-keyword">interface</span> <span class="hljs-title">IHinh</span> { <span class="hljs-function"><span class="hljs-built_in">double</span> <span class="hljs-title">DienTich</span>()</span>; }
+<span class="hljs-keyword">record</span> <span class="hljs-title">HCN</span>(<span class="hljs-title">double</span> <span class="hljs-title">Rong</span>, <span class="hljs-title">double</span> <span class="hljs-title">Cao</span>) : <span class="hljs-title">IHinh</span> { ... }
+<span class="hljs-keyword">record</span> <span class="hljs-title">HinhVuong</span>(<span class="hljs-title">double</span> <span class="hljs-title">Canh</span>) : <span class="hljs-title">IHinh</span> { ... }
+</code></pre>
+<p>Dấu hiệu vi phạm: lớp con <code>throw new NotImplementedException()</code>/<code>NotSupportedException</code> cho phương thức của cha; lớp con thu hẹp điều kiện đầu vào, nới lỏng
+điều kiện đầu ra; code phải <code>if (x is LopCon)</code> để xử lý riêng. Quy tắc: kế thừa để <strong>thể hiện &quot;là một&quot; về hành vi</strong>, không chỉ về khái niệm — nghi ngờ thì dùng composition.</p>
+<h2>I — Interface Segregation (tách interface)</h2>
+<p><strong>Vi phạm:</strong> một interface &quot;béo&quot; ép lớp cài đặt phải có cả phương thức nó không cần:</p>
+<pre class="hljs"><code><span class="hljs-keyword">interface</span> <span class="hljs-title">IMayXau</span> { <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">In</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> s</span>)</span>; <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Quet</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> s</span>)</span>; <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Fax</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> s</span>)</span>; }
+<span class="hljs-keyword">class</span> <span class="hljs-title">MayInDon</span> : <span class="hljs-title">IMayXau</span> { <span class="hljs-comment">/* phải viết Quet/Fax rỗng hoặc ném NotSupportedException */</span> }
+</code></pre>
+<p><strong>Tái cấu trúc:</strong> chia theo <strong>vai trò</strong>; lớp nào cần bao nhiêu vai trò thì cài bấy nhiêu:</p>
+<pre class="hljs"><code><span class="hljs-keyword">interface</span> <span class="hljs-title">IMayIn</span> { <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">In</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> s</span>)</span>; }
+<span class="hljs-keyword">interface</span> <span class="hljs-title">IMayQuet</span> { <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Quet</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> s</span>)</span>; }
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">MayInDon</span> : <span class="hljs-title">IMayIn</span> { ... }
+<span class="hljs-keyword">class</span> <span class="hljs-title">MayDaNangLuc</span> : <span class="hljs-title">IMayIn</span>, <span class="hljs-title">IMayQuet</span> { ... }
+</code></pre>
+<p>Bên dùng cũng chỉ phụ thuộc vào phần nó cần (<code>void Xuat(IMayIn may)</code>), nên đổi <code>IMayQuet</code> không ảnh hưởng nó. Ví dụ .NET: <code>IReadOnlyList&lt;T&gt;</code>,
+<code>IEnumerable&lt;T&gt;</code>, <code>IDisposable</code> — mỗi cái một khả năng nhỏ. Đây cũng là nền để kiểm thử: mock interface nhỏ dễ hơn nhiều.</p>
+<h2>D — Dependency Inversion (đảo ngược phụ thuộc)</h2>
+<p><strong>Vi phạm:</strong> lớp &quot;cấp cao&quot; (nghiệp vụ) tự <code>new</code> lớp &quot;cấp thấp&quot; (email, CSDL) → dính chặt vào chi tiết, không test được, không thay được:</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">DatHangXau</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> GuiEmailSmtp _email = <span class="hljs-keyword">new</span> GuiEmailSmtp();   <span class="hljs-comment">// phụ thuộc lớp cụ thể</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">DatHang</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> sp</span>)</span> { ...; _email.Gui(...); }     <span class="hljs-comment">// test là gửi email thật!</span>
+}
+</code></pre>
+<p><strong>Tái cấu trúc:</strong> cả hai phía cùng phụ thuộc vào <strong>abstraction (interface)</strong>; đối tượng cụ thể được <strong>tiêm vào</strong> từ ngoài:</p>
+<pre class="hljs"><code><span class="hljs-keyword">interface</span> <span class="hljs-title">IGuiEmail</span> { <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Gui</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> den, <span class="hljs-built_in">string</span> noiDung</span>)</span>; }
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">DatHangService</span>(<span class="hljs-title">IGuiEmail</span> <span class="hljs-title">email</span>)          <span class="hljs-comment">// Dependency Injection qua constructor</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">DatHang</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> sp</span>)</span> { ...; email.Gui(<span class="hljs-string">&quot;khach@mail.com&quot;</span>, <span class="hljs-string">$&quot;Da dat <span class="hljs-subst">{sp}</span>&quot;</span>); }
+}
+
+<span class="hljs-keyword">var</span> dichVu = <span class="hljs-keyword">new</span> DatHangService(<span class="hljs-keyword">new</span> GuiEmailGia());   <span class="hljs-comment">// test: dùng bản giả</span>
+</code></pre>
+<p>&quot;Đảo ngược&quot; nghĩa là: thay vì nghiệp vụ <em>phụ thuộc vào</em> email, cả hai phụ thuộc vào interface do <strong>nghiệp vụ định nghĩa</strong>. Nơi lắp ráp đối
+tượng gọi là <strong>composition root</strong> (thường ở <code>Program.cs</code>). Trong <a href="http://ASP.NET">ASP.NET</a> Core, <strong>DI container</strong> làm việc lắp ráp đó (Tập 2):</p>
+<pre class="hljs"><code>builder.Services.AddScoped&lt;IGuiEmail, GuiEmailSmtp&gt;();
+</code></pre>
+<p>Phân biệt: <strong>DIP</strong> (nguyên lý thiết kế) ≠ <strong>DI</strong> (kỹ thuật tiêm phụ thuộc) ≠ <strong>IoC container</strong> (công cụ tự động hoá DI).</p>
+<h2>SOLID gắn kết với nhau</h2>
+<pre class="mermaid">flowchart LR
+    S[&quot;S: tách trách nhiệm&quot;] --&gt; I2[&quot;thành nhiều lớp nhỏ&quot;]
+    I2 --&gt; D[&quot;D: chúng nói chuyện qua interface&quot;]
+    D --&gt; O[&quot;O: thêm lớp mới cài interface, không sửa cũ&quot;]
+    O --&gt; L[&quot;L: mọi cài đặt phải thay thế được nhau&quot;]
+    D --&gt; I[&quot;I: interface nhỏ, đúng vai trò&quot;]
+</pre>
+<p>Kết quả cuối: code <strong>lỏng lẻo (loosely coupled)</strong>, mỗi mảnh có thể thay/kiểm thử độc lập — nền tảng cho kiến trúc phân lớp/Clean
+Architecture ở Tập 3.</p>
+<h2>Áp dụng vừa đủ</h2>
+<ul>
+<li>SOLID <strong>giảm chi phí thay đổi trong tương lai</strong>, nhưng chi phí hiện tại là nhiều lớp/interface hơn. Nếu code nhỏ, đơn giản, ít đổi, <strong>đừng ép</strong>.</li>
+<li>Quy tắc ba lần (Rule of Three): lặp lần thứ ba mới tái cấu trúc/tách trừu tượng.</li>
+<li><strong>Đo bằng câu hỏi:</strong> Sửa yêu cầu X thì phải đụng bao nhiêu chỗ? Có test được không mà không cần CSDL/mạng thật? Người mới có hiểu được không?</li>
+<li>Tránh interface &quot;một–một&quot; vô nghĩa (<code>IUserService</code> chỉ có một cài đặt, không bao giờ đổi, không cần mock). Nhưng ở ranh giới I/O (CSDL, mạng, đồng hồ, file) thì hầu như luôn đáng.</li>
+<li>Tái cấu trúc <strong>cần test làm lưới an toàn</strong> (Chương 38): có test xanh trước, sửa, test xanh sau.</li>
+</ul>
+<h2>Các nguyên tắc bổ sung dễ nhớ</h2>
+<ul>
+<li><strong>DRY</strong> (Don't Repeat Yourself): đừng lặp tri thức — nhưng đừng gộp code chỉ vì trông giống nhau tình cờ.</li>
+<li><strong>KISS</strong>: giữ đơn giản. <strong>YAGNI</strong>: đừng viết thứ chưa cần.</li>
+<li><strong>Composition over inheritance</strong>, <strong>Law of Demeter</strong> (<code>a.B.C.D</code> dài là mùi xấu), <strong>Tell, Don't Ask</strong> (bảo đối tượng làm, đừng hỏi dữ liệu rồi tự quyết).</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Hiểu SRP là &quot;mỗi lớp một phương thức&quot; → phân mảnh vô nghĩa.</li>
+<li>Interface cho mọi lớp &quot;phòng khi&quot;, không có lý do thay thế.</li>
+<li><code>new</code> các phụ thuộc bên trong lớp nghiệp vụ → không test được.</li>
+<li>Kế thừa chỉ để tái sử dụng code, sinh lớp con phá hợp đồng lớp cha.</li>
+<li>Interface quá to, cài đặt rỗng/ném <code>NotImplementedException</code>.</li>
+<li>Dùng Service Locator (<code>ServiceProvider.GetService&lt;T&gt;()</code> gọi rải rác) thay vì tiêm qua constructor.</li>
+<li>Constructor nhận 8–10 phụ thuộc → lớp đang làm quá nhiều (vi phạm SRP).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Tách một lớp <code>QuanLyDonHang</code> làm cả tính tiền, lưu file JSON và gửi email thành các lớp theo SRP + DIP.</li>
+<li>Viết lại hàm <code>TinhPhiVanChuyen(string loai, double kg)</code> dùng <code>switch</code> thành Strategy để đóng với việc thêm loại mới.</li>
+<li>Cho <code>interface IDongVat { void Bay(); void Boi(); void Chay(); }</code> — chỉ ra vấn đề và tách theo ISP (Chim, Ca, Cho).</li>
+<li>Tìm ví dụ vi phạm Liskov trong <code>Stack&lt;T&gt;</code>/<code>ReadOnlyCollection</code> hoặc trong chính code bạn (một lớp con ném <code>NotSupportedException</code>).</li>
+<li>Viết unit test cho <code>DatHangService</code> bằng <code>IGuiEmail</code> giả (Chương 38) và chứng minh không cần gửi email thật.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch41-design-pattern.html">&larr; 41. Design pattern cơ bản</a><a class="nav-next" href="ch43-du-an-tong-hop.html">43. Dự án tổng hợp Tập 1 &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

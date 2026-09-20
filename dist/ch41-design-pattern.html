@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 41 — Design pattern cơ bản — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch31-delegate-event-lambda.html">31. Delegate, event và lambda</a></li><li><a class="chapter-link" href="ch32-csharp-hien-dai.html">32. Record, pattern matching và cú pháp mới</a></li><li><a class="chapter-link" href="ch33-async-await.html">33. Lập trình bất đồng bộ async/await</a></li><li><a class="chapter-link" href="ch34-da-luong.html">34. Đa luồng và đồng bộ hoá</a></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><a class="chapter-link" href="ch35-file-io.html">35. File I/O</a></li><li><a class="chapter-link" href="ch36-json-csv.html">36. JSON và CSV</a></li><li><a class="chapter-link" href="ch37-reflection-attribute.html">37. Reflection, Attribute và Serialization</a></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><a class="chapter-link" href="ch38-unit-test.html">38. Unit test với xUnit</a></li><li><a class="chapter-link" href="ch39-debug-logging.html">39. Debug và logging</a></li><li><a class="chapter-link" href="ch40-git-nuget-cau-hinh.html">40. Git, NuGet và cấu hình</a></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch41-design-pattern.html">41. Design pattern cơ bản</a></li><li><a class="chapter-link" href="ch42-solid.html">42. Nguyên lý SOLID</a></li><li><a class="chapter-link" href="ch43-du-an-tong-hop.html">43. Dự án tổng hợp Tập 1</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch44-phu-luc-a-loi-thuong-gap.html">44. Phụ lục A — Lỗi thường gặp</a></li><li><a class="chapter-link" href="ch45-phu-luc-b-tai-lieu.html">45. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch46-phu-luc-c-cheat-sheet.html">46. Phụ lục C — Cheat sheet C#</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 41 — Design pattern cơ bản</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>design pattern</strong> là gì và dùng chúng để làm gì (và không phải để làm gì).</li>
+<li>Cài đặt và nhận ra 5 pattern nền tảng: <strong>Singleton</strong>, <strong>Factory</strong>, <strong>Strategy</strong>, <strong>Observer</strong>, <strong>Decorator</strong>.</li>
+<li>Biết cách .NET hiện đại thể hiện các pattern này (DI lifetime, <code>event</code>, delegate, middleware).</li>
+<li>Tránh lạm dụng pattern.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch41-design-pattern/"><code>code/ch41-design-pattern/</code></a>.</p>
+<h2>Design pattern là gì?</h2>
+<p><strong>Design pattern</strong> (mẫu thiết kế) là <strong>lời giải đã được kiểm chứng cho một vấn đề thiết kế thường gặp</strong>, có tên gọi chung để lập
+trình viên trao đổi (&quot;dùng Strategy ở đây&quot;). Nó <strong>không phải</strong> đoạn code copy-paste, mà là ý tưởng bạn hiện thực hoá trong ngữ cảnh
+của mình. Bộ mẫu kinh điển là 23 pattern của &quot;Gang of Four&quot; (GoF), chia ba nhóm:</p>
+<ul>
+<li><strong>Creational</strong> (khởi tạo): Singleton, Factory, Builder...</li>
+<li><strong>Structural</strong> (cấu trúc): Decorator, Adapter, Facade...</li>
+<li><strong>Behavioral</strong> (hành vi): Strategy, Observer, Command...</li>
+</ul>
+<blockquote>
+<p><strong>Cảnh báo:</strong> pattern là công cụ, không phải mục tiêu. Nhồi pattern vào code đơn giản chỉ làm nó rối. Bắt đầu bằng code
+đơn giản nhất chạy đúng; áp dụng pattern khi thấy <strong>vấn đề cụ thể</strong> (lặp <code>switch</code>, cứng nhắc, khó test) mà pattern giải quyết.
+Nhiều pattern cổ điển đã có sẵn trong ngôn ngữ/framework hiện đại (event, delegate, DI, middleware, LINQ).</p>
+</blockquote>
+<h2>1. Singleton — một thể hiện duy nhất</h2>
+<p><strong>Vấn đề:</strong> chỉ được có <strong>một</strong> đối tượng của class (cấu hình dùng chung, bộ nhớ đệm, kết nối tốn kém).</p>
+<pre class="hljs"><code><span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">CauHinhUngDung</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">readonly</span> Lazy&lt;CauHinhUngDung&gt; _instance = <span class="hljs-keyword">new</span>(() =&gt; <span class="hljs-keyword">new</span> CauHinhUngDung());
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> CauHinhUngDung Instance =&gt; _instance.Value;
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">CauHinhUngDung</span>()</span> { }          <span class="hljs-comment">// cấm new từ bên ngoài</span>
+}
+</code></pre>
+<p><code>Lazy&lt;T&gt;</code> bảo đảm khởi tạo <strong>an toàn đa luồng</strong> và <strong>chỉ khi cần</strong>. Khuyết điểm của Singleton tự viết: là <strong>trạng thái toàn cục
+ẩn</strong> — code nào cũng gọi <code>CauHinhUngDung.Instance</code> được, phụ thuộc bị giấu, <strong>khó test</strong> (không thay bằng đối tượng giả được) và dễ
+gây lỗi đa luồng.</p>
+<p><strong>Cách hiện đại:</strong> để <strong>DI container</strong> quản lý thời gian sống: <code>builder.Services.AddSingleton&lt;ICauHinh, CauHinh&gt;();</code>. Bạn vẫn có
+một thể hiện duy nhất, nhưng nhận nó qua constructor dưới dạng interface — test thay thế dễ dàng (Tập 2). Nên hiểu Singleton như
+<strong>một lifetime</strong>, không phải chuyện tự viết <code>static Instance</code>.</p>
+<h2>2. Factory — che giấu việc tạo đối tượng</h2>
+<p><strong>Vấn đề:</strong> chọn <em>lớp cụ thể</em> nào để <code>new</code> phụ thuộc vào điều kiện (tham số, cấu hình), và bạn không muốn logic đó rải khắp nơi.</p>
+<pre class="hljs"><code><span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title">XuatBaoCaoFactory</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> IXuatBaoCao <span class="hljs-title">Tao</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> loai</span>)</span> =&gt; loai.ToLowerInvariant() <span class="hljs-keyword">switch</span>
+    {
+        <span class="hljs-string">&quot;pdf&quot;</span> =&gt; <span class="hljs-keyword">new</span> XuatPdf(),
+        <span class="hljs-string">&quot;excel&quot;</span> =&gt; <span class="hljs-keyword">new</span> XuatExcel(),
+        <span class="hljs-string">&quot;csv&quot;</span> =&gt; <span class="hljs-keyword">new</span> XuatCsv(),
+        _ =&gt; <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> NotSupportedException(<span class="hljs-string">$&quot;Khong ho tro &#x27;<span class="hljs-subst">{loai}</span>&#x27;&quot;</span>),
+    };
+}
+
+IXuatBaoCao xuat = XuatBaoCaoFactory.Tao(<span class="hljs-string">&quot;pdf&quot;</span>);    <span class="hljs-comment">// người dùng chỉ biết interface</span>
+</code></pre>
+<p>Bên gọi <strong>chỉ phụ thuộc vào interface</strong> <code>IXuatBaoCao</code>; thêm định dạng mới chỉ sửa nhà máy. Biến thể: <strong>Abstract Factory</strong> (nhà máy tạo
+cả họ đối tượng liên quan), <strong>Factory Method</strong>, và <strong>Builder</strong> khi đối tượng có nhiều tham số tuỳ chọn. Trong DI, mẫu
+tương đương là <code>Func&lt;string, IXuatBaoCao&gt;</code> hoặc &quot;keyed services&quot; (<code>[FromKeyedServices(&quot;pdf&quot;)]</code>).</p>
+<h2>3. Strategy — hoán đổi thuật toán</h2>
+<p><strong>Vấn đề:</strong> cùng một việc có nhiều cách làm (tính giảm giá, tính phí ship, sắp xếp) và cách nào dùng được chọn lúc chạy. Đừng để
+một <code>switch</code>/<code>if</code> khổng lồ:</p>
+<pre class="hljs"><code><span class="hljs-keyword">interface</span> <span class="hljs-title">IChinhSachGiamGia</span> { <span class="hljs-built_in">string</span> Ten { <span class="hljs-keyword">get</span>; } <span class="hljs-function"><span class="hljs-built_in">decimal</span> <span class="hljs-title">TinhTien</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> tienHang</span>)</span>; }
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">GiamPhanTram</span>(<span class="hljs-title">decimal</span> <span class="hljs-title">phanTram</span>) : <span class="hljs-title">IChinhSachGiamGia</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Ten =&gt; <span class="hljs-string">$&quot;Giam <span class="hljs-subst">{phanTram}</span>%&quot;</span>;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> <span class="hljs-title">TinhTien</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> t</span>)</span> =&gt; t * (<span class="hljs-number">100</span> - phanTram) / <span class="hljs-number">100</span>;
+}
+<span class="hljs-keyword">class</span> <span class="hljs-title">GiamCoDinh</span>(<span class="hljs-title">decimal</span> <span class="hljs-title">soTien</span>) : <span class="hljs-title">IChinhSachGiamGia</span> { ... }
+
+<span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> cs <span class="hljs-keyword">in</span> chinhSach)
+    Console.WriteLine(<span class="hljs-string">$&quot;<span class="hljs-subst">{cs.Ten}</span>: <span class="hljs-subst">{cs.TinhTien(<span class="hljs-number">1_000_000m</span>):N0}</span>&quot;</span>);
+</code></pre>
+<p>Thêm chính sách mới = thêm class mới, không sửa code đang chạy (Open/Closed, Chương 42). Khi thuật toán chỉ là một hàm nhỏ, <strong>delegate</strong> gọn hơn
+interface — chính là Strategy trong C#:</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">DonHang</span>(<span class="hljs-title">decimal</span> <span class="hljs-title">tienHang</span>, <span class="hljs-title">Func</span>&lt;<span class="hljs-title">decimal</span>, <span class="hljs-title">decimal</span>&gt; <span class="hljs-title">chinhSach</span>) { <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> <span class="hljs-title">TongCong</span>()</span> =&gt; chinhSach(tienHang); }
+<span class="hljs-keyword">new</span> DonHang(<span class="hljs-number">1_000_000m</span>, tien =&gt; tien * <span class="hljs-number">0.85m</span>);
+</code></pre>
+<p><code>List&lt;T&gt;.Sort(Comparison&lt;T&gt;)</code>, <code>Where(Func&lt;T,bool&gt;)</code> đều là Strategy.</p>
+<h2>4. Observer — thông báo cho nhiều bên</h2>
+<p><strong>Vấn đề:</strong> khi một đối tượng (Subject) thay đổi, nhiều đối tượng khác (Observer) cần biết mà Subject <strong>không nên phụ thuộc</strong> vào từng
+người nghe.</p>
+<p>Trong C#, đây chính là <strong><code>event</code></strong> (Chương 31):</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">CuaHangGiaCoPhieu</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">event</span> EventHandler&lt;GiaThayDoiEventArgs&gt;? GiaThayDoi;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">DatGia</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ma, <span class="hljs-built_in">decimal</span> giaMoi</span>)</span> { ...; GiaThayDoi?.Invoke(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">new</span>(ma, giaCu, giaMoi)); }
+}
+
+cuaHang.GiaThayDoi += (s, e) =&gt; Console.WriteLine(<span class="hljs-string">$&quot;[Bang dien] <span class="hljs-subst">{e.Ma}</span>: <span class="hljs-subst">{e.GiaCu}</span> -&gt; <span class="hljs-subst">{e.GiaMoi}</span>&quot;</span>);
+cuaHang.GiaThayDoi += (s, e) =&gt; { <span class="hljs-keyword">if</span> (e.GiaMoi &gt; e.GiaCu * <span class="hljs-number">1.05m</span>) Console.WriteLine(<span class="hljs-string">&quot;Canh bao&quot;</span>); };
+</code></pre>
+<p>Publisher không biết ai đang nghe; thêm/bớt người nghe không đụng vào publisher. Lưu ý huỷ đăng ký (<code>-=</code>) để tránh rò rỉ bộ nhớ.
+Với luồng sự kiện phức tạp/bất đồng bộ: <code>IObservable&lt;T&gt;</code> (Reactive Extensions), <code>Channel&lt;T&gt;</code> (Chương 34), hoặc message bus
+(MediatR, hàng đợi thông điệp — Tập 3).</p>
+<h2>5. Decorator — bọc thêm hành vi</h2>
+<p><strong>Vấn đề:</strong> thêm chức năng (log, cache, thời gian, mã hoá) cho một đối tượng mà <strong>không sửa nó</strong> và không nổ tung số lớp con.</p>
+<pre class="hljs"><code><span class="hljs-keyword">interface</span> <span class="hljs-title">IThongBao</span> { <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Gui</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> noiDung</span>)</span>; }
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">ThongBaoConsole</span> : <span class="hljs-title">IThongBao</span> { <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Gui</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> s</span>)</span> =&gt; Console.WriteLine(s); }
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">ThongBaoCoThoiGian</span>(<span class="hljs-title">IThongBao</span> <span class="hljs-title">ben</span>) : <span class="hljs-title">IThongBao</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Gui</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> s</span>)</span> =&gt; ben.Gui(<span class="hljs-string">$&quot;[08:30] <span class="hljs-subst">{s}</span>&quot;</span>);     <span class="hljs-comment">// thêm hành vi rồi giao cho đối tượng bên trong</span>
+}
+<span class="hljs-keyword">class</span> <span class="hljs-title">ThongBaoVietHoa</span>(<span class="hljs-title">IThongBao</span> <span class="hljs-title">ben</span>) : <span class="hljs-title">IThongBao</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Gui</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> s</span>)</span> =&gt; ben.Gui(s.ToUpperInvariant());
+}
+
+IThongBao tb = <span class="hljs-keyword">new</span> ThongBaoVietHoa(<span class="hljs-keyword">new</span> ThongBaoCoThoiGian(<span class="hljs-keyword">new</span> ThongBaoConsole()));
+tb.Gui(<span class="hljs-string">&quot;he thong da san sang&quot;</span>);    <span class="hljs-comment">// [08:30] HE THONG DA SAN SANG</span>
+</code></pre>
+<p>Mỗi decorator <strong>cài đúng interface</strong> và <strong>giữ một tham chiếu tới đối tượng cùng interface</strong>; xếp chồng như búp bê Nga. Bạn sẽ gặp lại
+ở <strong>middleware pipeline</strong> của <a href="http://ASP.NET">ASP.NET</a> Core, <code>Stream</code> (<code>GZipStream</code> bọc <code>FileStream</code>), decorator cache/log cho repository (Tập 3).</p>
+<h2>Chọn pattern nào khi nào?</h2>
+<table>
+<thead>
+<tr>
+<th>Dấu hiệu trong code</th>
+<th>Cân nhắc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cần đúng một thể hiện dùng chung</td>
+<td>Singleton (qua DI lifetime)</td>
+</tr>
+<tr>
+<td><code>new</code> rải rác kèm <code>if/switch</code> chọn lớp</td>
+<td>Factory</td>
+</tr>
+<tr>
+<td><code>switch</code> khổng lồ theo &quot;loại&quot; cùng làm một việc</td>
+<td>Strategy</td>
+</tr>
+<tr>
+<td>Một thay đổi cần thông báo nhiều nơi</td>
+<td>Observer (<code>event</code>)</td>
+</tr>
+<tr>
+<td>Cần thêm hành vi xuyên suốt (log, cache) mà không sửa lớp gốc</td>
+<td>Decorator</td>
+</tr>
+<tr>
+<td>Chuẩn bị đối tượng phức tạp nhiều bước/tham số</td>
+<td>Builder</td>
+</tr>
+<tr>
+<td>Giao diện không khớp thư viện ngoài</td>
+<td>Adapter</td>
+</tr>
+<tr>
+<td>Che phức tạp của nhiều lớp sau một cửa</td>
+<td>Facade</td>
+</tr>
+<tr>
+<td>Đóng gói yêu cầu thành đối tượng (undo, hàng đợi)</td>
+<td>Command</td>
+</tr>
+</tbody>
+</table>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><strong>Lạm dụng pattern</strong>: ba lớp và hai interface cho việc một hàm làm được (&quot;over-engineering&quot;).</li>
+<li>Singleton tự viết mang trạng thái thay đổi được → lỗi đa luồng, test không độc lập.</li>
+<li>Factory trả kiểu cụ thể thay vì interface → mất ý nghĩa.</li>
+<li>Strategy khi chỉ có một cách làm (không có biến thể thật).</li>
+<li>Observer không huỷ đăng ký; ngoại lệ trong một handler làm hỏng các handler sau.</li>
+<li>Decorator lồng quá sâu, thứ tự bọc thay đổi kết quả mà không ai để ý.</li>
+<li>Học thuộc tên pattern mà không hiểu <strong>vấn đề</strong> nó giải quyết.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm định dạng <code>json</code> vào Factory và chứng minh không phải sửa code gọi.</li>
+<li>Thêm <code>GiamTheoNgayLe</code> (giảm 30% nếu tháng 12) vào Strategy; dùng <code>TimeProvider</code> để test được.</li>
+<li>Viết <code>CacheDecorator</code> bọc <code>IKhoSanPham</code> (interface có <code>LaySanPham(int id)</code>) để lưu kết quả vào <code>Dictionary</code>.</li>
+<li>Dùng Observer mô phỏng &quot;nút Đặt hàng&quot;: khi bấm, một handler gửi email, một handler trừ kho, một handler ghi log.</li>
+<li>Tìm ba chỗ trong .NET (không phải code bạn viết) thể hiện Strategy, Observer, Decorator.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch40-git-nuget-cau-hinh.html">&larr; 40. Git, NuGet và cấu hình</a><a class="nav-next" href="ch42-solid.html">42. Nguyên lý SOLID &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

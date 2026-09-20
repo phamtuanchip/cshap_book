@@ -5,9 +5,13 @@ Sách lập trình C# bằng tiếng Việt, dành cho người **chưa biết g
 và các ứng dụng web nâng cao áp dụng design pattern / kiến trúc best practice của .NET — kèm code mẫu
 đầy đủ, chạy được cho từng chương.
 
-> **Trạng thái: đang viết Tập 1 — đã xong Phần 0–8 (chương 1–40).** Đã dựng khung, build được HTML (`npm run build`). Cấu trúc và pipeline tham khảo repo
-> `java_book` (đã hoàn thành 47 chương, có HTML + PDF). Định dạng phát hành: **HTML** trước, sau đó
-> **PDF** và **EPUB**.
+> **Trạng thái: Tập 1 đã viết xong — 43 chương + 3 phụ lục (46 mục), có bản HTML và PDF.**
+> Đọc `dist/index.html` (HTML) hoặc `dist/csharp-tu-co-ban-den-nang-cao-tap1.pdf` (bản in); chạy `npm run build:all` để
+> build lại từ nguồn Markdown. Còn lại: EPUB, **Tập 2** (ASP.NET Core) và **Tập 3** (web nâng cao). Cấu trúc và pipeline tham khảo
+> repo `java_book`.
+>
+> **Lưu ý:** code mẫu được viết trên máy chưa cài .NET SDK nên **chưa được biên dịch/chạy thử tự động** — cần chạy
+> `dotnet build` và `dotnet test` trên máy có .NET 10 SDK và sửa các lỗi nhỏ (nếu có) trước khi phát hành chính thức.
 
 ## 1. Mục tiêu
 
@@ -36,7 +40,7 @@ và các ứng dụng web nâng cao áp dụng design pattern / kiến trúc bes
 ```
 cshap_book/
 ├── book/                        # Nội dung sách (Markdown), 1 file/chương + manifest.json (mục lục)
-│   ├── part0-setup/ ... part14-...  # theo mục lục bên dưới
+│   ├── part0-setup/ ... part10-appendix/   # Tập 1: 11 phần, 46 mục (chương 1-43 + phụ lục A-C)
 ├── code/                        # Code mẫu — mỗi chương 1 project riêng, chạy độc lập
 │   ├── legacy-unused/           # Code cũ chưa gắn chương (nếu có file không khớp chương nào)
 │   └── ch03-hello-world/, ch13-class-object/, ...
@@ -155,7 +159,7 @@ không dùng mdBook/Pandoc.
 - **PDF**: `tools/build-pdf.js` gộp toàn bộ chương, Puppeteer in ra `dist/*.pdf`, link `code/...` trỏ
   sang GitHub.
 - **EPUB**: dùng lại nguồn Markdown, không viết lại nội dung.
-- Cần bổ sung: highlight.js đã hỗ trợ `csharp`; kiểm tra Mermaid + font tiếng Việt.
+- Đã xác nhận: highlight.js hỗ trợ `csharp`; `npm run build:pdf` ra PDF ~5 MB. Cần mở PDF kiểm tra mắt Mermaid + font tiếng Việt.
 
 ## 8. Lộ trình biên soạn (milestones)
 
@@ -166,8 +170,8 @@ không dùng mdBook/Pandoc.
 4. ✅ Phần 2–3 (OOP).
 5. ✅ Phần 4–5 (exception, generics, nullable, collection, LINQ, thuật toán).
 6. ✅ Phần 6–7 (delegate, C# hiện đại, async, đa luồng, I/O, JSON/CSV, reflection).
-7. ⬜ Phần 8–9 (test/tooling, pattern, SOLID, dự án tổng hợp) + phụ lục → **hoàn thành Tập 1**.
-8. ⬜ Build HTML + PDF Tập 1, rà soát link, publish.
+7. ✅ Phần 8–9 (test/tooling, pattern, SOLID, dự án tổng hợp) + phụ lục → **hoàn thành nội dung Tập 1**.
+8. ✅ Build HTML + PDF Tập 1 (đã rà soát: 0 link code hỏng, đủ 46 mục). ⬜ Còn: chạy thử toàn bộ code mẫu bằng .NET SDK, đọc soát PDF, publish.
 9. ⬜ Tập 2: Dữ liệu → Web API → MVC/Razor Pages/Blazor.
 10. ⬜ Tập 3: Kiến trúc → Sản xuất → Dự án tổng hợp.
 11. ⬜ Xuất bản EPUB cho cả 3 tập.

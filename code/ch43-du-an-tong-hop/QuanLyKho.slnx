@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="QuanLyKho.Core/QuanLyKho.Core.csproj" />
+  <Project Path="QuanLyKho.App/QuanLyKho.App.csproj" />
+  <Project Path="QuanLyKho.Tests/QuanLyKho.Tests.csproj" />
+</Solution>

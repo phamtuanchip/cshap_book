@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phụ lục C — Cheat sheet C# — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch31-delegate-event-lambda.html">31. Delegate, event và lambda</a></li><li><a class="chapter-link" href="ch32-csharp-hien-dai.html">32. Record, pattern matching và cú pháp mới</a></li><li><a class="chapter-link" href="ch33-async-await.html">33. Lập trình bất đồng bộ async/await</a></li><li><a class="chapter-link" href="ch34-da-luong.html">34. Đa luồng và đồng bộ hoá</a></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><a class="chapter-link" href="ch35-file-io.html">35. File I/O</a></li><li><a class="chapter-link" href="ch36-json-csv.html">36. JSON và CSV</a></li><li><a class="chapter-link" href="ch37-reflection-attribute.html">37. Reflection, Attribute và Serialization</a></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><a class="chapter-link" href="ch38-unit-test.html">38. Unit test với xUnit</a></li><li><a class="chapter-link" href="ch39-debug-logging.html">39. Debug và logging</a></li><li><a class="chapter-link" href="ch40-git-nuget-cau-hinh.html">40. Git, NuGet và cấu hình</a></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch41-design-pattern.html">41. Design pattern cơ bản</a></li><li><a class="chapter-link" href="ch42-solid.html">42. Nguyên lý SOLID</a></li><li><a class="chapter-link" href="ch43-du-an-tong-hop.html">43. Dự án tổng hợp Tập 1</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch44-phu-luc-a-loi-thuong-gap.html">44. Phụ lục A — Lỗi thường gặp</a></li><li><a class="chapter-link" href="ch45-phu-luc-b-tai-lieu.html">45. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link active" href="ch46-phu-luc-c-cheat-sheet.html">46. Phụ lục C — Cheat sheet C#</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Phụ lục C — Cheat sheet C#</h1>
+<p>Tra cứu nhanh cú pháp và lệnh thường dùng. Nhớ đây là <strong>tóm tắt</strong>; giải thích nằm trong các chương tương ứng (ghi trong ngoặc).</p>
+<h2>C.1 Lệnh <code>dotnet</code> (Ch. 2–4, 40)</h2>
+<pre class="hljs"><code>dotnet --version                  dotnet --info                 dotnet new list
+dotnet new console -n Ten         dotnet new classlib -n Ten    dotnet new xunit -n Ten.Tests
+dotnet new sln -n Ten             dotnet sln add Proj           dotnet add A reference B
+dotnet add package X [--version v]      dotnet remove package X      dotnet list package [--outdated]
+dotnet run [--project P] [-- args]      dotnet build     dotnet test     dotnet publish -c Release
+dotnet user-secrets set &quot;K&quot; &quot;V&quot;         dotnet format    dotnet new gitignore
+</code></pre>
+<h2>C.2 Kiểu dữ liệu (Ch. 5)</h2>
+<table>
+<thead>
+<tr>
+<th>Kiểu</th>
+<th>Ví dụ</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>int</code>, <code>long</code>, <code>byte</code></td>
+<td><code>25</code>, <code>8_000L</code>, <code>200</code></td>
+<td>số nguyên 32/64/8 bit</td>
+</tr>
+<tr>
+<td><code>double</code>, <code>float</code>, <code>decimal</code></td>
+<td><code>1.5</code>, <code>1.5f</code>, <code>19.99m</code></td>
+<td><code>decimal</code> cho tiền</td>
+</tr>
+<tr>
+<td><code>bool</code>, <code>char</code>, <code>string</code></td>
+<td><code>true</code>, <code>'A'</code>, <code>&quot;chao&quot;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>var</code></td>
+<td><code>var x = 5;</code></td>
+<td>suy kiểu lúc biên dịch</td>
+</tr>
+<tr>
+<td><code>T?</code></td>
+<td><code>int? x = null;</code>, <code>string? s</code></td>
+<td>nullable value / reference type</td>
+</tr>
+<tr>
+<td><code>const</code>, <code>readonly</code></td>
+<td><code>const double Pi = 3.14;</code></td>
+<td>hằng lúc biên dịch / lúc chạy</td>
+</tr>
+</tbody>
+</table>
+<p>Ép kiểu: <code>(int)9.9</code> (cắt) · <code>Convert.ToInt32(x)</code> · <code>int.Parse(s)</code> · <code>int.TryParse(s, out int n)</code> · <code>x as T</code> · <code>x is T t</code>.</p>
+<h2>C.3 Toán tử (Ch. 6)</h2>
+<pre class="hljs"><code>+ - * / %    ++ --    += -= *= /=    == != &lt; &gt; &lt;= &gt;=    &amp;&amp; || !    &amp; | ^ ~ &lt;&lt; &gt;&gt;
+c ? a : b    x ?? d    x ??= d    x?.Y    x?[i]    x!    a..b    ^1    is not null    nameof(x)
+</code></pre>
+<p>Độ ưu tiên (cao → thấp): <code>! ++ --</code> → <code>* / %</code> → <code>+ -</code> → so sánh → <code>== !=</code> → <code>&amp;&amp;</code> → <code>||</code> → <code>??</code> → <code>?:</code> → gán. Khi nghi ngờ: dùng ngoặc.</p>
+<h2>C.4 Điều khiển (Ch. 7–8)</h2>
+<pre class="hljs"><code><span class="hljs-keyword">if</span> (a) { } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (b) { } <span class="hljs-keyword">else</span> { }
+<span class="hljs-keyword">switch</span> (x) { <span class="hljs-keyword">case</span> <span class="hljs-number">1</span>: ...; <span class="hljs-keyword">break</span>; <span class="hljs-literal">default</span>: ...; <span class="hljs-keyword">break</span>; }
+<span class="hljs-keyword">var</span> s = x <span class="hljs-keyword">switch</span> { <span class="hljs-number">1</span> =&gt; <span class="hljs-string">&quot;a&quot;</span>, &gt;= <span class="hljs-number">2</span> <span class="hljs-keyword">and</span> &lt;= <span class="hljs-number">5</span> =&gt; <span class="hljs-string">&quot;b&quot;</span>, _ =&gt; <span class="hljs-string">&quot;c&quot;</span> };
+
+<span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) { }       <span class="hljs-keyword">while</span> (dk) { }       <span class="hljs-keyword">do</span> { } <span class="hljs-keyword">while</span> (dk);
+<span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> x <span class="hljs-keyword">in</span> ds) { }              <span class="hljs-keyword">break</span>;  <span class="hljs-keyword">continue</span>;   <span class="hljs-keyword">return</span>;
+</code></pre>
+<p>Pattern: <code>is int n</code>, <code>is { Length: &gt; 3 }</code>, <code>is [1, .., var last]</code>, <code>not null</code>, <code>x and &gt; 0</code>, <code>x or 1</code>.</p>
+<h2>C.5 Chuỗi (Ch. 11)</h2>
+<pre class="hljs"><code><span class="hljs-string">$&quot;Xin chao <span class="hljs-subst">{ten}</span>, <span class="hljs-subst">{gia:N2}</span>, <span class="hljs-subst">{ngay:dd/MM/yyyy}</span>, [<span class="hljs-subst">{s,<span class="hljs-number">10</span>}</span>], [<span class="hljs-subst">{s,<span class="hljs-number">-10</span>}</span>]&quot;</span>
+s.Length  s.Trim()  s.ToUpper()  s.Contains(<span class="hljs-string">&quot;x&quot;</span>)  s.IndexOf(<span class="hljs-string">&quot;x&quot;</span>)  s.Replace(<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>)  s.Substring(i,n)  s[i]  s[.<span class="hljs-number">.3</span>]
+s.Split(<span class="hljs-string">&#x27;,&#x27;</span>)   <span class="hljs-built_in">string</span>.Join(<span class="hljs-string">&quot;, &quot;</span>, ds)   <span class="hljs-built_in">string</span>.IsNullOrWhiteSpace(s)   s.StartsWith(<span class="hljs-string">&quot;x&quot;</span>)
+<span class="hljs-built_in">string</span>.Equals(a, b, StringComparison.OrdinalIgnoreCase)
+<span class="hljs-string">&quot;&quot;&quot;raw multi-line&quot;&quot;&quot;</span>     <span class="hljs-string">@&quot;C:\verbatim&quot;</span>     <span class="hljs-keyword">new</span> StringBuilder().Append(x).ToString()
+</code></pre>
+<h2>C.6 Mảng và collection (Ch. 9, 24–27)</h2>
+<pre class="hljs"><code><span class="hljs-built_in">int</span>[] a = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>];   <span class="hljs-built_in">int</span>[,] m = <span class="hljs-keyword">new</span> <span class="hljs-built_in">int</span>[<span class="hljs-number">2</span>,<span class="hljs-number">3</span>];   <span class="hljs-built_in">int</span>[][] j = <span class="hljs-keyword">new</span> <span class="hljs-built_in">int</span>[<span class="hljs-number">3</span>][];   a[^<span class="hljs-number">1</span>]   a[<span class="hljs-number">1.</span><span class="hljs-number">.3</span>]   a.Length
+Array.Sort(a)  Array.Reverse(a)  Array.IndexOf(a, x)  Array.BinarySearch(a, x)
+
+<span class="hljs-keyword">var</span> l = <span class="hljs-keyword">new</span> List&lt;T&gt; { }    l.Add  l.Insert(i,x)  l.Remove(x)  l.RemoveAt(i)  l.RemoveAll(p)  l.Contains  l.Sort()  l.Count
+<span class="hljs-keyword">var</span> d = <span class="hljs-keyword">new</span> Dictionary&lt;K,V&gt;   d[k] = v   d.TryGetValue(k, <span class="hljs-keyword">out</span> <span class="hljs-keyword">var</span> v)   d.ContainsKey(k)   d.GetValueOrDefault(k)   d.TryAdd(k, v)
+<span class="hljs-keyword">var</span> h = <span class="hljs-keyword">new</span> HashSet&lt;T&gt;        h.Add(x)   h.Contains(x)   h.UnionWith(o)  h.IntersectWith(o)  h.ExceptWith(o)
+<span class="hljs-keyword">new</span> Queue&lt;T&gt;()  .Enqueue .Dequeue .<span class="hljs-function">Peek          <span class="hljs-keyword">new</span> <span class="hljs-title">Stack</span>&lt;<span class="hljs-title">T</span>&gt;()  .Push .Pop .Peek
+</span></code></pre>
+<table>
+<thead>
+<tr>
+<th>Cần</th>
+<th>Dùng</th>
+<th>Truy cập/tìm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Danh sách</td>
+<td><code>List&lt;T&gt;</code></td>
+<td><code>[i]</code> O(1) · tìm O(n)</td>
+</tr>
+<tr>
+<td>Tra cứu theo khoá</td>
+<td><code>Dictionary&lt;K,V&gt;</code></td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>Không trùng</td>
+<td><code>HashSet&lt;T&gt;</code></td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>Có thứ tự khoá</td>
+<td><code>SortedDictionary/SortedSet</code></td>
+<td>O(log n)</td>
+</tr>
+</tbody>
+</table>
+<h2>C.7 LINQ (Ch. 30)</h2>
+<pre class="hljs"><code>.Where(x =&gt; ...)  .Select(x =&gt; ...)  .SelectMany(...)  .OrderBy(k)  .OrderByDescending(k)  .ThenBy(k)
+.GroupBy(k)  .Join(o, a =&gt; a.K, b =&gt; b.K, (a, b) =&gt; ...)  .Distinct()  .Skip(n).Take(n)  .Chunk(n)  .Zip(o)
+.First()  .FirstOrDefault()  .Single()  .Last()  .ElementAt(i)  .Any()  .All(p)  .Contains(x)
+.Count()  .Sum(x =&gt; ...)  .Average(...)  .Min()  .Max()  .MinBy(k)  .MaxBy(k)  .Aggregate((a, b) =&gt; ...)
+.ToList()  .ToArray()  .ToDictionary(k, v)  .ToHashSet()
+</code></pre>
+<p>Nhớ: thực thi trì hoãn — chạy khi duyệt/<code>ToList()</code>.</p>
+<h2>C.8 Phương thức (Ch. 10)</h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> <span class="hljs-title">Cong</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> a, <span class="hljs-built_in">int</span> b = <span class="hljs-number">0</span></span>)</span> =&gt; a + b;            <span class="hljs-comment">// tham số mặc định, expression-bodied</span>
+<span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">F</span>(<span class="hljs-params"><span class="hljs-keyword">ref</span> <span class="hljs-built_in">int</span> x</span>)</span> { }   <span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">G</span>(<span class="hljs-params"><span class="hljs-keyword">out</span> <span class="hljs-built_in">int</span> y</span>)</span> { y = <span class="hljs-number">1</span>; }   <span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> <span class="hljs-title">H</span>(<span class="hljs-params"><span class="hljs-keyword">params</span> <span class="hljs-built_in">int</span>[] xs</span>)</span> =&gt; xs.Length;
+<span class="hljs-keyword">static</span> (<span class="hljs-built_in">int</span> Min, <span class="hljs-built_in">int</span> Max) MinMax(<span class="hljs-built_in">int</span>[] a) =&gt; (a.Min(), a.Max());
+Cong(<span class="hljs-number">1</span>, b: <span class="hljs-number">2</span>);   F(<span class="hljs-keyword">ref</span> v);   G(<span class="hljs-keyword">out</span> <span class="hljs-built_in">int</span> r);   <span class="hljs-keyword">var</span> (min, max) = MinMax(a);
+</code></pre>
+<h2>C.9 Class, interface, kế thừa (Ch. 13–20)</h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SinhVien</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ten</span>) : <span class="hljs-title">Nguoi</span>(<span class="hljs-params">ten</span>), IComparable&lt;SinhVien&gt;      <span class="hljs-comment">// primary ctor, kế thừa, interface</span></span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> List&lt;<span class="hljs-built_in">string</span>&gt; _mon = [];                                 <span class="hljs-comment">// field</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Ten { <span class="hljs-keyword">get</span>; } = ten;                                        <span class="hljs-comment">// property chỉ đọc</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">required</span> <span class="hljs-built_in">int</span> Tuoi { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">init</span>; }                                  <span class="hljs-comment">// bắt buộc, gán 1 lần</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> Diem { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">private</span> <span class="hljs-keyword">set</span>; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-built_in">string</span> <span class="hljs-title">ToString</span>()</span> =&gt; Ten;                                <span class="hljs-comment">// ghi đè</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">virtual</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Chao</span>()</span> { }                                           <span class="hljs-comment">// cho phép ghi đè</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> <span class="hljs-title">CompareTo</span>(<span class="hljs-params">SinhVien? o</span>)</span> =&gt; Diem.CompareTo(o?.Diem);
+}
+<span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Hinh</span> { <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-built_in">double</span> <span class="hljs-title">DienTich</span>()</span>; }
+<span class="hljs-keyword">interface</span> <span class="hljs-title">IThanhToan</span> { <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Tra</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> t</span>)</span>; <span class="hljs-function"><span class="hljs-built_in">decimal</span> <span class="hljs-title">Phi</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> t</span>)</span> =&gt; <span class="hljs-number">0</span>; }   <span class="hljs-comment">// default interface method</span>
+<span class="hljs-keyword">record</span> <span class="hljs-title">Diem</span>(<span class="hljs-title">int</span> <span class="hljs-title">X</span>, <span class="hljs-title">int</span> <span class="hljs-title">Y</span>);   <span class="hljs-function"><span class="hljs-keyword">readonly</span> <span class="hljs-keyword">record</span> <span class="hljs-keyword">struct</span> <span class="hljs-title">P</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> X, <span class="hljs-built_in">int</span> Y</span>)</span>;   <span class="hljs-keyword">struct</span> S { }   <span class="hljs-built_in">enum</span> Mau { Do, Xanh }   [Flags] <span class="hljs-built_in">enum</span> Q { A = <span class="hljs-number">1</span>, B = <span class="hljs-number">2</span> }
+<span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title">MoRong</span> { <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">Chan</span>(<span class="hljs-params"><span class="hljs-keyword">this</span> <span class="hljs-built_in">int</span> n</span>)</span> =&gt; n % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>; }   <span class="hljs-comment">// extension method</span>
+</code></pre>
+<p>Access: <code>public</code> (mọi nơi) · <code>private</code> (trong class) · <code>protected</code> (class + con) · <code>internal</code> (cùng assembly). Mặc định thành viên: <code>private</code>; class: <code>internal</code>.</p>
+<h2>C.10 Exception (Ch. 21)</h2>
+<pre class="hljs"><code><span class="hljs-keyword">try</span> { ... }
+<span class="hljs-keyword">catch</span> (FormatException e) <span class="hljs-keyword">when</span> (e.Message.Length &gt; <span class="hljs-number">0</span>) { ... }       <span class="hljs-comment">// cụ thể trước</span>
+<span class="hljs-keyword">catch</span> (Exception) { <span class="hljs-keyword">throw</span>; }                                         <span class="hljs-comment">// ném lại: giữ stack trace</span>
+<span class="hljs-keyword">finally</span> { ... }
+<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentException(<span class="hljs-string">&quot;msg&quot;</span>, <span class="hljs-keyword">nameof</span>(x));       ArgumentNullException.ThrowIfNull(x);
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> f = File.OpenRead(p);                      <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> s = ...;
+</code></pre>
+<h2>C.11 Generics, delegate, event (Ch. 22, 31)</h2>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">Kho</span>&lt;<span class="hljs-title">T</span>&gt; <span class="hljs-keyword">where</span> <span class="hljs-title">T</span> : <span class="hljs-keyword">class</span>, <span class="hljs-title">IComparable</span>&lt;<span class="hljs-title">T</span>&gt;, <span class="hljs-title">new</span>() { }     <span class="hljs-function">T <span class="hljs-title">Max</span>&lt;<span class="hljs-title">T</span>&gt;(<span class="hljs-params">IEnumerable&lt;T&gt; d</span>) <span class="hljs-keyword">where</span> T : IComparable&lt;T&gt;
+Func&lt;<span class="hljs-built_in">int</span>,<span class="hljs-built_in">int</span>&gt; f</span> = x =&gt; x * <span class="hljs-number">2</span>;   Action&lt;<span class="hljs-built_in">string</span>&gt; a = Console.WriteLine;   Predicate&lt;<span class="hljs-built_in">int</span>&gt; p = x =&gt; x &gt; <span class="hljs-number">0</span>;
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">event</span> EventHandler&lt;MyArgs&gt;? DaXong;   DaXong?.Invoke(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">new</span> MyArgs());   obj.DaXong += Handler;   obj.DaXong -= Handler;
+</code></pre>
+<h2>C.12 Async và đa luồng (Ch. 33–34)</h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">async</span> Task&lt;<span class="hljs-built_in">int</span>&gt; <span class="hljs-title">LayAsync</span>(<span class="hljs-params">CancellationToken ct = <span class="hljs-literal">default</span></span>)</span> { <span class="hljs-keyword">await</span> Task.Delay(<span class="hljs-number">100</span>, ct); <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; }
+<span class="hljs-keyword">var</span> kq = <span class="hljs-keyword">await</span> LayAsync();                 <span class="hljs-keyword">await</span> Task.WhenAll(t1, t2);     <span class="hljs-keyword">await</span> Task.WhenAny(t1, t2);
+<span class="hljs-keyword">await</span> <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> x <span class="hljs-keyword">in</span> nguonAsync) { }    <span class="hljs-keyword">await</span> Task.Run(() =&gt; TinhNang());
+<span class="hljs-keyword">lock</span> (khoa) { }    Interlocked.Increment(<span class="hljs-keyword">ref</span> n);    Parallel.For(<span class="hljs-number">0</span>, n, i =&gt; { });    <span class="hljs-keyword">new</span> SemaphoreSlim(<span class="hljs-number">2</span>)
+<span class="hljs-keyword">new</span> ConcurrentDictionary&lt;K,V&gt;()    Channel.CreateBounded&lt;<span class="hljs-built_in">int</span>&gt;(<span class="hljs-number">10</span>)
+</code></pre>
+<p>Quy tắc: async xuyên suốt; không <code>.Result</code>/<code>.Wait()</code>; tránh <code>async void</code>; luôn truyền <code>CancellationToken</code>.</p>
+<h2>C.13 I/O và JSON (Ch. 35–36)</h2>
+<pre class="hljs"><code>File.ReadAllText(p)  File.WriteAllText(p, s)  File.ReadLines(p)  File.AppendAllText(p, s)  File.Exists(p)  File.Delete(p)
+<span class="hljs-keyword">await</span> File.ReadAllTextAsync(p)      Directory.EnumerateFiles(d, <span class="hljs-string">&quot;*.cs&quot;</span>, SearchOption.AllDirectories)
+Path.Combine(a, b)  Path.GetFileName(p)  Path.GetExtension(p)  Path.GetTempPath()
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> w = <span class="hljs-keyword">new</span> StreamWriter(p); w.WriteLine(<span class="hljs-string">&quot;x&quot;</span>);        <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> r = <span class="hljs-keyword">new</span> StreamReader(p); r.ReadLine();
+
+<span class="hljs-built_in">string</span> json = JsonSerializer.Serialize(obj, opts);        <span class="hljs-keyword">var</span> o = JsonSerializer.Deserialize&lt;T&gt;(json, opts);
+[<span class="hljs-meta">JsonPropertyName(<span class="hljs-string">&quot;ten&quot;</span>)</span>]  [JsonIgnore]     <span class="hljs-keyword">new</span> JsonSerializerOptions { WriteIndented = <span class="hljs-literal">true</span>, PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
+</code></pre>
+<h2>C.14 Test xUnit (Ch. 38)</h2>
+<pre class="hljs"><code>[<span class="hljs-meta">Fact</span>] <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Ten_TinhHuong_KetQua</span>()</span> { <span class="hljs-comment">/* Arrange - Act - Assert */</span> }
+[<span class="hljs-meta">Theory</span>][InlineData(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>)] <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Cong</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> a, <span class="hljs-built_in">int</span> b, <span class="hljs-built_in">int</span> mongDoi</span>)</span> { Assert.Equal(mongDoi, a + b); }
+Assert.Equal(mongDoi, thucTe)  Assert.True(x)  Assert.Null(x)  Assert.Empty(ds)  Assert.Single(ds)  Assert.Throws&lt;T&gt;(() =&gt; ...)
+<span class="hljs-keyword">var</span> m = Substitute.For&lt;IX&gt;();  m.Ham().Returns(<span class="hljs-number">5</span>);  m.Received(<span class="hljs-number">1</span>).Ham();
+</code></pre>
+<h2>C.15 Quy ước đặt tên (Ch. 15)</h2>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Quy ước</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Class, record, struct, enum, namespace, method, property, event</td>
+<td><code>PascalCase</code></td>
+</tr>
+<tr>
+<td>Interface</td>
+<td><code>IPascalCase</code></td>
+</tr>
+<tr>
+<td>Tham số, biến cục bộ</td>
+<td><code>camelCase</code></td>
+</tr>
+<tr>
+<td>Field private</td>
+<td><code>_camelCase</code></td>
+</tr>
+<tr>
+<td>Hằng</td>
+<td><code>PascalCase</code></td>
+</tr>
+<tr>
+<td>Phương thức async</td>
+<td>hậu tố <code>Async</code></td>
+</tr>
+<tr>
+<td>Kiểu generic</td>
+<td><code>T</code>, <code>TKey</code>, <code>TValue</code></td>
+</tr>
+</tbody>
+</table>
+<h2>C.16 Phím tắt IDE hay dùng</h2>
+<table>
+<thead>
+<tr>
+<th>Việc</th>
+<th>Visual Studio</th>
+<th>VS Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chạy debug / không debug</td>
+<td><code>F5</code> / <code>Ctrl+F5</code></td>
+<td><code>F5</code> / <code>Ctrl+F5</code></td>
+</tr>
+<tr>
+<td>Breakpoint</td>
+<td><code>F9</code></td>
+<td><code>F9</code></td>
+</tr>
+<tr>
+<td>Step Over / Into / Out</td>
+<td><code>F10</code> / <code>F11</code> / <code>Shift+F11</code></td>
+<td><code>F10</code> / <code>F11</code> / <code>Shift+F11</code></td>
+</tr>
+<tr>
+<td>Gợi ý nhanh / sửa lỗi</td>
+<td><code>Ctrl+.</code></td>
+<td><code>Ctrl+.</code></td>
+</tr>
+<tr>
+<td>Định dạng code</td>
+<td><code>Ctrl+K, Ctrl+D</code></td>
+<td><code>Shift+Alt+F</code></td>
+</tr>
+<tr>
+<td>Đổi tên (rename)</td>
+<td><code>F2</code></td>
+<td><code>F2</code></td>
+</tr>
+<tr>
+<td>Đến định nghĩa</td>
+<td><code>F12</code></td>
+<td><code>F12</code></td>
+</tr>
+<tr>
+<td>Tìm mọi tham chiếu</td>
+<td><code>Shift+F12</code></td>
+<td><code>Shift+F12</code></td>
+</tr>
+<tr>
+<td>Chạy test</td>
+<td><code>Ctrl+R, T</code></td>
+<td>qua Test Explorer</td>
+</tr>
+</tbody>
+</table>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch45-phu-luc-b-tai-lieu.html">&larr; 45. Phụ lục B — Tài liệu tham khảo</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
