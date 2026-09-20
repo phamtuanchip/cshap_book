@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 31 — Delegate, event và lambda — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch31-delegate-event-lambda.html">31. Delegate, event và lambda</a></li><li><a class="chapter-link" href="ch32-csharp-hien-dai.html">32. Record, pattern matching và cú pháp mới</a></li><li><a class="chapter-link" href="ch33-async-await.html">33. Lập trình bất đồng bộ async/await</a></li><li><a class="chapter-link" href="ch34-da-luong.html">34. Đa luồng và đồng bộ hoá</a></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 31 — Delegate, event và lambda</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>delegate</strong> là &quot;kiểu của phương thức&quot; và dùng <code>Func</code>, <code>Action</code>, <code>Predicate</code> có sẵn.</li>
+<li>Viết <strong>lambda</strong> và hiểu <strong>closure</strong>.</li>
+<li>Dùng <strong>event</strong> theo mẫu publisher/subscriber (<code>EventHandler&lt;T&gt;</code>).</li>
+<li>Truyền hành vi như một tham số — nền tảng của LINQ, async và <a href="http://ASP.NET">ASP.NET</a> Core.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch31-delegate-event-lambda/"><code>code/ch31-delegate-event-lambda/</code></a>.</p>
+<h2>Delegate — biến chứa phương thức</h2>
+<p>Với <code>int x = 5;</code> bạn lưu một giá trị. <strong>Delegate</strong> cho phép lưu <strong>một phương thức</strong> vào biến, truyền đi và gọi sau:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-built_in">delegate</span> <span class="hljs-built_in">int</span> <span class="hljs-title">PhepTinh</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> a, <span class="hljs-built_in">int</span> b</span>)</span>;        <span class="hljs-comment">// định nghĩa &quot;hình dạng&quot; phương thức</span>
+
+PhepTinh cong = (a, b) =&gt; a + b;
+Console.WriteLine(cong(<span class="hljs-number">3</span>, <span class="hljs-number">4</span>));              <span class="hljs-comment">// 7</span>
+
+<span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> <span class="hljs-title">ApDung</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> a, <span class="hljs-built_in">int</span> b, PhepTinh f</span>)</span> =&gt; f(a, b);
+ApDung(<span class="hljs-number">10</span>, <span class="hljs-number">5</span>, (x, y) =&gt; x - y);             <span class="hljs-comment">// 5 — truyền hành vi như tham số</span>
+</code></pre>
+<p>Delegate là kiểu <strong>an toàn</strong>: chỉ nhận phương thức khớp chữ ký (số tham số, kiểu, kiểu trả về). Nó cho phép <strong>tách &quot;làm gì&quot;
+khỏi &quot;khi nào/ở đâu làm&quot;</strong> — ví dụ <code>Sort</code> không biết bạn so sánh theo tiêu chí nào, bạn truyền cho nó.</p>
+<h2><code>Func</code>, <code>Action</code>, <code>Predicate</code> — delegate dựng sẵn</h2>
+<p>Hiếm khi cần tự khai báo <code>delegate</code>, vì .NET có sẵn dạng generic:</p>
+<table>
+<thead>
+<tr>
+<th>Kiểu</th>
+<th>Chữ ký</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Action</code> / <code>Action&lt;T1,...&gt;</code></td>
+<td>không trả về (<code>void</code>)</td>
+<td><code>Action&lt;string&gt; inRa = s =&gt; Console.WriteLine(s);</code></td>
+</tr>
+<tr>
+<td><code>Func&lt;T1,...,TResult&gt;</code></td>
+<td>trả về <code>TResult</code> (tham số <strong>cuối</strong> là kiểu trả về)</td>
+<td><code>Func&lt;int,int,int&gt; cong = (a, b) =&gt; a + b;</code></td>
+</tr>
+<tr>
+<td><code>Predicate&lt;T&gt;</code></td>
+<td>nhận <code>T</code> trả <code>bool</code></td>
+<td><code>Predicate&lt;int&gt; laChan = x =&gt; x % 2 == 0;</code></td>
+</tr>
+</tbody>
+</table>
+<pre class="hljs"><code>Func&lt;<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>&gt; binh = x =&gt; x * x;
+Func&lt;<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>, <span class="hljs-built_in">string</span>&gt; ghep = (a, b) =&gt; <span class="hljs-string">$&quot;<span class="hljs-subst">{a}</span>-<span class="hljs-subst">{b}</span>&quot;</span>;
+</code></pre>
+<h2>Lambda expression</h2>
+<p>Lambda là cách viết <strong>hàm vô danh</strong> ngắn gọn: <code>(tham số) =&gt; biểu_thức</code> hoặc <code>(tham số) =&gt; { khối lệnh }</code>.</p>
+<pre class="hljs"><code>x =&gt; x * x                       <span class="hljs-comment">// một tham số, không cần ngoặc</span>
+(a, b) =&gt; a + b                  <span class="hljs-comment">// nhiều tham số</span>
+() =&gt; Console.WriteLine(<span class="hljs-string">&quot;hi&quot;</span>)    <span class="hljs-comment">// không tham số</span>
+(<span class="hljs-built_in">int</span> a, <span class="hljs-built_in">int</span> b) =&gt; { <span class="hljs-keyword">var</span> t = a + b; <span class="hljs-keyword">return</span> t * <span class="hljs-number">2</span>; }   <span class="hljs-comment">// khối lệnh</span>
+<span class="hljs-keyword">static</span> x =&gt; x * <span class="hljs-number">2</span>                <span class="hljs-comment">// static lambda: không cho phép capture, an toàn &amp; nhanh hơn</span>
+</code></pre>
+<p>Kiểu tham số thường được suy luận từ delegate đích. <strong>Method group</strong> cho phép truyền thẳng tên phương thức:
+<code>so.Select(binh)</code>, <code>list.ForEach(Console.WriteLine)</code>.</p>
+<h3>Truyền hành vi vào hàm</h3>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">static</span> IEnumerable&lt;<span class="hljs-built_in">int</span>&gt; <span class="hljs-title">Loc</span>(<span class="hljs-params">IEnumerable&lt;<span class="hljs-built_in">int</span>&gt; ds, Predicate&lt;<span class="hljs-built_in">int</span>&gt; dieuKien</span>)</span>
+{
+    <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> x <span class="hljs-keyword">in</span> ds)
+        <span class="hljs-keyword">if</span> (dieuKien(x)) <span class="hljs-keyword">yield</span> <span class="hljs-keyword">return</span> x;
+}
+
+Loc(so, x =&gt; x % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>);   <span class="hljs-comment">// lọc chẵn</span>
+Loc(so, x =&gt; x &gt; <span class="hljs-number">3</span>);        <span class="hljs-comment">// lọc &gt; 3</span>
+</code></pre>
+<p>Đây chính xác là cách <code>Where</code> của LINQ được viết (Chương 30).</p>
+<h2>Closure — lambda &quot;nhớ&quot; biến bên ngoài</h2>
+<pre class="hljs"><code><span class="hljs-built_in">int</span> heSo = <span class="hljs-number">3</span>;
+Func&lt;<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>&gt; nhanHeSo = x =&gt; x * heSo;
+nhanHeSo(<span class="hljs-number">5</span>);    <span class="hljs-comment">// 15</span>
+heSo = <span class="hljs-number">10</span>;
+nhanHeSo(<span class="hljs-number">5</span>);    <span class="hljs-comment">// 50 — closure giữ THAM CHIẾU tới biến, không sao chép giá trị lúc tạo</span>
+</code></pre>
+<p>Lambda <strong>bắt (capture)</strong> biến của phạm vi bao quanh và đọc/ghi giá trị <em>hiện tại lúc gọi</em>. Hàm trả về hàm:</p>
+<pre class="hljs"><code><span class="hljs-function">Func&lt;<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>&gt; <span class="hljs-title">TaoBoCong</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> n</span>)</span> =&gt; x =&gt; x + n;
+<span class="hljs-keyword">var</span> cong5 = TaoBoCong(<span class="hljs-number">5</span>);
+cong5(<span class="hljs-number">1</span>);   <span class="hljs-comment">// 6 — n = 5 vẫn &quot;sống&quot; sau khi TaoBoCong kết thúc</span>
+</code></pre>
+<p>Cẩn thận: bắt biến <strong>vòng lặp</strong> (<code>for</code>) trong lambda chạy muộn có thể cho kết quả bất ngờ (mọi lambda cùng thấy giá trị
+cuối); <code>foreach</code> an toàn hơn vì mỗi vòng có biến riêng. Và closure giữ đối tượng &quot;sống&quot; lâu hơn dự kiến (rò rỉ bộ nhớ nếu
+lưu lambda mãi).</p>
+<h2>Multicast delegate</h2>
+<p>Một delegate có thể chứa <strong>nhiều</strong> phương thức; gọi một lần chạy tất cả theo thứ tự đăng ký:</p>
+<pre class="hljs"><code>Action thongBao = () =&gt; Console.WriteLine(<span class="hljs-string">&quot;ghi log&quot;</span>);
+thongBao += () =&gt; Console.WriteLine(<span class="hljs-string">&quot;gui email&quot;</span>);
+thongBao();   <span class="hljs-comment">// ghi log, gui email</span>
+</code></pre>
+<p><code>+=</code> thêm, <code>-=</code> bỏ. Với delegate có kiểu trả về, chỉ giá trị của phương thức <strong>cuối</strong> được trả về. Đây là nền của <strong>event</strong>.</p>
+<h2>Event — mẫu Publisher / Subscriber</h2>
+<p><strong>Event</strong> là delegate được &quot;bọc&quot; để: bên ngoài chỉ được <strong>đăng ký (<code>+=</code>) / huỷ (<code>-=</code>)</strong>; chỉ bản thân class phát mới
+được <strong>kích hoạt</strong> (<code>Invoke</code>). Nhờ đó bên phát không phụ thuộc vào bên nghe (giảm ràng buộc — Observer pattern, Chương 41).</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">DoUongEventArgs</span>(<span class="hljs-title">string</span> <span class="hljs-title">ten</span>) : <span class="hljs-title">EventArgs</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> TenDoUong { <span class="hljs-keyword">get</span>; } = ten;
+}
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">MayPha</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">event</span> EventHandler&lt;DoUongEventArgs&gt;? SanSang;   <span class="hljs-comment">// publisher</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Pha</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ten</span>)</span>
+    {
+        Console.WriteLine(<span class="hljs-string">$&quot;Dang pha <span class="hljs-subst">{ten}</span>...&quot;</span>);
+        SanSang?.Invoke(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">new</span> DoUongEventArgs(ten));   <span class="hljs-comment">// ?. : an toàn khi chưa ai đăng ký</span>
+    }
+}
+
+<span class="hljs-keyword">var</span> may = <span class="hljs-keyword">new</span> MayPha();
+may.SanSang += (sender, e) =&gt; Console.WriteLine(<span class="hljs-string">$&quot;[Khach A] nhan: <span class="hljs-subst">{e.TenDoUong}</span>&quot;</span>);   <span class="hljs-comment">// subscriber</span>
+may.SanSang += DocThongBao;
+may.Pha(<span class="hljs-string">&quot;ca phe sua&quot;</span>);
+may.SanSang -= DocThongBao;      <span class="hljs-comment">// huỷ đăng ký</span>
+</code></pre>
+<p>Quy ước chuẩn: <code>EventHandler&lt;TEventArgs&gt;</code> (<code>object? sender, TEventArgs e</code>); tên sự kiện là động từ (<code>SanSang</code>, <code>Clicked</code>);
+phương thức kích hoạt <code>OnXxx</code>.</p>
+<p>Điểm cần nhớ: <strong>hãy huỷ đăng ký (<code>-=</code>)</strong> khi subscriber không còn dùng — nếu không publisher vẫn giữ tham chiếu, ngăn GC
+dọn subscriber (&quot;memory leak do event&quot; rất phổ biến). Trong <a href="http://ASP.NET">ASP.NET</a> Core bạn ít tự viết event, nhưng sẽ gặp mẫu tương tự
+trong thông báo, <code>IObservable</code>, MediatR (Tập 3).</p>
+<h2>Khi nào dùng cái nào?</h2>
+<table>
+<thead>
+<tr>
+<th>Tình huống</th>
+<th>Chọn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Truyền một hành vi vào hàm (lọc, sắp xếp, callback)</td>
+<td><code>Func</code>/<code>Action</code>/<code>Predicate</code> + lambda</td>
+</tr>
+<tr>
+<td>Nhiều bên cần được báo khi có chuyện xảy ra</td>
+<td><code>event</code></td>
+</tr>
+<tr>
+<td>Hợp đồng nhiều phương thức có liên quan</td>
+<td><code>interface</code> (Chương 18)</td>
+</tr>
+<tr>
+<td>Một hành vi đơn lẻ, cần tên rõ nghĩa</td>
+<td>delegate đặt tên (<code>PhepTinh</code>) hoặc interface nhỏ</td>
+</tr>
+</tbody>
+</table>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>NullReferenceException</code> khi gọi <code>SanSang(this, e)</code> mà chưa ai đăng ký — dùng <code>SanSang?.Invoke(...)</code>.</li>
+<li>Quên huỷ đăng ký event → rò rỉ bộ nhớ, handler chạy cả khi đối tượng đã &quot;chết&quot; logic.</li>
+<li>Mong đợi closure sao chép giá trị lúc tạo (thực ra đọc lúc gọi).</li>
+<li>Nhầm <code>Func&lt;int, string&gt;</code> (nhận int, trả string) với <code>Func&lt;string, int&gt;</code>.</li>
+<li>Lambda quá dài, phức tạp — tách thành phương thức có tên.</li>
+<li>Dùng <code>async void</code> cho event handler mà không bắt lỗi (Chương 33).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết <code>ApDung&lt;T&gt;(IEnumerable&lt;T&gt; ds, Action&lt;T&gt; hanhDong)</code> tự cài đặt <code>ForEach</code>.</li>
+<li>Viết <code>Func&lt;double, double&gt; TaoHamNhan(double heSo)</code> trả về hàm nhân với hệ số; kiểm chứng closure.</li>
+<li>Tạo class <code>NutBam</code> có event <code>DuocBam</code> và hai subscriber; huỷ một subscriber rồi bấm lại.</li>
+<li>Cài <code>SapXep&lt;T&gt;(List&lt;T&gt; ds, Func&lt;T, T, int&gt; soSanh)</code> bằng thuật toán sắp xếp chèn đơn giản.</li>
+<li>Giải thích vì sao đoạn sau in <code>3 3 3</code> rồi sửa cho in <code>0 1 2</code>: <code>var fs = new List&lt;Action&gt;(); for (int i = 0; i &lt; 3; i++) fs.Add(() =&gt; Console.Write(i + &quot; &quot;));</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch30-linq.html">&larr; 30. LINQ</a><a class="nav-next" href="ch32-csharp-hien-dai.html">32. Record, pattern matching và cú pháp mới &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

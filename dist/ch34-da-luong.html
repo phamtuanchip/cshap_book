@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 34 — Đa luồng và đồng bộ hoá — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch31-delegate-event-lambda.html">31. Delegate, event và lambda</a></li><li><a class="chapter-link" href="ch32-csharp-hien-dai.html">32. Record, pattern matching và cú pháp mới</a></li><li><a class="chapter-link" href="ch33-async-await.html">33. Lập trình bất đồng bộ async/await</a></li><li><a class="chapter-link active" href="ch34-da-luong.html">34. Đa luồng và đồng bộ hoá</a></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 34 — Đa luồng và đồng bộ hoá</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>thread</strong>, <strong>thread pool</strong> và khi nào cần chạy song song.</li>
+<li>Nhận ra và sửa <strong>race condition</strong> bằng <code>lock</code>, <code>Interlocked</code>, collection an toàn đa luồng.</li>
+<li>Dùng <code>Parallel</code>, <code>SemaphoreSlim</code> và <code>Channel&lt;T&gt;</code> (mô hình producer/consumer).</li>
+<li>Hiểu <strong>deadlock</strong> và cách tránh; phân biệt với <code>async/await</code>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch34-da-luong/"><code>code/ch34-da-luong/</code></a>.</p>
+<h2>Thread và thread pool</h2>
+<p>Một <strong>thread</strong> là một luồng thực thi. Chương trình luôn có một thread chính; bạn có thể tạo thêm để làm nhiều việc <em>cùng lúc</em>
+(trên nhiều lõi CPU):</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> t = <span class="hljs-keyword">new</span> Thread(() =&gt; Console.WriteLine(<span class="hljs-string">&quot;chay tren thread phu&quot;</span>));
+t.Start();
+t.Join();     <span class="hljs-comment">// chờ thread kết thúc</span>
+</code></pre>
+<p>Tạo thread thủ công đắt (mỗi thread tốn ~1 MB ngăn xếp) và khó quản lý. Thực tế dùng <strong>thread pool</strong> — một nhóm thread tái
+sử dụng do .NET quản lý — thông qua <code>Task.Run</code>, <code>Parallel</code>, <code>async/await</code>. Hiếm khi bạn cần <code>new Thread</code> (chỉ khi cần thread
+chạy lâu, ưu tiên riêng).</p>
+<p><strong>Chọn công cụ:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Bài toán</th>
+<th>Dùng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chờ I/O (mạng, đĩa, CSDL)</td>
+<td><code>async/await</code> (Chương 33)</td>
+</tr>
+<tr>
+<td>Tính toán nặng, chia đều trên nhiều lõi</td>
+<td><code>Parallel.For/ForEach</code>, PLINQ (<code>.AsParallel()</code>)</td>
+</tr>
+<tr>
+<td>Việc nền một lần</td>
+<td><code>Task.Run</code></td>
+</tr>
+<tr>
+<td>Luồng dữ liệu producer → consumer</td>
+<td><code>Channel&lt;T&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Race condition — vấn đề gốc</h2>
+<p>Khi <strong>nhiều thread cùng đọc/ghi một dữ liệu chung</strong> mà không phối hợp, kết quả phụ thuộc vào thứ tự &quot;may rủi&quot; giữa các thread:</p>
+<pre class="hljs"><code><span class="hljs-built_in">int</span> dem = <span class="hljs-number">0</span>;
+Parallel.For(<span class="hljs-number">0</span>, <span class="hljs-number">100_000</span>, _ =&gt; dem++);
+Console.WriteLine(dem);   <span class="hljs-comment">// mong 100000, nhưng thường nhỏ hơn (vd 63.421) — và mỗi lần chạy khác nhau</span>
+</code></pre>
+<p>Vì <code>dem++</code> không &quot;nguyên tử&quot;: nó gồm ba bước <strong>đọc – cộng – ghi</strong>. Hai thread có thể cùng đọc <code>5</code>, cùng ghi <code>6</code> → mất một lần đếm.
+Lỗi này <strong>không nhất quán</strong>, khó tái hiện và hay biến mất khi debug — nên phải phòng ngừa chứ không thể &quot;thử xem có đúng không&quot;.</p>
+<h2>Giải pháp 1: <code>lock</code></h2>
+<p><code>lock</code> chỉ cho <strong>một thread tại một thời điểm</strong> vào đoạn code găng (critical section):</p>
+<pre class="hljs"><code><span class="hljs-built_in">object</span> khoa = <span class="hljs-keyword">new</span>();
+Parallel.For(<span class="hljs-number">0</span>, <span class="hljs-number">100_000</span>, _ =&gt; { <span class="hljs-keyword">lock</span> (khoa) { dem++; } });   <span class="hljs-comment">// luôn đúng: 100000</span>
+</code></pre>
+<p>Quy tắc dùng <code>lock</code>:</p>
+<ul>
+<li>Khoá trên một <strong>đối tượng <code>private readonly</code></strong> riêng (hoặc <code>System.Threading.Lock</code> trong .NET 9+); <strong>không</strong> khoá trên
+<code>this</code>, <code>typeof(...)</code>, hay chuỗi — code khác có thể khoá cùng đối tượng và gây deadlock.</li>
+<li>Giữ khoá <strong>càng ngắn càng tốt</strong>; không gọi code lạ, không <code>await</code> bên trong <code>lock</code>
+(dùng <code>SemaphoreSlim</code> cho tình huống async).</li>
+</ul>
+<h2>Giải pháp 2: <code>Interlocked</code></h2>
+<p>Phép nguyên tử, không cần khoá, nhanh hơn cho thao tác đơn giản trên biến số:</p>
+<pre class="hljs"><code>Parallel.For(<span class="hljs-number">0</span>, <span class="hljs-number">100_000</span>, _ =&gt; Interlocked.Increment(<span class="hljs-keyword">ref</span> dem));
+Interlocked.Add(<span class="hljs-keyword">ref</span> tong, <span class="hljs-number">5</span>);
+Interlocked.CompareExchange(<span class="hljs-keyword">ref</span> x, giaTriMoi, giaTriMongDoi);
+</code></pre>
+<h2>Giải pháp 3: collection an toàn đa luồng</h2>
+<p><code>List&lt;T&gt;</code>, <code>Dictionary&lt;K,V&gt;</code> <strong>không</strong> an toàn khi nhiều thread cùng ghi. Dùng <code>System.Collections.Concurrent</code>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> dem = <span class="hljs-keyword">new</span> ConcurrentDictionary&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">int</span>&gt;();
+Parallel.ForEach(tu, t =&gt; dem.AddOrUpdate(t, <span class="hljs-number">1</span>, (_, cu) =&gt; cu + <span class="hljs-number">1</span>));
+</code></pre>
+<p>Có sẵn <code>ConcurrentQueue&lt;T&gt;</code>, <code>ConcurrentBag&lt;T&gt;</code>, <code>ConcurrentStack&lt;T&gt;</code>, <code>BlockingCollection&lt;T&gt;</code>. Lưu ý: từng thao tác an toàn,
+nhưng <strong>chuỗi hai thao tác</strong> (kiểm tra rồi thêm) vẫn có thể bị xen — dùng phương thức gộp như <code>GetOrAdd</code>, <code>AddOrUpdate</code>.</p>
+<p>Cách tốt nhất tránh race: <strong>không chia sẻ trạng thái có thể thay đổi</strong>. Dùng dữ liệu bất biến (<code>record</code>, Chương 20) và mỗi
+thread giữ dữ liệu riêng rồi gộp kết quả cuối cùng.</p>
+<h2><code>Parallel</code> và PLINQ</h2>
+<pre class="hljs"><code><span class="hljs-comment">// Mỗi thread cộng dồn vào biến cục bộ, gộp một lần cuối =&gt; ít tranh chấp</span>
+<span class="hljs-built_in">long</span> tongChan = <span class="hljs-number">0</span>;
+Parallel.For(<span class="hljs-number">1</span>, <span class="hljs-number">1_000_001</span>, () =&gt; <span class="hljs-number">0L</span>,
+    (i, _, cucBo) =&gt; i % <span class="hljs-number">2</span> == <span class="hljs-number">0</span> ? cucBo + i : cucBo,
+    cucBo =&gt; Interlocked.Add(<span class="hljs-keyword">ref</span> tongChan, cucBo));
+
+<span class="hljs-keyword">var</span> kq = so.AsParallel().Where(LaNguyenTo).ToList();   <span class="hljs-comment">// PLINQ</span>
+<span class="hljs-keyword">await</span> Parallel.ForEachAsync(urls, opts, <span class="hljs-keyword">async</span> (url, ct) =&gt; { ... });   <span class="hljs-comment">// song song + async</span>
+</code></pre>
+<p>Song song hoá chỉ đáng khi <strong>mỗi đơn vị công việc đủ nặng</strong> và độc lập; với việc nhỏ, chi phí phối hợp lớn hơn lợi ích
+(thậm chí chậm hơn). Luôn <strong>đo</strong> trước và sau.</p>
+<h2><code>SemaphoreSlim</code> — giới hạn số việc đồng thời</h2>
+<p>Dùng khi muốn chỉ cho phép tối đa <em>N</em> việc chạy cùng lúc (giới hạn kết nối, gọi API có rate limit). Hỗ trợ <code>await</code>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> cho = <span class="hljs-keyword">new</span> SemaphoreSlim(<span class="hljs-number">2</span>);
+<span class="hljs-keyword">await</span> cho.WaitAsync();
+<span class="hljs-keyword">try</span> { <span class="hljs-keyword">await</span> LamViecAsync(); }
+<span class="hljs-keyword">finally</span> { cho.Release(); }    <span class="hljs-comment">// LUÔN Release trong finally</span>
+</code></pre>
+<h2><code>Channel&lt;T&gt;</code> — producer / consumer</h2>
+<p>Một bên <strong>sản xuất</strong> dữ liệu, bên kia <strong>tiêu thụ</strong>, ngăn cách bởi kênh có bộ đệm, an toàn đa luồng và hỗ trợ async:</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> kenh = Channel.CreateBounded&lt;<span class="hljs-built_in">int</span>&gt;(<span class="hljs-number">3</span>);    <span class="hljs-comment">// đệm tối đa 3 phần tử: &quot;áp suất ngược&quot; (backpressure)</span>
+
+<span class="hljs-keyword">var</span> sanXuat = Task.Run(<span class="hljs-keyword">async</span> () =&gt;
+{
+    <span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> i = <span class="hljs-number">1</span>; i &lt;= <span class="hljs-number">5</span>; i++) <span class="hljs-keyword">await</span> kenh.Writer.WriteAsync(i);   <span class="hljs-comment">// đầy thì chờ</span>
+    kenh.Writer.Complete();                                          <span class="hljs-comment">// báo hết dữ liệu</span>
+});
+<span class="hljs-keyword">var</span> tieuThu = Task.Run(<span class="hljs-keyword">async</span> () =&gt;
+{
+    <span class="hljs-keyword">await</span> <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> x <span class="hljs-keyword">in</span> kenh.Reader.ReadAllAsync()) Console.WriteLine(x);
+});
+<span class="hljs-keyword">await</span> Task.WhenAll(sanXuat, tieuThu);
+</code></pre>
+<p>Đây là mô hình nền cho hàng đợi công việc, xử lý sự kiện, background service trong <a href="http://ASP.NET">ASP.NET</a> Core.</p>
+<h2>Deadlock</h2>
+<p><strong>Deadlock</strong> = hai (hay nhiều) thread cùng chờ nhau mãi, không ai chạy được:</p>
+<pre class="hljs"><code><span class="hljs-comment">// Thread 1: lock(A) { lock(B) { ... } }</span>
+<span class="hljs-comment">// Thread 2: lock(B) { lock(A) { ... } }   // → mỗi bên giữ một khoá và chờ khoá kia</span>
+</code></pre>
+<p>Cách tránh: (1) luôn khoá theo <strong>cùng một thứ tự</strong>; (2) giữ khoá ngắn, không gọi code ngoài khi đang giữ; (3) dùng
+<code>Monitor.TryEnter</code> với timeout; (4) thiết kế ít khoá bằng cách tránh chia sẻ trạng thái. Deadlock kinh điển thứ hai:
+<code>.Result</code>/<code>.Wait()</code> trên Task trong ngữ cảnh đồng bộ (Chương 33).</p>
+<h2>Ghi nhớ</h2>
+<ul>
+<li>Chạy song song là <strong>tối ưu hiệu năng có giá</strong>: thêm độ phức tạp và lỗi khó bắt. Chỉ dùng khi đã đo và thật sự cần.</li>
+<li><strong><code>async</code> cho I/O, <code>Parallel</code> cho CPU.</strong></li>
+<li>Thứ tự ưu tiên khi phải chia sẻ dữ liệu: bất biến → không chia sẻ → collection concurrent → <code>Interlocked</code> → <code>lock</code>.</li>
+<li>Kiểm thử đa luồng rất khó; thiết kế để đoạn dùng chung nhỏ và dễ kiểm chứng bằng mắt.</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Nhiều thread ghi <code>List&lt;T&gt;</code>/<code>Dictionary</code> không khoá → dữ liệu hỏng, <code>IndexOutOfRange</code>, vòng lặp vô hạn.</li>
+<li><code>lock(this)</code>/<code>lock(&quot;chuoi&quot;)</code>.</li>
+<li><code>await</code> bên trong <code>lock</code> (lỗi biên dịch) — dùng <code>SemaphoreSlim</code>.</li>
+<li>Quên <code>Release()</code> semaphore trong <code>finally</code> → treo vĩnh viễn.</li>
+<li>Tưởng <code>volatile</code>/<code>static</code> là đủ an toàn.</li>
+<li>Dùng <code>Parallel.For</code> cho việc quá nhỏ — chậm hơn vòng <code>for</code>.</li>
+<li>Không gọi <code>Writer.Complete()</code> khiến consumer đợi mãi.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Chạy đoạn race condition 10 lần và ghi lại kết quả; sửa bằng <code>lock</code>, rồi bằng <code>Interlocked</code>; so sánh tốc độ.</li>
+<li>Dùng <code>Parallel.ForEach</code> + <code>ConcurrentDictionary</code> đếm tần suất từ trong nhiều chuỗi.</li>
+<li>Viết chương trình hai thread gây <strong>deadlock</strong> có chủ đích, rồi sửa bằng thứ tự khoá cố định.</li>
+<li>Dùng <code>Channel</code> mô phỏng nhà bếp: 1 đầu bếp (producer) và 3 người phục vụ (consumer) xử lý đơn.</li>
+<li>Đo thời gian đếm số nguyên tố ≤ 5.000.000 bằng vòng <code>for</code>, <code>Parallel.For</code>, và PLINQ.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch33-async-await.html">&larr; 33. Lập trình bất đồng bộ async/await</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
