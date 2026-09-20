@@ -149,3 +149,78 @@ public class IntegrationTests(KhoFactory f) : IClassFixture<KhoFactory>
         Assert.NotNull((await db.Outbox.AsNoTracking().FirstAsync(o => o.Loai == "Hong")).XuLyLuc);
     }
 }
+
+public class IdempotencyAuditTests(KhoFactory f) : IClassFixture<KhoFactory>
+{
+    private readonly HttpClient _c = f.CreateClient();
+
+    private static HttpRequestMessage Post(string url, object body, string? khoa = null, string? nguoi = null)
+    {
+        var r = new HttpRequestMessage(HttpMethod.Post, url) { Content = JsonContent.Create(body) };
+        if (khoa is not null) r.Headers.Add("Idempotency-Key", khoa);
+        if (nguoi is not null) r.Headers.Add("X-Nguoi", nguoi);
+        return r;
+    }
+
+    [Fact]
+    public async Task GuiLaiCungKhoa_ChiXuLyMotLan_VaTraLaiKetQuaCu()
+    {
+        await _c.SendAsync(Post("/api/san-pham", new { ma = "ID001", ten = "SP", nhom = "T", donGia = 1000, tonDau = 10 }));
+
+        var xuat = new { soLuong = 3 };
+        var lan1 = await _c.SendAsync(Post("/api/san-pham/ID001/xuat", xuat, "khoa-1"));
+        var lan2 = await _c.SendAsync(Post("/api/san-pham/ID001/xuat", xuat, "khoa-1"));      // mang bi rot, client gui lai
+
+        Assert.Equal(HttpStatusCode.NoContent, lan1.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, lan2.StatusCode);
+        Assert.True(lan2.Headers.Contains("Idempotency-Replayed"));
+
+        var sp = await _c.GetFromJsonAsync<SanPhamDto>("/api/san-pham/ID001");
+        Assert.Equal(7, sp!.TonKho);                                                             // tru 3 MOT lan, khong phai 2
+    }
+
+    [Fact]
+    public async Task KhongCoKhoa_MoiLanDeuXuLy()
+    {
+        await _c.SendAsync(Post("/api/san-pham", new { ma = "ID002", ten = "SP", nhom = "T", donGia = 1000, tonDau = 10 }));
+        await _c.SendAsync(Post("/api/san-pham/ID002/xuat", new { soLuong = 3 }));
+        await _c.SendAsync(Post("/api/san-pham/ID002/xuat", new { soLuong = 3 }));
+        Assert.Equal(4, (await _c.GetFromJsonAsync<SanPhamDto>("/api/san-pham/ID002"))!.TonKho);
+    }
+
+    [Fact]
+    public async Task CungKhoaNhungNoiDungKhac_422()
+    {
+        await _c.SendAsync(Post("/api/san-pham", new { ma = "ID003", ten = "SP", nhom = "T", donGia = 1000, tonDau = 10 }));
+        await _c.SendAsync(Post("/api/san-pham/ID003/xuat", new { soLuong = 1 }, "khoa-3"));
+        var khac = await _c.SendAsync(Post("/api/san-pham/ID003/xuat", new { soLuong = 5 }, "khoa-3"));
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, khac.StatusCode);
+    }
+
+    [Fact]
+    public async Task HaiRequestCungKhoaDongThoi_MotXuLy_KiaTraLaiHoacXungDot_TonChiTruMotLan()
+    {
+        await _c.SendAsync(Post("/api/san-pham", new { ma = "ID004", ten = "SP", nhom = "T", donGia = 1000, tonDau = 10 }));
+        var kq = await Task.WhenAll(Enumerable.Range(0, 8).Select(_ => _c.SendAsync(Post("/api/san-pham/ID004/xuat", new { soLuong = 2 }, "khoa-4"))));
+
+        Assert.All(kq, r => Assert.True(r.StatusCode is HttpStatusCode.NoContent or HttpStatusCode.Conflict));
+        Assert.Contains(kq, r => r.StatusCode == HttpStatusCode.NoContent);
+        Assert.Equal(8, (await _c.GetFromJsonAsync<SanPhamDto>("/api/san-pham/ID004"))!.TonKho);   // 10 - 2, dung mot lan
+    }
+
+    [Fact]
+    public async Task NhatKy_GhiAiLamGi_KemGiaTriTruocSau()
+    {
+        await _c.SendAsync(Post("/api/san-pham", new { ma = "AU001", ten = "SP", nhom = "T", donGia = 1000, tonDau = 10 }, nguoi: "an"));
+        await _c.SendAsync(Post("/api/san-pham/AU001/xuat", new { soLuong = 4 }, nguoi: "binh"));
+
+        var nhatKy = await _c.GetFromJsonAsync<List<NhatKyDto>>("/api/nhat-ky");
+        var sua = nhatKy!.Single(n => n.DoiTuong == "SanPham:AU001" && n.HanhDong == "Sua");
+        Assert.Equal("binh", sua.Nguoi);
+        Assert.Contains("\"TonKho\":\"10\"", sua.Truoc);
+        Assert.Contains("\"TonKho\":\"6\"", sua.Sau);
+        Assert.Contains(nhatKy!, n => n.DoiTuong == "SanPham:AU001" && n.HanhDong == "Them" && n.Nguoi == "an");
+    }
+
+    private record NhatKyDto(string Nguoi, string HanhDong, string DoiTuong, string? Truoc, string? Sau);
+}

@@ -9,7 +9,7 @@ Sau chương này, bạn sẽ:
 - Dùng **test data builder**, fake vs mock, **CSDL thật** trong test (SQLite file, Testcontainers).
 - Kiểm thử **đồng thời (concurrency)** và **bất đồng bộ** một cách xác định; đo độ phủ có ý nghĩa.
 
-Code: [`code/kho-clean/Kho.Tests/`](../../code/kho-clean/Kho.Tests/) — **40 test** (đã đạt) chia thành `DomainTests`, `ApplicationTests`, `ArchitectureTests`, `IntegrationTests` (mỗi `Theory` tính nhiều ca).
+Code: [`code/kho-clean/Kho.Tests/`](../../code/kho-clean/Kho.Tests/) — **45 test** (đã đạt) chia thành `DomainTests`, `ApplicationTests`, `ArchitectureTests`, `IntegrationTests`, `IdempotencyAuditTests` (Chương 13) (mỗi `Theory` tính nhiều ca).
 
 ## Vì sao cần "chiến lược"?
 

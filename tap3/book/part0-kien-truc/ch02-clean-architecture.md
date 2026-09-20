@@ -9,7 +9,7 @@ Sau chương này, bạn sẽ:
 - Hiểu vai trò của **composition root**, DI theo tầng, và **migration** trong kiến trúc nhiều project.
 - Biết cấu trúc thư mục theo **tính năng (vertical slice)**.
 
-Code: [`code/kho-clean/`](../../code/kho-clean/) — hệ thống kho của Tập 2 được **tái cấu trúc** (40 test đều đạt). Chương 2–8 và 13 lần lượt giải thích từng phần của cùng một solution.
+Code: [`code/kho-clean/`](../../code/kho-clean/) — hệ thống kho của Tập 2 được **tái cấu trúc** (45 test đều đạt). Chương 2–8 và 13 lần lượt giải thích từng phần của cùng một solution.
 
 ## Bản đồ solution
 

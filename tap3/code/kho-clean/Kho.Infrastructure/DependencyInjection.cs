@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddScoped<IKhoDocDuLieu, KhoDocDuLieu>();
         services.AddSingleton<IPhatHanhSuKien, LogPhatHanhSuKien>();
         services.AddSingleton(TimeProvider.System);
+        services.AddScoped<Kho.Infrastructure.Idempotency.IdempotencyStore>();
 
         if (cfg.GetValue("Outbox:Bat", true))
         {

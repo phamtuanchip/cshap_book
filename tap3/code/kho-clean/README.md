@@ -6,7 +6,7 @@ Hệ thống quản lý kho theo **Clean Architecture + CQRS + Result pattern + 
 cd Kho.Web
 dotnet run                          # tự migrate SQLite; POST/GET /api/san-pham
 cd ../Kho.Tests
-dotnet test                         # Domain + Application + Architecture + Integration
+dotnet test                         # Domain + Application + Architecture + Integration + Idempotency/Audit (45 test)
 ```
 
 Tạo migration mới (chạy trong `Kho.Web`):

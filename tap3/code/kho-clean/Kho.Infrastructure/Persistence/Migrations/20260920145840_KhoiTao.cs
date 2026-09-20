@@ -12,6 +12,40 @@ namespace Kho.Infrastructure.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "idempotency",
+                columns: table => new
+                {
+                    Khoa = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    DauVan = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    MaTrangThai = table.Column<int>(type: "INTEGER", nullable: false),
+                    NoiDung = table.Column<string>(type: "TEXT", nullable: true),
+                    LoaiNoiDung = table.Column<string>(type: "TEXT", nullable: true),
+                    TaoLucMs = table.Column<long>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_idempotency", x => x.Khoa);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "nhat_ky_kiem_toan",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Luc = table.Column<long>(type: "INTEGER", nullable: false),
+                    Nguoi = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    HanhDong = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
+                    DoiTuong = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Truoc = table.Column<string>(type: "TEXT", nullable: true),
+                    Sau = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_nhat_ky_kiem_toan", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "outbox",
                 columns: table => new
                 {
@@ -65,6 +99,11 @@ namespace Kho.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_nhat_ky_kiem_toan_Luc",
+                table: "nhat_ky_kiem_toan",
+                column: "Luc");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_outbox_XuLyLuc_TaoLuc",
                 table: "outbox",
                 columns: new[] { "XuLyLuc", "TaoLuc" });
@@ -79,6 +118,12 @@ namespace Kho.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "idempotency");
+
+            migrationBuilder.DropTable(
+                name: "nhat_ky_kiem_toan");
+
             migrationBuilder.DropTable(
                 name: "outbox");
 

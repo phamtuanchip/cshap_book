@@ -61,6 +61,71 @@ namespace Kho.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Kho.Infrastructure.Persistence.IdempotencyRecord", b =>
+                {
+                    b.Property<string>("Khoa")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DauVan")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LoaiNoiDung")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MaTrangThai")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("NoiDung")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("TaoLucMs")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Khoa");
+
+                    b.ToTable("idempotency", (string)null);
+                });
+
+            modelBuilder.Entity("Kho.Infrastructure.Persistence.NhatKyKiemToan", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("DoiTuong")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HanhDong")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("Luc")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Nguoi")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Sau")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Truoc")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Luc");
+
+                    b.ToTable("nhat_ky_kiem_toan", (string)null);
+                });
+
             modelBuilder.Entity("Kho.Infrastructure.Persistence.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
