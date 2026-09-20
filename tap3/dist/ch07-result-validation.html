@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 7 — Result pattern và validation — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link active" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><span class="chapter-link pending">9. Chiến lược kiểm thử</span></li><li><span class="chapter-link pending">10. Caching</span></li><li><span class="chapter-link pending">11. Quan sát và hiệu năng</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">12. OpenID Connect và OAuth 2.0</span></li><li><span class="chapter-link pending">13. Idempotency, audit log và bảo vệ dữ liệu</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><span class="chapter-link pending">14. Docker và docker-compose</span></li><li><span class="chapter-link pending">15. CI/CD với GitHub Actions</span></li><li><span class="chapter-link pending">16. Triển khai lên máy chủ và đám mây</span></li><li><span class="chapter-link pending">17. Microservices và giao tiếp giữa dịch vụ</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</span></li><li><span class="chapter-link pending">20. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 7 — Result pattern và validation</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Dùng <strong>Result pattern</strong> để biểu diễn lỗi nghiệp vụ như <strong>giá trị</strong>, thay vì exception.</li>
+<li>Thiết kế <code>Loi</code> (mã ổn định + loại + mô tả) và dịch sang <strong>HTTP</strong> ở một chỗ.</li>
+<li>Viết validation bằng <strong>FluentValidation</strong>, phân biệt <strong>validation đầu vào</strong> với <strong>luật nghiệp vụ</strong>.</li>
+<li>Biết khi nào <strong>nên</strong> và <strong>không nên</strong> ném exception.</li>
+</ul>
+<p>Code: <a href="code/kho-clean/Kho.Domain/Common/Result.cs"><code>Common/Result.cs</code></a>, <a href="code/kho-clean/Kho.Application/SanPhams/CaSuDung.cs"><code>CaSuDung.cs</code></a>, <a href="code/kho-clean/Kho.Web/Endpoints/KhoEndpoints.cs"><code>KhoEndpoints.cs</code></a>.</p>
+<h2>Exception hay Result?</h2>
+<p>Tập 1 (Chương 21) dạy exception. Tập 2 (Chương 9) dùng exception nghiệp vụ + <code>IExceptionHandler</code>. Cách đó ổn, nhưng có vấn đề khi lỗi là <strong>kết quả bình thường, xảy ra thường xuyên</strong>:</p>
+<pre class="hljs"><code><span class="hljs-comment">// Exception cho &quot;không đủ hàng&quot; (xảy ra hàng ngày, không phải bất thường)</span>
+<span class="hljs-keyword">try</span> { sp.XuatKho(n); }
+<span class="hljs-keyword">catch</span> (KhongDuHangException e) { ... }
+</code></pre>
+<ul>
+<li><strong>Chi phí</strong>: ném/bắt exception chậm hơn nhiều so với trả giá trị (đáng kể khi lặp/tải cao).</li>
+<li><strong>Luồng ẩn</strong>: chữ ký <code>void XuatKho(int)</code> <strong>không nói</strong> nó có thể thất bại theo cách nào; người gọi dễ quên <code>try/catch</code>.</li>
+<li><strong>Goto vô hình</strong>: exception nhảy qua nhiều tầng; khó đọc luồng.</li>
+</ul>
+<p><strong>Result pattern</strong>: hàm trả về <strong>giá trị mô tả thành công hoặc lỗi</strong>; chữ ký tự nói lên khả năng thất bại và trình biên dịch/IDE nhắc xử lý.</p>
+<table>
+<thead>
+<tr>
+<th>Dùng <strong>Result</strong> cho</th>
+<th>Dùng <strong>exception</strong> cho</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lỗi nghiệp vụ dự đoán được (hết hàng, dữ liệu sai, không tìm thấy, xung đột)</td>
+<td>lỗi lập trình (null, tham số sai, trạng thái không thể)</td>
+</tr>
+<tr>
+<td>luồng bình thường mà &quot;thất bại&quot; là một kết quả</td>
+<td>lỗi hạ tầng bất ngờ (mất mạng, đĩa đầy, bug)</td>
+</tr>
+<tr>
+<td>cần cho người gọi xử lý từng trường hợp</td>
+<td>lỗi mà tầng gần không thể xử lý → nổi lên tới handler toàn cục (<code>500</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Hai cách <strong>bổ sung</strong> nhau: lỗi <em>nghiệp vụ</em> qua <code>Result</code>, lỗi <em>bất thường</em> qua exception + <code>IExceptionHandler</code>.</p>
+<h2>Thiết kế <code>Result</code> và <code>Loi</code></h2>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-built_in">enum</span> LoaiLoi { DuLieuKhongHopLe, KhongTimThay, XungDot, NghiepVu }
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">record</span> <span class="hljs-title">Loi</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> Ma, <span class="hljs-built_in">string</span> MoTa, LoaiLoi Loai</span>)</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Loi <span class="hljs-title">DuLieuKhongHopLe</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ma, <span class="hljs-built_in">string</span> moTa</span>)</span> =&gt; <span class="hljs-keyword">new</span>(ma, moTa, LoaiLoi.DuLieuKhongHopLe);
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Loi <span class="hljs-title">KhongTimThay</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ma, <span class="hljs-built_in">string</span> moTa</span>)</span> =&gt; <span class="hljs-keyword">new</span>(ma, moTa, LoaiLoi.KhongTimThay);
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Loi <span class="hljs-title">XungDot</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ma, <span class="hljs-built_in">string</span> moTa</span>)</span> =&gt; <span class="hljs-keyword">new</span>(ma, moTa, LoaiLoi.XungDot);
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Loi <span class="hljs-title">NghiepVu</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ma, <span class="hljs-built_in">string</span> moTa</span>)</span> =&gt; <span class="hljs-keyword">new</span>(ma, moTa, LoaiLoi.NghiepVu);
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span> : <span class="hljs-title">IKetQua</span>&lt;<span class="hljs-title">Result</span>&gt;
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">bool</span> ThanhCong { <span class="hljs-keyword">get</span>; }
+    <span class="hljs-keyword">public</span> Loi? Loi { <span class="hljs-keyword">get</span>; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Result <span class="hljs-title">Ok</span>()</span> =&gt; <span class="hljs-keyword">new</span>(<span class="hljs-literal">true</span>, <span class="hljs-literal">null</span>);
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Result <span class="hljs-title">Fail</span>(<span class="hljs-params">Loi loi</span>)</span> =&gt; <span class="hljs-keyword">new</span>(<span class="hljs-literal">false</span>, loi);
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">T</span>&gt; : <span class="hljs-title">Result</span>, <span class="hljs-title">IKetQua</span>&lt;<span class="hljs-title">Result</span>&lt;<span class="hljs-title">T</span>&gt;&gt;
+{
+    <span class="hljs-keyword">public</span> T GiaTri =&gt; ThanhCong ? _giaTri! : <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> InvalidOperationException(<span class="hljs-string">&quot;Ket qua that bai khong co gia tri&quot;</span>);
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Result&lt;T&gt; <span class="hljs-title">Ok</span>(<span class="hljs-params">T giaTri</span>)</span> =&gt; <span class="hljs-keyword">new</span>(giaTri, <span class="hljs-literal">true</span>, <span class="hljs-literal">null</span>);
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">implicit</span> <span class="hljs-keyword">operator</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">T</span>&gt;(<span class="hljs-params">T giaTri</span>)</span> =&gt; Ok(giaTri);       <span class="hljs-comment">// return giaTri; tự thành Result&lt;T&gt;</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TOut</span>&gt; <span class="hljs-title">Map</span>&lt;<span class="hljs-title">TOut</span>&gt;(<span class="hljs-params">Func&lt;T, TOut&gt; f</span>)</span> =&gt; ThanhCong ? Result&lt;TOut&gt;.Ok(f(GiaTri)) : Result&lt;TOut&gt;.Fail(Loi!);
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TOut</span>&gt; <span class="hljs-title">Bind</span>&lt;<span class="hljs-title">TOut</span>&gt;(<span class="hljs-params">Func&lt;T, Result&lt;TOut&gt;&gt; f</span>)</span> =&gt; ThanhCong ? f(GiaTri) : Result&lt;TOut&gt;.Fail(Loi!);
+}
+</code></pre>
+<p>Các quyết định:</p>
+<ul>
+<li><strong><code>Loi.Ma</code> ổn định và có cấu trúc</strong> (<code>&quot;SanPham.KhongDuHang&quot;</code>): client/log/i18n dựa vào <strong>mã</strong> (không đổi), còn <code>MoTa</code> là văn bản cho người đọc (có thể dịch/đổi).</li>
+<li><strong><code>Loi.Loai</code></strong> là <em>phân loại nghiệp vụ</em>, không phải mã HTTP — domain không biết HTTP. Tầng Web ánh xạ một lần (<code>LoiSangHttp</code>, Chương 2).</li>
+<li><strong>Truy cập <code>GiaTri</code> khi thất bại ném <code>InvalidOperationException</code></strong>: đọc giá trị mà không kiểm tra là <strong>bug lập trình</strong> (đúng loại để dùng exception).</li>
+<li><strong>Không có <code>Result</code> &quot;rỗng&quot; mơ hồ</strong>: hoặc thành công (có giá trị) hoặc thất bại (có lỗi).</li>
+<li>Có thể mở rộng thành <strong>danh sách lỗi</strong> (validation nhiều trường) — solution gộp thành một chuỗi cho đơn giản; thư viện như <strong>ErrorOr</strong>, <strong>FluentResults</strong>, <strong>OneOf</strong> làm phong phú hơn.</li>
+</ul>
+<h2>Dùng Result</h2>
+<h3>Trong domain</h3>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Result&lt;SanPham&gt; <span class="hljs-title">Tao</span>(<span class="hljs-params"><span class="hljs-built_in">string</span>? ma, <span class="hljs-built_in">string</span>? ten, ...</span>)</span>
+{
+    <span class="hljs-keyword">var</span> maKq = MaSanPham.Tao(ma);
+    <span class="hljs-keyword">if</span> (!maKq.ThanhCong) <span class="hljs-keyword">return</span> Result&lt;SanPham&gt;.Fail(maKq.Loi!);        <span class="hljs-comment">// dừng ngay, chuyển tiếp lỗi</span>
+    ...
+    <span class="hljs-keyword">return</span> sp;                                                            <span class="hljs-comment">// conversion ngầm: T → Result&lt;T&gt;</span>
+}
+</code></pre>
+<h3>Trong handler: &quot;đường ray&quot; (railway-oriented)</h3>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> kq = MaSanPham.Tao(<span class="hljs-string">&quot;LT001&quot;</span>).Bind(m =&gt; Tien.Tao(<span class="hljs-number">-5</span>).Map(_ =&gt; m));   <span class="hljs-comment">// Bind/Map chỉ chạy tiếp khi thành công</span>
+</code></pre>
+<p><code>Map</code> biến đổi giá trị, <code>Bind</code> nối bước có thể lỗi khác; lỗi đầu tiên &quot;trượt&quot; thẳng ra cuối, các bước sau bị bỏ qua. Với chuỗi dài đọc gọn hơn <code>if (!x.ThanhCong) return ...</code> lồng nhau — nhưng với 2–3 bước, <code>if</code> tường minh cũng rõ ràng, đừng ép dùng <code>Bind</code>.</p>
+<h3>Ở ranh giới HTTP</h3>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> IResult <span class="hljs-title">ToHttp</span>&lt;<span class="hljs-title">T</span>&gt;(<span class="hljs-params"><span class="hljs-keyword">this</span> Result&lt;T&gt; kq</span>)</span> =&gt; kq.ThanhCong ? Results.Ok(kq.GiaTri) : LoiSangHttp(kq.Loi!);
+
+<span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> IResult <span class="hljs-title">LoiSangHttp</span>(<span class="hljs-params">Loi loi</span>)</span> =&gt; Results.Problem(title: loi.Ma, detail: loi.MoTa, statusCode: loi.Loai <span class="hljs-keyword">switch</span>
+{
+    LoaiLoi.DuLieuKhongHopLe =&gt; <span class="hljs-number">400</span>, LoaiLoi.KhongTimThay =&gt; <span class="hljs-number">404</span>, LoaiLoi.XungDot =&gt; <span class="hljs-number">409</span>, LoaiLoi.NghiepVu =&gt; <span class="hljs-number">422</span>, _ =&gt; <span class="hljs-number">500</span>,
+});
+</code></pre>
+<p>Kết quả <code>ProblemDetails</code> (RFC 9457) với <code>title = mã lỗi</code> giúp client xử lý theo mã. Muốn phong phú hơn: thêm <code>extensions</code> (danh sách lỗi theo trường).</p>
+<h2>Validation với FluentValidation</h2>
+<p>Validator viết bằng code (tách khỏi DTO, dễ test, biểu đạt được điều kiện phức tạp):</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ThemSanPhamValidator</span> : <span class="hljs-title">AbstractValidator</span>&lt;<span class="hljs-title">ThemSanPhamCommand</span>&gt;
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ThemSanPhamValidator</span>()</span>
+    {
+        RuleFor(x =&gt; x.Ma).NotEmpty().Matches(<span class="hljs-string">&quot;^[A-Za-z]{2}[0-9]{3}$&quot;</span>).WithMessage(<span class="hljs-string">&quot;Ma gom 2 chu cai + 3 chu so&quot;</span>);
+        RuleFor(x =&gt; x.Ten).NotEmpty().Length(<span class="hljs-number">2</span>, <span class="hljs-number">200</span>);
+        RuleFor(x =&gt; x.Nhom).NotEmpty().MaximumLength(<span class="hljs-number">100</span>);
+        RuleFor(x =&gt; x.DonGia).GreaterThanOrEqualTo(<span class="hljs-number">0</span>);
+        RuleFor(x =&gt; x.TonDau).InclusiveBetween(<span class="hljs-number">0</span>, <span class="hljs-number">1_000_000</span>);
+    }
+}
+</code></pre>
+<p>Các quy tắc hữu ích: <code>NotEmpty</code>, <code>NotNull</code>, <code>Length/MinimumLength/MaximumLength</code>, <code>Matches</code>, <code>EmailAddress</code>, <code>InclusiveBetween</code>, <code>GreaterThan</code>, <code>Must(x =&gt; ...)</code> (điều kiện tuỳ ý), <code>When/Unless</code> (điều kiện áp dụng), <code>RuleForEach</code> (phần tử danh sách), <code>SetValidator</code> (validator lồng), <code>MustAsync</code> (gọi CSDL — cẩn thận chi phí), <code>CascadeMode</code>.</p>
+<p>Đăng ký tự động bằng quét assembly (trong <code>AddApplication</code>); <code>ValidationBehavior</code> (Chương 6) chạy mọi <code>IValidator&lt;TRequest&gt;</code> và trả <code>Result</code> lỗi.</p>
+<h3>Ba tầng kiểm tra — mỗi tầng một việc</h3>
+<table>
+<thead>
+<tr>
+<th>Tầng</th>
+<th>Kiểm tra gì</th>
+<th>Công cụ</th>
+<th>Lỗi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Web/DTO</strong></td>
+<td>JSON đúng cú pháp/kiểu</td>
+<td>model binding</td>
+<td>400</td>
+</tr>
+<tr>
+<td><strong>Application (validator)</strong></td>
+<td><strong>định dạng, phạm vi</strong> của đầu vào lệnh</td>
+<td>FluentValidation</td>
+<td>400</td>
+</tr>
+<tr>
+<td><strong>Domain</strong></td>
+<td><strong>bất biến nghiệp vụ</strong> (đủ hàng, mã hợp lệ, số tiền không âm)</td>
+<td>factory/phương thức trả <code>Result</code></td>
+<td>400/404/409/422</td>
+</tr>
+<tr>
+<td><strong>CSDL</strong></td>
+<td>ràng buộc cuối cùng (UNIQUE, CHECK, FK)</td>
+<td>schema</td>
+<td>dịch thành <code>XungDot</code>...</td>
+</tr>
+</tbody>
+</table>
+<p>Đừng chỉ tin một tầng: <strong>Domain tự bảo vệ</strong> (đối tượng không bao giờ ở trạng thái sai dù ai gọi), validator cho <strong>phản hồi sớm, đầy đủ, thân thiện</strong>, CSDL là <strong>lưới cuối</strong>. Chúng có thể <em>trùng lặp</em> một phần (vd <code>TonDau &gt;= 0</code>) — chấp nhận, vì mục đích khác nhau. Để tránh lệch, nhiều đội để validator gọi lại hàm của Domain (<code>MaSanPham.Tao(x).ThanhCong</code>) cho quy tắc quan trọng.</p>
+<p>Ví dụ thực tế về trùng khoá: <code>ThemSanPhamHandler</code> kiểm tra <code>TonTaiMaAsync</code> trước (phản hồi tốt) <strong>và</strong> ràng buộc UNIQUE + <code>TrungLapException</code> xử lý trường hợp hai request đồng thời cùng qua bước kiểm tra — &quot;kiểm tra rồi hành động&quot; (check-then-act) luôn có khe race; CSDL là người phân xử.</p>
+<h2>Tổng hợp luồng lỗi trong hệ thống</h2>
+<pre class="mermaid">flowchart LR
+    V[&quot;Validator (Application)&quot;] --&gt;|&quot;Result lỗi&quot;| P[&quot;Pipeline&quot;]
+    D[&quot;Domain&quot;] --&gt;|&quot;Result lỗi&quot;| P
+    I[&quot;Infrastructure&lt;br/&gt;ConcurrencyException / TrungLap&quot;] --&gt;|&quot;exception ha tầng&quot;| U[&quot;UnitOfWorkBehavior&quot;]
+    U --&gt;|&quot;dịch → Result lỗi&quot;| P
+    P --&gt; E[&quot;Endpoint: ToHttp()&quot;]
+    E --&gt; H[&quot;HTTP 400/404/409/422&lt;br/&gt;ProblemDetails&quot;]
+    X[&quot;Lỗi bất ngờ (bug, mất mạng)&quot;] --&gt;|&quot;exception&quot;| G[&quot;UseExceptionHandler → 500&quot;]
+</pre>
+<p>Một bảng duy nhất quyết định &quot;lỗi nào thành mã nào&quot; (<code>LoiSangHttp</code>), và mọi lỗi nghiệp vụ đều cùng hình dạng <code>ProblemDetails</code>.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Trả <code>Result</code> nhưng vẫn ném exception cho cùng loại lỗi (hai luồng lỗi song song).</li>
+<li><code>Loi</code> chỉ có chuỗi mô tả, không mã ổn định → client phải phân tích văn bản.</li>
+<li>Đưa <code>LoaiLoi.NghiepVu</code> thành mã HTTP trong Domain (rò rỉ HTTP vào miền).</li>
+<li>Truy cập <code>.GiaTri</code> mà không kiểm tra <code>ThanhCong</code>.</li>
+<li>Ép mọi thứ thành <code>Result</code> kể cả lỗi hạ tầng (nuốt lỗi 500 thành 4xx).</li>
+<li>Chỉ validate ở validator, Domain để <code>public set</code> — đường tắt qua code khác bỏ qua luật.</li>
+<li>Dùng <code>MustAsync</code> gọi CSDL cho mỗi rule, sinh nhiều truy vấn.</li>
+<li>Thông báo lỗi tiết lộ chi tiết nội bộ.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Mở rộng <code>Loi</code> thành danh sách lỗi theo trường (<code>IReadOnlyList&lt;LoiTruong&gt;</code>); cập nhật <code>ValidationBehavior</code> và <code>LoiSangHttp</code> để trả <code>errors</code> như <code>ValidationProblem</code>.</li>
+<li>Viết extension <code>Ensure(Func&lt;T,bool&gt; dieuKien, Loi loi)</code> cho <code>Result&lt;T&gt;</code> và dùng nó trong một chuỗi Bind.</li>
+<li>Thêm rule FluentValidation <code>Must(BeUniqueMa)</code> gọi <code>ISanPhamRepository</code> — bàn về ưu/nhược so với kiểm tra trong handler.</li>
+<li>Đổi endpoint xuất kho để trả <strong>body</strong> <code>{ tonMoi }</code> thay vì <code>204</code> — cần đổi gì ở command/handler (gợi ý: <code>Result&lt;int&gt;</code>)?</li>
+<li>Viết test HTTP kiểm tra <code>title</code> (mã lỗi) trong <code>ProblemDetails</code> cho <code>404</code>, <code>409</code>, <code>422</code>, <code>400</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch06-pipeline-behavior.html">&larr; 6. Pipeline behavior: validation, logging, transaction</a><a class="nav-next" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

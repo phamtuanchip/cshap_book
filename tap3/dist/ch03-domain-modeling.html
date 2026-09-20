@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 3 — Mô hình hoá miền (DDD cơ bản) — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link active" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><span class="chapter-link pending">9. Chiến lược kiểm thử</span></li><li><span class="chapter-link pending">10. Caching</span></li><li><span class="chapter-link pending">11. Quan sát và hiệu năng</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">12. OpenID Connect và OAuth 2.0</span></li><li><span class="chapter-link pending">13. Idempotency, audit log và bảo vệ dữ liệu</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><span class="chapter-link pending">14. Docker và docker-compose</span></li><li><span class="chapter-link pending">15. CI/CD với GitHub Actions</span></li><li><span class="chapter-link pending">16. Triển khai lên máy chủ và đám mây</span></li><li><span class="chapter-link pending">17. Microservices và giao tiếp giữa dịch vụ</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</span></li><li><span class="chapter-link pending">20. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 3 — Mô hình hoá miền (DDD cơ bản)</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Phân biệt <strong>Entity</strong>, <strong>Value Object</strong>, <strong>Aggregate</strong>, <strong>Domain Event</strong> và biết khi nào dùng cái nào.</li>
+<li>Viết domain <strong>giàu hành vi</strong> (rich domain model) thay vì túi dữ liệu (anemic).</li>
+<li>Bảo vệ <strong>bất biến (invariant)</strong> ở chính lớp miền; dùng <code>Result</code> cho lỗi nghiệp vụ.</li>
+<li>Ánh xạ domain sang EF Core <strong>mà không làm bẩn</strong> domain.</li>
+</ul>
+<p>Code: <a href="code/kho-clean/Kho.Domain/"><code>code/kho-clean/Kho.Domain/</code></a> và <a href="code/kho-clean/Kho.Tests/DomainTests.cs"><code>DomainTests.cs</code></a>.</p>
+<h2>Domain-Driven Design (DDD) là gì?</h2>
+<p><strong>DDD</strong> (Eric Evans) là cách tiếp cận thiết kế cho <strong>nghiệp vụ phức tạp</strong>: mô hình phần mềm phản ánh <strong>ngôn ngữ và quy tắc của doanh nghiệp</strong>, do lập trình viên và chuyên gia nghiệp vụ cùng xây. Hai nhóm ý tưởng:</p>
+<ul>
+<li><strong>Chiến lược</strong>: <em>ubiquitous language</em> (ngôn ngữ chung: &quot;xuất kho&quot;, &quot;sắp hết hàng&quot; dùng thống nhất trong code, tài liệu, họp), <em>bounded context</em> (mỗi phần hệ thống có mô hình riêng; &quot;Sản phẩm&quot; trong Kho khác &quot;Sản phẩm&quot; trong Marketing).</li>
+<li><strong>Chiến thuật</strong> (bộ khối xây dựng, chương này): entity, value object, aggregate, domain event, repository, domain service.</li>
+</ul>
+<blockquote>
+<p>Sách này dùng <strong>DDD chiến thuật ở mức thực dụng</strong>. DDD đầy đủ (event storming, context mapping) là một chủ đề lớn — xem Phụ lục B. Áp dụng khi nghiệp vụ <em>thật sự phức tạp</em>; CRUD thuần không cần.</p>
+</blockquote>
+<h2>Anemic vs Rich domain model</h2>
+<pre class="hljs"><code><span class="hljs-comment">// ✘ ANEMIC: chỉ là túi dữ liệu; luật nằm ở service → ai cũng bỏ qua được luật</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SanPham</span> { <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> TonKho { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } }
+<span class="hljs-keyword">class</span> <span class="hljs-title">KhoService</span> { <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Xuat</span>(<span class="hljs-params">SanPham sp, <span class="hljs-built_in">int</span> n</span>)</span> { <span class="hljs-keyword">if</span> (sp.TonKho &gt;= n) sp.TonKho -= n; } }   <span class="hljs-comment">// quên kiểm tra ở chỗ khác → âm kho</span>
+
+<span class="hljs-comment">// ✔ RICH: dữ liệu + hành vi + luật ở CÙNG MỘT nơi</span>
+<span class="hljs-function"><span class="hljs-keyword">public</span> Result <span class="hljs-title">XuatKho</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> soLuong, DateTimeOffset bayGio</span>)</span>
+{
+    <span class="hljs-keyword">if</span> (soLuong &lt;= <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> Result.Fail(...);
+    <span class="hljs-keyword">if</span> (soLuong &gt; TonKho) <span class="hljs-keyword">return</span> Result.Fail(Loi.NghiepVu(<span class="hljs-string">&quot;SanPham.KhongDuHang&quot;</span>, ...));
+    TonKho -= soLuong;
+    ...
+}
+</code></pre>
+<p>Trong domain giàu, <strong>không có cách nào</strong> làm <code>TonKho</code> âm ngoài phương thức này (setter <code>private</code>). Test kiến trúc khoá điều đó: <code>Aggregate_KhongCoSetterCongKhai</code>. Đây là tinh thần của <em>encapsulation</em> (Tập 1, Chương 14) nâng lên cấp kiến trúc: <strong>object luôn ở trạng thái hợp lệ</strong>.</p>
+<h2>Value Object</h2>
+<p><strong>Value object</strong> đại diện một <strong>giá trị</strong> — <em>không có danh tính</em>, <strong>bất biến</strong>, so sánh <strong>theo giá trị</strong>, tự bảo đảm hợp lệ. Ví dụ: mã sản phẩm, số tiền, địa chỉ, khoảng ngày.</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">partial</span> <span class="hljs-keyword">record</span> <span class="hljs-title">MaSanPham</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> GiaTri { <span class="hljs-keyword">get</span>; }
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">MaSanPham</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> giaTri</span>)</span> =&gt; GiaTri = giaTri;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Result&lt;MaSanPham&gt; <span class="hljs-title">Tao</span>(<span class="hljs-params"><span class="hljs-built_in">string</span>? ma</span>)</span>
+    {
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">string</span>.IsNullOrWhiteSpace(ma)) <span class="hljs-keyword">return</span> Result&lt;MaSanPham&gt;.Fail(Loi.DuLieuKhongHopLe(<span class="hljs-string">&quot;SanPham.Ma.Rong&quot;</span>, <span class="hljs-string">&quot;...&quot;</span>));
+        ma = ma.Trim().ToUpperInvariant();
+        <span class="hljs-keyword">return</span> DinhDang().IsMatch(ma) ? <span class="hljs-keyword">new</span> MaSanPham(ma) : Result&lt;MaSanPham&gt;.Fail(Loi.DuLieuKhongHopLe(<span class="hljs-string">&quot;SanPham.Ma.SaiDinhDang&quot;</span>, <span class="hljs-string">&quot;...&quot;</span>));
+    }
+    [<span class="hljs-meta">GeneratedRegex(<span class="hljs-string">&quot;^[A-Z]{2}[0-9]{3}$&quot;</span>)</span>] <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">partial</span> Regex <span class="hljs-title">DinhDang</span>()</span>;
+}
+</code></pre>
+<p>Lợi ích:</p>
+<ul>
+<li><strong>Không thể tồn tại &quot;mã sản phẩm sai&quot;</strong> trong hệ thống: constructor <code>private</code>, chỉ có factory <code>Tao</code> trả <code>Result</code>. Kiểm tra đúng <strong>một chỗ</strong>, không rải rác.</li>
+<li><strong>Chống &quot;primitive obsession&quot;</strong> (dùng <code>string</code>/<code>decimal</code> trần khắp nơi): <code>XuatKho(string ma, decimal gia)</code> dễ đảo nhầm tham số; <code>XuatKho(MaSanPham ma, Tien gia)</code> thì không.</li>
+<li>Hành vi gắn với giá trị: <code>Tien</code> có <code>+</code>, <code>*</code>, làm tròn VND.</li>
+<li><code>record</code> cho sẵn so sánh theo giá trị (<code>MaSanPham.Tao(&quot;LT001&quot;) == MaSanPham.Tao(&quot;lt001&quot;)</code> — test <code>MaSanPham_SoSanhTheoGiaTri</code>).</li>
+</ul>
+<p>Dùng <code>readonly record struct</code> cho VO nhỏ, thường xuyên tạo (<code>Tien</code>, <code>Toado</code>) nếu cần hiệu năng; <code>record class</code> khi có nhiều trường/logic.</p>
+<h2>Entity và Aggregate</h2>
+<p><strong>Entity</strong>: có <strong>danh tính</strong> (<code>Id</code>) tồn tại suốt vòng đời, hai entity bằng nhau nếu cùng <code>Id</code> dù thuộc tính khác. <code>SanPham</code> là entity.</p>
+<p><strong>Aggregate</strong>: cụm entity/value object được đối xử như <strong>một đơn vị nhất quán</strong>, có một <strong>aggregate root</strong> là cổng duy nhất để thay đổi:</p>
+<pre class="mermaid">flowchart TB
+    subgraph &quot;Aggregate: DonHang&quot;
+        R[&quot;DonHang (root)&quot;] --&gt; L1[&quot;DongDon&quot;]
+        R --&gt; L2[&quot;DongDon&quot;]
+        R --&gt; VO[&quot;DiaChiGiaoHang (VO)&quot;]
+    end
+    X[&quot;Code bên ngoài&quot;] --&gt;|&quot;chỉ qua root&quot;| R
+</pre>
+<p>Quy tắc aggregate (giúp giữ nhất quán và hiệu năng):</p>
+<ol>
+<li><strong>Chỉ truy cập/sửa qua root</strong>; không giữ tham chiếu tới entity con bên trong từ bên ngoài.</li>
+<li><strong>Một giao dịch = một aggregate</strong>: mỗi lần <code>SaveChanges</code> chỉ nên đổi một aggregate; nhất quán <em>giữa các aggregate</em> dùng <strong>sự kiện</strong> và nhất quán cuối cùng (Chương 8).</li>
+<li>Aggregate <strong>nhỏ</strong>: chỉ chứa những gì cần nhất quán tức thời. <code>SanPham</code> không chứa danh sách hàng nghìn giao dịch — giao dịch là aggregate/bảng khác, sinh ra từ sự kiện.</li>
+<li>Tham chiếu aggregate khác <strong>bằng Id</strong>, không bằng object.</li>
+</ol>
+<p>Trong solution, <code>SanPham</code> là aggregate root độc lập (tồn kho là bất biến cần bảo vệ). Trong hệ thống có đơn hàng, <code>DonHang</code> tham chiếu <code>MaSanPham</code> (Id), không nhúng <code>SanPham</code>.</p>
+<h2>Domain Event</h2>
+<p><strong>Sự kiện miền</strong>: điều gì <strong>đã xảy ra</strong> trong nghiệp vụ, đặt tên thì <strong>quá khứ</strong>, bất biến.</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">record</span> <span class="hljs-title">TonKhoThayDoi</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> Ma, <span class="hljs-built_in">int</span> TonCu, <span class="hljs-built_in">int</span> TonMoi, <span class="hljs-built_in">string</span> LyDo, DateTimeOffset XayRaLuc</span>) : IDomainEvent</span>;
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">record</span> <span class="hljs-title">SapHetHang</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> Ma, <span class="hljs-built_in">int</span> TonKho, <span class="hljs-built_in">int</span> MucCanhBao, DateTimeOffset XayRaLuc</span>) : IDomainEvent</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> Result <span class="hljs-title">XuatKho</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> soLuong, DateTimeOffset bayGio</span>)</span>
+{
+    ...
+    TonKho -= soLuong;
+    PhatSuKien(<span class="hljs-keyword">new</span> TonKhoThayDoi(Ma.GiaTri, cu, TonKho, <span class="hljs-string">&quot;Xuat kho&quot;</span>, bayGio));
+
+    <span class="hljs-comment">// Quy tắc nghiệp vụ: vừa CHẠM ngưỡng (từ trên xuống) thì phát sự kiện — chỉ một lần</span>
+    <span class="hljs-keyword">if</span> (cu &gt; MucCanhBao &amp;&amp; TonKho &lt;= MucCanhBao)
+        PhatSuKien(<span class="hljs-keyword">new</span> SapHetHang(Ma.GiaTri, TonKho, MucCanhBao, bayGio));
+    <span class="hljs-keyword">return</span> Result.Ok();
+}
+</code></pre>
+<p>Aggregate <strong>không biết</strong> ai quan tâm (gửi email? báo mua hàng?) — chỉ ghi nhận sự kiện. Nhờ vậy domain giữ thuần và các hệ quả (tác dụng phụ) tách khỏi luật (Chương 8 xử lý bằng outbox). Test kiểm chứng thời điểm phát:</p>
+<pre class="hljs"><code>sp.XuatKho(<span class="hljs-number">3</span>, Gio);   <span class="hljs-comment">// 7 -&gt; 4: chạm ngưỡng 5</span>
+sp.XuatKho(<span class="hljs-number">1</span>, Gio);   <span class="hljs-comment">// 4 -&gt; 3: đã dưới ngưỡng, KHÔNG phát lại</span>
+Assert.Single(sp.SuKienMien.OfType&lt;SapHetHang&gt;());
+</code></pre>
+<p>Lưu ý: sự kiện chỉ nên <strong>phát sau khi thay đổi thành công</strong> — <code>XuatKho</code> thất bại không phát gì (test <code>XuatKho_KhongDuHang_...</code>).</p>
+<h2>Lỗi nghiệp vụ là <em>giá trị</em></h2>
+<p>Vi phạm luật (hết hàng, dữ liệu sai) là <strong>kết quả có thể đoán trước</strong>, không phải &quot;ngoại lệ&quot;. Domain trả <code>Result</code> (Chương 7) với <code>Loi</code> mang <strong>mã ổn định</strong> (<code>&quot;SanPham.KhongDuHang&quot;</code>) và <strong>loại</strong> (<code>LoaiLoi.NghiepVu</code>) — tầng ngoài dịch sang HTTP/log/UI tuỳ ý. Exception dành cho lỗi <strong>lập trình</strong> (truy cập <code>GiaTri</code> của Result thất bại, tham số null) và lỗi hạ tầng.</p>
+<h2>Domain service</h2>
+<p>Logic nghiệp vụ <strong>không thuộc riêng aggregate nào</strong> (ví dụ tính phí ship dựa trên nhiều aggregate, chuyển kho giữa hai <code>Kho</code>) đặt trong <strong>domain service</strong> — lớp không trạng thái trong tầng Domain, nhận aggregate làm tham số. Đừng vội tạo <code>XxxService</code>: hầu hết logic nên nằm trong entity/VO; chỉ tách khi thật sự &quot;không có nhà&quot;.</p>
+<h2>Ánh xạ sang EF Core mà không làm bẩn domain</h2>
+<p>Domain <strong>không</strong> có attribute EF, không cần <code>virtual</code>. Mọi cấu hình nằm ở Infrastructure (Fluent API):</p>
+<pre class="hljs"><code>mb.Entity&lt;SanPham&gt;(e =&gt;
+{
+    e.Ignore(s =&gt; s.SuKienMien);                                                    <span class="hljs-comment">// sự kiện không phải cột</span>
+    e.Property(s =&gt; s.Ma).HasConversion(m =&gt; m.GiaTri, v =&gt; MaSanPham.TuCsdl(v))    <span class="hljs-comment">// value object &lt;-&gt; cột đơn giản</span>
+                         .HasMaxLength(<span class="hljs-number">20</span>).IsRequired();
+    e.Property(s =&gt; s.DonGia).HasConversion(t =&gt; (<span class="hljs-built_in">double</span>)t.SoTien, v =&gt; Tien.TuCsdl((<span class="hljs-built_in">decimal</span>)v));
+    e.Property(s =&gt; s.TonKho).IsConcurrencyToken();
+    e.HasIndex(s =&gt; s.Ma).IsUnique();
+});
+</code></pre>
+<ul>
+<li><strong>Constructor <code>private SanPham() { }</code></strong> cho EF tạo đối tượng rồi gán qua <em>backing field/private setter</em> — EF làm được với setter <code>private</code>.</li>
+<li><strong>Tái tạo từ CSDL</strong>: <code>MaSanPham.TuCsdl(v)</code> bỏ qua kiểm tra (dữ liệu đã hợp lệ lúc ghi); factory <code>Tao</code> dành cho <strong>đầu vào bên ngoài</strong>. Đặt tên rõ để không dùng nhầm.</li>
+<li><code>HasConversion</code> cho value object đơn giá trị. Với VO nhiều thuộc tính dùng <strong>owned types/complex types</strong> (Tập 2, Chương 13).</li>
+<li><strong>Bài học thực tế</strong>: truy vấn LINQ <em>lọc trên value object đã chuyển đổi</em> (<code>s.Ma.GiaTri == ...</code>) không luôn dịch được sang SQL. Giải pháp của solution: phía <strong>đọc</strong> dùng <em>read model</em> riêng (<code>SanPhamDoc</code>, cột đơn giản — Chương 5) thay vì ép EF lọc trên aggregate; phía <strong>ghi</strong> chỉ so sánh nguyên value object (<code>s.Ma == MaSanPham.TuCsdl(ma)</code>) — EF áp bộ chuyển đổi cho tham số.</li>
+</ul>
+<h2>Thiết kế tốt hơn nhờ câu hỏi</h2>
+<p>Khi mô hình hoá, hỏi:</p>
+<ol>
+<li><strong>Bất biến nào</strong> phải luôn đúng? (tồn ≥ 0, mã đúng định dạng) → phương thức nghiệp vụ + kiểm tra ở domain.</li>
+<li>Khái niệm này có <strong>danh tính</strong> không? (có → entity; không → value object)</li>
+<li>Những thứ nào phải <strong>nhất quán trong cùng một giao dịch</strong>? → cùng aggregate.</li>
+<li>Chuyện gì <strong>đã xảy ra</strong> mà phần khác của hệ thống quan tâm? → domain event.</li>
+<li>Chuyên gia nghiệp vụ gọi nó là gì? → dùng đúng tên đó (tiếng Việt cũng được).</li>
+</ol>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Domain &quot;anemic&quot;: mọi property <code>public set</code>, logic ở service.</li>
+<li>Aggregate quá lớn (nhúng cả lịch sử giao dịch) → tải chậm, xung đột đồng thời liên tục.</li>
+<li>Value object có setter, hoặc dùng <code>string</code>/<code>decimal</code> trần thay vì tạo kiểu.</li>
+<li>Tham chiếu aggregate khác bằng object (kéo theo cả đồ thị) thay vì Id.</li>
+<li>Phát sự kiện <strong>trước khi</strong> thay đổi thành công, hoặc phát khi thao tác thất bại.</li>
+<li>Domain phụ thuộc EF/JSON (<code>[JsonIgnore]</code>, <code>[Key]</code>) vì &quot;tiện&quot;.</li>
+<li>Ném exception cho lỗi nghiệp vụ dự đoán được rồi bắt ở khắp nơi.</li>
+<li>Đặt tên kỹ thuật (<code>SanPhamManager</code>, <code>Helper</code>) thay vì ngôn ngữ nghiệp vụ.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm value object <code>SoLuong</code> (int &gt; 0) và dùng trong <code>NhapKho/XuatKho</code>; cập nhật test.</li>
+<li>Thêm phương thức <code>DieuChinhTon(int tonMoi, string lyDo)</code> (kiểm kê) phát <code>TonKhoThayDoi</code> với lý do; viết test cả nhánh lỗi.</li>
+<li>Thiết kế (giấy) aggregate <code>DonHang</code> gồm nhiều <code>DongDon</code> và giới hạn: tổng giá trị đơn ≤ 100 triệu. Nó tham chiếu sản phẩm thế nào?</li>
+<li>Thêm sự kiện <code>GiaThayDoi</code> khi <code>DoiGia</code> thành công; đăng ký phát vào outbox (đọc Chương 8).</li>
+<li>Tìm trong Tập 2 (Chương 22) ba chỗ đang là &quot;anemic&quot; và mô tả cách chuyển vào domain.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch02-clean-architecture.html">&larr; 2. Clean Architecture thực hành</a><a class="nav-next" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

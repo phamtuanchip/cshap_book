@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 8 — Sự kiện miền, xử lý nền và Outbox — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link active" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><span class="chapter-link pending">9. Chiến lược kiểm thử</span></li><li><span class="chapter-link pending">10. Caching</span></li><li><span class="chapter-link pending">11. Quan sát và hiệu năng</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">12. OpenID Connect và OAuth 2.0</span></li><li><span class="chapter-link pending">13. Idempotency, audit log và bảo vệ dữ liệu</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><span class="chapter-link pending">14. Docker và docker-compose</span></li><li><span class="chapter-link pending">15. CI/CD với GitHub Actions</span></li><li><span class="chapter-link pending">16. Triển khai lên máy chủ và đám mây</span></li><li><span class="chapter-link pending">17. Microservices và giao tiếp giữa dịch vụ</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</span></li><li><span class="chapter-link pending">20. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 8 — Sự kiện miền, xử lý nền và Outbox</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Phân biệt <strong>sự kiện miền (domain event)</strong> và <strong>sự kiện tích hợp (integration event)</strong>.</li>
+<li>Hiểu <strong>vấn đề ghi kép (dual write)</strong> và giải pháp <strong>Transactional Outbox</strong>.</li>
+<li>Cài đặt outbox + <strong><code>BackgroundService</code></strong> xử lý nền, đảm bảo <strong>ít nhất một lần (at-least-once)</strong>.</li>
+<li>Thiết kế bên nhận <strong>idempotent</strong>, và kiểm thử hệ thống bất đồng bộ một cách xác định.</li>
+</ul>
+<p>Code: <a href="code/kho-clean/Kho.Infrastructure/Persistence/KhoDbContext.cs"><code>KhoDbContext.cs</code></a> (thu sự kiện → outbox), <a href="code/kho-clean/Kho.Infrastructure/Outbox/OutboxProcessor.cs"><code>OutboxProcessor.cs</code></a>, <a href="code/kho-clean/Kho.Tests/IntegrationTests.cs"><code>IntegrationTests.cs</code></a>.</p>
+<h2>Bài toán</h2>
+<p>Khi tồn kho chạm ngưỡng cảnh báo (<code>SapHetHang</code>), hệ thống cần <strong>báo cho bộ phận mua hàng</strong>: gửi email, đẩy tin nhắn lên message bus, gọi webhook. Cách &quot;ngây thơ&quot;:</p>
+<pre class="hljs"><code><span class="hljs-keyword">await</span> uow.LuuAsync(ct);                 <span class="hljs-comment">// 1) ghi CSDL</span>
+<span class="hljs-keyword">await</span> emailSender.GuiAsync(...);        <span class="hljs-comment">// 2) gửi email  ← nếu sập/lỗi ở đây?</span>
+</code></pre>
+<h2>Vấn đề ghi kép (dual write)</h2>
+<p>Hai hệ thống (CSDL và email/message bus) <strong>không thể chung một giao dịch</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Thứ tự</th>
+<th>Sự cố</th>
+<th>Hậu quả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lưu CSDL rồi gửi</td>
+<td>tiến trình sập/mạng lỗi <strong>giữa</strong> hai bước</td>
+<td>dữ liệu đã đổi nhưng <strong>không ai được báo</strong> (mất sự kiện)</td>
+</tr>
+<tr>
+<td>Gửi rồi lưu CSDL</td>
+<td>lưu thất bại (xung đột)</td>
+<td>đã báo cho người khác về thay đổi <strong>không hề xảy ra</strong></td>
+</tr>
+<tr>
+<td>Bọc try/catch, thử lại</td>
+<td>lặp lại, hay sập đúng lúc</td>
+<td>gửi trùng hoặc bỏ sót</td>
+</tr>
+</tbody>
+</table>
+<p>Không có thứ tự nào an toàn. Cần một cơ chế bảo đảm: <em>&quot;nếu dữ liệu đã đổi thì sự kiện chắc chắn sẽ được phát hành (ít nhất một lần)&quot;</em>.</p>
+<h2>Transactional Outbox</h2>
+<p>Ý tưởng: <strong>ghi sự kiện vào một bảng <code>outbox</code> trong CÙNG giao dịch CSDL</strong> với thay đổi nghiệp vụ. Một tiến trình nền <strong>đọc bảng outbox và phát hành</strong> ra bên ngoài, rồi đánh dấu đã xử lý.</p>
+<pre class="mermaid">sequenceDiagram
+    participant H as Handler
+    participant DB as CSDL (1 giao dịch)
+    participant P as OutboxProcessor (nền)
+    participant B as Message bus / Email
+    H-&gt;&gt;DB: UPDATE san_pham (ton) + INSERT outbox (SapHetHang)
+    Note over DB: cùng commit → hoặc cả hai, hoặc không cái nào
+    loop mỗi 300 ms
+        P-&gt;&gt;DB: SELECT outbox WHERE XuLyLuc IS NULL
+        P-&gt;&gt;B: phát hành từng thông điệp
+        P-&gt;&gt;DB: UPDATE outbox SET XuLyLuc = now
+    end
+</pre>
+<p>Nhờ <strong>atomicity</strong> của giao dịch: sự kiện tồn tại <strong>khi và chỉ khi</strong> thay đổi nghiệp vụ được commit. Sập giữa chừng không mất gì: khi khởi động lại, tiến trình nền vẫn thấy dòng chưa xử lý.</p>
+<h3>Từ sự kiện miền đến outbox</h3>
+<p>Domain chỉ <strong>ghi nhận</strong> sự kiện (Chương 3: <code>PhatSuKien</code>). Infrastructure thu chúng ngay trong <code>LuuAsync</code> (Unit of Work):</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;<span class="hljs-built_in">int</span>&gt; <span class="hljs-title">LuuAsync</span>(<span class="hljs-params">CancellationToken ct</span>)</span>
+{
+    <span class="hljs-comment">// 1) Thu sự kiện miền từ MỌI aggregate đang theo dõi → thông điệp outbox</span>
+    <span class="hljs-keyword">var</span> aggregates = ChangeTracker.Entries&lt;Entity&lt;<span class="hljs-built_in">int</span>&gt;&gt;().Select(e =&gt; e.Entity).Where(e =&gt; e.SuKienMien.Count &gt; <span class="hljs-number">0</span>).ToList();
+    <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> agg <span class="hljs-keyword">in</span> aggregates)
+    {
+        <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> sk <span class="hljs-keyword">in</span> agg.SuKienMien)
+            Outbox.Add(<span class="hljs-keyword">new</span> OutboxMessage { Loai = sk.GetType().Name, NoiDung = JsonSerializer.Serialize(sk, sk.GetType()), TaoLuc = sk.XayRaLuc });
+        agg.XoaSuKien();
+    }
+
+    <span class="hljs-comment">// 2) MỘT SaveChanges = dữ liệu nghiệp vụ + outbox, cùng một giao dịch</span>
+    <span class="hljs-keyword">try</span> { <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> SaveChangesAsync(ct); }
+    <span class="hljs-keyword">catch</span> (DbUpdateConcurrencyException) { <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ConcurrencyException(); }
+    ...
+}
+</code></pre>
+<p>Handler và domain <strong>không biết</strong> outbox tồn tại — chỉ <code>PhatSuKien</code>. Mẫu này cũng chỉ ra vì sao tách sự kiện khỏi hành động: aggregate không cần biết <em>ai</em> nghe.</p>
+<p>Test tích hợp <code>SuKienMien_DuocGhiVaoOutboxCungGiaoDich_...</code> kiểm chứng: sau <code>POST</code> tạo sản phẩm và xuất 3 (7 → 4, chạm ngưỡng 5), bảng <code>outbox</code> có <code>SanPhamDaTao</code> và <code>SapHetHang</code>.</p>
+<h2>Tiến trình nền: <code>BackgroundService</code></h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">OutboxProcessor</span>(<span class="hljs-params">IServiceScopeFactory scopeFactory, TimeProvider dongHo, ILogger&lt;OutboxProcessor&gt; log</span>) : BackgroundService</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">ExecuteAsync</span>(<span class="hljs-params">CancellationToken stoppingToken</span>)</span>
+    {
+        <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> timer = <span class="hljs-keyword">new</span> PeriodicTimer(TimeSpan.FromMilliseconds(<span class="hljs-number">300</span>));
+        <span class="hljs-keyword">while</span> (<span class="hljs-keyword">await</span> timer.WaitForNextTickAsync(stoppingToken))
+            <span class="hljs-keyword">await</span> XuLyMotLanAsync(stoppingToken);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;<span class="hljs-built_in">int</span>&gt; <span class="hljs-title">XuLyMotLanAsync</span>(<span class="hljs-params">CancellationToken ct</span>)</span>
+    {
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> scope = scopeFactory.CreateAsyncScope();              <span class="hljs-comment">// DbContext Scoped → tự tạo scope (Tập 2, Ch. 5)</span>
+        <span class="hljs-keyword">var</span> db = scope.ServiceProvider.GetRequiredService&lt;KhoDbContext&gt;();
+        <span class="hljs-keyword">var</span> phatHanh = scope.ServiceProvider.GetRequiredService&lt;IPhatHanhSuKien&gt;();
+
+        <span class="hljs-keyword">var</span> cho = <span class="hljs-keyword">await</span> db.Outbox.Where(o =&gt; o.XuLyLuc == <span class="hljs-literal">null</span> &amp;&amp; o.SoLanThu &lt; ToiDaSoLanThu)
+            .OrderBy(o =&gt; o.TaoLuc).Take(ToiDaMoiLan).ToListAsync(ct);
+
+        <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> m <span class="hljs-keyword">in</span> cho)
+        {
+            <span class="hljs-keyword">try</span> { <span class="hljs-keyword">await</span> phatHanh.PhatHanhAsync(m.Loai, m.NoiDung, ct); m.XuLyLuc = dongHo.GetUtcNow(); }
+            <span class="hljs-keyword">catch</span> (Exception e) { m.SoLanThu++; m.LoiCuoi = e.Message; log.LogWarning(e, <span class="hljs-string">&quot;Phat hanh outbox {Id} that bai (lan {Lan})&quot;</span>, m.Id, m.SoLanThu); }
+        }
+        <span class="hljs-keyword">if</span> (cho.Count &gt; <span class="hljs-number">0</span>) <span class="hljs-keyword">await</span> db.SaveChangesAsync(ct);
+        <span class="hljs-keyword">return</span> cho.Count;
+    }
+}
+</code></pre>
+<p>Điểm cần chú ý:</p>
+<ul>
+<li><strong><code>BackgroundService</code></strong> (từ <code>Microsoft.Extensions.Hosting</code>) chạy suốt vòng đời ứng dụng; <code>PeriodicTimer</code> là cách hiện đại để lặp định kỳ (không trôi thời gian như <code>Task.Delay</code> trong vòng lặp). Đăng ký: <code>services.AddHostedService(...)</code>.</li>
+<li><strong>Dịch vụ Scoped trong Singleton</strong>: <code>BackgroundService</code> là Singleton; <code>DbContext</code> là Scoped ⇒ dùng <code>IServiceScopeFactory.CreateAsyncScope()</code> cho <strong>mỗi lượt xử lý</strong> (Tập 2, Chương 5 — captive dependency).</li>
+<li><strong>Tách <code>XuLyMotLanAsync</code> thành phương thức công khai</strong> để test gọi trực tiếp, xác định, không chờ timer (mẫu quan trọng để kiểm thử xử lý nền).</li>
+<li><strong>Thứ tự</strong> theo <code>TaoLuc</code> để giữ thứ tự tương đối; <strong>giới hạn lô</strong> (20) và <strong>số lần thử</strong> (5) tránh một thông điệp hỏng chặn cả hàng đợi (&quot;poison message&quot;): sau khi vượt số lần thử, để yên cho người vận hành xử lý (dead-letter).</li>
+<li>Nhiều instance chạy đồng thời? Cần <strong>khoá</strong> để tránh xử lý trùng (<code>SELECT ... FOR UPDATE SKIP LOCKED</code> trên PostgreSQL/SQL Server hint <code>READPAST</code>, hoặc chỉ chạy processor ở một instance). Với at-least-once, trùng vẫn an toàn nếu bên nhận idempotent.</li>
+</ul>
+<h3>Bảo đảm <strong>ít nhất một lần</strong> (at-least-once)</h3>
+<p>Nếu tiến trình sập <strong>sau khi</strong> phát hành nhưng <strong>trước khi</strong> đánh dấu <code>XuLyLuc</code>, lần chạy sau <strong>phát hành lại</strong>. Vì vậy hệ thống phân phối là <strong>at-least-once</strong>, <em>không phải</em> exactly-once (gần như không thể trong hệ phân tán). Điều đó <strong>đẩy trách nhiệm</strong> sang bên nhận: phải <strong>idempotent</strong> — xử lý cùng một thông điệp hai lần cho kết quả như một lần. Cách làm:</p>
+<ul>
+<li>Mỗi thông điệp có <strong>Id duy nhất</strong> (<code>OutboxMessage.Id</code>); bên nhận lưu Id đã xử lý (bảng <code>da_xu_ly</code>) và bỏ qua trùng.</li>
+<li>Hoặc thao tác tự nhiên idempotent (đặt trạng thái = X thay vì &quot;cộng thêm 1&quot;).</li>
+<li>Chương 13 đi sâu vào idempotency.</li>
+</ul>
+<h2>Sự kiện miền hay sự kiện tích hợp?</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Domain event</strong></th>
+<th><strong>Integration event</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phạm vi</td>
+<td><strong>trong</strong> một bounded context/ứng dụng</td>
+<td><strong>giữa</strong> các hệ thống/dịch vụ</td>
+</tr>
+<tr>
+<td>Ví dụ</td>
+<td><code>SapHetHang(Ma, TonKho...)</code></td>
+<td><code>SanPhamSapHet</code> gửi cho dịch vụ Mua hàng</td>
+</tr>
+<tr>
+<td>Truyền</td>
+<td>đồng bộ trong tiến trình (handler cục bộ) hoặc outbox</td>
+<td>qua message bus (RabbitMQ, Azure Service Bus, Kafka)</td>
+</tr>
+<tr>
+<td>Hợp đồng</td>
+<td>tự do thay đổi</td>
+<td><strong>ổn định, có phiên bản</strong> (người khác phụ thuộc)</td>
+</tr>
+</tbody>
+</table>
+<p>Solution dùng một bảng outbox cho cả hai để đơn giản: <strong>sự kiện miền được phát hành thẳng làm thông điệp</strong>. Trong hệ thống lớn, thường <strong>ánh xạ</strong> sự kiện miền → integration event (DTO ổn định) trước khi phát hành, để thay đổi nội bộ không làm vỡ bên ngoài.</p>
+<h2>Xử lý sự kiện miền <em>trong tiến trình</em> (tuỳ chọn)</h2>
+<p>Đôi khi cần phản ứng <strong>ngay trong cùng giao dịch</strong> (ví dụ cập nhật một aggregate khác — cần nhất quán mạnh). Mẫu: trong <code>LuuAsync</code>, trước <code>SaveChangesAsync</code>, gọi <code>IDomainEventHandler&lt;T&gt;</code> cho từng sự kiện. Cẩn thận: handler chạy trong giao dịch, lỗi làm hỏng cả lệnh; và làm mờ ranh giới &quot;một aggregate mỗi giao dịch&quot;. Ưu tiên <strong>bất đồng bộ qua outbox</strong> với nhất quán cuối cùng trừ khi nghiệp vụ đòi hỏi khác.</p>
+<h2><code>IPhatHanhSuKien</code> — cổng phát hành</h2>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IPhatHanhSuKien</span> { <span class="hljs-function">Task <span class="hljs-title">PhatHanhAsync</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> loai, <span class="hljs-built_in">string</span> noiDungJson, CancellationToken ct</span>)</span>; }
+</code></pre>
+<p>Mặc định ghi log (<code>LogPhatHanhSuKien</code>); thực tế thay bằng: gửi lên Azure Service Bus/RabbitMQ (qua <strong>MassTransit</strong>, <strong>Wolverine</strong>, <strong>NServiceBus</strong>, <strong>Rebus</strong>), gọi webhook, gửi email. Vì là cổng ở Application, đổi cài đặt <strong>không đổi</strong> domain/handler; test dùng <code>PhatHanhGia</code> gom vào danh sách.</p>
+<h2>Kiểm thử bất đồng bộ một cách xác định</h2>
+<p>Test <strong>không</strong> <code>Thread.Sleep</code> chờ timer. Cách làm trong solution:</p>
+<ol>
+<li>Tắt tiến trình nền khi test: <code>builder.UseSetting(&quot;Outbox:Bat&quot;, &quot;false&quot;)</code>.</li>
+<li>Lấy <code>OutboxProcessor</code> từ DI và <strong>gọi <code>XuLyMotLanAsync</code></strong> đúng lúc cần.</li>
+<li>Thay <code>IPhatHanhSuKien</code> bằng bản giả ghi lại.</li>
+<li>Kiểm chứng: sau <strong>hai</strong> lần chạy, mỗi sự kiện chỉ được phát hành <strong>một</strong> lần (đã đánh dấu).</li>
+</ol>
+<pre class="hljs"><code><span class="hljs-keyword">await</span> bxl.XuLyMotLanAsync(CancellationToken.None);
+<span class="hljs-keyword">await</span> bxl.XuLyMotLanAsync(CancellationToken.None);          <span class="hljs-comment">// lần hai: không phát hành lại</span>
+Assert.Single(cuaEE, p =&gt; p.Loai == <span class="hljs-string">&quot;SapHetHang&quot;</span>);
+</code></pre>
+<h2>Dọn dẹp và vận hành</h2>
+<ul>
+<li><strong>Xoá/lưu trữ</strong> dòng outbox cũ đã xử lý (job định kỳ) để bảng không phình.</li>
+<li><strong>Giám sát</strong>: số dòng chờ, tuổi dòng cũ nhất, số dòng vượt số lần thử — cảnh báo khi tăng (Chương 11).</li>
+<li><strong>Thứ tự</strong>: outbox đảm bảo thứ tự <em>cục bộ</em> theo aggregate chứ không phải toàn cục; thiết kế bên nhận chịu được sự kiện đến lệch thứ tự (dùng số phiên bản/<code>XayRaLuc</code>).</li>
+<li>Chọn <strong>khoảng quét</strong>: ngắn (300 ms) = độ trễ thấp nhưng tải CSDL; dài = trễ cao. Hoặc &quot;đánh thức&quot; processor ngay sau commit (<code>Channel&lt;T&gt;</code>) và quét dự phòng chậm.</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Vẫn gọi email/bus <strong>trong handler</strong> (dual write, mất sự kiện khi sập).</li>
+<li>Ghi outbox trong <strong>giao dịch khác</strong> với thay đổi nghiệp vụ (mất ý nghĩa của outbox).</li>
+<li>Bên nhận không idempotent → xử lý trùng gây hậu quả (gửi email hai lần, trừ tiền hai lần).</li>
+<li>Thông điệp hỏng lặp mãi (không giới hạn số lần thử) chặn hàng đợi.</li>
+<li><code>DbContext</code> Scoped bị tiêm thẳng vào <code>BackgroundService</code> (captive dependency).</li>
+<li><code>Thread.Sleep</code> trong test chờ tiến trình nền → test chậm và bấp bênh.</li>
+<li>Phát sự kiện miền cả khi thao tác thất bại (Chương 3).</li>
+<li>Không dọn dẹp outbox, bảng phình vô hạn.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm sự kiện <code>GiaThayDoi</code> và đảm bảo nó vào outbox khi <code>DoiGia</code> thành công; viết test.</li>
+<li>Viết <code>IPhatHanhSuKien</code> gửi HTTP <code>POST</code> tới webhook (dùng <code>HttpClient</code> + resilience — Tập 2, Chương 19); xử lý lỗi bằng <code>SoLanThu</code>.</li>
+<li>Thêm bảng <code>da_xu_ly</code> phía nhận và một consumer idempotent bỏ qua thông điệp trùng Id.</li>
+<li>Viết job dọn outbox xoá dòng <code>XuLyLuc</code> cũ hơn 7 ngày (một <code>BackgroundService</code> khác hoặc <code>ExecuteDeleteAsync</code>).</li>
+<li>Cố tình làm <code>PhatHanhAsync</code> ném lỗi 3 lần rồi thành công; quan sát <code>SoLanThu</code>, <code>LoiCuoi</code> và viết test.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch07-result-validation.html">&larr; 7. Result pattern và validation</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

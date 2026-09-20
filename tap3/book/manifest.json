@@ -1,0 +1,161 @@
+{
+  "title": "C# và ASP.NET Core — Tập 3",
+  "subtitle": "Web nâng cao: kiến trúc sạch, mẫu thiết kế, vận hành, bảo mật và triển khai — giả định đã nắm Tập 1 và Tập 2",
+  "pdfName": "csharp-web-nang-cao-tap3.pdf",
+  "parts": [
+    {
+      "id": "part0-kien-truc",
+      "title": "Phần 0 — Kiến trúc",
+      "dir": "part0-kien-truc",
+      "chapters": [
+        {
+          "num": 1,
+          "slug": "kien-truc-phan-lop",
+          "title": "Từ khối đơn nhất đến kiến trúc phân lớp"
+        },
+        {
+          "num": 2,
+          "slug": "clean-architecture",
+          "title": "Clean Architecture thực hành"
+        },
+        {
+          "num": 3,
+          "slug": "domain-modeling",
+          "title": "Mô hình hoá miền (DDD cơ bản)"
+        },
+        {
+          "num": 4,
+          "slug": "repository-specification",
+          "title": "Repository, Unit of Work và Specification"
+        }
+      ]
+    },
+    {
+      "id": "part1-pattern",
+      "title": "Phần 1 — Mẫu thiết kế nâng cao",
+      "dir": "part1-pattern",
+      "chapters": [
+        {
+          "num": 5,
+          "slug": "cqrs-mediator",
+          "title": "CQRS và Mediator"
+        },
+        {
+          "num": 6,
+          "slug": "pipeline-behavior",
+          "title": "Pipeline behavior: validation, logging, transaction"
+        },
+        {
+          "num": 7,
+          "slug": "result-validation",
+          "title": "Result pattern và validation"
+        },
+        {
+          "num": 8,
+          "slug": "su-kien-outbox",
+          "title": "Sự kiện miền, xử lý nền và Outbox"
+        }
+      ]
+    },
+    {
+      "id": "part2-chat-luong",
+      "title": "Phần 2 — Chất lượng vận hành",
+      "dir": "part2-chat-luong",
+      "chapters": [
+        {
+          "num": 9,
+          "slug": "chien-luoc-kiem-thu",
+          "title": "Chiến lược kiểm thử"
+        },
+        {
+          "num": 10,
+          "slug": "caching",
+          "title": "Caching"
+        },
+        {
+          "num": 11,
+          "slug": "quan-sat-hieu-nang",
+          "title": "Quan sát và hiệu năng"
+        }
+      ]
+    },
+    {
+      "id": "part3-bao-mat",
+      "title": "Phần 3 — Bảo mật nâng cao",
+      "dir": "part3-bao-mat",
+      "chapters": [
+        {
+          "num": 12,
+          "slug": "oidc-oauth2",
+          "title": "OpenID Connect và OAuth 2.0"
+        },
+        {
+          "num": 13,
+          "slug": "idempotency-audit",
+          "title": "Idempotency, audit log và bảo vệ dữ liệu"
+        }
+      ]
+    },
+    {
+      "id": "part4-trien-khai",
+      "title": "Phần 4 — Đóng gói và triển khai",
+      "dir": "part4-trien-khai",
+      "chapters": [
+        {
+          "num": 14,
+          "slug": "docker",
+          "title": "Docker và docker-compose"
+        },
+        {
+          "num": 15,
+          "slug": "ci-cd",
+          "title": "CI/CD với GitHub Actions"
+        },
+        {
+          "num": 16,
+          "slug": "trien-khai-cloud",
+          "title": "Triển khai lên máy chủ và đám mây"
+        },
+        {
+          "num": 17,
+          "slug": "microservices",
+          "title": "Microservices và giao tiếp giữa dịch vụ"
+        }
+      ]
+    },
+    {
+      "id": "part5-du-an",
+      "title": "Phần 5 — Dự án tổng hợp",
+      "dir": "part5-du-an",
+      "chapters": [
+        {
+          "num": 18,
+          "slug": "du-an-tong-hop",
+          "title": "Dự án tổng hợp Tập 3: Hệ thống đặt hàng"
+        }
+      ]
+    },
+    {
+      "id": "part6-phu-luc",
+      "title": "Phụ lục",
+      "dir": "part6-phu-luc",
+      "chapters": [
+        {
+          "num": 19,
+          "slug": "phu-luc-a-loi-thuong-gap",
+          "title": "Phụ lục A — Lỗi và bẫy kiến trúc thường gặp"
+        },
+        {
+          "num": 20,
+          "slug": "phu-luc-b-tai-lieu",
+          "title": "Phụ lục B — Tài liệu tham khảo"
+        },
+        {
+          "num": 21,
+          "slug": "phu-luc-c-cheat-sheet",
+          "title": "Phụ lục C — Cheat sheet kiến trúc và triển khai"
+        }
+      ]
+    }
+  ]
+}

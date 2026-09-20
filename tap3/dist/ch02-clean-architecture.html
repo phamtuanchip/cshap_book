@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 2 — Clean Architecture thực hành — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link active" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><span class="chapter-link pending">9. Chiến lược kiểm thử</span></li><li><span class="chapter-link pending">10. Caching</span></li><li><span class="chapter-link pending">11. Quan sát và hiệu năng</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">12. OpenID Connect và OAuth 2.0</span></li><li><span class="chapter-link pending">13. Idempotency, audit log và bảo vệ dữ liệu</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><span class="chapter-link pending">14. Docker và docker-compose</span></li><li><span class="chapter-link pending">15. CI/CD với GitHub Actions</span></li><li><span class="chapter-link pending">16. Triển khai lên máy chủ và đám mây</span></li><li><span class="chapter-link pending">17. Microservices và giao tiếp giữa dịch vụ</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</span></li><li><span class="chapter-link pending">20. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 2 — Clean Architecture thực hành</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Đọc hiểu một solution Clean Architecture hoàn chỉnh: <strong>Domain / Application / Infrastructure / Web / Tests</strong>.</li>
+<li>Theo dõi <strong>một request</strong> đi qua các tầng, từ HTTP đến CSDL và ngược lại.</li>
+<li>Hiểu vai trò của <strong>composition root</strong>, DI theo tầng, và <strong>migration</strong> trong kiến trúc nhiều project.</li>
+<li>Biết cấu trúc thư mục theo <strong>tính năng (vertical slice)</strong>.</li>
+</ul>
+<p>Code: <a href="code/kho-clean/"><code>code/kho-clean/</code></a> — hệ thống kho của Tập 2 được <strong>tái cấu trúc</strong> (40 test đều đạt). Chương 2–8 và 13 lần lượt giải thích từng phần của cùng một solution.</p>
+<h2>Bản đồ solution</h2>
+<pre class="hljs"><code>kho-clean/
+├── Kho.Domain/                    # KHÔNG tham chiếu gì
+│   ├── Common/                    # Result, Loi, Entity, IDomainEvent
+│   └── SanPhams/                  # SanPham (aggregate), MaSanPham, Tien (value object), sự kiện
+├── Kho.Application/               # → Domain
+│   ├── Abstractions/              # CỔNG: ISanPhamRepository, IUnitOfWork, IKhoDocDuLieu, IPhatHanhSuKien
+│   ├── Messaging/                 # ICommand/IQuery/IRequestHandler + mediator tự viết
+│   ├── Behaviors/                 # Logging, Validation, UnitOfWork
+│   ├── SanPhams/                  # ca sử dụng: Thêm, Nhập, Xuất, Tìm, Lấy
+│   └── DependencyInjection.cs     # services.AddApplication()
+├── Kho.Infrastructure/            # → Application
+│   ├── Persistence/               # KhoDbContext, Repositories, Migrations
+│   ├── Outbox/                    # OutboxProcessor (BackgroundService)
+│   └── DependencyInjection.cs     # services.AddInfrastructure(cfg)
+├── Kho.Web/                       # → Application + Infrastructure (composition root)
+│   ├── Endpoints/                 # Minimal API mỏng, dịch Result → HTTP
+│   └── Program.cs
+└── Kho.Tests/                     # Domain / Application / Architecture / Integration
+</code></pre>
+<p>Mũi tên <code>→</code> là <code>ProjectReference</code>; test kiến trúc (Chương 1) ép đúng chiều đó.</p>
+<pre class="mermaid">flowchart LR
+    Web --&gt; App[Application]
+    Web --&gt; Infra[Infrastructure]
+    Infra --&gt; App
+    App --&gt; Dom[Domain]
+    Tests --&gt; Web
+</pre>
+<h2>Đi theo một request: <code>POST /api/san-pham/CC001/xuat</code></h2>
+<pre class="mermaid">sequenceDiagram
+    participant C as Client
+    participant E as Endpoint (Web)
+    participant M as ISender (mediator)
+    participant L as LoggingBehavior
+    participant V as ValidationBehavior
+    participant U as UnitOfWorkBehavior
+    participant H as XuatKhoHandler
+    participant R as ISanPhamRepository
+    participant D as SanPham (Domain)
+    participant DB as KhoDbContext / SQLite
+    C-&gt;&gt;E: POST {soLuong: 2}
+    E-&gt;&gt;M: Send(new XuatKhoCommand(&quot;CC001&quot;, 2))
+    M-&gt;&gt;L: (pipeline: ngoài → trong)
+    L-&gt;&gt;V: next()
+    V-&gt;&gt;U: next() (dữ liệu hợp lệ)
+    U-&gt;&gt;H: next()
+    H-&gt;&gt;R: LayTheoMaAsync(&quot;CC001&quot;)
+    R-&gt;&gt;DB: SELECT ... WHERE Ma = 'CC001'
+    R--&gt;&gt;H: SanPham (aggregate)
+    H-&gt;&gt;D: sp.XuatKho(2)  → Result
+    D--&gt;&gt;H: Ok (+ sự kiện miền)
+    H--&gt;&gt;U: Result.Ok
+    U-&gt;&gt;DB: LuuAsync(): UPDATE + INSERT outbox (một giao dịch)
+    U--&gt;&gt;E: Result.Ok
+    E--&gt;&gt;C: 204 No Content
+</pre>
+<p>Mỗi tầng chỉ làm đúng việc của nó:</p>
+<table>
+<thead>
+<tr>
+<th>Tầng</th>
+<th>Việc làm trong request này</th>
+<th>Không làm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Endpoint (Web)</strong></td>
+<td>bind JSON → tạo <code>XuatKhoCommand</code>, gọi <code>sender.Send</code>, dịch <code>Result</code> → <code>204/404/422/409</code></td>
+<td>nghiệp vụ, truy cập CSDL</td>
+</tr>
+<tr>
+<td><strong>Behavior</strong></td>
+<td>log, validate đầu vào, lưu sau khi thành công</td>
+<td>nghiệp vụ cụ thể</td>
+</tr>
+<tr>
+<td><strong>Handler (Application)</strong></td>
+<td>điều phối: tải aggregate, gọi phương thức nghiệp vụ</td>
+<td>quy tắc &quot;đủ hàng&quot; (thuộc Domain), SQL</td>
+</tr>
+<tr>
+<td><strong>Domain</strong></td>
+<td><code>XuatKho</code> kiểm tra đủ hàng, giảm tồn, phát sự kiện</td>
+<td>biết CSDL, HTTP</td>
+</tr>
+<tr>
+<td><strong>Infrastructure</strong></td>
+<td>SQL, giao dịch, outbox</td>
+<td>quyết định nghiệp vụ</td>
+</tr>
+</tbody>
+</table>
+<h2>Endpoint mỏng</h2>
+<pre class="hljs"><code>g.MapPost(<span class="hljs-string">&quot;/{ma}/xuat&quot;</span>, <span class="hljs-keyword">async</span> (<span class="hljs-built_in">string</span> ma, SoLuongRequest r, ISender sender, CancellationToken ct)
+    =&gt; (<span class="hljs-keyword">await</span> sender.Send(<span class="hljs-keyword">new</span> XuatKhoCommand(ma, r.SoLuong), ct)).ToHttp(noContent: <span class="hljs-literal">true</span>));
+</code></pre>
+<p>Toàn bộ endpoint là <strong>một dòng</strong>. Điểm dịch duy nhất từ ngôn ngữ nghiệp vụ sang HTTP:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> IResult <span class="hljs-title">LoiSangHttp</span>(<span class="hljs-params">Loi loi</span>)</span> =&gt; Results.Problem(title: loi.Ma, detail: loi.MoTa, statusCode: loi.Loai <span class="hljs-keyword">switch</span>
+{
+    LoaiLoi.DuLieuKhongHopLe =&gt; <span class="hljs-number">400</span>,
+    LoaiLoi.KhongTimThay =&gt; <span class="hljs-number">404</span>,
+    LoaiLoi.XungDot =&gt; <span class="hljs-number">409</span>,
+    LoaiLoi.NghiepVu =&gt; <span class="hljs-number">422</span>,
+    _ =&gt; <span class="hljs-number">500</span>,
+});
+</code></pre>
+<p>Thay HTTP bằng gRPC, hàng đợi hay giao diện console: chỉ viết lại lớp dịch này; <strong>Application và Domain không đổi</strong>.</p>
+<h2>Composition root và DI theo tầng</h2>
+<p>Mỗi tầng tự khai báo những gì nó cung cấp bằng một extension method; <code>Program.cs</code> chỉ ghép:</p>
+<pre class="hljs"><code>builder.Services.AddApplication();                                  <span class="hljs-comment">// mediator + behaviors + validators + handlers</span>
+builder.Services.AddInfrastructure(builder.Configuration);          <span class="hljs-comment">// EF, repository, UoW, outbox</span>
+</code></pre>
+<pre class="hljs"><code><span class="hljs-comment">// Infrastructure/DependencyInjection.cs</span>
+services.AddDbContext&lt;KhoDbContext&gt;(o =&gt; o.UseSqlite(cfg.GetConnectionString(<span class="hljs-string">&quot;Kho&quot;</span>) ?? <span class="hljs-string">&quot;Data Source=kho.db&quot;</span>));
+services.AddScoped&lt;IUnitOfWork&gt;(sp =&gt; sp.GetRequiredService&lt;KhoDbContext&gt;());    <span class="hljs-comment">// cùng MỘT DbContext cho repository và UoW</span>
+services.AddScoped&lt;ISanPhamRepository, SanPhamRepository&gt;();
+services.AddScoped&lt;IKhoDocDuLieu, KhoDocDuLieu&gt;();
+</code></pre>
+<p><code>IUnitOfWork</code> được ánh xạ về chính <code>KhoDbContext</code> để repository và UoW <strong>chia sẻ một context</strong> trong cùng request. Ứng dụng đổi công nghệ chỉ cần thay <code>AddInfrastructure</code>.</p>
+<h2>Migration khi EF nằm ở tầng Infrastructure</h2>
+<p><code>DbContext</code> và migration thuộc <code>Kho.Infrastructure</code>, nhưng công cụ <code>dotnet ef</code> cần một <strong>startup project</strong> chạy được (<code>Kho.Web</code>, chứa cấu hình):</p>
+<pre class="hljs"><code>cd Kho.Web
+dotnet ef migrations add KhoiTao -p ../Kho.Infrastructure -s . -o Persistence/Migrations -- --MigrateOnStartup false
+</code></pre>
+<p><code>-p</code> (project chứa DbContext), <code>-s</code> (startup project), <code>-o</code> (thư mục sinh), <code>--</code> truyền tham số cho ứng dụng (tắt migrate khi khởi động để công cụ không mở CSDL). Package <code>Microsoft.EntityFrameworkCore.Design</code> đặt ở <code>Kho.Web</code>.</p>
+<h2>Tổ chức Application theo tính năng</h2>
+<p><code>Application/SanPhams/CaSuDung.cs</code> gom <strong>mọi thứ của một ca sử dụng cạnh nhau</strong>: command, validator, handler:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">record</span> <span class="hljs-title">XuatKhoCommand</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> Ma, <span class="hljs-built_in">int</span> SoLuong</span>) : ICommand&lt;Result&gt;</span>;
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">XuatKhoValidator</span> : <span class="hljs-title">AbstractValidator</span>&lt;<span class="hljs-title">XuatKhoCommand</span>&gt; { ... }
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">XuatKhoHandler</span>(<span class="hljs-params">ISanPhamRepository repo, TimeProvider dongHo</span>) : IRequestHandler&lt;XuatKhoCommand, Result&gt;</span> { ... }
+</code></pre>
+<p>Khi dự án lớn, mỗi ca sử dụng một thư mục/file (<code>SanPhams/XuatKho/...</code>). Thêm tính năng = thêm file mới, hầu như <strong>không sửa file cũ</strong> (Open/Closed).</p>
+<h2>Kiểm thử theo tầng</h2>
+<table>
+<thead>
+<tr>
+<th>Loại test</th>
+<th>Ví dụ trong <code>Kho.Tests</code></th>
+<th>Phụ thuộc</th>
+<th>Tốc độ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Domain</strong></td>
+<td><code>XuatKho_KhongDuHang_ThatBaiVaTonKhongDoi</code>, <code>MaSanPham_ChiChapNhanDungDinhDang</code></td>
+<td>không gì cả</td>
+<td>µs</td>
+</tr>
+<tr>
+<td><strong>Application</strong></td>
+<td><code>ThemSanPham_SaiDinhDang_ValidationBehaviorChanTruocHandler</code> — repository, UoW <strong>giả</strong></td>
+<td>DI + fake</td>
+<td>ms</td>
+</tr>
+<tr>
+<td><strong>Architecture</strong></td>
+<td>Domain không phụ thuộc gì; aggregate không có setter công khai</td>
+<td>file csproj, reflection</td>
+<td>ms</td>
+</tr>
+<tr>
+<td><strong>Integration</strong></td>
+<td><code>XuatDongThoi_KhongBaoGioAm_...</code>, outbox — HTTP + SQLite thật</td>
+<td>toàn bộ</td>
+<td>chục ms</td>
+</tr>
+</tbody>
+</table>
+<p>Chiến lược đầy đủ ở Chương 9. Điểm mấu chốt: <strong>phần lớn test rơi vào Domain/Application</strong> (nhanh, ổn định); ít test tích hợp hơn nhưng phủ luồng chính và ghép nối.</p>
+<h2>So sánh với Tập 2</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Tập 2 (khối đơn giản)</th>
+<th>Tập 3 (Clean)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nghiệp vụ nằm ở</td>
+<td><code>KhoService</code> dùng thẳng <code>DbContext</code></td>
+<td><code>SanPham</code> (Domain) + handler (Application)</td>
+</tr>
+<tr>
+<td>Test nghiệp vụ cần</td>
+<td>CSDL + HTTP</td>
+<td>không cần gì (Domain) / bản giả (Application)</td>
+</tr>
+<tr>
+<td>Đổi CSDL</td>
+<td>sửa nhiều chỗ</td>
+<td>thay <code>AddInfrastructure</code></td>
+</tr>
+<tr>
+<td>Số file</td>
+<td>ít</td>
+<td>nhiều hơn ~2–3 lần</td>
+</tr>
+<tr>
+<td>Hợp với</td>
+<td>CRUD, đội nhỏ, ít nghiệp vụ</td>
+<td>nghiệp vụ phức tạp, nhiều người, sống lâu</td>
+</tr>
+</tbody>
+</table>
+<p>Chi phí có thật (nhiều file, nhiều ánh xạ). Hãy dùng kiến trúc này khi độ phức tạp nghiệp vụ <strong>xứng đáng</strong> với nó.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Đặt <code>DbContext</code>/<code>DbSet</code> trong Application vì &quot;tiện&quot; — vi phạm quy tắc phụ thuộc.</li>
+<li>Quên <code>services.AddScoped&lt;IUnitOfWork&gt;(sp =&gt; sp.GetRequiredService&lt;KhoDbContext&gt;())</code> → repository và UoW dùng hai context khác nhau, <code>SaveChanges</code> không thấy thay đổi.</li>
+<li>Chạy <code>dotnet ef</code> ở thư mục sai (<code>-p</code>, <code>-s</code> thiếu) hoặc quên package <code>Design</code> ở startup project.</li>
+<li>Để endpoint chứa <code>if (sp.TonKho &lt; n)</code> — nghiệp vụ rò ra Web.</li>
+<li>Application trả entity/aggregate ra ngoài thay vì DTO/<code>Result</code>.</li>
+<li>Quên test kiến trúc; sau vài tháng tầng Domain tham chiếu EF.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm ca sử dụng <code>DoiGiaCommand(string Ma, decimal GiaMoi)</code> (command + validator + handler) mà <strong>không sửa</strong> file nào hiện có ngoài đăng ký (assembly scan tự nhận).</li>
+<li>Thêm endpoint <code>PUT /api/san-pham/{ma}/gia</code> gọi ca sử dụng ở trên; viết test tích hợp.</li>
+<li>Vẽ sơ đồ tuần tự cho <code>POST /api/san-pham</code> (thêm sản phẩm) tương tự sơ đồ ở trên.</li>
+<li>Thay <code>SanPhamRepository</code> bằng bản lưu file JSON (chỉ tạo class mới + đổi <code>AddInfrastructure</code>). Test Application có cần đổi không?</li>
+<li>Liệt kê những chỗ trong solution mà đổi SQLite → PostgreSQL phải sửa (gợi ý: <code>ConfigureConventions</code>, <code>Like</code>, kiểu ngày giờ).</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch01-kien-truc-phan-lop.html">&larr; 1. Từ khối đơn nhất đến kiến trúc phân lớp</a><a class="nav-next" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản) &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

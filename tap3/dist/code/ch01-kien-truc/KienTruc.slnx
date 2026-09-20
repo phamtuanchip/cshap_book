@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="KienTruc.Domain/KienTruc.Domain.csproj" />
+  <Project Path="KienTruc.Application/KienTruc.Application.csproj" />
+  <Project Path="KienTruc.Infrastructure/KienTruc.Infrastructure.csproj" />
+  <Project Path="KienTruc.Web/KienTruc.Web.csproj" />
+  <Project Path="KienTruc.Tests/KienTruc.Tests.csproj" />
+</Solution>

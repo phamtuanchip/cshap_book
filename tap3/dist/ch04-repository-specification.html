@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 4 — Repository, Unit of Work và Specification — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link active" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><span class="chapter-link pending">9. Chiến lược kiểm thử</span></li><li><span class="chapter-link pending">10. Caching</span></li><li><span class="chapter-link pending">11. Quan sát và hiệu năng</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">12. OpenID Connect và OAuth 2.0</span></li><li><span class="chapter-link pending">13. Idempotency, audit log và bảo vệ dữ liệu</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><span class="chapter-link pending">14. Docker và docker-compose</span></li><li><span class="chapter-link pending">15. CI/CD với GitHub Actions</span></li><li><span class="chapter-link pending">16. Triển khai lên máy chủ và đám mây</span></li><li><span class="chapter-link pending">17. Microservices và giao tiếp giữa dịch vụ</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</span></li><li><span class="chapter-link pending">20. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 4 — Repository, Unit of Work và Specification</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>Repository</strong> và <strong>Unit of Work</strong> giải quyết vấn đề gì, và vì sao <code>DbContext</code> <em>đã là</em> cả hai.</li>
+<li>Quyết định <strong>khi nào</strong> cần tự viết repository (và khi nào là &quot;lớp bọc thừa&quot;).</li>
+<li>Tách <strong>phía ghi (aggregate)</strong> khỏi <strong>phía đọc (read model)</strong>.</li>
+<li>Dùng <strong>Specification</strong> để đóng gói điều kiện truy vấn tái sử dụng.</li>
+</ul>
+<p>Code: <a href="code/kho-clean/Kho.Infrastructure/Persistence/Repositories.cs"><code>Repositories.cs</code></a>, <a href="code/kho-clean/Kho.Application/Abstractions/Cong.cs"><code>Cong.cs</code></a>, <a href="code/kho-clean/Kho.Infrastructure/Persistence/KhoDbContext.cs"><code>KhoDbContext.cs</code></a>.</p>
+<h2>Repository — &quot;bộ sưu tập aggregate&quot;</h2>
+<p><strong>Repository</strong> cho code nghiệp vụ cảm giác <strong>thao tác trên bộ sưu tập đối tượng trong bộ nhớ</strong>, che giấu cách lưu trữ:</p>
+<pre class="hljs"><code><span class="hljs-comment">// Application/Abstractions — CỔNG, ngôn ngữ của nghiệp vụ</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">ISanPhamRepository</span>
+{
+    Task&lt;SanPham?&gt; LayTheoMaAsync(<span class="hljs-built_in">string</span> ma, CancellationToken ct);
+    <span class="hljs-function">Task&lt;<span class="hljs-built_in">bool</span>&gt; <span class="hljs-title">TonTaiMaAsync</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ma, CancellationToken ct</span>)</span>;
+    <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Them</span>(<span class="hljs-params">SanPham sanPham</span>)</span>;
+}
+
+<span class="hljs-comment">// Infrastructure — cài đặt bằng EF Core</span>
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SanPhamRepository</span>(<span class="hljs-params">KhoDbContext db</span>) : ISanPhamRepository</span>
+{
+    <span class="hljs-keyword">public</span> Task&lt;SanPham?&gt; LayTheoMaAsync(<span class="hljs-built_in">string</span> ma, CancellationToken ct)
+        =&gt; db.SanPhams.FirstOrDefaultAsync(s =&gt; s.Ma == MaSanPham.TuCsdl(ma.Trim().ToUpperInvariant()), ct);
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Them</span>(<span class="hljs-params">SanPham sanPham</span>)</span> =&gt; db.SanPhams.Add(sanPham);
+}
+</code></pre>
+<p>Nguyên tắc:</p>
+<ul>
+<li><strong>Một repository cho mỗi aggregate root</strong> (không cho mỗi bảng): <code>ISanPhamRepository</code>, không có repository riêng cho &quot;dòng đơn hàng&quot;.</li>
+<li>Phương thức mang <strong>ngữ nghĩa nghiệp vụ</strong> (<code>LayTheoMaAsync</code>, <code>TonTaiMaAsync</code>), không lộ <code>IQueryable</code> — để tầng ngoài không viết truy vấn tuỳ ý, và để Application không phụ thuộc EF.</li>
+<li><code>Them</code> là <strong>đồng bộ và chưa ghi CSDL</strong>: chỉ đăng ký thay đổi; việc ghi thuộc Unit of Work.</li>
+<li>Chỉ thao tác trên <strong>aggregate đầy đủ</strong> (tải cả aggregate, lưu cả aggregate).</li>
+</ul>
+<h2>Unit of Work</h2>
+<p><strong>Unit of Work</strong> theo dõi các thay đổi trong một &quot;cuộc trao đổi nghiệp vụ&quot; và <strong>ghi chúng một lần trong một giao dịch</strong>.</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IUnitOfWork</span> { <span class="hljs-function">Task&lt;<span class="hljs-built_in">int</span>&gt; <span class="hljs-title">LuuAsync</span>(<span class="hljs-params">CancellationToken ct</span>)</span>; }
+</code></pre>
+<p>Trong solution, UoW <strong>do behavior gọi sau khi lệnh thành công</strong> (<code>UnitOfWorkBehavior</code>, Chương 6) — handler không tự <code>Save</code>. Vì vậy handler đơn giản, và &quot;một lệnh = một lần lưu = một giao dịch&quot; được bảo đảm ở một chỗ.</p>
+<h2><code>DbContext</code> đã là Repository + Unit of Work</h2>
+<p>Đây là điểm tranh luận lâu năm. <code>DbContext</code> <strong>là</strong> một Unit of Work (change tracker + <code>SaveChanges</code> trong giao dịch) và mỗi <code>DbSet&lt;T&gt;</code> <strong>là</strong> một repository. Bọc thêm <code>IRepository&lt;T&gt;</code> generic lên trên thường <strong>không thêm giá trị</strong>:</p>
+<pre class="hljs"><code><span class="hljs-comment">// ✘ Generic repository: lớp bọc mỏng, che mất sức mạnh EF (Include, projection, ExecuteUpdate...), lộ IQueryable hoặc phình to</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IRepository</span>&lt;<span class="hljs-title">T</span>&gt; { Task&lt;T?&gt; GetByIdAsync(<span class="hljs-built_in">int</span> id); Task&lt;IEnumerable&lt;T&gt;&gt; GetAllAsync(); <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Add</span>(<span class="hljs-params">T e</span>)</span>; <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Update</span>(<span class="hljs-params">T e</span>)</span>; <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Delete</span>(<span class="hljs-params">T e</span>)</span>; }
+</code></pre>
+<p>Vấn đề của repository generic: (1) không có chỗ cho truy vấn thực tế (lọc, phân trang, projection) → hoặc lộ <code>IQueryable</code> (rò rỉ) hoặc thêm hàng chục phương thức; (2) ép mọi entity có cùng bộ thao tác dù aggregate khác nhau; (3) <code>GetAll</code> kéo cả bảng; (4) khó nhận biết cái gì xảy ra ở CSDL.</p>
+<p><strong>Vậy khi nào tự viết repository?</strong></p>
+<table>
+<thead>
+<tr>
+<th>Tình huống</th>
+<th>Khuyến nghị</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CRUD đơn giản, ít nghiệp vụ (Tập 2)</td>
+<td>dùng thẳng <code>DbContext</code> — đừng bọc</td>
+</tr>
+<tr>
+<td>Clean Architecture / DDD với <strong>Application không được biết EF</strong></td>
+<td><strong>repository theo aggregate</strong> như solution: cổng ở Application, cài đặt ở Infrastructure</td>
+</tr>
+<tr>
+<td>Cần <strong>thay</strong> nguồn dữ liệu (CSDL ↔ API ↔ cache) hoặc <strong>test nghiệp vụ không cần CSDL</strong></td>
+<td>repository/cổng</td>
+</tr>
+<tr>
+<td>Chỉ để &quot;sau này có thể đổi ORM&quot;</td>
+<td>thường không đáng (YAGNI); đổi ORM hiếm khi xảy ra</td>
+</tr>
+</tbody>
+</table>
+<p>Quy tắc thực dụng: repository đáng giá khi nó <strong>diễn đạt câu hỏi nghiệp vụ</strong> và <strong>bảo vệ ranh giới tầng</strong>, không phải khi nó chỉ đổi tên <code>db.SanPhams</code>.</p>
+<h2>Phía đọc khác phía ghi: Read Model</h2>
+<p>Phía <strong>ghi</strong> cần <em>aggregate đầy đủ</em> để bảo vệ bất biến. Phía <strong>đọc</strong> (danh sách, tìm kiếm, báo cáo) chỉ cần <em>dữ liệu phẳng để hiển thị</em> — nạp aggregate cho việc này là lãng phí và dính vào value object/quan hệ. Solution dùng cổng riêng:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IKhoDocDuLieu</span>
+{
+    Task&lt;TrangKetQua&lt;SanPhamDto&gt;&gt; TimAsync(<span class="hljs-built_in">string</span>? tuKhoa, <span class="hljs-built_in">string</span>? nhom, <span class="hljs-built_in">int</span> trang, <span class="hljs-built_in">int</span> kichThuoc, CancellationToken ct);
+    Task&lt;SanPhamDto?&gt; LayTheoMaAsync(<span class="hljs-built_in">string</span> ma, CancellationToken ct);
+}
+</code></pre>
+<p>Cài đặt đọc trực tiếp từ một <strong>thực thể không khoá</strong> ánh xạ vào cùng bảng bằng truy vấn SQL:</p>
+<pre class="hljs"><code>mb.Entity&lt;SanPhamDoc&gt;(e =&gt;
+{
+    e.HasNoKey();
+    e.ToSqlQuery(<span class="hljs-string">&quot;SELECT Id, Ma, Ten, Nhom, DonGia, TonKho, MucCanhBao FROM san_pham&quot;</span>);
+    e.Property(x =&gt; x.DonGia).HasConversion&lt;<span class="hljs-built_in">double</span>&gt;();
+});
+
+<span class="hljs-comment">// Lọc/sắp xếp trên read model (cột đơn giản), chiếu sang DTO ở CUỐI</span>
+IQueryable&lt;SanPhamDoc&gt; q = db.SanPhamDocs.AsNoTracking();
+<span class="hljs-keyword">if</span> (!<span class="hljs-built_in">string</span>.IsNullOrWhiteSpace(tuKhoa)) q = q.Where(s =&gt; EF.Functions.Like(s.Ten, <span class="hljs-string">$&quot;%<span class="hljs-subst">{tuKhoa}</span>%&quot;</span>) || EF.Functions.Like(s.Ma, <span class="hljs-string">$&quot;%<span class="hljs-subst">{tuKhoa}</span>%&quot;</span>));
+<span class="hljs-built_in">int</span> tong = <span class="hljs-keyword">await</span> q.CountAsync(ct);
+<span class="hljs-keyword">var</span> dong = <span class="hljs-keyword">await</span> q.OrderBy(s =&gt; s.Id).Skip((trang - <span class="hljs-number">1</span>) * kichThuoc).Take(kichThuoc).ToListAsync(ct);
+</code></pre>
+<p>Ưu điểm: truy vấn đọc <strong>nhanh</strong> (không tracking, không hydrate aggregate), <strong>không bị ràng buộc</strong> bởi value object, và có thể tối ưu độc lập (chỉ mục riêng, view, thậm chí CSDL/cache riêng — đó là CQRS ở Chương 5). Kinh nghiệm thật khi viết solution: lọc trên DTO đã <code>Select</code> từ thực thể có value object gây lỗi dịch LINQ; chuyển sang read model phẳng và chiếu DTO <strong>sau cùng</strong> giải quyết gọn.</p>
+<h2>Specification — đóng gói điều kiện truy vấn</h2>
+<p>Khi cùng một điều kiện (&quot;sản phẩm sắp hết&quot;, &quot;khách VIP hoạt động&quot;) xuất hiện ở nhiều nơi, <strong>Specification</strong> gói nó thành đối tượng có tên, tái sử dụng và kết hợp được:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Specification</span>&lt;<span class="hljs-title">T</span>&gt;
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> Expression&lt;Func&lt;T, <span class="hljs-built_in">bool</span>&gt;&gt; DieuKien { <span class="hljs-keyword">get</span>; }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Specification&lt;T&gt; <span class="hljs-title">Va</span>(<span class="hljs-params">Specification&lt;T&gt; khac</span>)</span> =&gt; <span class="hljs-keyword">new</span> VaSpec&lt;T&gt;(<span class="hljs-keyword">this</span>, khac);
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SapHetHangSpec</span> : <span class="hljs-title">Specification</span>&lt;<span class="hljs-title">SanPhamDoc</span>&gt;
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> Expression&lt;Func&lt;SanPhamDoc, <span class="hljs-built_in">bool</span>&gt;&gt; DieuKien =&gt; s =&gt; s.TonKho &lt;= s.MucCanhBao;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TrongNhomSpec</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> nhom</span>) : Specification&lt;SanPhamDoc&gt;</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> Expression&lt;Func&lt;SanPhamDoc, <span class="hljs-built_in">bool</span>&gt;&gt; DieuKien =&gt; s =&gt; s.Nhom == nhom;
+}
+
+<span class="hljs-comment">// Dùng: q.Where(new SapHetHangSpec().Va(new TrongNhomSpec(&quot;Phu kien&quot;)).DieuKien)</span>
+</code></pre>
+<p>(<code>VaSpec&lt;T&gt;</code> — nối hai cây biểu thức thành một — được để lại làm <strong>bài tập 1</strong>; đoạn trên là phác thảo ý tưởng, không nằm trong solution.)</p>
+<p>Điểm quan trọng: điều kiện là <strong><code>Expression&lt;Func&lt;T,bool&gt;&gt;</code></strong> (cây biểu thức), không phải <code>Func&lt;T,bool&gt;</code> — EF dịch được sang SQL. Ghép <code>Va/Hoac</code> cần nối cây biểu thức (thư viện <strong>Ardalis.Specification</strong> làm sẵn, kèm <code>Include</code>, sắp xếp, phân trang). Đặt tên rõ (&quot;SapHetHang&quot;) biến quy tắc kinh doanh thành khái niệm hạng nhất, thay vì rải <code>TonKho &lt;= MucCanhBao</code> khắp nơi (và lệch nhau khi ai đó sửa một chỗ). Chỉ dùng khi thật sự có điều kiện lặp/phức tạp; với truy vấn đơn giản, LINQ trực tiếp trong read model là đủ.</p>
+<h2>Giao dịch ngoài &quot;một lệnh, một lần lưu&quot;</h2>
+<ul>
+<li><strong>Nhiều <code>SaveChanges</code> cần chung giao dịch</strong>: <code>await using var tx = await db.Database.BeginTransactionAsync();</code> (đưa vào cổng <code>IUnitOfWork.BatDauGiaoDichAsync</code> nếu Application cần).</li>
+<li><strong>Xung đột đồng thời</strong>: <code>IsConcurrencyToken</code> trên <code>TonKho</code> → <code>DbUpdateConcurrencyException</code> → Infrastructure dịch thành <code>ConcurrencyException</code> (Application hiểu) → behavior trả <code>Loi.XungDot</code> → HTTP <code>409</code>. Application <strong>không bao giờ thấy</strong> kiểu exception của EF.</li>
+<li><strong>Một lệnh sửa hai aggregate cùng lúc</strong>: dấu hiệu ranh giới aggregate sai, hoặc cần <strong>sự kiện</strong> và nhất quán cuối cùng (Chương 8).</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Repository generic <code>IRepository&lt;T&gt;</code> + <code>GetAll()</code> rồi lọc trong bộ nhớ.</li>
+<li>Trả <code>IQueryable</code> từ repository → tầng trên viết truy vấn, phụ thuộc EF ngầm.</li>
+<li>Repository gọi <code>SaveChanges</code> trong từng phương thức → mất khả năng gom giao dịch.</li>
+<li>Nhiều repository cho các bảng con của cùng một aggregate.</li>
+<li>Dùng aggregate cho truy vấn danh sách/báo cáo (chậm, kéo theo cả đồ thị).</li>
+<li>Specification dùng <code>Func</code> thay vì <code>Expression</code> → EF tải cả bảng rồi lọc trong bộ nhớ (chỉ thấy khi dữ liệu lớn).</li>
+<li>Để exception EF (<code>DbUpdateException</code>) lọt tới tầng Web.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết <code>Specification&lt;SanPhamDoc&gt;</code> thật (kể cả <code>Va</code>) dùng <code>Expression.Invoke</code>/thay tham số; kiểm tra bằng <code>ToQueryString()</code> rằng vẫn ra <strong>một</strong> mệnh đề <code>WHERE</code>.</li>
+<li>Thêm truy vấn <code>SapHetAsync()</code> vào <code>IKhoDocDuLieu</code> dùng <code>SapHetHangSpec</code>.</li>
+<li>Đo số câu SQL của <code>TimAsync</code> (dùng <code>LogTo</code>); so với việc nạp aggregate rồi map sang DTO.</li>
+<li>Thêm <code>IUnitOfWork.BatDauGiaoDichAsync</code> và dùng trong một lệnh &quot;chuyển kho&quot; sửa hai aggregate; bàn về rủi ro.</li>
+<li>Viết test: khi hai người cùng xuất và một bị <code>ConcurrencyException</code>, handler/behavior trả <code>409</code> chứ không phải <code>500</code> (đã có ở <code>ApplicationTests</code> — đọc và giải thích).</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch03-domain-modeling.html">&larr; 3. Mô hình hoá miền (DDD cơ bản)</a><a class="nav-next" href="ch05-cqrs-mediator.html">5. CQRS và Mediator &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

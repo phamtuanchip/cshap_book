@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 5 — CQRS và Mediator — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><span class="chapter-link pending">9. Chiến lược kiểm thử</span></li><li><span class="chapter-link pending">10. Caching</span></li><li><span class="chapter-link pending">11. Quan sát và hiệu năng</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">12. OpenID Connect và OAuth 2.0</span></li><li><span class="chapter-link pending">13. Idempotency, audit log và bảo vệ dữ liệu</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><span class="chapter-link pending">14. Docker và docker-compose</span></li><li><span class="chapter-link pending">15. CI/CD với GitHub Actions</span></li><li><span class="chapter-link pending">16. Triển khai lên máy chủ và đám mây</span></li><li><span class="chapter-link pending">17. Microservices và giao tiếp giữa dịch vụ</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</span></li><li><span class="chapter-link pending">20. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 5 — CQRS và Mediator</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>CQRS</strong> (Command Query Responsibility Segregation): tách <strong>lệnh</strong> (ghi) và <strong>truy vấn</strong> (đọc).</li>
+<li>Viết <code>ICommand</code>/<code>IQuery</code>, <strong>handler</strong>, và một <strong>mediator</strong> tự viết (~40 dòng) để kết nối chúng.</li>
+<li>Biết khi nào CQRS đáng dùng (và các mức độ: cùng CSDL → đọc/ghi tách biệt hoàn toàn).</li>
+<li>Hiểu ưu/nhược điểm mediator và các lựa chọn (MediatR, Wolverine, tự viết).</li>
+</ul>
+<p>Code: <a href="code/kho-clean/Kho.Application/Messaging/Mediator.cs"><code>Messaging/Mediator.cs</code></a>, <a href="code/kho-clean/Kho.Application/SanPhams/CaSuDung.cs"><code>SanPhams/CaSuDung.cs</code></a>.</p>
+<h2>Vấn đề: một <code>SanPhamService</code> phình to</h2>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">KhoService</span>   <span class="hljs-comment">// Tập 2 - ban đầu vài phương thức, sau 1 năm...</span>
+{
+    ThemAsync, NhapAsync, XuatAsync, DoiGiaAsync, XoaAsync, TimAsync, LayAsync,
+    BaoCaoTheoNhomAsync, SapHetAsync, LichSuAsync, XuatExcelAsync, ...   <span class="hljs-comment">// 40 phương thức, 15 phụ thuộc trong constructor</span>
+}
+</code></pre>
+<p>Lớp làm quá nhiều, phụ thuộc nhiều thứ không liên quan (báo cáo cần <code>IExcelWriter</code>, lệnh xuất cần <code>IEmailSender</code>), khó test (mock 15 thứ), mọi thay đổi đụng cùng một file (xung đột merge).</p>
+<h2>CQRS</h2>
+<p><strong>CQRS</strong> (Bertrand Meyer — <em>Command–Query Separation</em>; Greg Young — CQRS): phân biệt hai loại thao tác:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Lệnh (Command)</strong></th>
+<th><strong>Truy vấn (Query)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mục đích</td>
+<td><strong>thay đổi</strong> trạng thái</td>
+<td><strong>đọc</strong> dữ liệu</td>
+</tr>
+<tr>
+<td>Tác dụng phụ</td>
+<td>có</td>
+<td><strong>không</strong></td>
+</tr>
+<tr>
+<td>Trả về</td>
+<td>kết quả thành công/lỗi (+ Id mới)</td>
+<td>dữ liệu (DTO)</td>
+</tr>
+<tr>
+<td>Đặt tên</td>
+<td>mệnh lệnh: <code>XuatKhoCommand</code></td>
+<td>câu hỏi: <code>TimSanPhamQuery</code></td>
+</tr>
+<tr>
+<td>Mô hình</td>
+<td><strong>aggregate</strong> (bảo vệ bất biến)</td>
+<td><strong>read model</strong> phẳng, tối ưu hiển thị</td>
+</tr>
+<tr>
+<td>Giao dịch</td>
+<td>có (Unit of Work)</td>
+<td>không cần</td>
+</tr>
+</tbody>
+</table>
+<p>Ba mức áp dụng:</p>
+<ol>
+<li><strong>Tách trong code</strong> (solution này): cùng một CSDL, nhưng lệnh đi qua aggregate, truy vấn đi qua read model riêng. Chi phí thấp, lợi ích lớn — điểm bắt đầu hợp lý.</li>
+<li><strong>Tách lược đồ đọc</strong>: bảng/view riêng cho đọc (denormalized), cập nhật bằng sự kiện.</li>
+<li><strong>Tách hạ tầng</strong>: CSDL ghi (quan hệ) + CSDL đọc (Elasticsearch, Redis, kho cột), đồng bộ bất đồng bộ — nhất quán cuối cùng. Chỉ khi quy mô đọc/ghi chênh lệch lớn.</li>
+</ol>
+<p>CQRS <strong>không</strong> đồng nghĩa với Event Sourcing hay microservices, và không phải lúc nào cũng cần.</p>
+<h2>Mỗi ca sử dụng một &quot;thông điệp&quot; + một handler</h2>
+<pre class="hljs"><code><span class="hljs-comment">// Lệnh: dữ liệu vào + kiểu kết quả</span>
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">record</span> <span class="hljs-title">XuatKhoCommand</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> Ma, <span class="hljs-built_in">int</span> SoLuong</span>) : ICommand&lt;Result&gt;</span>;
+
+<span class="hljs-comment">// Handler: MỘT lớp cho MỘT ca sử dụng</span>
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">XuatKhoHandler</span>(<span class="hljs-params">ISanPhamRepository repo, TimeProvider dongHo</span>) : IRequestHandler&lt;XuatKhoCommand, Result&gt;</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;Result&gt; <span class="hljs-title">Handle</span>(<span class="hljs-params">XuatKhoCommand cmd, CancellationToken ct</span>)</span>
+    {
+        <span class="hljs-keyword">var</span> sp = <span class="hljs-keyword">await</span> repo.LayTheoMaAsync(cmd.Ma, ct);
+        <span class="hljs-keyword">return</span> sp <span class="hljs-keyword">is</span> <span class="hljs-literal">null</span>
+            ? Result.Fail(Loi.KhongTimThay(<span class="hljs-string">&quot;SanPham.KhongTimThay&quot;</span>, <span class="hljs-string">$&quot;Khong tim thay san pham <span class="hljs-subst">{cmd.Ma}</span>&quot;</span>))
+            : sp.XuatKho(cmd.SoLuong, dongHo.GetUtcNow());
+    }
+}
+
+<span class="hljs-comment">// Truy vấn: cũng một thông điệp + một handler, nhưng đi qua cổng ĐỌC</span>
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">record</span> <span class="hljs-title">TimSanPhamQuery</span>(<span class="hljs-params"><span class="hljs-built_in">string</span>? TuKhoa, <span class="hljs-built_in">string</span>? Nhom, <span class="hljs-built_in">int</span> Trang = <span class="hljs-number">1</span>, <span class="hljs-built_in">int</span> KichThuoc = <span class="hljs-number">10</span></span>) : IQuery&lt;Result&lt;TrangKetQua&lt;SanPhamDto&gt;&gt;&gt;</span>;
+</code></pre>
+<p>Mỗi handler chỉ có <strong>những phụ thuộc nó thật sự cần</strong> (xuất kho cần repository và đồng hồ; không cần Excel). Nhỏ, tập trung, dễ test (dựng handler với fake — hoặc gọi qua mediator như <code>ApplicationTests</code>), dễ tìm (&quot;ca sử dụng nào? → file đó&quot;), và <strong>thêm tính năng = thêm file</strong> (không sửa <code>KhoService</code>).</p>
+<h2>Mediator</h2>
+<p>Ai gọi handler? Endpoint có thể inject trực tiếp <code>XuatKhoHandler</code>, nhưng khi đó:</p>
+<ul>
+<li>Endpoint phụ thuộc lớp cụ thể của Application;</li>
+<li><strong>Không có chỗ chung</strong> để chèn hành vi xuyên suốt (log, validate, giao dịch, cache) — Chương 6.</li>
+</ul>
+<p><strong>Mediator</strong> đứng giữa: endpoint chỉ biết <em>thông điệp</em> và một cổng <code>ISender</code>; mediator tìm đúng handler và chạy qua <strong>pipeline</strong>.</p>
+<pre class="mermaid">flowchart LR
+    E[&quot;Endpoint&quot;] --&gt;|&quot;Send(XuatKhoCommand)&quot;| M[&quot;ISender&quot;]
+    M --&gt; P[&quot;Pipeline behaviors&quot;]
+    P --&gt; H[&quot;XuatKhoHandler&quot;]
+</pre>
+<h3>Hợp đồng</h3>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IRequest</span>&lt;<span class="hljs-title">TResponse</span>&gt; <span class="hljs-keyword">where</span> TResponse : <span class="hljs-title">IKetQua</span>&lt;<span class="hljs-title">TResponse</span>&gt;</span>;
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">ICommand</span>&lt;<span class="hljs-title">TResponse</span>&gt; : <span class="hljs-title">IRequest</span>&lt;<span class="hljs-title">TResponse</span>&gt; <span class="hljs-keyword">where</span> TResponse : <span class="hljs-title">IKetQua</span>&lt;<span class="hljs-title">TResponse</span>&gt;</span>;
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IQuery</span>&lt;<span class="hljs-title">TResponse</span>&gt;   : <span class="hljs-title">IRequest</span>&lt;<span class="hljs-title">TResponse</span>&gt; <span class="hljs-keyword">where</span> TResponse : <span class="hljs-title">IKetQua</span>&lt;<span class="hljs-title">TResponse</span>&gt;</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IRequestHandler</span>&lt;<span class="hljs-title">TRequest</span>, <span class="hljs-title">TResponse</span>&gt; <span class="hljs-keyword">where</span> TRequest : <span class="hljs-title">IRequest</span>&lt;<span class="hljs-title">TResponse</span>&gt; <span class="hljs-keyword">where</span> TResponse : <span class="hljs-title">IKetQua</span>&lt;<span class="hljs-title">TResponse</span>&gt;</span>
+{ <span class="hljs-function"><span class="hljs-title">Task</span>&lt;<span class="hljs-title">TResponse</span>&gt; <span class="hljs-title">Handle</span>(<span class="hljs-params">TRequest request, CancellationToken ct</span>)</span>; }
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">ISender</span>
+{ <span class="hljs-function"><span class="hljs-title">Task</span>&lt;<span class="hljs-title">TResponse</span>&gt; <span class="hljs-title">Send</span>&lt;<span class="hljs-title">TResponse</span>&gt;(<span class="hljs-params">IRequest&lt;TResponse&gt; request, CancellationToken ct = <span class="hljs-literal">default</span></span>) <span class="hljs-keyword">where</span> TResponse : IKetQua&lt;TResponse&gt;</span>; }
+</code></pre>
+<p><code>ICommand</code> và <code>IQuery</code> cùng kế thừa <code>IRequest</code>, khác nhau ở <strong>ý nghĩa</strong> — và cho phép behavior áp dụng <strong>riêng cho lệnh</strong> (giao dịch) hay <strong>riêng cho truy vấn</strong> (cache).</p>
+<h3>Cài đặt tối giản</h3>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">internal</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Sender</span>(<span class="hljs-params">IServiceProvider sp</span>) : ISender</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">readonly</span> ConcurrentDictionary&lt;Type, <span class="hljs-built_in">object</span>&gt; Wrappers = <span class="hljs-keyword">new</span>();
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Task</span>&lt;<span class="hljs-title">TResponse</span>&gt; <span class="hljs-title">Send</span>&lt;<span class="hljs-title">TResponse</span>&gt;(<span class="hljs-params">IRequest&lt;TResponse&gt; request, CancellationToken ct = <span class="hljs-literal">default</span></span>) <span class="hljs-keyword">where</span> TResponse : IKetQua&lt;TResponse&gt;</span>
+    {
+        <span class="hljs-keyword">var</span> wrapper = (Boc&lt;TResponse&gt;)Wrappers.GetOrAdd(request.GetType(),
+            t =&gt; Activator.CreateInstance(<span class="hljs-keyword">typeof</span>(Boc&lt;,&gt;).MakeGenericType(t, <span class="hljs-keyword">typeof</span>(TResponse)))!);
+        <span class="hljs-keyword">return</span> wrapper.Chay(request, sp, ct);
+    }
+    ...
+}
+</code></pre>
+<p>Vấn đề kỹ thuật: <code>Send</code> chỉ biết kiểu <strong>đối tượng lúc chạy</strong> (<code>request.GetType()</code>), nhưng DI cần kiểu <strong>generic đã đóng</strong> <code>IRequestHandler&lt;XuatKhoCommand, Result&gt;</code>. Giải pháp: một lớp bọc generic <code>Boc&lt;TRequest,TResponse&gt;</code> được tạo <strong>một lần</strong> cho mỗi kiểu request bằng reflection và <strong>cache</strong> — về sau mỗi lần gọi là lời gọi có kiểu tĩnh, không reflection. Toàn bộ mediator ~40 dòng.</p>
+<h3>Đăng ký</h3>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> IServiceCollection <span class="hljs-title">AddMediator</span>(<span class="hljs-params"><span class="hljs-keyword">this</span> IServiceCollection services, Assembly assembly, <span class="hljs-keyword">params</span> Type[] behaviorMoRong</span>)</span>
+{
+    services.AddScoped&lt;ISender, Sender&gt;();
+    <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> type <span class="hljs-keyword">in</span> assembly.GetTypes().Where(t =&gt; t <span class="hljs-keyword">is</span> { IsClass: <span class="hljs-literal">true</span>, IsAbstract: <span class="hljs-literal">false</span> }))
+        <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> i <span class="hljs-keyword">in</span> type.GetInterfaces().Where(i =&gt; i.IsGenericType &amp;&amp; i.GetGenericTypeDefinition() == <span class="hljs-keyword">typeof</span>(IRequestHandler&lt;,&gt;)))
+            services.AddScoped(i, type);                                        <span class="hljs-comment">// quét assembly: mỗi handler tự đăng ký</span>
+    <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> b <span class="hljs-keyword">in</span> behaviorMoRong) services.AddScoped(<span class="hljs-keyword">typeof</span>(IPipelineBehavior&lt;,&gt;), b);
+    <span class="hljs-keyword">return</span> services;
+}
+</code></pre>
+<p>Thêm ca sử dụng mới = thêm command + handler; <strong>không sửa</strong> file đăng ký hay endpoint khác.</p>
+<h3>Sử dụng ở endpoint</h3>
+<pre class="hljs"><code>g.MapPost(<span class="hljs-string">&quot;/{ma}/xuat&quot;</span>, <span class="hljs-keyword">async</span> (<span class="hljs-built_in">string</span> ma, SoLuongRequest r, ISender sender, CancellationToken ct)
+    =&gt; (<span class="hljs-keyword">await</span> sender.Send(<span class="hljs-keyword">new</span> XuatKhoCommand(ma, r.SoLuong), ct)).ToHttp(noContent: <span class="hljs-literal">true</span>));
+</code></pre>
+<h2><code>static abstract</code> — chi tiết C# hiện đại làm nên sự gọn</h2>
+<p>Behavior generic cần <strong>tạo kết quả lỗi</strong> cho <em>bất kỳ</em> <code>TResponse</code> (<code>Result</code> hay <code>Result&lt;T&gt;</code>):</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IKetQua</span>&lt;<span class="hljs-title">TSelf</span>&gt; <span class="hljs-keyword">where</span> <span class="hljs-title">TSelf</span> : <span class="hljs-title">IKetQua</span>&lt;<span class="hljs-title">TSelf</span>&gt;
+{
+    <span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">abstract</span> TSelf <span class="hljs-title">TuLoi</span>(<span class="hljs-params">Loi loi</span>)</span>;
+    <span class="hljs-built_in">bool</span> ThanhCong { <span class="hljs-keyword">get</span>; }
+    Loi? Loi { <span class="hljs-keyword">get</span>; }
+}
+
+<span class="hljs-comment">// Trong ValidationBehavior&lt;TRequest, TResponse&gt; where TResponse : IKetQua&lt;TResponse&gt;:</span>
+<span class="hljs-keyword">return</span> TResponse.TuLoi(Loi.DuLieuKhongHopLe(<span class="hljs-string">&quot;Validation&quot;</span>, moTa));     <span class="hljs-comment">// gọi thành viên static trên tham số kiểu!</span>
+</code></pre>
+<p><strong>Static abstract interface members</strong> (C# 11) cho phép gọi <code>TResponse.TuLoi(...)</code> không cần reflection hay <code>dynamic</code>. (Nếu không có tính năng này, các thư viện phải dùng reflection hoặc ép kiểu.)</p>
+<h2>Ưu và nhược điểm của mediator</h2>
+<p><strong>Ưu:</strong></p>
+<ul>
+<li>Endpoint mỏng, tách rời khỏi handler; thêm/xoá tính năng cục bộ.</li>
+<li>Một chỗ chung để gắn hành vi xuyên suốt (pipeline).</li>
+<li>Handler nhỏ, test độc lập.</li>
+</ul>
+<p><strong>Nhược:</strong></p>
+<ul>
+<li><strong>Gián tiếp</strong>: từ endpoint khó &quot;nhảy tới định nghĩa&quot; handler (IDE hỗ trợ tìm theo kiểu); luồng bị &quot;ẩn&quot; sau DI.</li>
+<li>Thêm một lớp trừu tượng và chi phí nhỏ mỗi lần gọi.</li>
+<li>Dễ lạm dụng: handler gọi handler khác qua mediator tạo dây phụ thuộc khó thấy — dùng dịch vụ miền/domain thay vì handler-gọi-handler.</li>
+<li>Không cần thiết nếu ứng dụng nhỏ (endpoint gọi thẳng dịch vụ là đủ).</li>
+</ul>
+<h2>Thư viện hay tự viết?</h2>
+<ul>
+<li><strong>MediatR</strong> (Jimmy Bogard) là thư viện phổ biến nhất, API tương tự (<code>IRequest&lt;T&gt;</code>, <code>IRequestHandler</code>, <code>IPipelineBehavior</code>). Lưu ý: từ các bản gần đây MediatR chuyển sang <strong>giấy phép thương mại</strong> cho một số đối tượng dùng — hãy kiểm tra điều khoản hiện hành trước khi dùng trong dự án.</li>
+<li><strong>Wolverine</strong>, <strong>Mediator (martinothamar, source generator, nhanh)</strong>, <strong>Immediate.Handlers</strong>: lựa chọn thay thế.</li>
+<li><strong>Tự viết</strong> (như chương này): ~40 dòng, đủ cho nhu cầu phổ biến, không phụ thuộc bên ngoài, hiểu rõ bên trong. Đủ tốt để đi sản phẩm với đội nhỏ; chuyển sang thư viện nếu cần tính năng nâng cao (notification, streaming, generic behavior phức tạp).</li>
+</ul>
+<p>API giữa các lựa chọn giống nhau nên đổi sau này rẻ.</p>
+<h2>Khi nào dùng CQRS + mediator?</h2>
+<table>
+<thead>
+<tr>
+<th>Dấu hiệu</th>
+<th>Gợi ý</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CRUD đơn giản, ít quy tắc</td>
+<td><strong>Không cần</strong> (Tập 2)</td>
+</tr>
+<tr>
+<td>Service phình to, mỗi tính năng đụng cùng file</td>
+<td>Tách use case + handler</td>
+</tr>
+<tr>
+<td>Cần hành vi xuyên suốt (log, validate, giao dịch, cache) áp đồng loạt</td>
+<td>Mediator + pipeline</td>
+</tr>
+<tr>
+<td>Đọc/ghi có yêu cầu hiệu năng, mô hình khác hẳn nhau</td>
+<td>CQRS mức 2–3</td>
+</tr>
+<tr>
+<td>Nhiều đội cùng sửa một codebase</td>
+<td>Vertical slice + CQRS giảm xung đột</td>
+</tr>
+</tbody>
+</table>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Truy vấn có tác dụng phụ (ghi log nghiệp vụ, đổi trạng thái) — phá tính chất &quot;không đổi trạng thái&quot;.</li>
+<li>Lệnh trả về cả đối tượng lớn để &quot;tiện&quot; — nên trả Id/<code>Result</code>, muốn dữ liệu thì gửi truy vấn.</li>
+<li>Handler gọi <code>ISender.Send</code> của handler khác (spaghetti).</li>
+<li>Quên đăng ký handler/behavior (không quét đúng assembly) → <code>InvalidOperationException: No service for type IRequestHandler&lt;...&gt;</code>.</li>
+<li>Bọc mọi thứ trong mediator kể cả nơi đơn giản — &quot;nghi thức&quot; thừa.</li>
+<li>Đặt logic nghiệp vụ trong handler thay vì domain (handler thành &quot;transaction script&quot; phình to).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm <code>LayLichSuQuery</code> (đọc từ bảng outbox) qua mediator; đọc bằng cổng đọc, không nạp aggregate.</li>
+<li>Viết test kiểm chứng <code>ISender</code> ném lỗi rõ ràng khi thiếu handler; sửa thông báo lỗi cho dễ hiểu.</li>
+<li>Thêm <code>INotification</code>/<code>IPublisher</code> (một sự kiện, nhiều handler) vào mediator tự viết (~20 dòng).</li>
+<li>So sánh số dòng/độ phức tạp: viết lại <code>XuatKho</code> dưới dạng phương thức của <code>KhoService</code> (Tập 2) và dạng command+handler. Khi nào cách nào tốt hơn?</li>
+<li>Đo chi phí mỗi lần <code>Send</code> với BenchmarkDotNet so với gọi handler trực tiếp.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch04-repository-specification.html">&larr; 4. Repository, Unit of Work và Specification</a><a class="nav-next" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

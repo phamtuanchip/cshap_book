@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 6 — Pipeline behavior: validation, logging, transaction — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link active" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><span class="chapter-link pending">9. Chiến lược kiểm thử</span></li><li><span class="chapter-link pending">10. Caching</span></li><li><span class="chapter-link pending">11. Quan sát và hiệu năng</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">12. OpenID Connect và OAuth 2.0</span></li><li><span class="chapter-link pending">13. Idempotency, audit log và bảo vệ dữ liệu</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><span class="chapter-link pending">14. Docker và docker-compose</span></li><li><span class="chapter-link pending">15. CI/CD với GitHub Actions</span></li><li><span class="chapter-link pending">16. Triển khai lên máy chủ và đám mây</span></li><li><span class="chapter-link pending">17. Microservices và giao tiếp giữa dịch vụ</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</span></li><li><span class="chapter-link pending">20. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 6 — Pipeline behavior: validation, logging, transaction</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Dùng <strong>pipeline behavior</strong> (mẫu Decorator/Chain of Responsibility) để xử lý các mối quan tâm <strong>xuyên suốt</strong> ở một nơi.</li>
+<li>Đọc hiểu ba behavior của solution: <strong>Logging</strong>, <strong>Validation</strong>, <strong>UnitOfWork</strong> và <strong>thứ tự</strong> của chúng.</li>
+<li>Thêm behavior mới (cache, authorization, retry, timing) và giới hạn behavior theo <strong>kiểu request</strong> bằng generic constraint.</li>
+<li>Chọn giữa behavior, middleware và filter.</li>
+</ul>
+<p>Code: <a href="code/kho-clean/Kho.Application/Behaviors/Behaviors.cs"><code>Behaviors/Behaviors.cs</code></a>, <a href="code/kho-clean/Kho.Tests/ApplicationTests.cs"><code>ApplicationTests.cs</code></a>.</p>
+<h2>Cross-cutting concerns</h2>
+<p>Có việc <strong>mọi</strong> ca sử dụng đều cần: ghi log, kiểm tra dữ liệu đầu vào, mở/đóng giao dịch, kiểm tra quyền, đo thời gian, cache. Viết lặp trong từng handler:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;Result&gt; <span class="hljs-title">Handle</span>(<span class="hljs-params">XuatKhoCommand cmd, CancellationToken ct</span>)</span>
+{
+    log.LogInformation(<span class="hljs-string">&quot;Bat dau xuat kho ...&quot;</span>);                    <span class="hljs-comment">// lặp ở 30 handler</span>
+    <span class="hljs-keyword">var</span> loi = validator.Validate(cmd); <span class="hljs-keyword">if</span> (!loi.IsValid) <span class="hljs-keyword">return</span> ...; <span class="hljs-comment">// lặp</span>
+    <span class="hljs-keyword">var</span> sw = Stopwatch.StartNew();                                  <span class="hljs-comment">// lặp</span>
+    ...nghiệp vụ thật (<span class="hljs-number">3</span> dòng)...
+    <span class="hljs-keyword">await</span> uow.SaveChangesAsync(ct);                                 <span class="hljs-comment">// lặp, dễ quên</span>
+    log.LogInformation(<span class="hljs-string">&quot;Xong sau {Ms}&quot;</span>, sw.ElapsedMilliseconds);    <span class="hljs-comment">// lặp</span>
+}
+</code></pre>
+<p>Hậu quả: nghiệp vụ chìm giữa &quot;rác hạ tầng&quot;, dễ <strong>quên</strong> ở một handler (không validate → dữ liệu xấu; không lưu → mất dữ liệu). Pipeline behavior đưa chúng ra một chỗ, <strong>áp dụng đồng loạt và không thể quên</strong>.</p>
+<h2>Pipeline: vỏ hành xung quanh handler</h2>
+<pre class="mermaid">flowchart LR
+    R[&quot;Send(cmd)&quot;] --&gt; L[&quot;Logging&quot;] --&gt; V[&quot;Validation&quot;] --&gt; U[&quot;UnitOfWork&quot;] --&gt; H[&quot;Handler&quot;]
+    H -.-&gt; U -.-&gt; V -.-&gt; L -.-&gt; K[&quot;Result&quot;]
+</pre>
+<p>Mỗi behavior nhận <code>next</code> (đoạn còn lại của chuỗi) — như middleware <a href="http://ASP.NET">ASP.NET</a> Core (Tập 2, Chương 3): làm việc <strong>trước</strong>, gọi <code>next()</code>, làm việc <strong>sau</strong>, hoặc <strong>ngắn mạch</strong> không gọi <code>next</code>.</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IPipelineBehavior</span>&lt;<span class="hljs-title">TRequest</span>, <span class="hljs-title">TResponse</span>&gt; <span class="hljs-keyword">where</span> <span class="hljs-title">TRequest</span> : <span class="hljs-title">IRequest</span>&lt;<span class="hljs-title">TResponse</span>&gt; <span class="hljs-keyword">where</span> <span class="hljs-title">TResponse</span> : <span class="hljs-title">IKetQua</span>&lt;<span class="hljs-title">TResponse</span>&gt;
+{
+    <span class="hljs-function">Task&lt;TResponse&gt; <span class="hljs-title">Handle</span>(<span class="hljs-params">TRequest request, RequestHandlerDelegate&lt;TResponse&gt; next, CancellationToken ct</span>)</span>;
+}
+</code></pre>
+<h2>1. Logging</h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">LoggingBehavior</span>&lt;<span class="hljs-title">TRequest</span>, <span class="hljs-title">TResponse</span>&gt;(<span class="hljs-params">ILogger&lt;LoggingBehavior&lt;TRequest, TResponse&gt;&gt; log</span>) : IPipelineBehavior&lt;TRequest, TResponse&gt;
+    <span class="hljs-keyword">where</span> TRequest : IRequest&lt;TResponse&gt; <span class="hljs-keyword">where</span> TResponse : IKetQua&lt;TResponse&gt;</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;TResponse&gt; <span class="hljs-title">Handle</span>(<span class="hljs-params">TRequest request, RequestHandlerDelegate&lt;TResponse&gt; next, CancellationToken ct</span>)</span>
+    {
+        <span class="hljs-keyword">var</span> dong = Stopwatch.StartNew();
+        <span class="hljs-keyword">var</span> kq = <span class="hljs-keyword">await</span> next();
+        <span class="hljs-keyword">if</span> (kq.ThanhCong) log.LogInformation(<span class="hljs-string">&quot;{Request} thanh cong sau {Ms} ms&quot;</span>, <span class="hljs-keyword">typeof</span>(TRequest).Name, dong.ElapsedMilliseconds);
+        <span class="hljs-keyword">else</span> log.LogWarning(<span class="hljs-string">&quot;{Request} that bai ({Ma}) sau {Ms} ms&quot;</span>, <span class="hljs-keyword">typeof</span>(TRequest).Name, kq.Loi!.Ma, dong.ElapsedMilliseconds);
+        <span class="hljs-keyword">return</span> kq;
+    }
+}
+</code></pre>
+<p>Vì kết quả là <code>Result</code> (có <code>ThanhCong</code>, <code>Loi.Ma</code>), behavior log được <strong>thành công/thất bại và mã lỗi</strong> mà không cần <code>try/catch</code> hay biết kiểu cụ thể. <strong>Không log nội dung request</strong> mặc định (có thể chứa dữ liệu nhạy cảm) — chỉ tên request và kết quả.</p>
+<p>Đặt <strong>ngoài cùng</strong> để đo tổng thời gian của mọi behavior bên trong.</p>
+<h2>2. Validation</h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ValidationBehavior</span>&lt;<span class="hljs-title">TRequest</span>, <span class="hljs-title">TResponse</span>&gt;(<span class="hljs-params">IEnumerable&lt;IValidator&lt;TRequest&gt;&gt; validators</span>) : IPipelineBehavior&lt;TRequest, TResponse&gt;
+    <span class="hljs-keyword">where</span> TRequest : IRequest&lt;TResponse&gt; <span class="hljs-keyword">where</span> TResponse : IKetQua&lt;TResponse&gt;</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;TResponse&gt; <span class="hljs-title">Handle</span>(<span class="hljs-params">TRequest request, RequestHandlerDelegate&lt;TResponse&gt; next, CancellationToken ct</span>)</span>
+    {
+        <span class="hljs-keyword">if</span> (!validators.Any()) <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> next();
+
+        <span class="hljs-keyword">var</span> ctx = <span class="hljs-keyword">new</span> ValidationContext&lt;TRequest&gt;(request);
+        <span class="hljs-keyword">var</span> loi = (<span class="hljs-keyword">await</span> Task.WhenAll(validators.Select(v =&gt; v.ValidateAsync(ctx, ct)))).SelectMany(r =&gt; r.Errors).ToList();
+        <span class="hljs-keyword">if</span> (loi.Count == <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> next();
+
+        <span class="hljs-built_in">string</span> moTa = <span class="hljs-built_in">string</span>.Join(<span class="hljs-string">&quot;; &quot;</span>, loi.Select(e =&gt; <span class="hljs-string">$&quot;<span class="hljs-subst">{e.PropertyName}</span>: <span class="hljs-subst">{e.ErrorMessage}</span>&quot;</span>));
+        <span class="hljs-keyword">return</span> TResponse.TuLoi(Loi.DuLieuKhongHopLe(<span class="hljs-string">&quot;Validation&quot;</span>, moTa));         <span class="hljs-comment">// ngắn mạch: handler KHÔNG chạy</span>
+    }
+}
+</code></pre>
+<ul>
+<li>Nhận <code>IEnumerable&lt;IValidator&lt;TRequest&gt;&gt;</code>: request nào <strong>không có</strong> validator thì danh sách rỗng, đi thẳng — không cần cấu hình gì.</li>
+<li>Validator viết bằng <strong>FluentValidation</strong> cạnh command (Chương 7):</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">XuatKhoValidator</span> : <span class="hljs-title">AbstractValidator</span>&lt;<span class="hljs-title">XuatKhoCommand</span>&gt;
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">XuatKhoValidator</span>()</span> =&gt; RuleFor(x =&gt; x.SoLuong).InclusiveBetween(<span class="hljs-number">1</span>, <span class="hljs-number">100_000</span>);
+}
+</code></pre>
+<ul>
+<li>Lỗi trả về như <strong>giá trị</strong> (<code>Result</code>), không ném exception — nhanh hơn và không phải bắt ở khắp nơi. Test <code>ThemSanPham_SaiDinhDang_ValidationBehaviorChanTruocHandler</code> chứng minh handler và Unit of Work không được gọi.</li>
+</ul>
+<p>Phân biệt: <strong>validation đầu vào</strong> (định dạng, khoảng — behavior này) khác <strong>luật nghiệp vụ</strong> (đủ hàng — trong Domain). Domain vẫn tự bảo vệ bất biến; validator chặn sớm dữ liệu rác với thông báo tốt.</p>
+<h2>3. Unit of Work</h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">UnitOfWorkBehavior</span>&lt;<span class="hljs-title">TRequest</span>, <span class="hljs-title">TResponse</span>&gt;(<span class="hljs-params">IUnitOfWork uow</span>) : IPipelineBehavior&lt;TRequest, TResponse&gt;
+    <span class="hljs-keyword">where</span> TRequest : ICommand&lt;TResponse&gt; <span class="hljs-keyword">where</span> TResponse : IKetQua&lt;TResponse&gt;      <span class="hljs-comment">// CHỈ áp cho LỆNH</span></span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;TResponse&gt; <span class="hljs-title">Handle</span>(<span class="hljs-params">TRequest request, RequestHandlerDelegate&lt;TResponse&gt; next, CancellationToken ct</span>)</span>
+    {
+        <span class="hljs-keyword">var</span> kq = <span class="hljs-keyword">await</span> next();
+        <span class="hljs-keyword">if</span> (!kq.ThanhCong) <span class="hljs-keyword">return</span> kq;                    <span class="hljs-comment">// handler thất bại: không lưu gì</span>
+
+        <span class="hljs-keyword">try</span> { <span class="hljs-keyword">await</span> uow.LuuAsync(ct); }
+        <span class="hljs-keyword">catch</span> (ConcurrencyException) { <span class="hljs-keyword">return</span> TResponse.TuLoi(Loi.XungDot(<span class="hljs-string">&quot;Kho.XungDotDongThoi&quot;</span>, <span class="hljs-string">&quot;Du lieu vua bi nguoi khac thay doi, vui long thu lai&quot;</span>)); }
+        <span class="hljs-keyword">catch</span> (TrungLapException e)  { <span class="hljs-keyword">return</span> TResponse.TuLoi(Loi.XungDot(<span class="hljs-string">&quot;Kho.TrungLap&quot;</span>, e.Message)); }
+        <span class="hljs-keyword">return</span> kq;
+    }
+}
+</code></pre>
+<p>Điểm hay:</p>
+<ul>
+<li><strong>Constraint <code>where TRequest : ICommand&lt;TResponse&gt;</code></strong> giới hạn behavior này <strong>chỉ cho lệnh</strong>. Đăng ký mở <code>typeof(IPipelineBehavior&lt;,&gt;) → UnitOfWorkBehavior&lt;,&gt;</code>; với query (không thoả constraint) DI <strong>tự bỏ qua</strong> (test <code>TruyVan_KhongDiQuaUnitOfWorkBehavior</code>: truy vấn không bao giờ lưu).</li>
+<li><strong>Handler không bao giờ gọi <code>Save</code></strong> — không thể quên; luôn &quot;một lệnh = một lần lưu = một giao dịch&quot;.</li>
+<li><strong>Dịch lỗi hạ tầng sang ngôn ngữ nghiệp vụ</strong>: <code>ConcurrencyException</code>/<code>TrungLapException</code> do Infrastructure ném (từ <code>DbUpdateConcurrencyException</code>/UNIQUE) → <code>Loi.XungDot</code> → HTTP <code>409</code>. Test <code>XungDotDongThoi_...</code> mô phỏng bằng UoW giả nem exception.</li>
+<li>Lưu ý: nếu <code>LuuAsync</code> thành công thì aggregate và <strong>outbox</strong> (sự kiện miền) đã được ghi cùng giao dịch (Chương 8).</li>
+</ul>
+<h2>Thứ tự quan trọng</h2>
+<pre class="hljs"><code>services.AddMediator(assembly, <span class="hljs-keyword">typeof</span>(LoggingBehavior&lt;,&gt;), <span class="hljs-keyword">typeof</span>(ValidationBehavior&lt;,&gt;), <span class="hljs-keyword">typeof</span>(UnitOfWorkBehavior&lt;,&gt;));
+<span class="hljs-comment">//                             ngoài cùng  ───────────────────────────────────────────────────►  trong cùng</span>
+</code></pre>
+<p>Thứ tự đăng ký = thứ tự <strong>từ ngoài vào trong</strong>. Lý do chọn:</p>
+<ol>
+<li><strong>Logging</strong> ngoài cùng: thấy cả những request bị validation chặn.</li>
+<li><strong>Validation</strong> trước UoW: dữ liệu sai thì khỏi mở giao dịch.</li>
+<li><strong>UnitOfWork</strong> trong cùng, sát handler: chỉ lưu khi handler đã xong.</li>
+</ol>
+<p>Nếu thêm <strong>Authorization</strong> (kiểm tra quyền): đặt <em>trước</em> validation (từ chối sớm mà không tốn công); <strong>Caching</strong> (chỉ query): đặt trước handler, sau authorization; <strong>Retry</strong> (lỗi tạm thời): bọc quanh UoW.</p>
+<p>Test <code>Pipeline_ChayTheoThuTuNgoaiVaoTrongRoiTrongRaNgoai</code> chứng minh bằng hai behavior ghi vết: <code>[&quot;A:vao&quot;,&quot;B:vao&quot;,&quot;B:ra&quot;,&quot;A:ra&quot;]</code>.</p>
+<h2>Thêm behavior: ví dụ cache cho truy vấn</h2>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">ICachedQuery</span> { <span class="hljs-built_in">string</span> CacheKey { <span class="hljs-keyword">get</span>; } TimeSpan ThoiGianSong { <span class="hljs-keyword">get</span>; } }
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">CachingBehavior</span>&lt;<span class="hljs-title">TRequest</span>, <span class="hljs-title">TResponse</span>&gt;(<span class="hljs-params">IMemoryCache cache</span>) : IPipelineBehavior&lt;TRequest, TResponse&gt;
+    <span class="hljs-keyword">where</span> TRequest : IQuery&lt;TResponse&gt;, ICachedQuery <span class="hljs-keyword">where</span> TResponse : IKetQua&lt;TResponse&gt;</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;TResponse&gt; <span class="hljs-title">Handle</span>(<span class="hljs-params">TRequest request, RequestHandlerDelegate&lt;TResponse&gt; next, CancellationToken ct</span>)</span>
+    {
+        <span class="hljs-keyword">if</span> (cache.TryGetValue(request.CacheKey, <span class="hljs-keyword">out</span> TResponse? trongCache) &amp;&amp; trongCache <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span>) <span class="hljs-keyword">return</span> trongCache;
+        <span class="hljs-keyword">var</span> kq = <span class="hljs-keyword">await</span> next();
+        <span class="hljs-keyword">if</span> (kq.ThanhCong) cache.Set(request.CacheKey, kq, request.ThoiGianSong);       <span class="hljs-comment">// chỉ cache kết quả THÀNH CÔNG</span>
+        <span class="hljs-keyword">return</span> kq;
+    }
+}
+</code></pre>
+<p>Truy vấn nào muốn cache chỉ cần <code>implements ICachedQuery</code> — không sửa handler (Chương 10 nói kỹ về chiến lược cache và vô hiệu hoá).</p>
+<h2>Behavior, middleware hay filter?</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Middleware (<a href="http://ASP.NET">ASP.NET</a>)</th>
+<th>Endpoint filter</th>
+<th><strong>Pipeline behavior</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tầng</td>
+<td>HTTP, mọi request</td>
+<td>endpoint HTTP</td>
+<td><strong>Application</strong> (ca sử dụng)</td>
+</tr>
+<tr>
+<td>Biết HTTP?</td>
+<td>có</td>
+<td>có</td>
+<td><strong>không</strong></td>
+</tr>
+<tr>
+<td>Dùng cho</td>
+<td>lỗi toàn cục, xác thực, CORS, nén</td>
+<td>validation HTTP, ánh xạ tham số</td>
+<td>log nghiệp vụ, validation lệnh, giao dịch, cache</td>
+</tr>
+<tr>
+<td>Tái sử dụng khi đổi giao diện (gRPC, worker)</td>
+<td>không</td>
+<td>không</td>
+<td><strong>có</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Quy tắc: mối quan tâm <strong>thuộc HTTP</strong> → middleware/filter; <strong>thuộc nghiệp vụ/ca sử dụng</strong> → behavior (chạy được cả từ worker, message consumer, test).</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Đặt thứ tự sai (UoW ngoài validation → mở giao dịch cho dữ liệu rác; logging trong cùng → không thấy lỗi validation).</li>
+<li>Handler <strong>vẫn</strong> tự gọi <code>Save</code> (lưu hai lần hoặc lưu ngay cả khi behavior sau đó thất bại).</li>
+<li>Behavior cho query có tác dụng phụ (ghi DB) hoặc behavior giao dịch chạy cả với query (mở giao dịch vô ích).</li>
+<li>Ném exception thay vì trả <code>Result</code> trong behavior → phá luồng xử lý lỗi thống nhất.</li>
+<li>Cache theo khoá thiếu tham số (kết quả người này lộ cho người khác) hoặc cache cả kết quả lỗi.</li>
+<li>Log nội dung request chứa mật khẩu/thẻ.</li>
+<li>Behavior quá nhiều, mỗi request đi qua 10 lớp — cân nhắc lại.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết <code>TimingBehavior</code> cảnh báo (<code>LogWarning</code>) khi ca sử dụng chậm hơn 500 ms; đặt ở vị trí hợp lý.</li>
+<li>Viết <code>AuthorizationBehavior</code> với attribute <code>[YeuCauVaiTro(&quot;Admin&quot;)]</code> trên command và cổng <code>IUserContext</code> (Application) — Web cung cấp cài đặt từ <code>HttpContext</code>.</li>
+<li>Viết <code>RetryBehavior</code> cho lỗi tạm thời (<code>TimeoutException</code>) tối đa 3 lần với backoff; chỉ áp dụng cho <strong>query</strong> hoặc lệnh idempotent.</li>
+<li>Thêm <code>CachingBehavior</code> ở trên và test: lần gọi thứ hai không chạm handler.</li>
+<li>Đổi thứ tự Validation và UnitOfWork; chạy bộ test và quan sát test nào đỏ. Giải thích.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch05-cqrs-mediator.html">&larr; 5. CQRS và Mediator</a><a class="nav-next" href="ch07-result-validation.html">7. Result pattern và validation &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

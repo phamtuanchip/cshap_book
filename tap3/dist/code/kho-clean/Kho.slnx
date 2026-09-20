@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Kho.Domain/Kho.Domain.csproj" />
+  <Project Path="Kho.Application/Kho.Application.csproj" />
+  <Project Path="Kho.Infrastructure/Kho.Infrastructure.csproj" />
+  <Project Path="Kho.Web/Kho.Web.csproj" />
+  <Project Path="Kho.Tests/Kho.Tests.csproj" />
+</Solution>

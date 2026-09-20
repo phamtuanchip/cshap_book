@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 1 — Từ khối đơn nhất đến kiến trúc phân lớp — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><span class="chapter-link pending">9. Chiến lược kiểm thử</span></li><li><span class="chapter-link pending">10. Caching</span></li><li><span class="chapter-link pending">11. Quan sát và hiệu năng</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">12. OpenID Connect và OAuth 2.0</span></li><li><span class="chapter-link pending">13. Idempotency, audit log và bảo vệ dữ liệu</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><span class="chapter-link pending">14. Docker và docker-compose</span></li><li><span class="chapter-link pending">15. CI/CD với GitHub Actions</span></li><li><span class="chapter-link pending">16. Triển khai lên máy chủ và đám mây</span></li><li><span class="chapter-link pending">17. Microservices và giao tiếp giữa dịch vụ</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</span></li><li><span class="chapter-link pending">20. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 1 — Từ khối đơn nhất đến kiến trúc phân lớp</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Nhận ra các dấu hiệu của <strong>&quot;quả cầu bùn&quot; (big ball of mud)</strong> và hiểu vì sao kiến trúc quan trọng khi hệ thống lớn dần.</li>
+<li>Nắm <strong>Layered, Onion, Hexagonal (Ports &amp; Adapters), Clean Architecture</strong> và điểm chung: <strong>quy tắc phụ thuộc</strong>.</li>
+<li>Biết cách chia solution thành <strong>Domain / Application / Infrastructure / Web</strong>.</li>
+<li>Biến quy tắc kiến trúc thành <strong>kiểm thử tự động</strong>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch01-kien-truc/"><code>code/ch01-kien-truc/</code></a> — bộ khung 4 tầng cực nhỏ kèm 6 <strong>architecture test</strong> (đều đạt).</p>
+<blockquote>
+<p>Tập 3 giả định bạn đã đọc Tập 1–2. Dự án Chương 22 (Tập 2) chính là &quot;điểm xuất phát&quot; ta sẽ tái cấu trúc.</p>
+</blockquote>
+<h2>Vấn đề: hệ thống lớn lên</h2>
+<p>Dự án Chương 22 chạy tốt: endpoint gọi <code>KhoService</code>, <code>KhoService</code> dùng thẳng <code>DbContext</code>. Với 4 màn hình điều đó ổn. Nhưng sau hai năm, 40 đội tính năng, 300 endpoint:</p>
+<ul>
+<li>Logic nghiệp vụ <strong>rải khắp</strong>: một phần trong endpoint, một phần trong service, một phần trong câu SQL, một phần trong JavaScript.</li>
+<li>Thay đổi cách lưu trữ (đổi CSDL, thêm cache) làm <strong>vỡ</strong> nghiệp vụ; sửa nghiệp vụ lại đụng vào code truy cập dữ liệu.</li>
+<li><strong>Không test được</strong> nghiệp vụ nếu không dựng cả CSDL và HTTP.</li>
+<li>Ai cũng gọi mọi thứ: <code>Controller → DbContext → Controller khác</code>... phụ thuộc chằng chịt (vòng tròn).</li>
+<li>Người mới mất vài tuần để hiểu &quot;cái gì ở đâu&quot;.</li>
+</ul>
+<p>Đó là <strong>big ball of mud</strong>: mọi thứ phụ thuộc mọi thứ. Kiến trúc là tập quy tắc <strong>giới hạn ai được phụ thuộc ai</strong> để thay đổi ở một nơi không lan ra khắp nơi.</p>
+<blockquote>
+<p><strong>Đừng vội &quot;kiến trúc hoá&quot;.</strong> Với ứng dụng CRUD nhỏ, kiến trúc một khối như Tập 2 là <strong>lựa chọn đúng</strong> (đơn giản hơn = ít lỗi hơn). Kiến trúc phân lớp trả giá bằng nhiều project, nhiều ánh xạ, nhiều &quot;nghi thức&quot; — chỉ đáng khi <strong>độ phức tạp nghiệp vụ</strong> hoặc <strong>quy mô đội/vòng đời</strong> đủ lớn. Hãy tiến hoá dần: bắt đầu đơn giản, tách khi cơn đau xuất hiện.</p>
+</blockquote>
+<h2>Kiến trúc phân lớp truyền thống (N-tier)</h2>
+<pre class="mermaid">flowchart TB
+    P[&quot;Presentation (Web/UI)&quot;] --&gt; B[&quot;Business Logic&quot;] --&gt; D[&quot;Data Access&quot;] --&gt; DB[(&quot;CSDL&quot;)]
+</pre>
+<p>Phụ thuộc đi <strong>một chiều từ trên xuống</strong>: giao diện → nghiệp vụ → truy cập dữ liệu. Đơn giản, quen thuộc. Vấn đề: <strong>nghiệp vụ phụ thuộc vào tầng dữ liệu</strong> (nó gọi <code>DbContext</code>/repository cụ thể) — nên kiểu CSDL, cấu trúc bảng, ORM &quot;rò rỉ&quot; vào nghiệp vụ; nghiệp vụ khó test và bị ràng buộc với công nghệ.</p>
+<h2>Đảo ngược phụ thuộc: Onion / Hexagonal / Clean</h2>
+<p>Ba tên gọi (Jeffrey Palermo — <em>Onion</em>, Alistair Cockburn — <em>Hexagonal/Ports &amp; Adapters</em>, Robert Martin — <em>Clean Architecture</em>) cùng một ý tưởng: <strong>nghiệp vụ ở trung tâm, không phụ thuộc gì cả; mọi thứ kỹ thuật ở ngoài phụ thuộc vào nghiệp vụ.</strong></p>
+<pre class="mermaid">flowchart LR
+    subgraph Trong[&quot;TRUNG TÂM&quot;]
+        D[&quot;Domain&lt;br/&gt;(thực thể, quy tắc)&quot;]
+        A[&quot;Application&lt;br/&gt;(ca sử dụng + CỔNG/interface)&quot;]
+    end
+    subgraph Ngoai[&quot;VÒNG NGOÀI&quot;]
+        I[&quot;Infrastructure&lt;br/&gt;(EF Core, email, file, HTTP client)&quot;]
+        W[&quot;Web / API / Worker&quot;]
+    end
+    A --&gt; D
+    I --&gt; A
+    W --&gt; A
+    W -.-&gt;|&quot;composition root&lt;br/&gt;lắp ráp&quot;| I
+</pre>
+<p><strong>Quy tắc phụ thuộc (Dependency Rule):</strong> <em>mã nguồn chỉ được phụ thuộc vào vòng trong, không bao giờ vào vòng ngoài.</em> Mũi tên tham chiếu (<code>ProjectReference</code>) luôn chỉ <strong>vào trung tâm</strong>.</p>
+<p>Làm sao nghiệp vụ dùng CSDL mà không phụ thuộc vào nó? Nhờ <strong>Dependency Inversion</strong> (Tập 1, Chương 42): tầng Application <strong>định nghĩa interface</strong> (cổng — <em>port</em>) <code>ISanPhamRepository</code>; tầng Infrastructure <strong>cài đặt</strong> (bộ điều hợp — <em>adapter</em>). Nghiệp vụ chỉ biết cổng.</p>
+<pre class="hljs"><code><span class="hljs-comment">// Application/SanPhamService.cs — biết Domain, KHÔNG biết EF hay Web</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">ISanPhamRepository</span> { Task&lt;SanPham?&gt; LayAsync(<span class="hljs-built_in">int</span> id, CancellationToken ct); ... }
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SanPhamService</span>(<span class="hljs-params">ISanPhamRepository repo</span>)</span> { ... }
+
+<span class="hljs-comment">// Infrastructure/... — cài đặt cổng bằng EF Core / in-memory / API ngoài</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">InMemorySanPhamRepository</span> : <span class="hljs-title">ISanPhamRepository</span> { ... }
+
+<span class="hljs-comment">// Web/Program.cs — COMPOSITION ROOT: nơi duy nhất biết tất cả và nối chúng lại</span>
+builder.Services.AddSingleton&lt;ISanPhamRepository, InMemorySanPhamRepository&gt;();
+</code></pre>
+<p>Lợi ích:</p>
+<ul>
+<li><strong>Test nghiệp vụ không cần hạ tầng</strong>: thay repository bằng bản giả trong bộ nhớ.</li>
+<li><strong>Thay công nghệ dễ</strong>: đổi SQL Server → PostgreSQL, thêm cache, gọi API thay vì CSDL — chỉ viết adapter mới.</li>
+<li><strong>Nghiệp vụ tập trung</strong> một chỗ, đọc như &quot;ngôn ngữ của doanh nghiệp&quot;.</li>
+<li>Framework (<a href="http://ASP.NET">ASP.NET</a>, EF) là <strong>chi tiết</strong>, không phải trung tâm ứng dụng — ứng dụng &quot;sống&quot; lâu hơn framework.</li>
+</ul>
+<h2>Bốn tầng và trách nhiệm</h2>
+<table>
+<thead>
+<tr>
+<th>Tầng (project)</th>
+<th>Chứa gì</th>
+<th>Được tham chiếu tới</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Domain</strong></td>
+<td>thực thể, value object, quy tắc nghiệp vụ, sự kiện miền, interface thuần miền</td>
+<td><strong>không gì cả</strong></td>
+</tr>
+<tr>
+<td><strong>Application</strong></td>
+<td>ca sử dụng (command/query handler, service), <strong>cổng</strong> (<code>IRepository</code>, <code>IEmailSender</code>, <code>IClock</code>), DTO</td>
+<td>Domain</td>
+</tr>
+<tr>
+<td><strong>Infrastructure</strong></td>
+<td>EF Core (<code>DbContext</code>, migration, repository), gửi email, gọi API ngoài, file, cache</td>
+<td>Application (+ Domain)</td>
+</tr>
+<tr>
+<td><strong>Web/API/Worker</strong></td>
+<td>endpoint/controller, DI (composition root), middleware, cấu hình</td>
+<td>Application, Infrastructure</td>
+</tr>
+</tbody>
+</table>
+<p>Cấu trúc solution mẫu (<code>ch01-kien-truc</code>):</p>
+<pre class="hljs"><code>KienTruc.slnx
+├── KienTruc.Domain/           # SanPham — không tham chiếu gì
+├── KienTruc.Application/      # ISanPhamRepository + SanPhamService — tham chiếu Domain
+├── KienTruc.Infrastructure/   # InMemorySanPhamRepository — tham chiếu Application
+├── KienTruc.Web/              # Program.cs (composition root) — tham chiếu Application + Infrastructure
+└── KienTruc.Tests/            # kiểm thử kiến trúc
+</code></pre>
+<p>Lưu ý: <code>Infrastructure</code> <strong>tham chiếu</strong> <code>Application</code> (để cài đặt interface của nó) chứ <strong>không</strong> ngược lại. Đây là chỗ &quot;đảo ngược&quot; so với N-tier (ở đó nghiệp vụ tham chiếu dữ liệu).</p>
+<h2>Biến quy tắc thành kiểm thử</h2>
+<p>Quy tắc kiến trúc chỉ tồn tại trên giấy nếu không có gì ngăn ai đó thêm <code>using Microsoft.EntityFrameworkCore;</code> vào Domain &quot;cho tiện&quot;. <strong>Architecture test</strong> giải quyết:</p>
+<pre class="hljs"><code>[<span class="hljs-meta">Fact</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Domain_KhongPhuThuocBatKyThuGiGi</span>()</span>
+{
+    Assert.Empty(ThamChieuDuAn(<span class="hljs-string">&quot;KienTruc.Domain&quot;</span>));     <span class="hljs-comment">// đọc &lt;ProjectReference&gt; trong .csproj</span>
+    Assert.Empty(GoiNuGet(<span class="hljs-string">&quot;KienTruc.Domain&quot;</span>));            <span class="hljs-comment">// và &lt;PackageReference&gt;</span>
+}
+
+[<span class="hljs-meta">Fact</span>] <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Application_ChiPhuThuocDomain</span>()</span> =&gt; Assert.Equal([<span class="hljs-string">&quot;KienTruc.Domain&quot;</span>], ThamChieuDuAn(<span class="hljs-string">&quot;KienTruc.Application&quot;</span>));
+
+[<span class="hljs-meta">Fact</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Domain_KhongThamChieuAssemblyHaTang</span>()</span>
+{
+    <span class="hljs-keyword">var</span> cam = <span class="hljs-keyword">new</span>[] { <span class="hljs-string">&quot;Microsoft.EntityFrameworkCore&quot;</span>, <span class="hljs-string">&quot;Microsoft.AspNetCore&quot;</span>, <span class="hljs-string">&quot;System.Data&quot;</span>, <span class="hljs-string">&quot;Newtonsoft&quot;</span> };
+    <span class="hljs-keyword">var</span> duocGoi = <span class="hljs-keyword">typeof</span>(SanPham).Assembly.GetReferencedAssemblies().Select(a =&gt; a.Name!);
+    Assert.DoesNotContain(duocGoi, ten =&gt; cam.Any(c =&gt; ten.StartsWith(c)));       <span class="hljs-comment">// kiểm tra cả ở mức assembly</span>
+}
+</code></pre>
+<p>Trong CI, test hỏng ⇒ pull request bị chặn. Thư viện <strong>NetArchTest.Rules</strong> hoặc <strong>ArchUnitNET</strong> viết được quy tắc phong phú hơn (kiểu/namespace/thuộc tính): &quot;mọi lớp <code>*Handler</code> nằm trong Application&quot;, &quot;lớp trong Domain không <code>public set</code>&quot;... Mẫu tự viết ở trên đủ cho bốn quy tắc nền tảng.</p>
+<h2>Cách tổ chức trong mỗi tầng: theo chiều dọc</h2>
+<p>Trong Application, đừng gom mọi thứ theo <em>loại kỹ thuật</em> (<code>Services/</code>, <code>Dtos/</code>, <code>Validators/</code> — thư mục nào cũng phình to). Nhóm theo <strong>tính năng</strong> (vertical slice):</p>
+<pre class="hljs"><code>Application/
+├── SanPham/
+│   ├── ThemSanPham/      (Command, Handler, Validator, Result)
+│   └── TimSanPham/       (Query, Handler, Dto)
+└── DonHang/ ...
+</code></pre>
+<p>Mọi thứ cho một ca sử dụng nằm cạnh nhau: dễ tìm, dễ xoá, ít xung đột merge (Chương 5).</p>
+<h2>Khi nào chọn gì?</h2>
+<table>
+<thead>
+<tr>
+<th>Tình huống</th>
+<th>Gợi ý</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CRUD nhỏ, đội 1–3 người, vòng đời ngắn</td>
+<td>một project, vertical slice đơn giản (như Tập 2)</td>
+</tr>
+<tr>
+<td>Nghiệp vụ phức tạp, nhiều quy tắc, sống nhiều năm</td>
+<td><strong>Clean Architecture / DDD</strong></td>
+</tr>
+<tr>
+<td>Nhiều đội độc lập, cần deploy riêng</td>
+<td><strong>Modular monolith</strong> (mỗi module một bộ Domain/Application/Infra, giao tiếp qua hợp đồng) → cân nhắc <strong>microservices</strong> khi thật cần (Chương 17)</td>
+</tr>
+<tr>
+<td>Cần thay CSDL/nhà cung cấp linh hoạt, test nghiệp vụ dày</td>
+<td>Ports &amp; Adapters</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Modular monolith</strong> (một ứng dụng triển khai một khối, nhưng chia module có ranh giới rõ, không truy cập bảng của nhau) là điểm khởi đầu thực dụng nhất cho đa số hệ thống lớn: hưởng lợi kiến trúc mà chưa phải trả chi phí phân tán.</p>
+<h2>Chi phí và cạm bẫy</h2>
+<ul>
+<li><strong>Nhiều &quot;nghi thức&quot;</strong>: DTO ↔ entity ↔ view model; interface cho mọi thứ. Mỗi lớp thêm ma sát — chỉ đáng khi nó bảo vệ một ranh giới thật.</li>
+<li><strong>Anemic domain</strong>: Domain chỉ là túi dữ liệu (<code>get/set</code>), mọi logic dồn vào service — mất hết lợi ích (Chương 3).</li>
+<li><strong>Đảo ngược quá mức</strong>: interface cho thứ không bao giờ đổi (<code>IDateTimeWrapper</code> cho mọi hàm) — chỉ đảo ngược ở <strong>ranh giới I/O</strong> (CSDL, mạng, thời gian, file).</li>
+<li><strong>&quot;Tầng Shared/Common&quot; phình to</strong>: thùng rác kéo mọi phụ thuộc lại với nhau.</li>
+<li>Kiến trúc đẹp trên giấy nhưng đội không tuân thủ → dùng architecture test và review.</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Domain tham chiếu <code>Microsoft.EntityFrameworkCore</code> (đặt attribute EF trong entity) — dùng Fluent API bên Infrastructure.</li>
+<li>Application gọi thẳng <code>DbContext</code> (chưa qua cổng) rồi vẫn gọi là &quot;Clean&quot;.</li>
+<li>Infrastructure tham chiếu Web hoặc ngược lại tạo vòng.</li>
+<li>Đặt logic nghiệp vụ trong controller/endpoint hoặc trong Infrastructure (SQL/stored procedure).</li>
+<li>Chia project nhưng không có test kiến trúc → sau 6 tháng quy tắc bị phá.</li>
+<li>Áp Clean Architecture cho ứng dụng CRUD 5 bảng.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm <code>KienTruc.Infrastructure</code> một cài đặt thứ hai của <code>ISanPhamRepository</code> (đọc từ file JSON) và đổi bằng một dòng ở composition root.</li>
+<li>Viết architecture test: mọi lớp trong <code>KienTruc.Domain</code> <strong>không</strong> có property <code>public set</code> (dùng reflection).</li>
+<li>Cố tình thêm <code>using Microsoft.AspNetCore...;</code> và <code>&lt;PackageReference&gt;</code> vào Domain rồi xem test nào đỏ.</li>
+<li>Vẽ sơ đồ các tầng cho dự án Chương 22 sau tái cấu trúc: <code>KhoService</code> đi về tầng nào? <code>KhoDb</code>? <code>JwtOptions</code>?</li>
+<li>Liệt kê ba ràng buộc nghiệp vụ trong Chương 22 và quyết định chúng nằm ở Domain, Application hay Infrastructure.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><span></span><a class="nav-next" href="ch02-clean-architecture.html">2. Clean Architecture thực hành &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
