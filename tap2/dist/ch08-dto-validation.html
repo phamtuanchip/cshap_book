@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 8 — DTO và Validation — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link active" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><span class="chapter-link pending">11. SQL cơ bản và SQLite</span></li><li><span class="chapter-link pending">12. Entity Framework Core cơ bản</span></li><li><span class="chapter-link pending">13. Quan hệ, truy vấn nâng cao và hiệu năng</span></li><li><span class="chapter-link pending">14. Web API hoàn chỉnh với EF Core</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><span class="chapter-link pending">15. ASP.NET Core MVC</span></li><li><span class="chapter-link pending">16. Razor Pages</span></li><li><span class="chapter-link pending">17. Form, validation phía server và chống CSRF</span></li><li><span class="chapter-link pending">18. Blazor</span></li><li><span class="chapter-link pending">19. Gọi API ngoài với HttpClient</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 8 — DTO và Validation</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>DTO</strong> là gì và vì sao <strong>không bao giờ</strong> trả/nhận thẳng entity nội bộ.</li>
+<li>Kiểm tra dữ liệu bằng <strong>DataAnnotations</strong>, <code>IValidatableObject</code> và attribute tự viết.</li>
+<li>Đọc và tuỳ chỉnh lỗi validation theo chuẩn <strong>ProblemDetails</strong>.</li>
+<li>Validation cho Minimal API; biết tới FluentValidation; phân biệt kiểm tra <strong>định dạng</strong> và <strong>nghiệp vụ</strong>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch08-dto-validation/"><code>code/ch08-dto-validation/</code></a>.</p>
+<h2>Vấn đề: đừng lộ entity</h2>
+<p>Ở Chương 7, controller nhận/trả thẳng class <code>Customer</code>. Với dữ liệu thật, đó là con đường dẫn tới lỗi và lộ bí mật:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SanPham</span>            <span class="hljs-comment">// entity nội bộ</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> Id { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Ten { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-string">&quot;&quot;</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> Gia { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> GiaVon { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }      <span class="hljs-comment">// bí mật kinh doanh!</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span>? EmailNhaCungCap { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+}
+
+[<span class="hljs-meta">HttpPost</span>] <span class="hljs-function"><span class="hljs-keyword">public</span> IActionResult <span class="hljs-title">Tao</span>(<span class="hljs-params">SanPham sp</span>)</span> { ... }    <span class="hljs-comment">// ✘ client tự gửi &quot;id&quot;, &quot;giaVon&quot;</span>
+[<span class="hljs-meta">HttpGet</span>]  <span class="hljs-function"><span class="hljs-keyword">public</span> List&lt;SanPham&gt; <span class="hljs-title">Lay</span>() ...                   <span class="hljs-comment">// ✘ trả cả GiaVon, email nội bộ</span>
+</span></code></pre>
+<p>Hai lỗ hổng cùng một gốc:</p>
+<ul>
+<li><strong>Over-posting (mass assignment)</strong>: client gửi thêm trường không được phép (<code>&quot;id&quot;: 1</code>, <code>&quot;isAdmin&quot;: true</code>, <code>&quot;giaVon&quot;: 1</code>) và server gán luôn.</li>
+<li><strong>Data leak</strong>: trả về mọi thuộc tính, gồm cả thứ nhạy cảm.</li>
+</ul>
+<p>Ngoài ra, ràng buộc entity với API làm <strong>mọi thay đổi bên trong</strong> (đổi tên cột, tách bảng) vỡ hợp đồng với client.</p>
+<h2>DTO — Data Transfer Object</h2>
+<p><strong>DTO</strong> là kiểu chỉ dùng để <strong>truyền dữ liệu qua ranh giới</strong> (API), tách biệt với entity. Nguyên tắc: <strong>DTO vào ≠ DTO ra ≠ entity.</strong></p>
+<pre class="hljs"><code><span class="hljs-comment">// DTO vào: chỉ những trường client được phép gửi</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TaoSanPhamRequest</span> { <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span>? Ten { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">init</span>; } <span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> Gia { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">init</span>; } ... }
+
+<span class="hljs-comment">// DTO ra: chỉ những gì client cần biết</span>
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">record</span> <span class="hljs-title">SanPhamResponse</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> Id, <span class="hljs-built_in">string</span> Ma, <span class="hljs-built_in">string</span> Ten, <span class="hljs-built_in">decimal</span> Gia, IReadOnlyList&lt;<span class="hljs-built_in">string</span>&gt; The</span>)</span>;
+</code></pre>
+<p>Anh xa (mapping) qua extension method:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> SanPhamResponse <span class="hljs-title">ToResponse</span>(<span class="hljs-params"><span class="hljs-keyword">this</span> SanPham s</span>)</span> =&gt; <span class="hljs-keyword">new</span>(s.Id, s.Ma, s.Ten, s.Gia, s.The);
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> SanPham <span class="hljs-title">ToEntity</span>(<span class="hljs-params"><span class="hljs-keyword">this</span> TaoSanPhamRequest r</span>)</span> =&gt; <span class="hljs-keyword">new</span>() { Ma = r.Ma!, Ten = r.Ten!.Trim(), Gia = r.Gia, GiaVon = r.Gia * <span class="hljs-number">0.7m</span>, ... };
+</code></pre>
+<p>Chạy code mẫu: <code>GET /api/san-pham/1</code> <strong>không</strong> có <code>giaVon</code>, dù entity có. Có thư viện mapping (<strong>AutoMapper</strong>, <strong>Mapster</strong>) nhưng nhiều đội chọn code tay: tường minh, kiểm tra được lúc biên dịch, không &quot;phép thuật&quot; — hợp với dự án vừa và nhỏ. Với <code>record</code>/<code>init</code> (Tập 1, Chương 32) DTO gọn và bất biến.</p>
+<p>Quy ước đặt tên: <code>TaoSanPhamRequest</code>/<code>CapNhatSanPhamRequest</code> (vào), <code>SanPhamResponse</code>/<code>SanPhamDto</code> (ra); mỗi thao tác có DTO riêng vì trường bắt buộc khác nhau (tạo mới cần <code>Ma</code>; cập nhật thì không cho đổi <code>Ma</code>).</p>
+<h2>DataAnnotations</h2>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TaoSanPhamRequest</span>
+{
+    [<span class="hljs-meta">Required(ErrorMessage = <span class="hljs-string">&quot;Ten san pham la bat buoc&quot;</span>)</span>]
+    [<span class="hljs-meta">StringLength(100, MinimumLength = 2, ErrorMessage = <span class="hljs-string">&quot;Ten phai tu 2 den 100 ky tu&quot;</span>)</span>]
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span>? Ten { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">init</span>; }
+
+    [<span class="hljs-meta">Required(ErrorMessage = <span class="hljs-string">&quot;Ma san pham la bat buoc&quot;</span>)</span>]
+    [<span class="hljs-meta">RegularExpression(<span class="hljs-string">&quot;^[A-Z]{2}[0-9]{3}$&quot;</span>, ErrorMessage = <span class="hljs-string">&quot;Ma phai co dang 2 chu HOA + 3 so, vi du LT001&quot;</span>)</span>]
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span>? Ma { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">init</span>; }
+
+    [<span class="hljs-meta">Range(1_000, 1_000_000_000, ErrorMessage = <span class="hljs-string">&quot;Gia phai tu 1.000 den 1 ty&quot;</span>)</span>]
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> Gia { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">init</span>; }
+
+    [<span class="hljs-meta">EmailAddress</span>] <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span>? EmailNhaCungCap { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">init</span>; }
+    [<span class="hljs-meta">MaxLength(5)</span>] <span class="hljs-keyword">public</span> List&lt;<span class="hljs-built_in">string</span>&gt; The { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">init</span>; } = [];
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Kiểm tra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[Required]</code></td>
+<td>không null (và với <code>string</code>: không rỗng)</td>
+</tr>
+<tr>
+<td><code>[StringLength]</code>, <code>[MinLength]</code>, <code>[MaxLength]</code></td>
+<td>độ dài chuỗi/số phần tử</td>
+</tr>
+<tr>
+<td><code>[Range]</code></td>
+<td>khoảng số/ngày</td>
+</tr>
+<tr>
+<td><code>[RegularExpression]</code></td>
+<td>khớp mẫu regex</td>
+</tr>
+<tr>
+<td><code>[EmailAddress]</code>, <code>[Url]</code>, <code>[Phone]</code>, <code>[CreditCard]</code></td>
+<td>định dạng thường gặp</td>
+</tr>
+<tr>
+<td><code>[Compare(&quot;Field&quot;)]</code></td>
+<td>bằng trường khác (xác nhận mật khẩu)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lưu ý nullable:</strong> thuộc tính <code>string Ten</code> (không nullable) bị coi là <code>[Required]</code> ngầm định dưới nullable reference types; nhưng để <strong>thông báo lỗi</strong> như mong muốn và phân biệt &quot;thiếu&quot; với &quot;rỗng&quot;, khai báo <code>string?</code> kèm <code>[Required]</code> như trên rất phổ biến. Với kiểu giá trị (<code>decimal Gia</code>), thiếu trong JSON sẽ mang giá trị <code>0</code> (không phải &quot;thiếu&quot;) — nếu cần bắt buộc thật sự hãy dùng <code>decimal?</code> + <code>[Required]</code> hoặc <code>required</code> (C# 11).</p>
+<h3>Kết quả: 400 với ValidationProblemDetails</h3>
+<p>Với <code>[ApiController]</code>, request sai <strong>không chạm tới action</strong>; framework trả ngay:</p>
+<pre class="hljs"><code><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Du lieu gui len khong hop le&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">400</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;instance&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/api/san-pham&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;errors&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;Ma&quot;</span><span class="hljs-punctuation">:</span>  <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;Ma phai co dang 2 chu HOA + 3 so, vi du LT001&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;Gia&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;Gia phai tu 1.000 den 1 ty&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;Ten&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;Ten khong duoc chua tu &#x27;re rach&#x27;&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;The&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;Toi da 5 the&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;EmailNhaCungCap&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;Email lien he khong dung dinh dang&quot;</span><span class="hljs-punctuation">]</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;traceId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0HN...&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p>Mọi lỗi được trả <strong>một lần</strong> (không dừng ở lỗi đầu tiên) để client hiển thị tất cả bên cạnh các ô nhập. Dạng này chuẩn <strong>RFC 9457 Problem Details</strong> (<code>application/problem+json</code>). Tuỳ chỉnh (đổi tiêu đề, thêm <code>traceId</code>) qua <code>ConfigureApiBehaviorOptions(o =&gt; o.InvalidModelStateResponseFactory = ...)</code> như trong <code>Program.cs</code> mẫu.</p>
+<h2>Attribute tự viết</h2>
+<p>Dùng lại một quy tắc ở nhiều DTO (nhờ Tập 1, Chương 37 — attribute):</p>
+<pre class="hljs"><code>[<span class="hljs-meta">AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">KhongChuaTuCamAttribute</span>(<span class="hljs-params"><span class="hljs-keyword">params</span> <span class="hljs-built_in">string</span>[] tuCam</span>) : ValidationAttribute</span>
+{
+    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> ValidationResult? IsValid(<span class="hljs-built_in">object</span>? <span class="hljs-keyword">value</span>, ValidationContext ctx)
+    {
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">value</span> <span class="hljs-keyword">is</span> <span class="hljs-built_in">string</span> s)
+            <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> tu <span class="hljs-keyword">in</span> tuCam)
+                <span class="hljs-keyword">if</span> (s.Contains(tu, StringComparison.OrdinalIgnoreCase))
+                    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ValidationResult(<span class="hljs-string">$&quot;<span class="hljs-subst">{ctx.DisplayName}</span> khong duoc chua tu &#x27;<span class="hljs-subst">{tu}</span>&#x27;&quot;</span>, [ctx.MemberName!]);
+        <span class="hljs-keyword">return</span> ValidationResult.Success;
+    }
+}
+
+[<span class="hljs-meta">KhongChuaTuCam(<span class="hljs-string">&quot;re rach&quot;</span>, <span class="hljs-string">&quot;hang gia&quot;</span>)</span>] <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span>? Ten { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">init</span>; }
+</code></pre>
+<h2>Kiểm tra chéo nhiều trường: <code>IValidatableObject</code></h2>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TaoSanPhamRequest</span> : <span class="hljs-title">IValidatableObject</span>
+{
+    <span class="hljs-keyword">public</span> DateOnly? KhuyenMaiTu { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">init</span>; }
+    <span class="hljs-keyword">public</span> DateOnly? KhuyenMaiDen { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">init</span>; }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;ValidationResult&gt; <span class="hljs-title">Validate</span>(<span class="hljs-params">ValidationContext ctx</span>)</span>
+    {
+        <span class="hljs-keyword">if</span> (KhuyenMaiTu <span class="hljs-keyword">is</span> { } tu &amp;&amp; KhuyenMaiDen <span class="hljs-keyword">is</span> { } den &amp;&amp; den &lt; tu)
+            <span class="hljs-function"><span class="hljs-keyword">yield</span> <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title">ValidationResult</span>(<span class="hljs-params"><span class="hljs-string">&quot;Ngay ket thuc khuyen mai phai sau ngay bat dau&quot;</span>,
+                [<span class="hljs-keyword">nameof</span>(KhuyenMaiTu</span>), <span class="hljs-title">nameof</span>(<span class="hljs-params">KhuyenMaiDen</span>)])</span>;
+    }
+}
+</code></pre>
+<blockquote>
+<p><strong>Bẫy:</strong> <code>Validate</code> của <code>IValidatableObject</code> <strong>chỉ chạy khi mọi validation cấp thuộc tính đã đạt.</strong> Trong ví dụ &quot;nhiều lỗi&quot; ở trên, lỗi ngày khuyến mãi không xuất hiện vì các lỗi khác đã chặn; gửi riêng một request chỉ sai ngày sẽ thấy nó. Đây là hành vi có chủ đích, đừng ngạc nhiên.</p>
+</blockquote>
+<h2>Định dạng ≠ nghiệp vụ</h2>
+<p>Hai tầng kiểm tra khác nhau:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Validation <strong>đầu vào</strong> (định dạng)</th>
+<th>Kiểm tra <strong>nghiệp vụ</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ví dụ</td>
+<td>tên không rỗng, email đúng dạng, giá trong khoảng</td>
+<td><strong>mã sản phẩm chưa tồn tại</strong>, đủ tồn kho, khách chưa bị khoá</td>
+</tr>
+<tr>
+<td>Cần dữ liệu ngoài request?</td>
+<td>Không</td>
+<td><strong>Có</strong> (CSDL, dịch vụ khác)</td>
+</tr>
+<tr>
+<td>Nơi thực hiện</td>
+<td>DataAnnotations/filter</td>
+<td><strong>dịch vụ nghiệp vụ</strong> (ném exception nghiệp vụ hoặc trả Result)</td>
+</tr>
+<tr>
+<td>Lỗi</td>
+<td><code>400 Bad Request</code></td>
+<td>thường <code>409 Conflict</code>, <code>422</code>, <code>404</code>... tuỳ trường hợp</td>
+</tr>
+</tbody>
+</table>
+<p>Trong controller mẫu: kiểm tra trùng mã là nghiệp vụ (cần kho dữ liệu), nên viết trong action/dịch vụ, và vẫn dùng <code>ModelState.AddModelError</code> + <code>ValidationProblem(ModelState)</code> để định dạng lỗi cùng dạng với các lỗi khác:</p>
+<pre class="hljs"><code><span class="hljs-keyword">if</span> (kho.TonTaiMa(req.Ma!))
+{
+    ModelState.AddModelError(<span class="hljs-keyword">nameof</span>(req.Ma), <span class="hljs-string">$&quot;Ma <span class="hljs-subst">{req.Ma}</span> da ton tai&quot;</span>);
+    <span class="hljs-keyword">return</span> ValidationProblem(ModelState);
+}
+</code></pre>
+<p>Đừng tin chỉ validation phía client (JavaScript) — dễ bị bỏ qua. <strong>Server luôn validate lại.</strong></p>
+<h2>Validation cho Minimal API</h2>
+<p>Minimal API <strong>không</strong> tự validate DataAnnotations (trước .NET 10; .NET 10 đã thêm <code>AddValidation()</code> cho Minimal API — kiểm tra tài liệu phiên bản bạn dùng). Cách chung, chạy trên mọi phiên bản: <strong>endpoint filter</strong> dùng <code>Validator.TryValidateObject</code>:</p>
+<pre class="hljs"><code>app.MapPost(<span class="hljs-string">&quot;/minimal/san-pham&quot;</span>, (TaoSanPhamRequest req) =&gt; ...)
+   .AddEndpointFilter(<span class="hljs-keyword">async</span> (ctx, next) =&gt;
+   {
+       <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> arg <span class="hljs-keyword">in</span> ctx.Arguments.Where(a =&gt; a <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span>))
+       {
+           <span class="hljs-keyword">var</span> ketQua = <span class="hljs-keyword">new</span> List&lt;ValidationResult&gt;();
+           <span class="hljs-keyword">if</span> (!Validator.TryValidateObject(arg!, <span class="hljs-keyword">new</span> ValidationContext(arg!), ketQua, validateAllProperties: <span class="hljs-literal">true</span>))
+               <span class="hljs-keyword">return</span> Results.ValidationProblem(GomLoi(ketQua));
+       }
+       <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> next(ctx);
+   });
+</code></pre>
+<p>Mã đầy đủ trong <code>Program.cs</code> mẫu; nên rút thành filter dùng lại cho cả nhóm route.</p>
+<h2>FluentValidation</h2>
+<p>Khi quy tắc phức tạp, phụ thuộc lẫn nhau hay cần test riêng, nhiều dự án dùng thư viện <strong>FluentValidation</strong> — viết quy tắc bằng code thay vì attribute:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TaoSanPhamValidator</span> : <span class="hljs-title">AbstractValidator</span>&lt;<span class="hljs-title">TaoSanPhamRequest</span>&gt;
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">TaoSanPhamValidator</span>()</span>
+    {
+        RuleFor(x =&gt; x.Ten).NotEmpty().Length(<span class="hljs-number">2</span>, <span class="hljs-number">100</span>);
+        RuleFor(x =&gt; x.Gia).InclusiveBetween(<span class="hljs-number">1_000</span>, <span class="hljs-number">1_000_000_000</span>);
+        RuleFor(x =&gt; x.KhuyenMaiDen).GreaterThan(x =&gt; x.KhuyenMaiTu).When(x =&gt; x.KhuyenMaiTu <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span>);
+    }
+}
+</code></pre>
+<p>Ưu: quy tắc <strong>tách khỏi DTO</strong>, dễ đọc, dễ unit test, hỗ trợ điều kiện/quy tắc bất đồng bộ (gọi CSDL). Nhược: thêm phụ thuộc. Sẽ dùng ở Tập 3 (pipeline validation).</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Trả thẳng entity ra API → lộ trường nhạy cảm; nhận thẳng entity → over-posting.</li>
+<li>Dùng cùng một DTO cho tạo và cập nhật nên phải nới lỏng <code>[Required]</code>.</li>
+<li>Tưởng <code>[Required]</code> trên <code>int/decimal</code> bắt được trường vắng (giá trị mặc định <code>0</code> vẫn &quot;có giá trị&quot;).</li>
+<li>Chỉ validate ở client.</li>
+<li>Nhồi kiểm tra nghiệp vụ (cần CSDL) vào attribute → khó test, phụ thuộc DI khó chịu.</li>
+<li>Trả lỗi <code>500</code> thay vì <code>400/409</code> khi dữ liệu sai; hoặc trả <code>200</code> kèm <code>&quot;error&quot;: ...</code>.</li>
+<li>Thông báo lỗi lộ chi tiết nội bộ (tên bảng, câu SQL).</li>
+<li>Quên <code>IValidatableObject</code> chỉ chạy sau khi các lỗi thuộc tính đã sạch.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm <code>CapNhatSanPhamRequest</code> (không cho đổi <code>Ma</code>) và action <code>PUT /api/san-pham/{id}</code>; ánh xạ vào entity.</li>
+<li>Viết attribute <code>[NgayTuongLai]</code> chỉ chấp nhận <code>DateOnly</code> sau hôm nay.</li>
+<li>Thêm <code>SanPhamSummaryResponse</code> (id, tên, giá) cho danh sách và <code>SanPhamDetailResponse</code> cho chi tiết.</li>
+<li>Viết một endpoint filter dùng lại (generic) <code>ValidationFilter&lt;T&gt;</code> cho Minimal API và áp dụng cho <code>MapGroup</code>.</li>
+<li>Thử gửi <code>{&quot;id&quot;:999,&quot;giaVon&quot;:1,&quot;ten&quot;:&quot;A&quot;}</code> tới action nhận DTO và tới action nhận entity; so sánh hậu quả.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch07-controller-api.html">&larr; 7. Web API với Controller</a><a class="nav-next" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

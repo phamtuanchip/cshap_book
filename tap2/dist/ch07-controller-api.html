@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 7 — Web API với Controller — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><span class="chapter-link pending">11. SQL cơ bản và SQLite</span></li><li><span class="chapter-link pending">12. Entity Framework Core cơ bản</span></li><li><span class="chapter-link pending">13. Quan hệ, truy vấn nâng cao và hiệu năng</span></li><li><span class="chapter-link pending">14. Web API hoàn chỉnh với EF Core</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><span class="chapter-link pending">15. ASP.NET Core MVC</span></li><li><span class="chapter-link pending">16. Razor Pages</span></li><li><span class="chapter-link pending">17. Form, validation phía server và chống CSRF</span></li><li><span class="chapter-link pending">18. Blazor</span></li><li><span class="chapter-link pending">19. Gọi API ngoài với HttpClient</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 7 — Web API với Controller</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Viết Web API theo kiểu <strong>controller</strong>: <code>ControllerBase</code>, <code>[ApiController]</code>, <code>[Route]</code>, <code>[HttpGet]</code>...</li>
+<li>Hiểu vòng đời request qua <strong>MVC pipeline</strong>: routing → model binding → validation → action → result.</li>
+<li>Trả kết quả đúng chuẩn: <code>ActionResult&lt;T&gt;</code>, <code>CreatedAtAction</code>, <code>NoContent</code>, <code>NotFound</code>.</li>
+<li>Tách nghiệp vụ khỏi controller (controller <strong>mỏng</strong>), nhận dịch vụ qua <strong>DI</strong>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch07-controller-api/"><code>code/ch07-controller-api/</code></a> — bản hiện đại hoá của <code>CustomersController</code> và <code>UserController</code> mà repo này bắt đầu từ đó.</p>
+<h2>Controller hay Minimal API?</h2>
+<p>Chương 4 đã viết API bằng Minimal API. <strong>Controller</strong> là kiểu truyền thống (từ <a href="http://ASP.NET">ASP.NET</a> MVC), vẫn được dùng rất rộng rãi — bạn sẽ gặp nó trong hầu hết code có sẵn. Cùng nền tảng (routing, DI, middleware, JSON), khác cách tổ chức:</p>
+<ul>
+<li>Mỗi <strong>controller</strong> là một class gom các <strong>action</strong> (phương thức) của một tài nguyên.</li>
+<li>Nhiều <strong>quy ước</strong> có sẵn: lấy tên route từ tên class, tự validation model, filter theo nhóm, <code>[Authorize]</code> trên class...</li>
+</ul>
+<p>Chọn cái nào ở cuối Chương 4; điều quan trọng là <strong>hiểu cả hai</strong>.</p>
+<h2>Cài đặt</h2>
+<pre class="hljs"><code>builder.Services.AddControllers();                  <span class="hljs-comment">// đăng ký MVC controllers</span>
+builder.Services.AddRouting(o =&gt; o.LowercaseUrls = <span class="hljs-literal">true</span>);   <span class="hljs-comment">// URL sinh ra viết thường</span>
+...
+app.MapControllers();                                <span class="hljs-comment">// gắn [Route] của controller vào pipeline</span>
+</code></pre>
+<h2>Controller đầu tiên</h2>
+<p>Ta viết lại <code>CustomersController</code> gốc của repo:</p>
+<pre class="hljs"><code>[<span class="hljs-meta">ApiController</span>]
+[<span class="hljs-meta">Route(<span class="hljs-string">&quot;api/[controller]&quot;</span>)</span>]
+[<span class="hljs-meta">Produces(<span class="hljs-string">&quot;application/json&quot;</span>)</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">CustomersController</span>(<span class="hljs-params">ICustomerService customers</span>) : ControllerBase</span>
+{
+    [<span class="hljs-meta">HttpGet</span>]
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;ActionResult&lt;IEnumerable&lt;Customer&gt;&gt;&gt; GetCustomers([FromQuery] <span class="hljs-built_in">string</span>? search, CancellationToken ct)
+        =&gt; Ok(<span class="hljs-keyword">await</span> customers.GetAllAsync(search, ct));
+
+    [<span class="hljs-meta">HttpGet(<span class="hljs-string">&quot;{id:int}&quot;</span>)</span>]
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;ActionResult&lt;Customer&gt;&gt; GetCustomerById(<span class="hljs-built_in">int</span> id, CancellationToken ct)
+    {
+        <span class="hljs-keyword">var</span> customer = <span class="hljs-keyword">await</span> customers.GetByIdAsync(id, ct);
+        <span class="hljs-keyword">return</span> customer <span class="hljs-keyword">is</span> <span class="hljs-literal">null</span> ? NotFound() : Ok(customer);
+    }
+
+    [<span class="hljs-meta">HttpPost</span>]
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;ActionResult&lt;Customer&gt;&gt; CreateCustomer(Customer customer, CancellationToken ct)
+    {
+        <span class="hljs-keyword">var</span> created = <span class="hljs-keyword">await</span> customers.CreateAsync(customer, ct);
+        <span class="hljs-keyword">return</span> CreatedAtAction(<span class="hljs-keyword">nameof</span>(GetCustomerById), <span class="hljs-keyword">new</span> { id = created.Id }, created);
+    }
+
+    [<span class="hljs-meta">HttpPut(<span class="hljs-string">&quot;{id:int}&quot;</span>)</span>]
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;IActionResult&gt; <span class="hljs-title">UpdateCustomer</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> id, Customer customer, CancellationToken ct</span>)</span>
+        =&gt; <span class="hljs-keyword">await</span> customers.UpdateAsync(id, customer, ct) ? NoContent() : NotFound();
+
+    [<span class="hljs-meta">HttpDelete(<span class="hljs-string">&quot;{id:int}&quot;</span>)</span>]
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;IActionResult&gt; <span class="hljs-title">DeleteCustomer</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> id, CancellationToken ct</span>)</span>
+        =&gt; <span class="hljs-keyword">await</span> customers.DeleteAsync(id, ct) ? NoContent() : NotFound();
+}
+</code></pre>
+<p>So với bản gốc: ba chỗ đã được <strong>thay đổi có chủ đích</strong>:</p>
+<ol>
+<li>Dữ liệu không còn &quot;giả cứng&quot; trong action mà nằm trong <strong>dịch vụ</strong> <code>ICustomerService</code> được tiêm qua constructor (<strong>primary constructor</strong> C# 12) — controller chỉ lo HTTP.</li>
+<li>Action <strong>bất đồng bộ</strong> (<code>async Task</code>) và nhận <code>CancellationToken</code> — khi client ngắt kết nối, việc dở dang được huỷ (Tập 1, Chương 33).</li>
+<li>Route <code>{id:int}</code> có <strong>constraint</strong>; <code>PUT</code>/<code>DELETE</code> trả <code>404</code> khi không có, thay vì luôn <code>204</code>.</li>
+</ol>
+<h2>Các thành phần cần hiểu</h2>
+<h3><code>ControllerBase</code> và <code>Controller</code></h3>
+<p><code>ControllerBase</code> cho API (không có view). <code>Controller</code> (kế thừa <code>ControllerBase</code>) thêm hỗ trợ <strong>View</strong> cho MVC trả HTML (Chương 15). Web API dùng <code>ControllerBase</code>.</p>
+<h3><code>[ApiController]</code></h3>
+<p>Bật cả bộ hành vi tiện cho API:</p>
+<ul>
+<li><strong>Tự trả <code>400</code></strong> với <code>ValidationProblemDetails</code> khi model không hợp lệ (không cần tự viết <code>if (!ModelState.IsValid)</code>).</li>
+<li><strong>Suy ra nguồn binding</strong>: kiểu phức tạp → <code>[FromBody]</code>; tham số trùng tên route → <code>[FromRoute]</code>; kiểu đơn giản còn lại → <code>[FromQuery]</code>.</li>
+<li>Bắt buộc dùng <strong>attribute routing</strong>; trả lỗi <code>4xx</code> dạng ProblemDetails.</li>
+<li>Body sai JSON → <code>400</code>.</li>
+</ul>
+<h3>Route</h3>
+<pre class="hljs"><code>[<span class="hljs-meta">Route(<span class="hljs-string">&quot;api/[controller]&quot;</span>)</span>]        <span class="hljs-comment">// [controller] = tên class bỏ hậu tố &quot;Controller&quot; → &quot;api/customers&quot;</span>
+[<span class="hljs-meta">HttpGet(<span class="hljs-string">&quot;{id:int}&quot;</span>)</span>]               <span class="hljs-comment">// ghép: GET /api/customers/{id}</span>
+[<span class="hljs-meta">HttpPost</span>]                          <span class="hljs-comment">// POST /api/customers</span>
+[<span class="hljs-meta">HttpGet(<span class="hljs-string">&quot;~/thong-ke&quot;</span>)</span>]            <span class="hljs-comment">// &quot;~/&quot; bỏ tiền tố controller: GET /thong-ke</span>
+</code></pre>
+<p>Các token: <code>[controller]</code>, <code>[action]</code>, <code>[area]</code>. Nhiều dự án đặt tên tường minh (<code>[Route(&quot;api/khach-hang&quot;)]</code>) để URL không phụ thuộc tên class (đổi tên class → vỡ URL).</p>
+<h3>Model binding — dữ liệu request → tham số</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Nguồn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FromRoute]</code></td>
+<td>phần <code>{id}</code> trong URL</td>
+</tr>
+<tr>
+<td><code>[FromQuery]</code></td>
+<td>query string</td>
+</tr>
+<tr>
+<td><code>[FromBody]</code></td>
+<td>body (JSON) — chỉ <strong>một</strong> tham số</td>
+</tr>
+<tr>
+<td><code>[FromHeader]</code></td>
+<td>header</td>
+</tr>
+<tr>
+<td><code>[FromForm]</code></td>
+<td>form/multipart (upload file: <code>IFormFile</code>)</td>
+</tr>
+<tr>
+<td><code>[FromServices]</code></td>
+<td>DI</td>
+</tr>
+</tbody>
+</table>
+<p>Binding <strong>lỗi kiểu</strong> (<code>/api/customers/abc</code>, hay số truyền chuỗi) → <code>400</code> hoặc <code>404</code> (nếu vướng constraint). Trong bản mẫu, <code>GET /api/customers/abc</code> trả <code>404</code> vì constraint <code>:int</code> không khớp.</p>
+<h3>Kiểu trả về</h3>
+<table>
+<thead>
+<tr>
+<th>Kiểu</th>
+<th>Khi nào</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ActionResult&lt;T&gt;</code></td>
+<td><strong>khuyến nghị</strong>: trả <code>T</code> (200) hoặc kết quả lỗi; OpenAPI biết kiểu <code>T</code></td>
+</tr>
+<tr>
+<td><code>IActionResult</code></td>
+<td>khi không có body/nhiều dạng khác nhau</td>
+</tr>
+<tr>
+<td><code>T</code> hoặc <code>Task&lt;T&gt;</code></td>
+<td>luôn 200 (không nên nếu có thể lỗi)</td>
+</tr>
+<tr>
+<td><code>IAsyncEnumerable&lt;T&gt;</code></td>
+<td>trả luồng lớn</td>
+</tr>
+</tbody>
+</table>
+<p>Helper (kế thừa từ <code>ControllerBase</code>): <code>Ok()</code>, <code>Created()</code>, <strong><code>CreatedAtAction(...)</code></strong>, <code>NoContent()</code>, <code>BadRequest()</code>, <code>NotFound()</code>, <code>Conflict()</code>, <code>Unauthorized()</code>, <code>Forbid()</code>, <code>ValidationProblem()</code>, <code>Problem()</code>, <code>File()</code>, <code>Redirect()</code>.</p>
+<p><code>CreatedAtAction(nameof(GetCustomerById), new { id = created.Id }, created)</code> trả <code>201 Created</code> <strong>kèm header <code>Location</code></strong> trỏ tới action lấy đối tượng mới:</p>
+<pre class="hljs"><code>HTTP/1.1 201 Created
+Location: http://localhost:5207/api/customers/4
+{&quot;id&quot;:4,&quot;name&quot;:&quot;Alice&quot;,&quot;email&quot;:&quot;a@x.com&quot;}
+</code></pre>
+<p>Khai báo mã trả về cho tài liệu API: <code>[ProducesResponseType&lt;Customer&gt;(StatusCodes.Status201Created)]</code>, <code>[ProducesResponseType(StatusCodes.Status404NotFound)]</code>.</p>
+<h2>Controller mỏng, nghiệp vụ trong dịch vụ</h2>
+<p>Một quy tắc quan trọng: <strong>controller chỉ làm việc của tầng HTTP</strong>:</p>
+<ol>
+<li>Nhận dữ liệu (đã bind/validate),</li>
+<li>Gọi <strong>một</strong> dịch vụ nghiệp vụ,</li>
+<li>Chuyển kết quả thành <strong>mã HTTP + body</strong>.</li>
+</ol>
+<p>Quy tắc kinh doanh, truy cập CSDL, gửi email… thuộc về dịch vụ/domain. Lợi ích: nghiệp vụ test được <strong>không cần HTTP</strong> (unit test Tập 1, Chương 38); dùng lại được (cho worker, gRPC, console); đổi CSDL không đụng controller.</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">ICustomerService</span>
+{
+    Task&lt;IReadOnlyList&lt;Customer&gt;&gt; GetAllAsync(<span class="hljs-built_in">string</span>? search, CancellationToken ct);
+    Task&lt;Customer?&gt; GetByIdAsync(<span class="hljs-built_in">int</span> id, CancellationToken ct);
+    ...
+}
+builder.Services.AddSingleton&lt;ICustomerService, InMemoryCustomerService&gt;();   <span class="hljs-comment">// Chương 12: thay bằng EF Core</span>
+</code></pre>
+<p><code>UserController</code> gốc dùng <code>IUserRepository</code> đúng theo hướng này; bản mới chỉ đổi thành primary constructor và trả <code>201</code>.</p>
+<h2>Thử API</h2>
+<p>File <code>customers.http</code> đi kèm (mở bằng VS/VS Code hoặc dùng <code>curl</code>):</p>
+<pre class="hljs"><code>curl -s http://localhost:5207/api/customers?search=jo
+curl -i -X POST http://localhost:5207/api/customers -H &quot;Content-Type: application/json&quot; -d '{&quot;name&quot;:&quot;Alice&quot;,&quot;email&quot;:&quot;a@x.com&quot;}'
+curl -i -X PUT  http://localhost:5207/api/customers/2 -H &quot;Content-Type: application/json&quot; -d '{&quot;name&quot;:&quot;J2&quot;,&quot;email&quot;:&quot;j@x.com&quot;}'
+curl -i -X DELETE http://localhost:5207/api/customers/3
+</code></pre>
+<h2>Filters — chèn xử lý quanh action</h2>
+<p>Tương tự middleware nhưng <strong>biết action, tham số, kết quả</strong>:</p>
+<pre class="hljs"><code>Authorization → Resource → [Model binding] → Action filter (trước) → ACTION → Action filter (sau) → Result filter → Exception filter (khi lỗi)
+</code></pre>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">GhiThoiGianAttribute</span> : <span class="hljs-title">ActionFilterAttribute</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnActionExecuting</span>(<span class="hljs-params">ActionExecutingContext ctx</span>)</span> { <span class="hljs-comment">/* trước action */</span> }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnActionExecuted</span>(<span class="hljs-params">ActionExecutedContext ctx</span>)</span> { <span class="hljs-comment">/* sau action */</span> }
+}
+
+[<span class="hljs-meta">GhiThoiGian</span>] <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">CustomersController</span> { ... }     <span class="hljs-comment">// áp cho cả controller (hoặc từng action)</span>
+</code></pre>
+<p>Loại filter: <strong>Authorization</strong> (<code>[Authorize]</code>), <strong>Resource</strong>, <strong>Action</strong>, <strong>Exception</strong>, <strong>Result</strong>. Dùng cho vấn đề xuyên suốt gắn với MVC (audit, chuẩn hoá kết quả). Xử lý lỗi toàn cục tốt hơn nên ở middleware/<code>IExceptionHandler</code> (Chương 9).</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>404</code> cho endpoint tồn tại — quên <code>app.MapControllers()</code>, hoặc route/constraint không khớp (<code>abc</code> cho <code>{id:int}</code>).</li>
+<li><code>415 Unsupported Media Type</code> — body JSON nhưng thiếu <code>Content-Type: application/json</code>.</li>
+<li><code>AmbiguousMatchException: The request matched multiple endpoints</code> — hai action cùng route + phương thức.</li>
+<li>Action trả <code>200</code> cho mọi tình huống thay vì <code>404/201/204</code> đúng nghĩa.</li>
+<li>Nhét nghiệp vụ và truy cập CSDL vào controller (&quot;fat controller&quot;).</li>
+<li>Trả thẳng entity CSDL (lộ trường nhạy cảm) — dùng DTO (Chương 8).</li>
+<li>Quên <code>CancellationToken</code>, hoặc chặn luồng bằng <code>.Result</code> thay vì <code>await</code>.</li>
+<li>Trả <code>List&lt;T&gt;</code> lớn không phân trang.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm <code>GET /api/customers/{id}/don-hang</code> (route lồng) — trả danh sách rỗng, chú ý đặt tên và mã trạng thái.</li>
+<li>Thêm <code>PATCH /api/customers/{id}/email</code> nhận body <code>{ &quot;email&quot;: &quot;...&quot; }</code>.</li>
+<li>Viết <code>ActionFilter</code> <code>[GhiLog]</code> in tên action và thời gian; gắn vào controller.</li>
+<li>Đổi tên class <code>CustomersController</code> thành <code>KhachHangController</code> và quan sát URL; sau đó cố định URL bằng <code>[Route(&quot;api/customers&quot;)]</code>.</li>
+<li>Viết unit test (không HTTP) cho <code>InMemoryCustomerService</code> và một test kiểm tra <code>CustomersController</code> bằng dịch vụ giả.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch06-cau-hinh-logging.html">&larr; 6. Cấu hình, Options và Logging</a><a class="nav-next" href="ch08-dto-validation.html">8. DTO và Validation &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

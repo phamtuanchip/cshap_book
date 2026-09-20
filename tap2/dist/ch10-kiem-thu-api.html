@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 10 — Kiểm thử API — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link active" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><span class="chapter-link pending">11. SQL cơ bản và SQLite</span></li><li><span class="chapter-link pending">12. Entity Framework Core cơ bản</span></li><li><span class="chapter-link pending">13. Quan hệ, truy vấn nâng cao và hiệu năng</span></li><li><span class="chapter-link pending">14. Web API hoàn chỉnh với EF Core</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><span class="chapter-link pending">15. ASP.NET Core MVC</span></li><li><span class="chapter-link pending">16. Razor Pages</span></li><li><span class="chapter-link pending">17. Form, validation phía server và chống CSRF</span></li><li><span class="chapter-link pending">18. Blazor</span></li><li><span class="chapter-link pending">19. Gọi API ngoài với HttpClient</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 10 — Kiểm thử API</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Phân biệt <strong>unit test</strong>, <strong>integration test</strong> và khi nào dùng loại nào cho web.</li>
+<li>Viết integration test chạy <strong>cả ứng dụng thật trong bộ nhớ</strong> bằng <code>WebApplicationFactory&lt;Program&gt;</code>.</li>
+<li><strong>Thay thế dịch vụ</strong> (cổng thanh toán, CSDL…) bằng bản giả trong test.</li>
+<li>Kiểm tra mã trạng thái, header, body JSON, xác thực, validation; giữ test độc lập và nhanh.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch10-kiem-thu-api/"><code>code/ch10-kiem-thu-api/</code></a> (API <code>DonHangApi</code> + project <code>DonHangApi.Tests</code>).</p>
+<p>Nền tảng: xUnit, Arrange–Act–Assert, mock/stub — đã học ở Tập 1, Chương 38. Chương này áp dụng vào tầng HTTP.</p>
+<h2>Hai tầng kiểm thử cho web</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Unit test</th>
+<th>Integration test (API)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Đối tượng</td>
+<td>một lớp/hàm (dịch vụ nghiệp vụ, validator)</td>
+<td><strong>cả pipeline</strong>: routing, binding, validation, filter, serialization</td>
+</tr>
+<tr>
+<td>Phụ thuộc</td>
+<td>mọi phụ thuộc bị thay bằng giả</td>
+<td>dịch vụ <strong>ngoại vi</strong> bị thay; phần còn lại là thật</td>
+</tr>
+<tr>
+<td>Tốc độ</td>
+<td>mili-giây</td>
+<td>vài chục mili-giây (không mạng thật)</td>
+</tr>
+<tr>
+<td>Bắt được</td>
+<td>lỗi logic</td>
+<td>lỗi <strong>kết nối các phần</strong>: route sai, thiếu <code>Content-Type</code>, JSON sai tên, thứ tự middleware, DI thiếu đăng ký</td>
+</tr>
+</tbody>
+</table>
+<p>Unit test không thể phát hiện &quot;quên <code>app.UseAuthentication()</code>&quot; hay &quot;đăng ký DI sai vòng đời&quot; — integration test thì được. Cần cả hai: <strong>nhiều unit test nhanh cho nghiệp vụ + vài chục integration test cho các luồng chính</strong> (hình kim tự tháp).</p>
+<h2><code>WebApplicationFactory&lt;Program&gt;</code></h2>
+<p>Package <code>Microsoft.AspNetCore.Mvc.Testing</code>. Nó khởi động <strong>ứng dụng thật của bạn</strong> trong tiến trình test bằng <strong>TestServer</strong> (không mở cổng mạng), và đưa cho bạn <code>HttpClient</code> gửi thẳng request vào pipeline.</p>
+<p>Điều kiện: project test tham chiếu project web, và lớp <code>Program</code> phải nhìn thấy được. Với top-level statements <code>Program</code> là <code>internal</code> ẩn — thêm một dòng cuối <code>Program.cs</code>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">partial</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Program</span>;
+</code></pre>
+<p>Test đầu tiên:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">DonHangApiTests</span> : <span class="hljs-title">IClassFixture</span>&lt;<span class="hljs-title">WebApplicationFactory</span>&lt;<span class="hljs-title">Program</span>&gt;&gt;
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> HttpClient _client;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">DonHangApiTests</span>(<span class="hljs-params">WebApplicationFactory&lt;Program&gt; factory</span>)</span> =&gt; _client = factory.CreateClient();
+
+    [<span class="hljs-meta">Fact</span>]
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">TrangChu_TraVeChuoiXacNhan</span>()</span>
+    {
+        <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">await</span> _client.GetAsync(<span class="hljs-string">&quot;/&quot;</span>);
+
+        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        Assert.Contains(<span class="hljs-string">&quot;dang chay&quot;</span>, <span class="hljs-keyword">await</span> res.Content.ReadAsStringAsync());
+    }
+}
+</code></pre>
+<p><code>IClassFixture&lt;T&gt;</code>: tạo factory <strong>một lần cho cả class test</strong> (khởi động app tốn chút thời gian) và chia sẻ. Vì thế trạng thái Singleton (kho dữ liệu trong bộ nhớ) <strong>dùng chung giữa các test trong class</strong> — viết test <strong>không phụ thuộc thứ tự</strong> (mỗi test tự tạo dữ liệu nó cần, không giả định &quot;danh sách đang rỗng&quot;).</p>
+<h2>Thay thế phụ thuộc bằng bản giả</h2>
+<p>API tạo đơn hàng gọi cổng thanh toán bên ngoài (<code>ICongThanhToan</code>). Test <strong>không được</strong> gọi cổng thật. Ghi đè đăng ký DI:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ApiFactory</span> : <span class="hljs-title">WebApplicationFactory</span>&lt;<span class="hljs-title">Program</span>&gt;
+{
+    <span class="hljs-keyword">public</span> ICongThanhToan CongThanhToanGia { <span class="hljs-keyword">get</span>; } = Substitute.For&lt;ICongThanhToan&gt;();
+
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">ConfigureWebHost</span>(<span class="hljs-params">IWebHostBuilder builder</span>)</span>
+    {
+        builder.UseEnvironment(<span class="hljs-string">&quot;Testing&quot;</span>);
+        builder.ConfigureServices(services =&gt;
+        {
+            services.AddScoped(_ =&gt; CongThanhToanGia);        <span class="hljs-comment">// đăng ký SAU → thắng đăng ký gốc</span>
+        });
+    }
+}
+</code></pre>
+<p>Đăng ký cuối cùng cho cùng một kiểu <strong>thắng</strong> — nên <code>AddScoped</code> trong <code>ConfigureServices</code> của test ghi đè bản thật. Trong test dàn kết quả:</p>
+<pre class="hljs"><code>_factory.CongThanhToanGia
+    .ThanhToanAsync(Arg.Any&lt;<span class="hljs-built_in">decimal</span>&gt;(), Arg.Any&lt;CancellationToken&gt;())
+    .Returns(<span class="hljs-keyword">new</span> KetQuaThanhToan(<span class="hljs-literal">true</span>, <span class="hljs-string">&quot;GD-TEST-01&quot;</span>, <span class="hljs-literal">null</span>));
+</code></pre>
+<p>Đây là phần thưởng của việc <strong>lập trình theo interface + DI</strong> (Tập 1, Chương 42; Chương 5): thay phụ thuộc mà không sửa code sản phẩm. Tương tự thay <code>DbContext</code> bằng SQLite in-memory hoặc <code>IHttpClientFactory</code> bằng handler giả.</p>
+<h2>Các loại kiểm tra thường gặp</h2>
+<pre class="hljs"><code><span class="hljs-comment">// 1. Tạo mới → 201 + Location + body</span>
+<span class="hljs-keyword">var</span> res = <span class="hljs-keyword">await</span> _client.PostAsJsonAsync(<span class="hljs-string">&quot;/api/don-hang&quot;</span>, <span class="hljs-keyword">new</span> { khachHang = <span class="hljs-string">&quot;An&quot;</span>, soTien = <span class="hljs-number">250_000</span> });
+Assert.Equal(HttpStatusCode.Created, res.StatusCode);
+<span class="hljs-keyword">var</span> don = <span class="hljs-keyword">await</span> res.Content.ReadFromJsonAsync&lt;DonHang&gt;();
+Assert.Equal(<span class="hljs-string">$&quot;/api/don-hang/<span class="hljs-subst">{don!.Id}</span>&quot;</span>, res.Headers.Location?.OriginalString);
+
+<span class="hljs-comment">// 2. Tạo rồi đọc lại → đúng đối tượng (kiểm tra cả vòng khứ hồi)</span>
+<span class="hljs-keyword">var</span> lay = <span class="hljs-keyword">await</span> _client.GetFromJsonAsync&lt;DonHang&gt;(<span class="hljs-string">$&quot;/api/don-hang/<span class="hljs-subst">{don.Id}</span>&quot;</span>);
+Assert.Equal(don, lay);            <span class="hljs-comment">// record: so sánh theo giá trị</span>
+
+<span class="hljs-comment">// 3. Không tồn tại → 404</span>
+Assert.Equal(HttpStatusCode.NotFound, (<span class="hljs-keyword">await</span> _client.GetAsync(<span class="hljs-string">&quot;/api/don-hang/99999&quot;</span>)).StatusCode);
+
+<span class="hljs-comment">// 4. Dữ liệu sai (Theory) → 400 + problem+json</span>
+[<span class="hljs-meta">Theory</span>]
+[<span class="hljs-meta">InlineData(<span class="hljs-string">&quot;&quot;</span>, 1000)</span>] [InlineData(<span class="hljs-string">&quot;An&quot;</span>, <span class="hljs-number">0</span>)] [InlineData(<span class="hljs-string">&quot;An&quot;</span>, <span class="hljs-number">-5</span>)]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">TaoDonHang_DuLieuSai_Tra400</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> khachHang, <span class="hljs-built_in">decimal</span> soTien</span>)</span> { ... }
+
+<span class="hljs-comment">// 5. Xác thực: client không có header → 401</span>
+<span class="hljs-keyword">var</span> khongKhoa = _factory.CreateClient();                <span class="hljs-comment">// client mới, không header mặc định</span>
+Assert.Equal(HttpStatusCode.Unauthorized, (<span class="hljs-keyword">await</span> khongKhoa.GetAsync(<span class="hljs-string">&quot;/api/don-hang&quot;</span>)).StatusCode);
+
+<span class="hljs-comment">// 6. Nhánh lỗi từ dịch vụ ngoài → 402 và KHÔNG lưu đơn</span>
+</code></pre>
+<p>Mẹo:</p>
+<ul>
+<li><code>PostAsJsonAsync</code>, <code>GetFromJsonAsync</code>, <code>ReadFromJsonAsync&lt;T&gt;</code> (<code>System.Net.Http.Json</code>) gọn hơn tự dựng chuỗi JSON.</li>
+<li>Dùng <strong>DTO/record của chính dự án</strong> để đọc response — nếu đổi tên trường, test biên dịch lỗi, báo ngay.</li>
+<li>Kiểm tra <code>Content-Type</code> cho lỗi (<code>application/problem+json</code>).</li>
+<li>Client mặc định <strong>tự theo redirect</strong>; cần kiểm tra redirect thì <code>CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false })</code>.</li>
+<li><code>builder.UseSetting(&quot;ApiKey&quot;, &quot;khac&quot;)</code> hoặc <code>ConfigureAppConfiguration</code> để đổi cấu hình trong test.</li>
+</ul>
+<h2>Kiểm thử với cơ sở dữ liệu</h2>
+<p>Từ Chương 12 có EF Core. Ba chiến lược cho test:</p>
+<table>
+<thead>
+<tr>
+<th>Chiến lược</th>
+<th>Ưu</th>
+<th>Nhược</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SQLite in-memory</strong> (<code>DataSource=:memory:</code>, giữ kết nối mở)</td>
+<td>nhanh, gần CSDL thật, chạy khắp nơi</td>
+<td>không giống 100% SQL Server/PostgreSQL</td>
+</tr>
+<tr>
+<td><strong>EF InMemory provider</strong></td>
+<td>rất nhanh</td>
+<td><strong>không</strong> mô phỏng ràng buộc, transaction, SQL → dễ &quot;xanh giả&quot;; <strong>không khuyến khích</strong></td>
+</tr>
+<tr>
+<td><strong>CSDL thật trong container</strong> (Testcontainers)</td>
+<td>chính xác nhất</td>
+<td>chậm hơn, cần Docker (Tập 3)</td>
+</tr>
+</tbody>
+</table>
+<p>Nguyên tắc: test khớp môi trường thật nhất có thể chấp nhận về chi phí; luôn chạy migration/khởi tạo schema trong fixture; dọn dữ liệu (hoặc mỗi test một CSDL/transaction rollback).</p>
+<h2>Tổ chức và chất lượng</h2>
+<ul>
+<li>Đặt tên test mô tả tình huống: <code>TaoDonHang_ThanhToanThatBai_Tra402VaKhongLuuDon</code>.</li>
+<li>Test <strong>hợp đồng</strong> (contract): status code, header, hình dạng JSON — đây là thứ client phụ thuộc.</li>
+<li>Test <strong>hành vi</strong>, không test chi tiết cài đặt (đừng verify từng lời gọi nội bộ trừ khi đó là tác dụng phụ quan trọng, như gửi email).</li>
+<li>Test độc lập: không phụ thuộc thứ tự; dùng dữ liệu ngẫu nhiên/riêng (<code>Guid.NewGuid()</code> cho tên).</li>
+<li>Chạy trong <strong>CI</strong> mỗi commit (Tập 3: GitHub Actions <code>dotnet test</code>).</li>
+<li>Một số ít test <strong>smoke</strong> đầu–cuối trên môi trường thật sau deploy (gọi <code>/health</code>).</li>
+</ul>
+<h2>File <code>.http</code> và kiểm thử thủ công</h2>
+<p>Song song test tự động, giữ file <code>.http</code> (như <code>customers.http</code> ở Chương 7) làm <strong>tài liệu sống + thử nhanh</strong> khi phát triển — khác test: chạy bằng tay, cho người đọc.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>The type 'Program' is inaccessible</code> — quên <code>public partial class Program;</code>.</li>
+<li>Test chạy được riêng lẻ nhưng lỗi khi chạy cả bộ — <strong>phụ thuộc thứ tự / trạng thái chung</strong> trong Singleton dùng chung qua <code>IClassFixture</code>.</li>
+<li>Gọi dịch vụ ngoài thật trong test (chậm, không ổn định, tác dụng phụ).</li>
+<li>Không cấu hình môi trường/thiết lập → ứng dụng đọc <code>appsettings.Development.json</code> ngoài ý muốn (dùng <code>UseEnvironment(&quot;Testing&quot;)</code>).</li>
+<li>Dùng EF InMemory rồi tin rằng &quot;test qua = CSDL chạy đúng&quot;.</li>
+<li>Bỏ qua kiểm tra nhánh lỗi (400/401/404/409/5xx) — chính là nơi lỗi hay ẩn.</li>
+<li>Test quá chi tiết vào JSON (so chuỗi thô) → giòn; nên đọc thành DTO.</li>
+<li>Quên <code>await</code> với <code>PostAsJsonAsync</code>… → test &quot;xanh&quot; nhưng không kiểm tra gì.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm <code>PUT /api/don-hang/{id}</code> (đổi tên khách) và viết bốn test: thành công (204), không tồn tại (404), dữ liệu sai (400), không có API key (401).</li>
+<li>Viết test cho tình huống <code>ICongThanhToan</code> <strong>ném exception</strong> — API nên trả gì? Chỉnh code cho hợp lý (<code>502</code>/<code>503</code>) rồi viết test.</li>
+<li>Đổi API key bằng cấu hình trong test (<code>builder.UseSetting(&quot;ApiKey&quot;, &quot;khoa-khac&quot;)</code>) và kiểm tra khoá cũ bị từ chối.</li>
+<li>Viết test kiểm tra header <code>Location</code> của <code>POST</code> dùng được để <code>GET</code> (theo <code>Location</code>, không tự ghép URL).</li>
+<li>Chạy <code>dotnet test --collect:&quot;XPlat Code Coverage&quot;</code> và tìm nhánh chưa được test trong <code>Program.cs</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch09-loi-openapi.html">&larr; 9. Xử lý lỗi, versioning và OpenAPI</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

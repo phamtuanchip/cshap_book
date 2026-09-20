@@ -1,0 +1,35 @@
+@host = http://localhost:5207
+
+### Lay danh sach
+GET {{host}}/api/customers
+Accept: application/json
+
+### Tim theo ten
+GET {{host}}/api/customers?search=jo
+
+### Lay mot khach hang
+GET {{host}}/api/customers/2
+
+### Khong ton tai -> 404
+GET {{host}}/api/customers/999
+
+### Tao moi -> 201 Created
+POST {{host}}/api/customers
+Content-Type: application/json
+
+{ "name": "Alice Nguyen", "email": "alice@example.com" }
+
+### Cap nhat -> 204
+PUT {{host}}/api/customers/2
+Content-Type: application/json
+
+{ "name": "Jane Smith (da doi)", "email": "jane@example.com" }
+
+### Xoa -> 204
+DELETE {{host}}/api/customers/3
+
+### User
+POST {{host}}/user
+Content-Type: application/json
+
+{ "userName": "an" }

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 9 — Xử lý lỗi, versioning và OpenAPI — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link active" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><span class="chapter-link pending">11. SQL cơ bản và SQLite</span></li><li><span class="chapter-link pending">12. Entity Framework Core cơ bản</span></li><li><span class="chapter-link pending">13. Quan hệ, truy vấn nâng cao và hiệu năng</span></li><li><span class="chapter-link pending">14. Web API hoàn chỉnh với EF Core</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><span class="chapter-link pending">15. ASP.NET Core MVC</span></li><li><span class="chapter-link pending">16. Razor Pages</span></li><li><span class="chapter-link pending">17. Form, validation phía server và chống CSRF</span></li><li><span class="chapter-link pending">18. Blazor</span></li><li><span class="chapter-link pending">19. Gọi API ngoài với HttpClient</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 9 — Xử lý lỗi, versioning và OpenAPI</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Xử lý lỗi <strong>tập trung</strong> bằng <code>IExceptionHandler</code> và <code>ProblemDetails</code>, ánh xạ exception nghiệp vụ → mã HTTP.</li>
+<li>Thiết kế <strong>versioning</strong> cho API để đổi hợp đồng mà không làm vỡ client cũ.</li>
+<li>Sinh và tuỳ biến tài liệu <strong>OpenAPI</strong>, dùng giao diện <strong>Scalar</strong> để thử API.</li>
+<li>Bật <strong>CORS</strong> đúng cách và <strong>health checks</strong>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch09-loi-openapi/"><code>code/ch09-loi-openapi/</code></a>.</p>
+<h2>Xử lý lỗi tập trung</h2>
+<p>Nếu mỗi action tự <code>try/catch</code> và tự dựng response lỗi, code lặp, định dạng lỗi mỗi nơi một kiểu, dễ lộ chi tiết nội bộ. Giải pháp: để exception <strong>nổi lên</strong> và có <strong>một nơi duy nhất</strong> biến nó thành response.</p>
+<h3>1. Exception nghiệp vụ có ý nghĩa</h3>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">LoiNghiepVu</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>) : <span class="hljs-title">Exception</span>(<span class="hljs-params">message</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">KhongTimThayException</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> loai, <span class="hljs-built_in">object</span> khoa</span>) : <span class="hljs-title">LoiNghiepVu</span>(<span class="hljs-params"><span class="hljs-string">$&quot;Khong tim thay <span class="hljs-subst">{loai}</span> &#x27;<span class="hljs-subst">{khoa}</span>&#x27;&quot;</span></span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">XungDotException</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>) : <span class="hljs-title">LoiNghiepVu</span>(<span class="hljs-params">message</span>)</span>;
+
+<span class="hljs-comment">// Trong dịch vụ / endpoint:</span>
+<span class="hljs-keyword">var</span> sp = kho.Tim(id) ?? <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> KhongTimThayException(<span class="hljs-string">&quot;San pham&quot;</span>, id);
+</code></pre>
+<p>Tầng nghiệp vụ nói bằng ngôn ngữ <strong>nghiệp vụ</strong> (không thấy HTTP); tầng web dịch sang mã HTTP.</p>
+<h3>2. <code>IExceptionHandler</code> (.NET 8+)</h3>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">GlobalExceptionHandler</span>(<span class="hljs-params">ILogger&lt;GlobalExceptionHandler&gt; log, IProblemDetailsService problemDetails</span>) : IExceptionHandler</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> ValueTask&lt;<span class="hljs-built_in">bool</span>&gt; <span class="hljs-title">TryHandleAsync</span>(<span class="hljs-params">HttpContext ctx, Exception e, CancellationToken ct</span>)</span>
+    {
+        <span class="hljs-keyword">var</span> (status, title) = e <span class="hljs-keyword">switch</span>
+        {
+            KhongTimThayException =&gt; (<span class="hljs-number">404</span>, <span class="hljs-string">&quot;Khong tim thay&quot;</span>),
+            XungDotException =&gt; (<span class="hljs-number">409</span>, <span class="hljs-string">&quot;Xung dot du lieu&quot;</span>),
+            OperationCanceledException =&gt; (<span class="hljs-number">499</span>, <span class="hljs-string">&quot;Client huy yeu cau&quot;</span>),
+            _ =&gt; (<span class="hljs-number">500</span>, <span class="hljs-string">&quot;Loi may chu&quot;</span>),
+        };
+
+        <span class="hljs-keyword">if</span> (status &gt;= <span class="hljs-number">500</span>) log.LogError(e, <span class="hljs-string">&quot;Loi khong xu ly tai {Path}&quot;</span>, ctx.Request.Path);
+        <span class="hljs-keyword">else</span> log.LogWarning(<span class="hljs-string">&quot;Loi nghiep vu {Loai}: {Message}&quot;</span>, e.GetType().Name, e.Message);
+
+        ctx.Response.StatusCode = status;
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> problemDetails.TryWriteAsync(<span class="hljs-keyword">new</span> ProblemDetailsContext
+        {
+            HttpContext = ctx,
+            Exception = e,
+            ProblemDetails = <span class="hljs-keyword">new</span> ProblemDetails
+            {
+                Status = status, Title = title,
+                Detail = status &lt; <span class="hljs-number">500</span> ? e.Message : <span class="hljs-literal">null</span>,        <span class="hljs-comment">// KHÔNG lộ chi tiết lỗi 500</span>
+                Instance = ctx.Request.Path,
+            },
+        });
+    }
+}
+
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler&lt;GlobalExceptionHandler&gt;();
+app.UseExceptionHandler();          <span class="hljs-comment">// sớm nhất trong pipeline (Chương 3)</span>
+app.UseStatusCodePages();           <span class="hljs-comment">// 404/405 không body → cũng dạng ProblemDetails</span>
+</code></pre>
+<p>Kết quả thực tế khi chạy code mẫu:</p>
+<pre class="hljs"><code>GET /loi/khong-tim-thay   →  404  application/problem+json
+{&quot;type&quot;:&quot;https://tools.ietf.org/html/rfc9110#section-15.5.5&quot;,&quot;title&quot;:&quot;Khong tim thay&quot;,&quot;status&quot;:404,
+ &quot;detail&quot;:&quot;Khong tim thay San pham '999'&quot;,&quot;instance&quot;:&quot;/loi/khong-tim-thay&quot;,&quot;traceId&quot;:&quot;00-a16ba7f...&quot;}
+
+GET /loi/bat-ngo          →  500  (KHÔNG có detail — chi tiết chỉ nằm trong log)
+{&quot;type&quot;:&quot;...#section-15.6.1&quot;,&quot;title&quot;:&quot;Loi may chu&quot;,&quot;status&quot;:500,&quot;instance&quot;:&quot;/loi/bat-ngo&quot;,&quot;traceId&quot;:&quot;00-69f22e...&quot;}
+</code></pre>
+<p>Điểm mấu chốt:</p>
+<ul>
+<li><strong>Lỗi nghiệp vụ (4xx)</strong>: hiển thị thông điệp cho client (họ cần biết để sửa), log mức <code>Warning</code> không kèm stack trace.</li>
+<li><strong>Lỗi bất ngờ (5xx)</strong>: <strong>không</strong> trả <code>e.Message</code>/stack trace (lộ cấu trúc nội bộ, câu SQL, đường dẫn máy chủ — thông tin có giá trị cho kẻ tấn công); trả thông điệp chung + <code>traceId</code> để người dùng báo lại và bạn tra log. Log <code>Error</code> đầy đủ.</li>
+<li>Mọi lỗi cùng <strong>một định dạng</strong> (ProblemDetails) — client xử lý thống nhất.</li>
+<li>Trong <code>Development</code> <code>UseDeveloperExceptionPage</code> (mặc định) hiện trang lỗi chi tiết cho lập trình viên; production dùng handler trên.</li>
+</ul>
+<p>Khi hai dịch vụ gọi nhau, <code>traceId</code> cho phép lần theo chuỗi request xuyên nhiều hệ thống (Tập 3: OpenTelemetry).</p>
+<h3>Lỗi vs Result</h3>
+<p>Không phải mọi kết quả &quot;thất bại&quot; đều là ngoại lệ. Lỗi <strong>dự kiến, thường xuyên</strong> (&quot;không đủ hàng&quot;) có thể trả về như <strong>giá trị</strong> (<code>Result</code>, <code>Conflict&lt;ProblemDetails&gt;</code>, như endpoint <code>/mua</code>), tránh chi phí và độ ồn của exception. Ngoại lệ dành cho <strong>bất thường</strong> hoặc khi nhiều tầng cần &quot;bỏ dở&quot;. Tập 3 nói kỹ Result pattern.</p>
+<h2>Versioning</h2>
+<p>API công khai là <strong>hợp đồng</strong>: khi client đã dùng, bạn không được tuỳ tiện đổi tên trường, xoá trường, đổi kiểu. Khi cần thay đổi phá vỡ tương thích (<strong>breaking change</strong>), phát hành <strong>phiên bản mới</strong> và giữ phiên bản cũ đủ lâu.</p>
+<p>Ba cách phổ biến:</p>
+<table>
+<thead>
+<tr>
+<th>Cách</th>
+<th>Ví dụ</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Đường dẫn</strong></td>
+<td><code>/api/v1/san-pham</code>, <code>/api/v2/san-pham</code></td>
+<td>rõ ràng, dễ cache/test, <strong>phổ biến nhất</strong></td>
+</tr>
+<tr>
+<td><strong>Query</strong></td>
+<td><code>/api/san-pham?api-version=2</code></td>
+<td>dễ dùng thử trên trình duyệt</td>
+</tr>
+<tr>
+<td><strong>Header</strong></td>
+<td><code>X-Api-Version: 2</code> hoặc media type (<code>Accept: application/vnd.x.v2+json</code>)</td>
+<td>URL sạch, khó thử</td>
+</tr>
+</tbody>
+</table>
+<p>Code mẫu dùng đường dẫn với <code>MapGroup</code>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> v1 = app.MapGroup(<span class="hljs-string">&quot;/api/v1/san-pham&quot;</span>);
+<span class="hljs-keyword">var</span> v2 = app.MapGroup(<span class="hljs-string">&quot;/api/v2/san-pham&quot;</span>);
+
+v1.MapGet(<span class="hljs-string">&quot;/{id:int}&quot;</span>, ...);   <span class="hljs-comment">// {&quot;id&quot;:1,&quot;ten&quot;:&quot;Laptop&quot;,&quot;gia&quot;:18000000}</span>
+v2.MapGet(<span class="hljs-string">&quot;/{id:int}&quot;</span>, ...);   <span class="hljs-comment">// {&quot;id&quot;:1,&quot;ten&quot;:&quot;Laptop&quot;,&quot;gia&quot;:{&quot;soTien&quot;:18000000,&quot;donVi&quot;:&quot;VND&quot;},&quot;tonKho&quot;:3}</span>
+</code></pre>
+<p>v2 đổi <code>gia</code> từ số sang đối tượng (thêm đơn vị tiền) — nếu đổi trực tiếp, mọi client v1 vỡ. Cho dự án lớn dùng thư viện <strong><code>Asp.Versioning</code></strong> (versioning theo attribute, tự đưa vào OpenAPI, báo phiên bản lỗi thời qua header <code>api-supported-versions</code>, <code>Deprecation</code>/<code>Sunset</code>).</p>
+<p>Quy tắc: <strong>thay đổi tương thích thì không cần version mới</strong> — thêm trường tuỳ chọn, thêm endpoint. <strong>Phá vỡ</strong> — xoá/đổi tên/đổi kiểu trường, đổi ý nghĩa, thêm tham số bắt buộc — mới cần. Thiết kế client theo &quot;tolerant reader&quot; (bỏ qua trường lạ) để dễ tiến hoá.</p>
+<h2>OpenAPI</h2>
+<p><strong>OpenAPI</strong> (trước kia Swagger) là chuẩn mô tả API dạng JSON/YAML: mọi endpoint, tham số, body, phản hồi, xác thực. Từ .NET 9, <a href="http://ASP.NET">ASP.NET</a> Core sinh sẵn bằng <code>Microsoft.AspNetCore.OpenApi</code>:</p>
+<pre class="hljs"><code>builder.Services.AddOpenApi(options =&gt;
+{
+    options.AddDocumentTransformer((doc, ctx, ct) =&gt;
+    {
+        doc.Info = <span class="hljs-keyword">new</span> OpenApiInfo { Title = <span class="hljs-string">&quot;API Cua Hang&quot;</span>, Version = <span class="hljs-string">&quot;v1&quot;</span>, Description = <span class="hljs-string">&quot;...&quot;</span> };
+        <span class="hljs-keyword">return</span> Task.CompletedTask;
+    });
+});
+
+<span class="hljs-keyword">if</span> (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();                 <span class="hljs-comment">// GET /openapi/v1.json</span>
+    app.MapScalarApiReference();      <span class="hljs-comment">// giao diện /scalar/v1  (package Scalar.AspNetCore)</span>
+}
+</code></pre>
+<p>Thông tin lấy từ code: route, kiểu tham số, kiểu trả về khai báo bằng <code>Results&lt;...&gt;</code>/<code>[ProducesResponseType]</code>, XML doc comment (bật <code>GenerateDocumentationFile</code>), attribute <code>[Tags]</code>, <code>WithSummary</code>, <code>WithDescription</code>.</p>
+<p>Giá trị của tài liệu OpenAPI:</p>
+<ul>
+<li><strong>Giao diện thử API</strong> (Scalar, Swagger UI, Postman nhập file) — người dùng API không cần đọc code.</li>
+<li><strong>Sinh code client</strong> (C#, TypeScript, Java...) bằng NSwag/Kiota/openapi-generator — tránh viết tay DTO phía client.</li>
+<li><strong>Kiểm thử hợp đồng</strong> và phát hiện breaking change trong CI.</li>
+</ul>
+<p>Đặt <code>MapOpenApi</code>/UI ở <code>Development</code> hoặc sau xác thực khi production (không muốn công khai bản đồ API nội bộ).</p>
+<h2>CORS</h2>
+<p>Trình duyệt chặn trang ở origin A gọi API ở origin B (<strong>same-origin policy</strong>) trừ khi server B cho phép bằng header CORS. <code>curl</code> và server-to-server <strong>không bị</strong> ảnh hưởng — nên lỗi CORS chỉ hiện trong trình duyệt.</p>
+<pre class="hljs"><code>builder.Services.AddCors(o =&gt; o.AddPolicy(<span class="hljs-string">&quot;web-app&quot;</span>, p =&gt; p
+    .WithOrigins(<span class="hljs-string">&quot;https://cuahang.example.com&quot;</span>, <span class="hljs-string">&quot;http://localhost:3000&quot;</span>)
+    .WithMethods(<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">&quot;POST&quot;</span>, <span class="hljs-string">&quot;PUT&quot;</span>, <span class="hljs-string">&quot;DELETE&quot;</span>)
+    .AllowAnyHeader()));
+
+app.UseCors(<span class="hljs-string">&quot;web-app&quot;</span>);      <span class="hljs-comment">// sau UseRouting, TRƯỚC UseAuthentication/UseAuthorization</span>
+</code></pre>
+<p>Thử: request có <code>Origin: http://localhost:3000</code> nhận <code>Access-Control-Allow-Origin: http://localhost:3000</code>; <code>Origin: http://evil.com</code> <strong>không</strong> nhận header nào. Nguyên tắc: liệt kê <strong>chính xác</strong> origin được phép; <strong>không</strong> dùng <code>AllowAnyOrigin()</code> cùng <code>AllowCredentials()</code> (bị chặn và nguy hiểm). CORS là cơ chế của <strong>trình duyệt bảo vệ người dùng</strong>, không phải cơ chế bảo mật API (kẻ tấn công vẫn gọi được bằng công cụ khác — xác thực mới là cái bảo vệ).</p>
+<h2>Health checks</h2>
+<p>Endpoint cho hệ thống giám sát/orchestrator (Docker, Kubernetes, load balancer) hỏi &quot;ứng dụng còn khoẻ không?&quot;:</p>
+<pre class="hljs"><code>builder.Services.AddHealthChecks().AddCheck(<span class="hljs-string">&quot;bo-nho&quot;</span>, () =&gt; GC.GetTotalMemory(<span class="hljs-literal">false</span>) &lt; <span class="hljs-number">500_000_000</span>
+    ? HealthCheckResult.Healthy(<span class="hljs-string">&quot;Bo nho on dinh&quot;</span>) : HealthCheckResult.Degraded(<span class="hljs-string">&quot;Bo nho cao&quot;</span>));
+app.MapHealthChecks(<span class="hljs-string">&quot;/health&quot;</span>);        <span class="hljs-comment">// 200 &quot;Healthy&quot; / 503 &quot;Unhealthy&quot;</span>
+</code></pre>
+<p>Thực tế thêm check CSDL, dịch vụ ngoài (<code>AspNetCore.HealthChecks.*</code>). Tách <strong>liveness</strong> (tiến trình còn sống) và <strong>readiness</strong> (đã sẵn sàng nhận tải — phụ thuộc kết nối được) bằng <code>Tags</code>/nhiều endpoint (Tập 3).</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Quên <code>app.UseExceptionHandler()</code> (đăng ký handler nhưng không bật middleware).</li>
+<li>Đặt middleware xử lý lỗi <strong>sau</strong> middleware khác nên không bắt được lỗi của chúng.</li>
+<li>Trả <code>e.Message</code>/stack trace ra client ở production.</li>
+<li>Bắt <code>Exception</code> chung chung trong từng action rồi trả <code>500</code> với thông điệp riêng lẻ.</li>
+<li>Đổi hợp đồng API ngay trên phiên bản đang dùng.</li>
+<li>Lỗi CORS trong trình duyệt nhưng <code>curl</code> chạy tốt — thiếu origin trong policy, hoặc <code>UseCors</code> đặt sai thứ tự.</li>
+<li>Công khai OpenAPI/Scalar trên production ngoài ý muốn.</li>
+<li>Health check gọi thao tác nặng → chính nó làm sập ứng dụng.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm <code>LoiDuLieuKhongHopLeException</code> → <code>422 Unprocessable Entity</code> vào <code>GlobalExceptionHandler</code>.</li>
+<li>Thêm <code>TimeoutException</code> → <code>504 Gateway Timeout</code> với thông điệp chung.</li>
+<li>Tạo <code>/api/v3/san-pham/{id}</code> thêm <code>hinhAnh</code> (tương thích) và giải thích vì sao không cần phiên bản mới nếu chỉ <em>thêm</em> trường.</li>
+<li>Dùng <code>WithSummary/WithDescription</code> mô tả các endpoint; mở <code>/scalar/v1</code> và kiểm tra.</li>
+<li>Thêm health check kiểm tra ghi được vào thư mục tạm; thử làm nó thất bại và quan sát <code>503</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch08-dto-validation.html">&larr; 8. DTO và Validation</a><a class="nav-next" href="ch10-kiem-thu-api.html">10. Kiểm thử API &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
