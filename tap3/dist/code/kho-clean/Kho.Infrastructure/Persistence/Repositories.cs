@@ -1,4 +1,5 @@
 using Kho.Application.Abstractions;
+using Kho.Domain.DonHangs;
 using Kho.Domain.SanPhams;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,17 @@ public class SanPhamRepository(KhoDbContext db) : ISanPhamRepository
     }
 
     public void Them(SanPham sanPham) => db.SanPhams.Add(sanPham);
+}
+
+public class DonHangRepository(KhoDbContext db) : IDonHangRepository
+{
+    public Task<DonHang?> LayTheoMaAsync(string ma, CancellationToken ct)
+    {
+        var maChuan = ma.Trim().ToUpperInvariant();
+        return db.DonHangs.FirstOrDefaultAsync(d => d.Ma == maChuan, ct);          // aggregate + cac dong (owned) nap cung
+    }
+
+    public void Them(DonHang donHang) => db.DonHangs.Add(donHang);
 }
 
 // Phia DOC: chieu thang tu bang ra DTO bang projection, khong nap aggregate, khong theo doi

@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 14 — Docker và docker-compose — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><a class="chapter-link" href="ch09-chien-luoc-kiem-thu.html">9. Chiến lược kiểm thử</a></li><li><a class="chapter-link" href="ch10-caching.html">10. Caching</a></li><li><a class="chapter-link" href="ch11-quan-sat-hieu-nang.html">11. Quan sát và hiệu năng</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-oidc-oauth2.html">12. OpenID Connect và OAuth 2.0</a></li><li><a class="chapter-link" href="ch13-idempotency-audit.html">13. Idempotency, audit log và bảo vệ dữ liệu</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch14-docker.html">14. Docker và docker-compose</a></li><li><a class="chapter-link" href="ch15-ci-cd.html">15. CI/CD với GitHub Actions</a></li><li><a class="chapter-link" href="ch16-trien-khai-cloud.html">16. Triển khai lên máy chủ và đám mây</a></li><li><a class="chapter-link" href="ch17-microservices.html">17. Microservices và giao tiếp giữa dịch vụ</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch18-du-an-tong-hop.html">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch19-phu-luc-a-loi-thuong-gap.html">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</a></li><li><a class="chapter-link" href="ch20-phu-luc-b-tai-lieu.html">20. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch21-phu-luc-c-cheat-sheet.html">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 14 — Docker và docker-compose</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>container</strong> là gì, khác máy ảo ra sao, và vì sao &quot;chạy được trên máy tôi&quot; không còn là vấn đề.</li>
+<li>Viết <strong>Dockerfile nhiều giai đoạn (multi-stage)</strong> cho ứng dụng <a href="http://ASP.NET">ASP.NET</a> Core: nhỏ, cache tốt, chạy không bằng root.</li>
+<li>Cấu hình ứng dụng qua <strong>biến môi trường</strong>, dùng <strong>volume</strong> cho dữ liệu, dùng <strong>docker-compose</strong> để chạy nhiều dịch vụ.</li>
+<li>Biết các thực hành an toàn và các lỗi thường gặp.</li>
+</ul>
+<p>Code: <a href="code/kho-clean/Dockerfile"><code>code/kho-clean/Dockerfile</code></a>, <a href="code/kho-clean/docker-compose.yml"><code>docker-compose.yml</code></a>, <a href="code/kho-clean/.dockerignore"><code>.dockerignore</code></a>.</p>
+<blockquote>
+<p><strong>Lưu ý trung thực về kiểm chứng:</strong> khi viết sách, Docker daemon trên máy tác giả không chạy nên <strong>chưa build được image thật</strong>. Những gì đã kiểm chứng: lệnh <code>dotnet publish -c Release</code> dùng đúng trong Dockerfile chạy thành công và bản publish khởi động ở môi trường Production (tự migrate CSDL SQLite, <code>/health</code> trả 200, API trả đúng lỗi 400). Nội dung Dockerfile/compose tuân theo tài liệu chính thức của Microsoft/Docker; nếu build ở máy bạn gặp khác biệt (phiên bản image, tên biến), hãy xem <code>docker build</code> cho thông báo cụ thể.</p>
+</blockquote>
+<h2>Container là gì?</h2>
+<p><strong>Container</strong> đóng gói ứng dụng <strong>cùng mọi thứ nó cần</strong> (runtime, thư viện, cấu hình mặc định) thành một <strong>image</strong> bất biến; chạy image ra <strong>container</strong>. Khác <strong>máy ảo (VM)</strong>: VM ảo hoá cả phần cứng và chạy hệ điều hành đầy đủ (nặng, khởi động phút); container <strong>dùng chung nhân (kernel)</strong> của máy chủ, chỉ cô lập tiến trình/mạng/hệ tệp bằng namespace và cgroup (nhẹ, khởi động giây).</p>
+<table>
+<thead>
+<tr>
+<th>Khái niệm</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Image</strong></td>
+<td>khuôn bất biến, gồm nhiều <strong>lớp (layer)</strong> chỉ đọc</td>
+</tr>
+<tr>
+<td><strong>Container</strong></td>
+<td>một thể hiện đang chạy của image (thêm lớp ghi mỏng, mất khi xoá container)</td>
+</tr>
+<tr>
+<td><strong>Registry</strong></td>
+<td>kho lưu image (Docker Hub, GitHub Container Registry, Azure Container Registry, ECR)</td>
+</tr>
+<tr>
+<td><strong>Volume</strong></td>
+<td>thư mục lưu <strong>bền</strong> ngoài vòng đời container</td>
+</tr>
+<tr>
+<td><strong>Tag</strong></td>
+<td>nhãn phiên bản (<code>kho-web:1.4.2</code>); <code>latest</code> chỉ là một tag quy ước, không phải &quot;mới nhất&quot; thật</td>
+</tr>
+</tbody>
+</table>
+<p>Lợi ích cho .NET: môi trường <strong>giống nhau</strong> ở dev/CI/production, triển khai bằng <strong>thay image</strong> (không cài đặt trên máy chủ), <strong>mở rộng</strong> bằng cách chạy nhiều bản, <strong>quay lui</strong> bằng cách chạy lại tag cũ. Hầu hết nền tảng đám mây (Chương 16) đều chạy container.</p>
+<h2>Dockerfile nhiều giai đoạn</h2>
+<pre class="hljs"><code><span class="hljs-comment"># ===== Giai đoạn 1: BUILD (có SDK, nặng ~1 GB) =====</span>
+<span class="hljs-keyword">FROM</span> mcr.microsoft.com/dotnet/sdk:<span class="hljs-number">10.0</span> AS build
+<span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /src</span>
+
+<span class="hljs-comment"># Chép RIÊNG các file csproj trước -&gt; lớp &quot;restore&quot; được cache; chỉ khi đổi package mới restore lại</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> Kho.Domain/Kho.Domain.csproj Kho.Domain/</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> Kho.Application/Kho.Application.csproj Kho.Application/</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> Kho.Infrastructure/Kho.Infrastructure.csproj Kho.Infrastructure/</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> Kho.Web/Kho.Web.csproj Kho.Web/</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> dotnet restore Kho.Web/Kho.Web.csproj</span>
+
+<span class="hljs-keyword">COPY</span><span class="language-bash"> . .</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> dotnet publish Kho.Web/Kho.Web.csproj -c Release -o /app/publish --no-restore /p:UseAppHost=<span class="hljs-literal">false</span></span>
+
+<span class="hljs-comment"># ===== Giai đoạn 2: RUNTIME (chỉ runtime ASP.NET, nhỏ) =====</span>
+<span class="hljs-keyword">FROM</span> mcr.microsoft.com/dotnet/aspnet:<span class="hljs-number">10.0</span> AS final
+<span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> --from=build /app/publish .</span>
+
+<span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">mkdir</span> -p /data &amp;&amp; <span class="hljs-built_in">chown</span> <span class="hljs-variable">$APP_UID</span> /data</span>
+<span class="hljs-keyword">ENV</span> ConnectionStrings__Kho=<span class="hljs-string">&quot;Data Source=/data/kho.db&quot;</span> ASPNETCORE_HTTP_PORTS=<span class="hljs-number">8080</span>
+<span class="hljs-keyword">VOLUME</span><span class="language-bash"> /data</span>
+
+<span class="hljs-keyword">USER</span> $APP_UID
+<span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">8080</span>
+<span class="hljs-keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="hljs-string">&quot;dotnet&quot;</span>, <span class="hljs-string">&quot;Kho.Web.dll&quot;</span>]</span>
+</code></pre>
+<p>Giải thích từng quyết định:</p>
+<ol>
+<li><strong>Multi-stage</strong>: SDK (compiler, công cụ) chỉ ở giai đoạn build; image cuối chỉ có <strong>runtime</strong> (<code>aspnet</code>), nhỏ hơn nhiều và <strong>ít bề mặt tấn công</strong> (không có compiler cho kẻ xâm nhập).</li>
+<li><strong>Cache theo lớp</strong>: Docker cache từng lệnh; nếu đầu vào không đổi, dùng lại. Chép <code>*.csproj</code> và <code>restore</code> <strong>trước</strong> khi chép mã nguồn: sửa mã (thường xuyên) không làm mất lớp restore (chậm, tải package). Đây là mẹo quan trọng nhất về tốc độ build.</li>
+<li><strong><code>--no-restore</code>, <code>UseAppHost=false</code></strong>: publish nhanh hơn, không cần file thực thi native vì dùng <code>dotnet Kho.Web.dll</code>.</li>
+<li><strong>Không chạy bằng root</strong>: image .NET 8+ có sẵn người dùng <code>app</code> (UID trong biến <code>$APP_UID</code>); <code>USER $APP_UID</code> để nếu ứng dụng bị chiếm quyền, kẻ tấn công không có root trong container. Cấp quyền ghi thư mục dữ liệu cho người dùng đó.</li>
+<li><strong>Cổng 8080</strong>: image .NET 8+ mặc định lắng nghe <strong>8080</strong> (không phải 80) vì cổng dưới 1024 cần đặc quyền. <code>ASPNETCORE_HTTP_PORTS</code> cấu hình cổng. TLS thường <strong>kết thúc ở reverse proxy/ingress</strong> phía trước, không phải trong container.</li>
+<li><strong><code>ENTRYPOINT</code> dạng mảng (exec form)</strong>: tiến trình <code>dotnet</code> là PID 1 nhận tín hiệu <code>SIGTERM</code> trực tiếp → tắt êm (graceful shutdown, hoàn tất request đang chạy, dừng <code>BackgroundService</code> như outbox).</li>
+</ol>
+<h3><code>.dockerignore</code></h3>
+<pre class="hljs"><code>**/bin/
+**/obj/
+**/*.db
+.git
+</code></pre>
+<p>Không đưa <code>bin/obj</code> (ghi đè kết quả build trong container), cơ sở dữ liệu cục bộ, <code>.git</code> vào <strong>ngữ cảnh build</strong> — nhỏ hơn, nhanh hơn, và không rò rỉ dữ liệu/bí mật vào image.</p>
+<h3>Build và chạy</h3>
+<pre class="hljs"><code>docker build -t kho-web:dev tap3/code/kho-clean
+docker run --<span class="hljs-built_in">rm</span> -p 8080:8080 -v kho-data:/data kho-web:dev
+curl http://localhost:8080/health
+</code></pre>
+<p>Ngoài Dockerfile, .NET SDK còn có thể tạo image <strong>không cần Dockerfile</strong>: <code>dotnet publish -t:PublishContainer</code> (gói <code>Microsoft.NET.Build.Containers</code>, cấu hình trong csproj). Tiện cho CI; Dockerfile linh hoạt hơn khi cần tuỳ biến.</p>
+<h2>Cấu hình bằng biến môi trường</h2>
+<p>Nguyên tắc <strong>12-factor</strong>: cấu hình theo môi trường <strong>nằm ngoài image</strong>. <a href="http://ASP.NET">ASP.NET</a> Core map biến môi trường tới cấu hình: dấu <code>:</code> thành <code>__</code> (hai gạch dưới):</p>
+<table>
+<thead>
+<tr>
+<th>Biến</th>
+<th>Tương ứng <code>appsettings</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ConnectionStrings__Kho</code></td>
+<td><code>ConnectionStrings:Kho</code></td>
+</tr>
+<tr>
+<td><code>Outbox__Bat</code></td>
+<td><code>Outbox:Bat</code></td>
+</tr>
+<tr>
+<td><code>Logging__LogLevel__Default</code></td>
+<td><code>Logging:LogLevel:Default</code></td>
+</tr>
+<tr>
+<td><code>ASPNETCORE_ENVIRONMENT</code></td>
+<td>môi trường (Development/Production)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Một image cho mọi môi trường</strong>: build một lần, khác biệt chỉ nằm ở biến môi trường/secret khi chạy. <strong>Không nhúng bí mật vào image</strong> (<code>ENV PASSWORD=...</code> nằm mãi trong lịch sử layer); truyền lúc chạy qua secret của nền tảng (Chương 16).</p>
+<h2>Dữ liệu: container không lưu trạng thái</h2>
+<p>Container là <strong>tạm thời</strong>: xoá đi là mất lớp ghi. Dữ liệu phải ở <strong>volume</strong> (như <code>kho-data:/data</code> cho SQLite) hoặc — chuẩn hơn ở production — <strong>dịch vụ CSDL ngoài</strong> (PostgreSQL/SQL Server, thường là dịch vụ quản lý). SQLite trong volume phù hợp demo và ứng dụng nhỏ <strong>một instance</strong>; khi chạy nhiều bản (mở rộng ngang) bắt buộc chuyển sang CSDL máy chủ.</p>
+<h2>docker-compose</h2>
+<p><strong>Compose</strong> khai báo cả hệ thống nhiều container trong một file YAML:</p>
+<pre class="hljs"><code><span class="hljs-attr">services:</span>
+  <span class="hljs-attr">kho-web:</span>
+    <span class="hljs-attr">build:</span> <span class="hljs-string">.</span>
+    <span class="hljs-attr">ports:</span> [<span class="hljs-string">&quot;8080:8080&quot;</span>]
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-attr">ASPNETCORE_ENVIRONMENT:</span> <span class="hljs-string">Production</span>
+      <span class="hljs-attr">ConnectionStrings__Kho:</span> <span class="hljs-string">&quot;Data Source=/data/kho.db&quot;</span>
+    <span class="hljs-attr">volumes:</span> [<span class="hljs-string">kho-data:/data</span>]
+    <span class="hljs-attr">restart:</span> <span class="hljs-string">unless-stopped</span>
+<span class="hljs-attr">volumes:</span>
+  <span class="hljs-attr">kho-data:</span>
+</code></pre>
+<p><code>docker compose up --build</code> dựng và chạy; <code>docker compose logs -f kho-web</code>; <code>docker compose down</code> (thêm <code>-v</code> để xoá cả volume — cẩn thận, mất dữ liệu).</p>
+<h3>Thêm PostgreSQL (mẫu tham khảo)</h3>
+<p>Khi chuyển sang PostgreSQL: đổi provider EF (<code>Npgsql.EntityFrameworkCore.PostgreSQL</code>), tạo lại migration, và compose có thêm dịch vụ CSDL:</p>
+<pre class="hljs"><code><span class="hljs-attr">services:</span>
+  <span class="hljs-attr">kho-web:</span>
+    <span class="hljs-attr">build:</span> <span class="hljs-string">.</span>
+    <span class="hljs-attr">ports:</span> [<span class="hljs-string">&quot;8080:8080&quot;</span>]
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-attr">ConnectionStrings__Kho:</span> <span class="hljs-string">&quot;Host=csdl;Database=kho;Username=kho;Password=${KHO_DB_PASSWORD}&quot;</span>
+    <span class="hljs-attr">depends_on:</span>
+      <span class="hljs-attr">csdl:</span>
+        <span class="hljs-attr">condition:</span> <span class="hljs-string">service_healthy</span>        <span class="hljs-comment"># chờ CSDL SẴN SÀNG, không chỉ &quot;đã khởi động&quot;</span>
+  <span class="hljs-attr">csdl:</span>
+    <span class="hljs-attr">image:</span> <span class="hljs-string">postgres:17</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-attr">POSTGRES_DB:</span> <span class="hljs-string">kho</span>
+      <span class="hljs-attr">POSTGRES_USER:</span> <span class="hljs-string">kho</span>
+      <span class="hljs-attr">POSTGRES_PASSWORD:</span> <span class="hljs-string">${KHO_DB_PASSWORD}</span>
+    <span class="hljs-attr">volumes:</span> [<span class="hljs-string">pg-data:/var/lib/postgresql/data</span>]
+    <span class="hljs-attr">healthcheck:</span>
+      <span class="hljs-attr">test:</span> [<span class="hljs-string">&quot;CMD-SHELL&quot;</span>, <span class="hljs-string">&quot;pg_isready -U kho -d kho&quot;</span>]
+      <span class="hljs-attr">interval:</span> <span class="hljs-string">5s</span>
+      <span class="hljs-attr">retries:</span> <span class="hljs-number">10</span>
+<span class="hljs-attr">volumes:</span>
+  <span class="hljs-attr">pg-data:</span>
+</code></pre>
+<ul>
+<li>Các dịch vụ trong cùng compose gọi nhau <strong>bằng tên dịch vụ</strong> (<code>Host=csdl</code>) qua mạng riêng.</li>
+<li>Mật khẩu lấy từ biến <code>${KHO_DB_PASSWORD}</code> (file <code>.env</code> <strong>không commit</strong>, hoặc <code>docker compose --env-file</code>).</li>
+<li>Ứng dụng nên <strong>chịu được CSDL chưa sẵn sàng</strong> lúc khởi động (retry), đừng dựa hoàn toàn vào <code>depends_on</code>. Tự <code>MigrateAsync</code> khi khởi động chỉ hợp với một instance; khi nhiều bản, chạy migration bằng <strong>job riêng</strong> (hoặc <code>dotnet ef migrations bundle</code>) trước khi triển khai.</li>
+</ul>
+<p>(Đây là mẫu theo tài liệu, <strong>chưa chạy ở máy tác giả</strong>; provider PostgreSQL cũng cần đổi vài chỗ SQL đặc thù SQLite như <code>INSERT OR IGNORE</code> ở Chương 13 → <code>ON CONFLICT DO NOTHING</code>.)</p>
+<h3>Health check trong container</h3>
+<p><code>/health</code> của ứng dụng (Chương 11) là nền tảng để orchestrator biết sống/sẵn sàng. Image <code>aspnet</code> mặc định <strong>không có <code>curl</code></strong> (và bản <em>chiseled</em> không có cả shell), nên khai báo <code>HEALTHCHECK</code> trong Dockerfile khó; trên Kubernetes/Container Apps dùng <strong>probe HTTP</strong> do nền tảng gọi (không cần công cụ trong container), và trên compose có thể kiểm tra từ dịch vụ khác hoặc dùng image có <code>curl</code>.</p>
+<h2>Thực hành tốt và an toàn</h2>
+<ul>
+<li><strong>Ghim phiên bản</strong>: <code>dotnet/aspnet:10.0</code> (hoặc ghim tới patch/digest cho tái lập); tránh <code>latest</code>.</li>
+<li><strong>Image nhỏ/an toàn hơn</strong>: biến thể <code>-noble-chiseled</code> (Ubuntu chiseled: không shell, không package manager, chạy sẵn non-root) và <code>-alpine</code>; đánh đổi: khó debug (không có shell), musl libc.</li>
+<li><strong>Quét lỗ hổng</strong> image (Trivy, Docker Scout, Defender) trong CI; cập nhật base image thường xuyên (vá bảo mật).</li>
+<li><strong>Không chạy root</strong>, không mount <code>docker.sock</code>, không dùng <code>--privileged</code>.</li>
+<li><strong>Hệ tệp chỉ đọc</strong> (<code>read_only: true</code> + volume ghi cho thư mục cần thiết) nếu có thể.</li>
+<li><strong>Giới hạn tài nguyên</strong> (<code>mem_limit</code>, <code>cpus</code>); .NET tự nhận giới hạn bộ nhớ container để đặt heap GC.</li>
+<li><strong>Log ra stdout/stderr</strong> (mặc định của <a href="http://ASP.NET">ASP.NET</a> Core console logger); nền tảng thu gom — đừng ghi file log trong container.</li>
+<li><strong>Một tiến trình chính mỗi container</strong>; ứng dụng phải <strong>tắt êm</strong> khi nhận SIGTERM.</li>
+<li>Đừng nhét <strong>secret</strong> hay <code>appsettings.Production.json</code> chứa bí mật vào image.</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Chép toàn bộ mã trước <code>restore</code> → mỗi lần sửa một dòng lại tải lại toàn bộ package.</li>
+<li>Thiếu <code>.dockerignore</code> → ngữ cảnh build lớn, <code>bin/obj</code> cũ làm hỏng build.</li>
+<li>Ứng dụng nghe <code>localhost</code> trong container → không truy cập được từ ngoài (dùng <code>ASPNETCORE_HTTP_PORTS</code>/<code>URLS=http://+:8080</code>).</li>
+<li>Quên volume → <strong>mất dữ liệu SQLite</strong> khi tạo lại container; hoặc lỗi quyền ghi vì chạy non-root mà thư mục thuộc root.</li>
+<li>Dùng <code>latest</code> → build không tái lập được.</li>
+<li>Nhúng secret vào <code>ENV</code>/<code>ARG</code>/image; commit <code>.env</code>.</li>
+<li>Giả định <code>depends_on</code> đảm bảo CSDL sẵn sàng.</li>
+<li>Cổng 80 trong container non-root → lỗi quyền (dùng 8080).</li>
+<li>Chạy migration tự động ở mỗi bản trong cụm → đua nhau migrate.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Build image của <code>kho-clean</code>, chạy, tạo vài sản phẩm bằng <code>curl</code>, <strong>xoá container</strong>, chạy lại cùng volume và xác nhận dữ liệu còn. Chạy lại <strong>không</strong> volume và xác nhận mất.</li>
+<li>So sánh kích thước image khi dùng <code>sdk</code> làm image cuối với multi-stage; ghi lại số liệu bằng <code>docker images</code>.</li>
+<li>Đo tác dụng cache: sửa một dòng mã rồi <code>docker build</code> lại; xem lớp <code>dotnet restore</code> có <code>CACHED</code> không. Sau đó đổi thứ tự (chép hết trước restore) và so sánh thời gian.</li>
+<li>Tạo image không cần Dockerfile bằng <code>dotnet publish -t:PublishContainer</code> (kèm <code>ContainerRepository</code>, <code>ContainerFamily</code> trong csproj).</li>
+<li>Chuyển <code>kho-clean</code> sang PostgreSQL theo mẫu compose ở trên, sửa <code>INSERT OR IGNORE</code>, tạo lại migration và chạy <code>docker compose up</code>.</li>
+<li>Thêm dịch vụ <strong>OpenTelemetry Collector</strong> hoặc <strong>Jaeger</strong> vào compose và cấu hình <code>OTEL_EXPORTER_OTLP_ENDPOINT</code> cho ứng dụng (kết nối Chương 11).</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch13-idempotency-audit.html">&larr; 13. Idempotency, audit log và bảo vệ dữ liệu</a><a class="nav-next" href="ch15-ci-cd.html">15. CI/CD với GitHub Actions &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

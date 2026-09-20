@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 18 — Dự án tổng hợp Tập 3: Hệ thống đặt hàng — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><a class="chapter-link" href="ch09-chien-luoc-kiem-thu.html">9. Chiến lược kiểm thử</a></li><li><a class="chapter-link" href="ch10-caching.html">10. Caching</a></li><li><a class="chapter-link" href="ch11-quan-sat-hieu-nang.html">11. Quan sát và hiệu năng</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-oidc-oauth2.html">12. OpenID Connect và OAuth 2.0</a></li><li><a class="chapter-link" href="ch13-idempotency-audit.html">13. Idempotency, audit log và bảo vệ dữ liệu</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><a class="chapter-link" href="ch14-docker.html">14. Docker và docker-compose</a></li><li><a class="chapter-link" href="ch15-ci-cd.html">15. CI/CD với GitHub Actions</a></li><li><a class="chapter-link" href="ch16-trien-khai-cloud.html">16. Triển khai lên máy chủ và đám mây</a></li><li><a class="chapter-link" href="ch17-microservices.html">17. Microservices và giao tiếp giữa dịch vụ</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch18-du-an-tong-hop.html">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch19-phu-luc-a-loi-thuong-gap.html">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</a></li><li><a class="chapter-link" href="ch20-phu-luc-b-tai-lieu.html">20. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch21-phu-luc-c-cheat-sheet.html">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 18 — Dự án tổng hợp Tập 3: Hệ thống đặt hàng</h1>
+<h2>Mục tiêu học</h2>
+<p>Chương này gom mọi thứ của Tập 3 vào <strong>một hệ thống</strong>: mở rộng <code>kho-clean</code> bằng mô-đun <strong>Đơn hàng</strong> (đặt hàng nhiều dòng, huỷ đơn), rồi rà soát nó qua từng chương: kiến trúc, miền, CQRS, Result, outbox, idempotency, audit, kiểm thử, quan sát, đóng gói và triển khai.</p>
+<p>Code: <a href="code/kho-clean/"><code>code/kho-clean/</code></a> — thư mục <code>Kho.Domain/DonHangs</code>, <code>Kho.Application/DonHangs</code>, <code>Kho.Web/Endpoints/DonHangEndpoints.cs</code>, <code>Kho.Tests/DonHangTests.cs</code>.</p>
+<blockquote>
+<p><strong>Trạng thái kiểm chứng (đọc kỹ):</strong> mã Đơn hàng <strong>biên dịch được</strong>, migration đã sinh, và các test <strong>domain</strong> của nó chạy được. Nhưng các test <strong>tích hợp</strong> (đặt hàng, huỷ đơn, đặt đồng thời, idempotency, outbox) <strong>chưa chạy được ở máy tác giả</strong>: Windows chặn nạp <code>Kho.Infrastructure.dll</code> bằng chính sách Application Control (lỗi <code>0x800711C7</code>), dù trước đó 45 test cũ đều đạt trên cùng thiết lập. Vì vậy các khẳng định về hành vi end-to-end dưới đây là <strong>thiết kế và kỳ vọng của test</strong>, chưa phải kết quả đã quan sát. Hãy chạy <code>dotnet test</code> ở máy bạn; nếu có test đỏ, coi đó là một phần của bài tập gỡ lỗi.</p>
+</blockquote>
+<h2>Yêu cầu</h2>
+<ol>
+<li>Đặt hàng gồm <strong>nhiều dòng</strong> (mã sản phẩm + số lượng). Mỗi dòng trừ kho.</li>
+<li><strong>Tất cả hoặc không gì cả</strong>: một dòng thiếu hàng thì không dòng nào bị trừ.</li>
+<li>Đơn lưu <strong>bản chụp đơn giá</strong> lúc đặt (giá đổi sau này không đổi đơn cũ).</li>
+<li><strong>Huỷ đơn</strong> trả lại tồn, và không huỷ được hai lần.</li>
+<li>Nhiều người đặt cùng lúc món cuối cùng: <strong>tồn không bao giờ âm</strong>.</li>
+<li>Gửi lại request (mạng rớt) với <code>Idempotency-Key</code> <strong>không tạo đơn thứ hai</strong>.</li>
+<li>Sự kiện <code>DonHangDaDat</code>/<code>DonHangDaHuy</code> đi qua <strong>outbox</strong> để hệ thống khác (thanh toán, thông báo) tiêu thụ.</li>
+</ol>
+<h2>Thiết kế</h2>
+<pre class="mermaid">flowchart LR
+    C[Client] --&gt;|POST /api/don-hang&lt;br/&gt;Idempotency-Key| W[Web: middleware idempotency&lt;br/&gt;endpoint mỏng]
+    W --&gt; M[Mediator: Logging &gt; Validation &gt; UnitOfWork]
+    M --&gt; H[DatHangHandler]
+    H --&gt; S[SanPham.XuatKho x N]
+    H --&gt; D[DonHang.Tao]
+    M --&gt;|LuuAsync: MỘT giao dịch| DB[(SQLite: san_pham, don_hang,&lt;br/&gt;dong_don_hang, outbox, nhat_ky, idempotency)]
+    DB -.-&gt; O[OutboxProcessor] --&gt; P[IPhatHanhSuKien]
+</pre>
+<p><strong>Hai aggregate, một use case.</strong> <code>SanPham</code> và <code>DonHang</code> là hai aggregate riêng (Chương 3): <code>DonHang</code> chỉ giữ <strong>mã</strong> sản phẩm và bản chụp giá, không giữ đối tượng <code>SanPham</code>. Use case đặt hàng (tầng Application) <strong>điều phối</strong> cả hai trong <strong>một giao dịch</strong> — chấp nhận được khi cùng một CSDL. Nếu sau này Kho và Đơn hàng thành hai dịch vụ, chỗ này biến thành <strong>saga</strong> (Chương 17): giữ tồn → tạo đơn → bù trừ khi lỗi.</p>
+<h3>Miền: <code>DonHang</code></h3>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Result&lt;DonHang&gt; <span class="hljs-title">Tao</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ma, <span class="hljs-built_in">string</span>? khachHang, IEnumerable&lt;DongDon&gt; dong, DateTimeOffset bayGio</span>)</span>
+{
+    <span class="hljs-comment">// kiểm tra: có khách, 1..50 dòng, không trùng sản phẩm, số lượng &gt; 0  → Result.Fail(Loi.DuLieuKhongHopLe(...))</span>
+    <span class="hljs-keyword">var</span> don = <span class="hljs-keyword">new</span> DonHang { Ma = ma, KhachHang = khachHang.Trim(), TrangThai = TrangThaiDon.DaDat, DatLuc = bayGio };
+    don._dong.AddRange(ds);
+    don.TongTien = ds.Aggregate(Tien.Khong, (tong, d) =&gt; tong + d.ThanhTien);
+    don.PhatSuKien(<span class="hljs-keyword">new</span> DonHangDaDat(ma, don.KhachHang, don.TongTien.SoTien, ds.Count, bayGio));
+    <span class="hljs-keyword">return</span> don;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> Result <span class="hljs-title">Huy</span>(<span class="hljs-params"><span class="hljs-built_in">string</span>? lyDo, DateTimeOffset bayGio</span>)</span>
+{
+    <span class="hljs-keyword">if</span> (TrangThai == TrangThaiDon.DaHuy) <span class="hljs-keyword">return</span> Result.Fail(Loi.NghiepVu(<span class="hljs-string">&quot;DonHang.DaHuy&quot;</span>, ...));   <span class="hljs-comment">// quy tắc ở ĐÚNG chỗ</span>
+    TrangThai = TrangThaiDon.DaHuy;
+    PhatSuKien(<span class="hljs-keyword">new</span> DonHangDaHuy(Ma, ..., bayGio));
+    <span class="hljs-keyword">return</span> Result.Ok();
+}
+</code></pre>
+<p>Bất biến do chính aggregate giữ; trạng thái đổi qua phương thức nghiệp vụ; <code>DongDon</code> là thực thể con (owned) sống và chết cùng đơn.</p>
+<h3>Ứng dụng: đặt hàng tất-cả-hoặc-không</h3>
+<pre class="hljs"><code><span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> d <span class="hljs-keyword">in</span> cmd.Dong)
+{
+    <span class="hljs-keyword">var</span> sp = <span class="hljs-keyword">await</span> sanPhams.LayTheoMaAsync(d.MaSanPham, ct);
+    <span class="hljs-keyword">if</span> (sp <span class="hljs-keyword">is</span> <span class="hljs-literal">null</span>) <span class="hljs-keyword">return</span> Result&lt;<span class="hljs-built_in">string</span>&gt;.Fail(Loi.KhongTimThay(...));
+    <span class="hljs-keyword">var</span> xuat = sp.XuatKho(d.SoLuong, bayGio);
+    <span class="hljs-keyword">if</span> (!xuat.ThanhCong) <span class="hljs-keyword">return</span> Result&lt;<span class="hljs-built_in">string</span>&gt;.Fail(xuat.Loi!);        <span class="hljs-comment">// trả lỗi NGAY</span>
+    dong.Add(<span class="hljs-keyword">new</span> DongDon(sp.Ma.GiaTri, d.SoLuong, sp.DonGia));          <span class="hljs-comment">// bản chụp giá</span>
+}
+<span class="hljs-keyword">var</span> don = DonHang.Tao(ma, cmd.KhachHang, dong, bayGio);
+donHangs.Them(don.GiaTri);
+<span class="hljs-keyword">return</span> ma;
+</code></pre>
+<p>Tính nguyên tử đến từ <strong>hai thứ phối hợp</strong> (Chương 6 và 7): handler trả <code>Result</code> thất bại → <code>UnitOfWorkBehavior</code> <strong>không gọi <code>LuuAsync</code></strong> nên các thay đổi trong bộ nhớ bị bỏ; còn khi thành công, mọi thay đổi (tồn nhiều sản phẩm, đơn, dòng đơn, outbox, audit) được ghi trong <strong>một giao dịch</strong>. Cạnh tranh đồng thời do <strong>concurrency token</strong> <code>TonKho</code> xử lý: người thua nhận <code>DbUpdateConcurrencyException</code> → <code>ConcurrencyException</code> → <code>409</code> (Chương 8).</p>
+<p>Huỷ đơn: đổi trạng thái rồi <code>NhapKho</code> lại từng dòng, cùng giao dịch — một <strong>hành động bù trừ</strong> nội bộ.</p>
+<h3>Hạ tầng: ánh xạ</h3>
+<p><code>DonHang</code> ↔ bảng <code>don_hang</code>, <code>DongDon</code> ↔ <code>dong_don_hang</code> qua <code>OwnsMany</code> (khoá ngoài + cascade); <code>Tien</code> chuyển <code>double</code> cho SQLite (đã gặp ở Chương 4); trạng thái lưu chuỗi; <code>Ma</code> có chỉ mục duy nhất. <code>KhoDbContext.LuuAsync</code> vẫn <strong>là chỗ duy nhất</strong> gom sự kiện miền vào outbox — mô-đun mới không cần viết thêm dòng nào cho outbox, vì nó dựa trên <code>Entity&lt;int&gt;</code> chung. Đó là lợi ích của việc thiết kế tổng quát ở Chương 8.</p>
+<h3>Web</h3>
+<pre class="hljs"><code>POST /api/don-hang
+<span class="hljs-attribute">Idempotency-Key</span><span class="hljs-punctuation">: </span>dat-hang-7d2c
+<span class="hljs-attribute">X-Nguoi</span><span class="hljs-punctuation">: </span>an
+{ &quot;khachHang&quot;: &quot;An&quot;, &quot;dong&quot;: [ { &quot;maSanPham&quot;: &quot;LT001&quot;, &quot;soLuong&quot;: 2 }, { &quot;maSanPham&quot;: &quot;CH002&quot;, &quot;soLuong&quot;: 4 } ] }
+→ 201 { &quot;ma&quot;: &quot;DH-3F9A0C51B2E7&quot; }
+</code></pre>
+<p>Endpoint mỏng: dựng lệnh, gửi qua mediator, dịch <code>Result</code> → HTTP (400/404/409/422) bằng <code>ToHttp()</code> có sẵn. Middleware idempotency (Chương 13) bảo vệ nó <strong>mà không sửa một dòng nghiệp vụ</strong>.</p>
+<h2>Bản đồ: mỗi chương của Tập 3 hiện diện ở đâu</h2>
+<table>
+<thead>
+<tr>
+<th>Chương</th>
+<th>Trong hệ thống</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1–2 Phân lớp, Clean Architecture</td>
+<td>4 dự án, quy tắc phụ thuộc, architecture test</td>
+</tr>
+<tr>
+<td>3 Domain modeling</td>
+<td><code>SanPham</code>, <code>DonHang</code>, value object <code>Tien</code>/<code>MaSanPham</code>, sự kiện miền</td>
+</tr>
+<tr>
+<td>4 Repository/Specification</td>
+<td><code>ISanPhamRepository</code>, <code>IDonHangRepository</code>, read model <code>SanPhamDoc</code></td>
+</tr>
+<tr>
+<td>5–6 CQRS, Pipeline</td>
+<td><code>DatHangCommand</code>, <code>LayDonHangQuery</code>, Logging&gt;Validation&gt;UnitOfWork</td>
+</tr>
+<tr>
+<td>7 Result/Validation</td>
+<td><code>Result&lt;string&gt;</code>, FluentValidation cho lệnh đặt hàng, <code>ToHttp()</code></td>
+</tr>
+<tr>
+<td>8 Sự kiện &amp; Outbox</td>
+<td><code>DonHangDaDat</code> → bảng <code>outbox</code> → <code>OutboxProcessor</code></td>
+</tr>
+<tr>
+<td>9 Kiểm thử</td>
+<td>domain test, integration test với SQLite tệp tạm</td>
+</tr>
+<tr>
+<td>10–11 Cache, quan sát</td>
+<td>(mở rộng) cache đọc đơn/sản phẩm; span cho <code>DatHang</code></td>
+</tr>
+<tr>
+<td>12 OIDC</td>
+<td>thay <code>X-Nguoi</code> bằng claim <code>sub</code> của JWT</td>
+</tr>
+<tr>
+<td>13 Idempotency/Audit</td>
+<td><code>Idempotency-Key</code>, <code>nhat_ky_kiem_toan</code></td>
+</tr>
+<tr>
+<td>14–16 Docker, CI/CD, cloud</td>
+<td><code>Dockerfile</code>, <code>docker-compose.yml</code>, <code>.github/workflows/kho-clean.yml</code></td>
+</tr>
+<tr>
+<td>17 Microservices</td>
+<td>ranh giới Kho/Đơn hàng sẵn sàng tách khi cần</td>
+</tr>
+</tbody>
+</table>
+<h2>Các test được thiết kế (cần chạy ở máy bạn)</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Ý định</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Tao_TinhTongTien_VaPhatSuKienDonHangDaDat</code> (domain)</td>
+<td>tổng tiền và sự kiện đúng</td>
+</tr>
+<tr>
+<td><code>Tao_KhongDong_HoacTrungSanPham_...</code> (domain)</td>
+<td>các bất biến</td>
+</tr>
+<tr>
+<td><code>Huy_HaiLan_LanHaiLoiNghiepVu</code> (domain)</td>
+<td>không huỷ hai lần</td>
+</tr>
+<tr>
+<td><code>DatHang_TruKhoTatCaCacDong_...</code></td>
+<td>trừ kho mọi dòng, đọc lại đơn</td>
+</tr>
+<tr>
+<td><code>DatHang_MotDongThieuHang_422_VaKhongDongNaoBiTru</code></td>
+<td>tính nguyên tử</td>
+</tr>
+<tr>
+<td><code>HuyDon_TraLaiTon_VaKhongHuyDuocLanHai</code></td>
+<td>bù trừ tồn</td>
+</tr>
+<tr>
+<td><code>DatHangDongThoi_ChiDatDuocDungSoLuongCon...</code></td>
+<td>12 request tranh 5 món → đúng 5 thành công, tồn 0</td>
+</tr>
+<tr>
+<td><code>DatHang_CoIdempotencyKey_...VaSuKienDiQuaOutbox</code></td>
+<td>một đơn, một sự kiện phát hành</td>
+</tr>
+</tbody>
+</table>
+<h2>Bài tập (phần chính của chương)</h2>
+<ol>
+<li><strong>Chạy và sửa.</strong> Chạy <code>dotnet test</code> ở máy bạn. Test nào đỏ? Đọc lỗi, tìm nguyên nhân (gợi ý các điểm nhạy cảm: ánh xạ <code>OwnsMany</code> với field <code>_dong</code>, chuyển <code>decimal</code> sang <code>double</code>, thứ tự ràng buộc khoá ngoài) và sửa. Ghi lại nguyên nhân.</li>
+<li><strong>Nhập thanh toán.</strong> Thêm trạng thái <code>DaThanhToan</code> và lệnh <code>ThanhToanDonHang</code> (quy tắc: chỉ đơn <code>DaDat</code> mới thanh toán; không huỷ được đơn đã thanh toán, hoặc huỷ kèm hoàn tiền). Viết domain test trước.</li>
+<li><strong>Đọc hiệu quả.</strong> Thêm read model <code>DonHangDoc</code> + truy vấn phân trang danh sách đơn của một khách (không nạp aggregate), kèm test.</li>
+<li><strong>Quan sát.</strong> Thêm <code>ActivitySource</code>/<code>Meter</code> như Chương 11: đếm <code>don_hang_dat</code> theo kết quả, span <code>DatHang</code> với tag số dòng.</li>
+<li><strong>Bảo mật.</strong> Áp Chương 12: yêu cầu JWT; đơn thuộc <code>sub</code> của người đặt; chỉ chủ đơn hoặc <code>quan-tri</code> mới huỷ/xem.</li>
+<li><strong>Tách dịch vụ (thiết kế).</strong> Vẽ saga khi Đơn hàng tách khỏi Kho: sự kiện, lệnh, bù trừ, và ba điều bạn phải đổi trong code hiện tại.</li>
+<li><strong>Triển khai.</strong> Build image, chạy compose, đưa lên một dịch vụ container, và bật pipeline CI của Chương 15.</li>
+</ol>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Để handler <code>SaveChanges</code> riêng → mất tính nguyên tử và bỏ qua behavior.</li>
+<li>Giữ tham chiếu đối tượng giữa hai aggregate, kéo theo nạp/khoá lan rộng.</li>
+<li>Quên bản chụp giá: đổi giá sản phẩm làm đổi lịch sử đơn.</li>
+<li>Tin vào chuỗi các thử nghiệm &quot;chắc là đúng&quot; khi chưa chạy — như chương này đã nói thẳng, kết quả chưa quan sát không được gọi là đã kiểm chứng.</li>
+</ul>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch17-microservices.html">&larr; 17. Microservices và giao tiếp giữa dịch vụ</a><a class="nav-next" href="ch19-phu-luc-a-loi-thuong-gap.html">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

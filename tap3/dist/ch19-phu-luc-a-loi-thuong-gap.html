@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phụ lục A — Lỗi và bẫy kiến trúc thường gặp — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><a class="chapter-link" href="ch09-chien-luoc-kiem-thu.html">9. Chiến lược kiểm thử</a></li><li><a class="chapter-link" href="ch10-caching.html">10. Caching</a></li><li><a class="chapter-link" href="ch11-quan-sat-hieu-nang.html">11. Quan sát và hiệu năng</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-oidc-oauth2.html">12. OpenID Connect và OAuth 2.0</a></li><li><a class="chapter-link" href="ch13-idempotency-audit.html">13. Idempotency, audit log và bảo vệ dữ liệu</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><a class="chapter-link" href="ch14-docker.html">14. Docker và docker-compose</a></li><li><a class="chapter-link" href="ch15-ci-cd.html">15. CI/CD với GitHub Actions</a></li><li><a class="chapter-link" href="ch16-trien-khai-cloud.html">16. Triển khai lên máy chủ và đám mây</a></li><li><a class="chapter-link" href="ch17-microservices.html">17. Microservices và giao tiếp giữa dịch vụ</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch18-du-an-tong-hop.html">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch19-phu-luc-a-loi-thuong-gap.html">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</a></li><li><a class="chapter-link" href="ch20-phu-luc-b-tai-lieu.html">20. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch21-phu-luc-c-cheat-sheet.html">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</h1>
+<p>Bảng tra nhanh các sai lầm hay gặp khi áp dụng nội dung Tập 3, kèm dấu hiệu nhận biết và hướng xử lý. Số trong ngoặc là chương liên quan.</p>
+<h2>Kiến trúc và phân lớp (1–2)</h2>
+<table>
+<thead>
+<tr>
+<th>Bẫy</th>
+<th>Dấu hiệu</th>
+<th>Cách xử lý</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Domain phụ thuộc EF Core/ASP.NET</td>
+<td><code>using Microsoft.EntityFrameworkCore</code> trong Domain</td>
+<td>Chiều phụ thuộc hướng vào trong; ánh xạ ở Infrastructure; thêm architecture test</td>
+</tr>
+<tr>
+<td>Controller/endpoint chứa nghiệp vụ</td>
+<td>if/else quy tắc trong endpoint</td>
+<td>Đẩy vào aggregate/handler; endpoint chỉ dịch HTTP</td>
+</tr>
+<tr>
+<td>Application trả <code>IQueryable</code></td>
+<td>truy vấn EF rò lên trên</td>
+<td>Cổng dạng phương thức async trả DTO</td>
+</tr>
+<tr>
+<td>Chia lớp theo kỹ thuật cho dự án nhỏ</td>
+<td>ba tầng chỉ chuyển tiếp lời gọi</td>
+<td>Đơn giản hoá; kiến trúc phải tương xứng độ phức tạp</td>
+</tr>
+<tr>
+<td>Interface cho mọi thứ</td>
+<td>mỗi lớp có <code>IFoo</code> một cài đặt</td>
+<td>Chỉ tạo cổng ở ranh giới thật (I/O, ngoài hệ thống)</td>
+</tr>
+</tbody>
+</table>
+<h2>Miền và dữ liệu (3–4)</h2>
+<table>
+<thead>
+<tr>
+<th>Bẫy</th>
+<th>Dấu hiệu</th>
+<th>Xử lý</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Anemic model</td>
+<td>entity chỉ có getter/setter, logic ở service</td>
+<td>Chuyển hành vi vào entity; setter private</td>
+</tr>
+<tr>
+<td>Aggregate quá lớn</td>
+<td>nạp cả cây, khoá xung đột liên tục</td>
+<td>Aggregate nhỏ; tham chiếu bằng id</td>
+</tr>
+<tr>
+<td>Giữ đối tượng giữa aggregate</td>
+<td><code>don.SanPham.TonKho--</code></td>
+<td>Tham chiếu bằng mã; điều phối ở use case</td>
+</tr>
+<tr>
+<td>Value object có setter</td>
+<td>&quot;Tien&quot; bị sửa giữa chừng</td>
+<td>Bất biến, so sánh theo giá trị</td>
+</tr>
+<tr>
+<td>Repository lộ mọi truy vấn</td>
+<td>40 phương thức <code>LayTheo...</code></td>
+<td>Repository theo aggregate; đọc qua read model</td>
+</tr>
+<tr>
+<td>Specification thay cho việc đơn giản</td>
+<td>pattern cho truy vấn dùng một lần</td>
+<td>Chỉ dùng khi tái sử dụng/kết hợp điều kiện</td>
+</tr>
+<tr>
+<td>SQLite: <code>decimal</code>, <code>DateTimeOffset</code>, <code>Contains</code></td>
+<td>lỗi dịch LINQ / sai thứ tự</td>
+<td>Đổi sang <code>double</code>/binary converter, <code>EF.Functions.Like</code> — hoặc dùng CSDL máy chủ</td>
+</tr>
+</tbody>
+</table>
+<h2>CQRS, pipeline, Result (5–7)</h2>
+<table>
+<thead>
+<tr>
+<th>Bẫy</th>
+<th>Xử lý</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bọc CQRS + mediator cho CRUD đơn giản</td>
+<td>Chỉ dùng khi lợi ích rõ (pipeline dùng chung, tách đọc/ghi)</td>
+</tr>
+<tr>
+<td>Truy vấn đi qua UnitOfWork behavior</td>
+<td>Chỉ ràng buộc behavior này vào <code>ICommand</code></td>
+</tr>
+<tr>
+<td>Sai thứ tự behavior</td>
+<td>Logging &gt; Validation &gt; UnitOfWork; có test kiểm thứ tự</td>
+</tr>
+<tr>
+<td>Ném exception cho lỗi nghiệp vụ dự kiến</td>
+<td>Dùng <code>Result</code>; exception cho điều bất thường</td>
+</tr>
+<tr>
+<td>Lẫn lỗi nghiệp vụ với lỗi hạ tầng</td>
+<td>Hạ tầng nem exception cụ thể, Application dịch</td>
+</tr>
+<tr>
+<td>Validate lặp ở nhiều tầng</td>
+<td>Định dạng ở validator; bất biến ở domain — mỗi cái một vai</td>
+</tr>
+<tr>
+<td>Bỏ qua <code>Result</code> (không kiểm <code>ThanhCong</code>)</td>
+<td>Analyzer/test; API <code>Match</code>; không truy cập <code>.GiaTri</code> bừa</td>
+</tr>
+<tr>
+<td>Ánh xạ lỗi → HTTP rải rác</td>
+<td>Một điểm <code>ToHttp()</code> duy nhất</td>
+</tr>
+</tbody>
+</table>
+<h2>Sự kiện và outbox (8)</h2>
+<ul>
+<li>Phát sự kiện <strong>trước</strong> khi commit → phát ma khi giao dịch thất bại. Dùng outbox cùng giao dịch.</li>
+<li>Consumer không idempotent; xử lý trùng gây tác dụng phụ kép.</li>
+<li>Outbox không dọn dẹp → bảng phình; không giới hạn số lần thử/không dead-letter.</li>
+<li>Nhiều instance cùng lấy một dòng outbox → cần khoá hàng/<code>SKIP LOCKED</code> hoặc cập nhật có điều kiện.</li>
+<li>Sự kiện chứa cả entity thay vì dữ liệu tối thiểu, phiên bản hoá kém.</li>
+</ul>
+<h2>Kiểm thử (9)</h2>
+<ul>
+<li>Mock quá đà → test chỉ kiểm cách gọi, không kiểm hành vi. Ưu tiên fake/CSDL thật cho tích hợp.</li>
+<li><code>:memory:</code> chia sẻ kết nối làm hỏng test đồng thời → dùng tệp tạm.</li>
+<li>Test phụ thuộc thứ tự/dữ liệu chung; dùng dữ liệu riêng mỗi test (mã duy nhất).</li>
+<li>Sleep để chờ thay vì điều khiển thời gian (<code>TimeProvider</code>/<code>FakeTimeProvider</code>).</li>
+<li>Đuổi theo % độ phủ, bỏ qua test hành vi quan trọng; test chập chờn bị bỏ qua.</li>
+</ul>
+<h2>Caching (10)</h2>
+<ul>
+<li>Cache không có chính sách vô hiệu hoá; TTL vô hạn.</li>
+<li><strong>Stampede</strong>: nhiều request cùng nạp một khoá hết hạn → dùng <code>HybridCache</code>/khoá.</li>
+<li>Cache dữ liệu theo <strong>người dùng</strong> trong cache dùng chung (rò rỉ dữ liệu); output cache cho response có cookie/<code>Authorization</code>.</li>
+<li>Cache trong bộ nhớ khi chạy nhiều instance mà cần nhất quán.</li>
+<li>Cache kết quả rỗng/lỗi; khoá không phân biệt tham số.</li>
+</ul>
+<h2>Quan sát (11)</h2>
+<ul>
+<li>Quên <code>AddSource</code>/<code>AddMeter</code> cho nguồn tự viết.</li>
+<li>Nhãn metric có cardinality cao (<code>UserId</code>).</li>
+<li>Log dữ liệu nhạy cảm; log ở mức <code>Debug</code> trên production.</li>
+<li>Kiểm tra phụ thuộc trong <strong>liveness</strong> → restart dây chuyền.</li>
+<li>Tối ưu không đo; cảnh báo không có runbook.</li>
+</ul>
+<h2>Bảo mật và độ tin cậy (12–13)</h2>
+<ul>
+<li>Implicit/Password flow; token trong <code>localStorage</code>; không PKCE; <code>redirect_uri</code> ký tự đại diện.</li>
+<li>Không kiểm tra <code>aud</code>/<code>iss</code>; nhầm 401 với 403; chỉ dùng role, bỏ kiểm tra quyền sở hữu.</li>
+<li>Idempotency kiểu &quot;kiểm tra rồi ghi&quot; (race); lưu kết quả 5xx; không đối chiếu nội dung với khoá.</li>
+<li>Audit ngoài giao dịch; cho phép sửa/xoá audit; ghi bí mật vào log/audit.</li>
+<li>Secret trong Git/image; khoá mã hoá cạnh dữ liệu.</li>
+</ul>
+<h2>Đóng gói và triển khai (14–17)</h2>
+<ul>
+<li>Docker: chép mã trước <code>restore</code>; thiếu <code>.dockerignore</code>; chạy root; dùng <code>latest</code>; quên volume; nghe <code>localhost</code> trong container.</li>
+<li>CI/CD: <code>permissions</code> rộng; build lại cho từng môi trường; migration phá tương thích ngược; thiếu smoke test/rollback.</li>
+<li>Cloud: quên forwarded headers; tin mọi <code>X-Forwarded-*</code>; trạng thái cục bộ khi nhân bản; Data Protection keys không chia sẻ; chưa từng thử khôi phục sao lưu.</li>
+<li>Microservices: <strong>distributed monolith</strong>, chung CSDL, chia theo tầng kỹ thuật, không có trace phân tán, cố dùng giao dịch phân tán.</li>
+</ul>
+<h2>Nguyên tắc chung khi gặp lỗi lạ</h2>
+<ol>
+<li>Tái hiện tối thiểu (một test đỏ).</li>
+<li>Đọc <strong>thông báo lỗi và inner exception</strong> đầy đủ; đọc SQL EF sinh ra (<code>LogTo</code>/log mức <code>Information</code> của <code>Microsoft.EntityFrameworkCore.Database.Command</code>).</li>
+<li>Dùng <code>traceId</code> xuyên log/trace (Chương 11).</li>
+<li>Thay đổi <strong>một</strong> thứ mỗi lần; viết test khoá lỗi trước khi sửa.</li>
+<li>Nghi ngờ môi trường (chính sách hệ điều hành, phiên bản SDK, cổng bận) trước khi nghi ngờ trình biên dịch — và nếu môi trường chặn thì báo cho người có quyền, đừng lách.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch18-du-an-tong-hop.html">&larr; 18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</a><a class="nav-next" href="ch20-phu-luc-b-tai-lieu.html">20. Phụ lục B — Tài liệu tham khảo &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

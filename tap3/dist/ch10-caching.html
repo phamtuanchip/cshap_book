@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 10 — Caching — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><a class="chapter-link" href="ch09-chien-luoc-kiem-thu.html">9. Chiến lược kiểm thử</a></li><li><a class="chapter-link active" href="ch10-caching.html">10. Caching</a></li><li><a class="chapter-link" href="ch11-quan-sat-hieu-nang.html">11. Quan sát và hiệu năng</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-oidc-oauth2.html">12. OpenID Connect và OAuth 2.0</a></li><li><a class="chapter-link" href="ch13-idempotency-audit.html">13. Idempotency, audit log và bảo vệ dữ liệu</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><a class="chapter-link" href="ch14-docker.html">14. Docker và docker-compose</a></li><li><a class="chapter-link" href="ch15-ci-cd.html">15. CI/CD với GitHub Actions</a></li><li><a class="chapter-link" href="ch16-trien-khai-cloud.html">16. Triển khai lên máy chủ và đám mây</a></li><li><a class="chapter-link" href="ch17-microservices.html">17. Microservices và giao tiếp giữa dịch vụ</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch18-du-an-tong-hop.html">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch19-phu-luc-a-loi-thuong-gap.html">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</a></li><li><a class="chapter-link" href="ch20-phu-luc-b-tai-lieu.html">20. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch21-phu-luc-c-cheat-sheet.html">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 10 — Caching</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>caching</strong> giải quyết gì và những <strong>rủi ro</strong> đi kèm (&quot;hai vấn đề khó: đặt tên và vô hiệu hoá cache&quot;).</li>
+<li>Dùng <strong><code>IMemoryCache</code></strong>, <strong><code>HybridCache</code></strong> (.NET 9+), <strong>Output Caching</strong>, và biết khi nào cần cache phân tán (Redis).</li>
+<li>Nhận ra và chặn <strong>cache stampede</strong>; thiết kế <strong>chiến lược vô hiệu hoá</strong>.</li>
+<li>Áp dụng cache đúng chỗ (pipeline behavior cho query) và tránh cache dữ liệu sai đối tượng/người dùng.</li>
+</ul>
+<p>Code: <a href="code/ch10-caching/"><code>code/ch10-caching/</code></a> — nguồn dữ liệu &quot;chậm 300 ms&quot; có bộ đếm lời gọi để <strong>thấy</strong> hiệu quả bằng số.</p>
+<h2>Cache là gì, để làm gì?</h2>
+<p><strong>Cache</strong> lưu kết quả đắt (truy vấn CSDL, gọi API, tính toán) ở nơi <strong>rẻ và gần</strong> để lần sau dùng lại. Lợi: <strong>giảm độ trễ</strong>, <strong>giảm tải</strong> CSDL/dịch vụ ngoài, <strong>tăng thông lượng</strong>. Cái giá: <strong>dữ liệu có thể cũ</strong> (staleness), độ phức tạp vô hiệu hoá, thêm điểm lỗi, tốn bộ nhớ.</p>
+<p>Khi nào đáng cache: dữ liệu <strong>đọc nhiều, ghi ít</strong>, tính toán <strong>đắt</strong>, chấp nhận <strong>cũ vài giây–phút</strong> (danh mục sản phẩm, cấu hình, báo cáo, kết quả API ngoài). Không cache: dữ liệu cần <strong>luôn chính xác tuyệt đối</strong> (số dư, tồn kho khi đặt hàng), dữ liệu riêng từng người dùng mà không tách khoá, thứ rẻ sẵn.</p>
+<blockquote>
+<p><strong>Quy tắc</strong>: đo trước khi cache. Cache che giấu vấn đề (truy vấn chậm cần chỉ mục) thay vì sửa. Cache là <em>tối ưu</em>, không phải <em>thiết kế</em>.</p>
+</blockquote>
+<h2>Các tầng cache</h2>
+<pre class="mermaid">flowchart LR
+    B[&quot;Trình duyệt / CDN&lt;br/&gt;(Cache-Control, ETag)&quot;] --&gt; O[&quot;Output cache&lt;br/&gt;(cả response HTTP)&quot;] --&gt; M[&quot;Cache ứng dụng&lt;br/&gt;(IMemoryCache / HybridCache)&quot;] --&gt; R[&quot;Redis&lt;br/&gt;(phân tán)&quot;] --&gt; D[(&quot;CSDL&quot;)]
+</pre>
+<table>
+<thead>
+<tr>
+<th>Tầng</th>
+<th>Cache gì</th>
+<th>Công cụ</th>
+<th>Khi nào</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Client/CDN</td>
+<td>response HTTP tĩnh/công khai</td>
+<td><code>Cache-Control</code>, <code>ETag</code>, CDN</td>
+<td>tài nguyên tĩnh, API công khai</td>
+</tr>
+<tr>
+<td><strong>Output cache</strong></td>
+<td>toàn bộ response endpoint</td>
+<td><code>AddOutputCache</code></td>
+<td>trang/báo cáo giống nhau cho nhiều người</td>
+</tr>
+<tr>
+<td><strong>Cache ứng dụng</strong></td>
+<td>đối tượng/DTO/kết quả truy vấn</td>
+<td><code>IMemoryCache</code>, <code>HybridCache</code></td>
+<td>dữ liệu dùng lại giữa nhiều endpoint</td>
+</tr>
+<tr>
+<td><strong>Cache phân tán</strong></td>
+<td>như trên, chia sẻ giữa các instance</td>
+<td>Redis, SQL Server</td>
+<td>nhiều instance, cần chung một bộ nhớ đệm</td>
+</tr>
+</tbody>
+</table>
+<h2>1. <code>IMemoryCache</code> — cache-aside thủ công</h2>
+<pre class="hljs"><code>app.MapGet(<span class="hljs-string">&quot;/memory/{id:int}&quot;</span>, <span class="hljs-keyword">async</span> (<span class="hljs-built_in">int</span> id, IMemoryCache cache, NguonDuLieuCham nguon) =&gt;
+{
+    <span class="hljs-keyword">if</span> (cache.TryGetValue(<span class="hljs-string">$&quot;sp:<span class="hljs-subst">{id}</span>&quot;</span>, <span class="hljs-keyword">out</span> SanPhamCache? co)) <span class="hljs-keyword">return</span> co!;      <span class="hljs-comment">// có trong cache</span>
+    <span class="hljs-keyword">var</span> moi = <span class="hljs-keyword">await</span> nguon.LayAsync(id);                                        <span class="hljs-comment">// không có: đi lấy</span>
+    cache.Set(<span class="hljs-string">$&quot;sp:<span class="hljs-subst">{id}</span>&quot;</span>, moi, TimeSpan.FromSeconds(<span class="hljs-number">30</span>));
+    <span class="hljs-keyword">return</span> moi;
+});
+</code></pre>
+<p>Mẫu <strong>cache-aside</strong>: kiểm tra cache → thiếu thì lấy nguồn → ghi vào cache. Đơn giản, nhưng có ba vấn đề:</p>
+<ol>
+<li><strong>Chỉ trong một tiến trình</strong> (mỗi instance một cache riêng, không nhất quán khi scale ngang).</li>
+<li><strong>Không chống stampede</strong> (xem dưới).</li>
+<li>Phải tự quản thời hạn, khoá, kích thước (<code>SizeLimit</code>), vô hiệu hoá.</li>
+</ol>
+<h3>Cache stampede (thundering herd)</h3>
+<p>Khi mục hết hạn/chưa có, <strong>nhiều request đồng thời</strong> cùng thấy &quot;thiếu&quot; và <strong>cùng chạy</strong> truy vấn đắt. Chạy code mẫu, 20 request đồng thời tới <code>/memory/2</code> (nguồn 300 ms):</p>
+<pre class="hljs"><code>soLanGoiNguon: 20      ← 20 lần truy vấn thật, dù chỉ cần 1
+</code></pre>
+<p>Với dữ liệu nóng và nguồn đắt, một mục hết hạn có thể đánh sập CSDL. Cần <strong>hợp nhất</strong> các lần tính đồng thời (single-flight): request đầu tiên tính, các request khác <strong>chờ kết quả đó</strong>.</p>
+<h2>2. <code>HybridCache</code> — khuyến nghị cho ứng dụng mới</h2>
+<p><code>Microsoft.Extensions.Caching.Hybrid</code> (GA từ .NET 9) kết hợp <strong>L1 (bộ nhớ cục bộ, cực nhanh)</strong> và <strong>L2 (cache phân tán như Redis, tuỳ chọn)</strong>, <strong>chống stampede sẵn</strong>, <strong>tag</strong> để vô hiệu hoá theo nhóm:</p>
+<pre class="hljs"><code>builder.Services.AddHybridCache(o =&gt; o.DefaultEntryOptions = <span class="hljs-keyword">new</span> HybridCacheEntryOptions
+{
+    Expiration = TimeSpan.FromSeconds(<span class="hljs-number">30</span>),                 <span class="hljs-comment">// hạn tổng thể (L2)</span>
+    LocalCacheExpiration = TimeSpan.FromSeconds(<span class="hljs-number">10</span>),       <span class="hljs-comment">// hạn ở L1 (cục bộ)</span>
+});
+
+app.MapGet(<span class="hljs-string">&quot;/hybrid/{id:int}&quot;</span>, <span class="hljs-keyword">async</span> (<span class="hljs-built_in">int</span> id, HybridCache cache, NguonDuLieuCham nguon, CancellationToken ct) =&gt;
+    <span class="hljs-keyword">await</span> cache.GetOrCreateAsync(<span class="hljs-string">$&quot;sp:<span class="hljs-subst">{id}</span>&quot;</span>,
+        <span class="hljs-keyword">async</span> token =&gt; <span class="hljs-keyword">await</span> nguon.LayAsync(id),            <span class="hljs-comment">// factory: chỉ CHẠY MỘT LẦN dù nhiều request đồng thời</span>
+        tags: [<span class="hljs-string">&quot;san-pham&quot;</span>, <span class="hljs-string">$&quot;sp:<span class="hljs-subst">{id}</span>&quot;</span>],
+        cancellationToken: ct));
+</code></pre>
+<p>Kết quả thật với 20 request đồng thời:</p>
+<pre class="hljs"><code>IMemoryCache thủ công  → soLanGoiNguon: 20
+HybridCache            → soLanGoiNguon: 1      ← các request đợi chung kết quả của request đầu
+</code></pre>
+<p>Cách hoạt động: <code>GetOrCreateAsync</code> tra L1 → L2 → gọi factory; nếu một khoá đang được tạo, request khác <strong>chờ cùng <code>Task</code></strong>. Kết quả được <strong>tuần tự hoá</strong> khi lưu vào L2 (nên kiểu dữ liệu phải serialize được; mặc định <code>System.Text.Json</code>).</p>
+<p>Nếu <strong>không cấu hình L2</strong>, <code>HybridCache</code> chỉ dùng L1 nhưng vẫn có chống stampede và API thống nhất — dễ dàng <strong>nâng lên Redis</strong> sau này bằng <code>AddStackExchangeRedisCache(...)</code> (đăng ký <code>IDistributedCache</code>) mà không đổi code gọi.</p>
+<h3>Vô hiệu hoá theo tag</h3>
+<pre class="hljs"><code>app.MapPost(<span class="hljs-string">&quot;/hybrid/{id:int}/cap-nhat&quot;</span>, <span class="hljs-keyword">async</span> (<span class="hljs-built_in">int</span> id, HybridCache cache, NguonDuLieuCham nguon) =&gt;
+{
+    nguon.Sua(id);                                    <span class="hljs-comment">// 1) ghi vào nguồn thật</span>
+    <span class="hljs-keyword">await</span> cache.RemoveByTagAsync(<span class="hljs-string">$&quot;sp:<span class="hljs-subst">{id}</span>&quot;</span>);         <span class="hljs-comment">// 2) vô hiệu hoá mọi mục gắn thẻ này</span>
+    <span class="hljs-keyword">return</span> Results.NoContent();
+});
+</code></pre>
+<p>Chạy thử: lấy <code>/hybrid/3</code> → <code>phienBan: 1</code>; gọi cập nhật; lấy lại → <code>phienBan: 2</code> (cache đã bị xoá đúng lúc).</p>
+<h2>3. Output caching</h2>
+<p>Cache <strong>cả response HTTP</strong> của endpoint theo chính sách:</p>
+<pre class="hljs"><code>builder.Services.AddOutputCache(o =&gt; o.AddPolicy(<span class="hljs-string">&quot;BaoCao&quot;</span>, p =&gt; p.Expire(TimeSpan.FromSeconds(<span class="hljs-number">15</span>)).Tag(<span class="hljs-string">&quot;bao-cao&quot;</span>)));
+app.UseOutputCache();
+
+app.MapGet(<span class="hljs-string">&quot;/bao-cao&quot;</span>, ...).CacheOutput(<span class="hljs-string">&quot;BaoCao&quot;</span>);
+app.MapPost(<span class="hljs-string">&quot;/bao-cao/lam-moi&quot;</span>, <span class="hljs-keyword">async</span> (IOutputCacheStore store, CancellationToken ct) =&gt; { <span class="hljs-keyword">await</span> store.EvictByTagAsync(<span class="hljs-string">&quot;bao-cao&quot;</span>, ct); <span class="hljs-keyword">return</span> Results.NoContent(); });
+</code></pre>
+<p>Kết quả thử: hai lần <code>GET /bao-cao</code> trả <strong>cùng <code>taoLuc</code> và <code>soLanChayThat: 1</code></strong> (handler chỉ chạy một lần); sau <code>POST /bao-cao/lam-moi</code> lần kế tiếp chạy lại (<code>soLanChayThat: 2</code>). Mặc định output cache <strong>chỉ cache <code>GET/HEAD</code> trả <code>200</code>, không có <code>Authorization</code>/cookie</strong> (an toàn: tránh cache dữ liệu riêng tư); có thể <code>VaryByQuery</code>, <code>VaryByHeader</code>, <code>VaryByValue</code>. Response caching (<code>Cache-Control</code>) khác: dựa vào header để <strong>client/proxy</strong> cache; output caching cache <strong>phía server</strong> và <strong>bạn điều khiển</strong> vô hiệu hoá.</p>
+<h2>4. Cache phân tán (Redis)</h2>
+<p>Nhiều instance ⇒ cache cục bộ mỗi nơi một khác (người dùng thấy dữ liệu khác nhau tuỳ gặp instance nào) và mỗi instance &quot;làm nóng&quot; riêng. <strong>Redis</strong> là bộ nhớ đệm chung:</p>
+<pre class="hljs"><code>dotnet add package Microsoft.Extensions.Caching.StackExchangeRedis
+builder.Services.AddStackExchangeRedisCache(o =&gt; o.Configuration = builder.Configuration.GetConnectionString(&quot;Redis&quot;));
+builder.Services.AddHybridCache();            // tự dùng IDistributedCache làm L2
+</code></pre>
+<p>Redis còn dùng làm kho phiên, khoá phân tán, hàng đợi nhẹ, rate limit phân tán (Tập 2, Chương 21). Chi phí: thêm hạ tầng và một điểm lỗi; mỗi truy cập là một lượt mạng — vì vậy L1 vẫn có giá trị. <strong>Thiết kế cho cache hỏng</strong>: khi Redis không sẵn sàng, ứng dụng nên <strong>vẫn chạy</strong> (chậm hơn, chạm CSDL) chứ không sập.</p>
+<h2>Vô hiệu hoá cache — phần khó nhất</h2>
+<table>
+<thead>
+<tr>
+<th>Chiến lược</th>
+<th>Cách làm</th>
+<th>Ưu/nhược</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hết hạn theo thời gian (TTL)</strong></td>
+<td>đặt <code>Expiration</code> ngắn</td>
+<td>đơn giản; chấp nhận dữ liệu cũ tối đa TTL</td>
+</tr>
+<tr>
+<td><strong>Xoá khi ghi</strong></td>
+<td>sau khi cập nhật gọi <code>RemoveByTag/Remove</code></td>
+<td>dữ liệu mới ngay; phải nhớ gọi ở <strong>mọi</strong> đường ghi</td>
+</tr>
+<tr>
+<td><strong>Theo sự kiện</strong></td>
+<td>handler sự kiện miền (<code>GiaThayDoi</code>) xoá cache</td>
+<td>tách rời (ghi không biết cache); xem outbox Chương 8</td>
+</tr>
+<tr>
+<td><strong>Khoá có phiên bản</strong></td>
+<td>khoá chứa <code>version</code> (<code>sp:3:v7</code>)</td>
+<td>tự &quot;vô hiệu&quot; khi version đổi; cache cũ chết theo TTL</td>
+</tr>
+</tbody>
+</table>
+<p>Quy tắc:</p>
+<ol>
+<li><strong>Cache chỉ thứ có thể cũ</strong>; với dữ liệu cần chính xác, đọc thẳng nguồn.</li>
+<li><strong>Xoá sau khi ghi nguồn</strong> (nếu xoá trước, một request xen giữa có thể nạp lại giá trị cũ vào cache).</li>
+<li>Luôn đặt <strong>TTL</strong> như lưới an toàn dù có xoá chủ động — nếu quên xoá ở đâu đó, dữ liệu cũ tự hết.</li>
+<li>Đặt tag theo <strong>thực thể và theo nhóm</strong> (<code>sp:3</code>, <code>san-pham</code>) để xoá tinh hoặc rộng.</li>
+</ol>
+<h2>Cache và bảo mật/đúng đắn</h2>
+<ul>
+<li><strong>Khoá phải chứa mọi yếu tố ảnh hưởng kết quả</strong>: người dùng/tenant/ngôn ngữ/quyền. Quên <code>TenantId</code> ⇒ <strong>người này thấy dữ liệu người khác</strong> (lỗ hổng nghiêm trọng).</li>
+<li><strong>Không cache lỗi</strong> (hoặc TTL cực ngắn) — lỗi tạm thời không nên &quot;dính&quot; 30 giây; solution đề xuất chỉ cache <code>Result</code> thành công.</li>
+<li><strong>Không cache dữ liệu nhạy cảm</strong> không mã hoá ở Redis dùng chung; cân nhắc mã hoá/TTL ngắn.</li>
+<li>Cache đối tượng <strong>bất biến</strong> (DTO/record); nếu cache tham chiếu tới đối tượng có thể sửa, một chỗ sửa làm hỏng mọi người.</li>
+<li><strong>Cache penetration</strong>: khoá không tồn tại bị gọi liên tục → lần nào cũng chạm CSDL. Cache cả kết quả &quot;không có&quot; trong thời gian ngắn.</li>
+</ul>
+<h2>Cache trong kiến trúc sạch: behavior cho query</h2>
+<p>Đặt cache thành <strong>pipeline behavior</strong> chỉ cho truy vấn (Chương 6) — handler không biết về cache:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">ICachedQuery</span> { <span class="hljs-built_in">string</span> CacheKey { <span class="hljs-keyword">get</span>; } <span class="hljs-built_in">string</span>[] Tags { <span class="hljs-keyword">get</span>; } TimeSpan ThoiGianSong { <span class="hljs-keyword">get</span>; } }
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">CachingBehavior</span>&lt;<span class="hljs-title">TRequest</span>, <span class="hljs-title">TResponse</span>&gt;(<span class="hljs-params">HybridCache cache</span>) : IPipelineBehavior&lt;TRequest, TResponse&gt;
+    <span class="hljs-keyword">where</span> TRequest : IQuery&lt;TResponse&gt;, ICachedQuery <span class="hljs-keyword">where</span> TResponse : IKetQua&lt;TResponse&gt;</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;TResponse&gt; <span class="hljs-title">Handle</span>(<span class="hljs-params">TRequest request, RequestHandlerDelegate&lt;TResponse&gt; next, CancellationToken ct</span>)</span>
+        =&gt; <span class="hljs-keyword">await</span> cache.GetOrCreateAsync(request.CacheKey, <span class="hljs-keyword">async</span> _ =&gt; <span class="hljs-keyword">await</span> next(),
+            <span class="hljs-keyword">new</span> HybridCacheEntryOptions { Expiration = request.ThoiGianSong }, request.Tags, cancellationToken: ct);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">record</span> <span class="hljs-title">LaySanPhamQuery</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> Ma</span>) : IQuery&lt;Result&lt;SanPhamDto&gt;&gt;, ICachedQuery</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> CacheKey =&gt; <span class="hljs-string">$&quot;sp:<span class="hljs-subst">{Ma.ToUpperInvariant()}</span>&quot;</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span>[] Tags =&gt; [<span class="hljs-string">&quot;san-pham&quot;</span>, CacheKey];
+    <span class="hljs-keyword">public</span> TimeSpan ThoiGianSong =&gt; TimeSpan.FromSeconds(<span class="hljs-number">30</span>);
+}
+</code></pre>
+<p>Và <strong>lệnh</strong> vô hiệu hoá: <code>UnitOfWorkBehavior</code> (hoặc handler sự kiện) gọi <code>cache.RemoveByTagAsync(...)</code> sau khi lưu thành công. Kiểu <code>Result</code> phải serialize được để lưu L2 (hoặc chỉ cache DTO, không cache <code>Result</code>).</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Cache trước khi đo; cache để &quot;che&quot; truy vấn thiếu chỉ mục.</li>
+<li>Không chống stampede → sập CSDL khi mục nóng hết hạn.</li>
+<li>Khoá cache thiếu người dùng/tenant → rò rỉ dữ liệu.</li>
+<li>Xoá cache <strong>trước</strong> khi ghi nguồn; hoặc quên xoá ở một đường ghi.</li>
+<li>Không có TTL → dữ liệu cũ vĩnh viễn khi lỡ quên vô hiệu hoá.</li>
+<li>Cache đối tượng có thể thay đổi (entity EF đang theo dõi) — cache DTO bất biến.</li>
+<li>Cache lỗi; cache dữ liệu cần chính xác (tồn kho khi đặt hàng).</li>
+<li>Redis là điểm lỗi duy nhất — ứng dụng sập khi Redis sập.</li>
+<li>Tuần tự hoá kiểu không hỗ trợ khi dùng L2 (chỉ lộ ra khi bật Redis).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm <code>Cache-Control: public, max-age=60</code> cho <code>/khong-cache/{id}</code> và quan sát bằng <code>curl -i</code>; so sánh với output cache phía server.</li>
+<li>Cache &quot;không tìm thấy&quot; 5 giây trong endpoint hybrid để chống penetration; đo số lần gọi nguồn khi bị tấn công bằng id ngẫu nhiên.</li>
+<li>Viết <code>CachingBehavior</code> ở trên vào <code>kho-clean</code> cho <code>LaySanPhamQuery</code> và test: lần gọi thứ hai không chạm repository; sau <code>NhapKhoCommand</code> cache bị xoá.</li>
+<li>(Cần Docker) Chạy Redis, cấu hình L2 cho <code>HybridCache</code>, chạy hai instance ứng dụng trên hai cổng và xác nhận cập nhật ở instance A làm mất cache ở instance B.</li>
+<li>Đo (<code>Stopwatch</code>) độ trễ p50/p95 của <code>/khong-cache</code>, <code>/memory</code>, <code>/hybrid</code> với 200 request và vẽ nhận xét.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch09-chien-luoc-kiem-thu.html">&larr; 9. Chiến lược kiểm thử</a><a class="nav-next" href="ch11-quan-sat-hieu-nang.html">11. Quan sát và hiệu năng &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

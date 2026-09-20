@@ -11,6 +11,12 @@ public interface ISanPhamRepository
     void Them(SanPham sanPham);
 }
 
+public interface IDonHangRepository
+{
+    Task<Kho.Domain.DonHangs.DonHang?> LayTheoMaAsync(string ma, CancellationToken ct);
+    void Them(Kho.Domain.DonHangs.DonHang donHang);
+}
+
 // Don vi cong viec: gom moi thay doi thanh MOT giao dich
 public interface IUnitOfWork
 {

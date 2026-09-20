@@ -1,0 +1,16 @@
+# Chay: docker compose up --build     (API o http://localhost:8080)
+services:
+  kho-web:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Kho: "Data Source=/data/kho.db"
+      Outbox__Bat: "true"
+    volumes:
+      - kho-data:/data
+    restart: unless-stopped
+
+volumes:
+  kho-data:

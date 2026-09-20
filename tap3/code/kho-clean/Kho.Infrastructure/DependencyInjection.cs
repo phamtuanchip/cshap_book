@@ -15,6 +15,7 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<KhoDbContext>());      // cung MOT DbContext cho repository va UoW
         services.AddScoped<ISanPhamRepository, SanPhamRepository>();
+        services.AddScoped<IDonHangRepository, DonHangRepository>();
         services.AddScoped<IKhoDocDuLieu, KhoDocDuLieu>();
         services.AddSingleton<IPhatHanhSuKien, LogPhatHanhSuKien>();
         services.AddSingleton(TimeProvider.System);

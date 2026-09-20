@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 13 — Idempotency, audit log và bảo vệ dữ liệu — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><a class="chapter-link" href="ch09-chien-luoc-kiem-thu.html">9. Chiến lược kiểm thử</a></li><li><a class="chapter-link" href="ch10-caching.html">10. Caching</a></li><li><a class="chapter-link" href="ch11-quan-sat-hieu-nang.html">11. Quan sát và hiệu năng</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-oidc-oauth2.html">12. OpenID Connect và OAuth 2.0</a></li><li><a class="chapter-link active" href="ch13-idempotency-audit.html">13. Idempotency, audit log và bảo vệ dữ liệu</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><a class="chapter-link" href="ch14-docker.html">14. Docker và docker-compose</a></li><li><a class="chapter-link" href="ch15-ci-cd.html">15. CI/CD với GitHub Actions</a></li><li><a class="chapter-link" href="ch16-trien-khai-cloud.html">16. Triển khai lên máy chủ và đám mây</a></li><li><a class="chapter-link" href="ch17-microservices.html">17. Microservices và giao tiếp giữa dịch vụ</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch18-du-an-tong-hop.html">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch19-phu-luc-a-loi-thuong-gap.html">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</a></li><li><a class="chapter-link" href="ch20-phu-luc-b-tai-lieu.html">20. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch21-phu-luc-c-cheat-sheet.html">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 13 — Idempotency, audit log và bảo vệ dữ liệu</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>idempotency</strong> (tính lặp an toàn) và vì sao mạng không đáng tin buộc API ghi phải chịu được <strong>gửi lặp</strong>.</li>
+<li>Cài <strong><code>Idempotency-Key</code></strong> đúng cách: chiếm khoá bằng <strong>một lệnh INSERT nguyên tử</strong>, lưu và <strong>phát lại</strong> kết quả, xử lý đồng thời và nội dung khác.</li>
+<li>Ghi <strong>nhật ký kiểm toán (audit log)</strong>: ai, làm gì, lúc nào, giá trị trước/sau — <strong>cùng giao dịch</strong> với thay đổi nghiệp vụ.</li>
+<li>Áp dụng nguyên tắc <strong>bảo vệ dữ liệu</strong>: dữ liệu cá nhân (PII), mã hoá, quản lý bí mật, giữ/xoá dữ liệu.</li>
+</ul>
+<p>Code: <a href="code/kho-clean/"><code>code/kho-clean/</code></a> — <code>Kho.Infrastructure/Idempotency/</code>, <code>Kho.Web/IdempotencyMiddleware.cs</code>, bảng <code>nhat_ky_kiem_toan</code> và lớp <code>IdempotencyAuditTests</code> (5 test mới; toàn solution <strong>45 test đều đạt</strong>).</p>
+<h2>Vấn đề: &quot;đã trừ kho chưa?&quot;</h2>
+<p>Khách bấm &quot;Xuất kho 3 cái&quot;. Request tới server, server trừ tồn, nhưng <strong>phản hồi bị mất</strong> (rớt mạng, timeout, proxy). Client không biết thành công hay không, và thử lại. Nếu API không được thiết kế cho việc này, tồn bị trừ <strong>hai lần</strong>. Retry còn đến từ tầng hạ tầng (Polly ở Tập 2 Chương 19, message broker giao &quot;ít nhất một lần&quot;), người dùng bấm đúp, trình duyệt gửi lại.</p>
+<p><strong>Idempotent</strong> nghĩa là: thực hiện một thao tác <strong>nhiều lần cho cùng kết quả như một lần</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Phương thức HTTP</th>
+<th>Idempotent theo đặc tả?</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code>, <code>HEAD</code>, <code>OPTIONS</code></td>
+<td>có (an toàn)</td>
+<td>chỉ đọc</td>
+</tr>
+<tr>
+<td><code>PUT</code>, <code>DELETE</code></td>
+<td>có</td>
+<td>&quot;đặt thành X&quot;, &quot;xoá X&quot; — lặp lại vẫn ra cùng trạng thái</td>
+</tr>
+<tr>
+<td><strong><code>POST</code></strong></td>
+<td><strong>không</strong></td>
+<td>&quot;tạo mới&quot;, &quot;xuất 3 cái&quot; — mỗi lần một hiệu ứng</td>
+</tr>
+<tr>
+<td><code>PATCH</code></td>
+<td>tuỳ</td>
+<td>tăng tương đối (<code>+3</code>) không idempotent</td>
+</tr>
+</tbody>
+</table>
+<p>Thiết kế ưu tiên nhất là làm thao tác <strong>idempotent tự nhiên</strong>: <code>PUT /san-pham/LT001/ton {&quot;ton&quot;: 7}</code> (đặt tuyệt đối) thay vì <code>POST .../xuat {&quot;soLuong&quot;: 3}</code> (tương đối). Nhưng nhiều nghiệp vụ (thanh toán, xuất kho, đặt hàng) vốn là &quot;tương đối&quot; — với chúng, dùng <strong>khoá idempotency</strong>.</p>
+<h2><code>Idempotency-Key</code></h2>
+<p>Quy ước (Stripe phổ biến, có bản nháp IETF): client sinh một <strong>khoá duy nhất cho mỗi <em>ý định</em></strong> (thường GUID) và gửi ở header. Server nhớ khoá → kết quả:</p>
+<pre class="hljs"><code>POST /api/san-pham/LT001/xuat
+<span class="hljs-attribute">Idempotency-Key</span><span class="hljs-punctuation">: </span>7d2c1a9e-7b0e-4e0e-9a51-2b0f6c1d0a11
+<span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/json
+
+{&quot;soLuong&quot;: 3}
+</code></pre>
+<ul>
+<li>Lần đầu: xử lý, lưu kết quả, trả <code>204</code>.</li>
+<li>Gửi lại <strong>cùng khoá, cùng nội dung</strong>: <strong>không xử lý lại</strong>, trả <strong>y hệt</strong> kết quả cũ (kèm <code>Idempotency-Replayed: true</code>).</li>
+<li><strong>Cùng khoá, nội dung khác</strong>: lỗi lập trình phía client → <code>422</code>.</li>
+<li>Cùng khoá, bản đầu <strong>đang chạy</strong>: <code>409</code> (client thử lại sau).</li>
+</ul>
+<p>Client sinh khoá <strong>một lần cho một hành động</strong> rồi dùng lại nó cho mọi lần thử lại của hành động đó; khoá mới cho hành động mới.</p>
+<h2>Cài đặt: để CSDL phân xử</h2>
+<p>Sai lầm phổ biến: &quot;đọc xem khoá có chưa; chưa có thì xử lý rồi ghi&quot; — hai request đến cùng lúc <strong>cùng thấy &quot;chưa có&quot;</strong> và cùng xử lý (race condition, giống Tập 2 Chương 22). Cách đúng: <strong>chiếm khoá bằng một lệnh nguyên tử</strong> và để <strong>ràng buộc duy nhất của CSDL</strong> chọn người thắng.</p>
+<pre class="hljs"><code><span class="hljs-comment">// bảng idempotency: khoá chính = Khoa</span>
+<span class="hljs-built_in">int</span> them = <span class="hljs-keyword">await</span> db.Database.ExecuteSqlInterpolatedAsync(
+    <span class="hljs-string">$&quot;INSERT OR IGNORE INTO idempotency (Khoa, DauVan, MaTrangThai, TaoLucMs) VALUES (<span class="hljs-subst">{khoa}</span>, <span class="hljs-subst">{dauVan}</span>, 0, <span class="hljs-subst">{nowMs}</span>)&quot;</span>, ct);
+<span class="hljs-keyword">if</span> (them == <span class="hljs-number">1</span>) <span class="hljs-keyword">return</span> ChiemDuoc;                         <span class="hljs-comment">// mình là người đầu tiên</span>
+<span class="hljs-comment">// ngược lại: đã có -&gt; đọc bản ghi để quyết định</span>
+<span class="hljs-keyword">var</span> cu = <span class="hljs-keyword">await</span> db.Idempotency.AsNoTracking().Where(x =&gt; x.Khoa == khoa).Select(...).FirstAsync(ct);
+<span class="hljs-keyword">if</span> (cu.DauVan != dauVan)   <span class="hljs-keyword">return</span> KhacNoiDung;           <span class="hljs-comment">// cùng khoá, yêu cầu khác</span>
+<span class="hljs-keyword">if</span> (cu.MaTrangThai == <span class="hljs-number">0</span>)   <span class="hljs-keyword">return</span> DangXuLy;              <span class="hljs-comment">// bản kia chưa xong</span>
+<span class="hljs-keyword">return</span> DaXong(cu.MaTrangThai, cu.NoiDung);               <span class="hljs-comment">// phát lại</span>
+</code></pre>
+<p>(<code>INSERT OR IGNORE</code> là cú pháp SQLite; PostgreSQL dùng <code>INSERT ... ON CONFLICT DO NOTHING</code>, SQL Server dùng bắt lỗi vi phạm khoá duy nhất. Nguyên tắc y hệt.)</p>
+<p><strong>Dấu vân tay <code>DauVan</code></strong> = SHA-256 của <code>phương thức + đường dẫn + nội dung</code> để phát hiện &quot;cùng khoá, khác nội dung&quot;.</p>
+<p>Middleware bao quanh endpoint:</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> kq = <span class="hljs-keyword">await</span> store.ChiemAsync(khoa, dauVan, ct);
+<span class="hljs-keyword">switch</span> (kq.TrangThai) { <span class="hljs-comment">/* KhacNoiDung -&gt; 422; DangXuLy -&gt; 409; DaXongTraLai -&gt; ghi lại status + body cũ */</span> }
+
+<span class="hljs-comment">// Chiếm được -&gt; xử lý thật, &quot;bắt&quot; response vào bộ đệm để lưu lại</span>
+ctx.Response.Body = dem;
+<span class="hljs-keyword">await</span> next(ctx);
+<span class="hljs-keyword">if</span> (ctx.Response.StatusCode &gt;= <span class="hljs-number">500</span>) <span class="hljs-keyword">await</span> store.NhaAsync(khoa, ...);   <span class="hljs-comment">// lỗi tạm thời: thả khoá để client thử lại được</span>
+<span class="hljs-keyword">else</span> <span class="hljs-keyword">await</span> store.LuuKetQuaAsync(khoa, ctx.Response.StatusCode, body, contentType, ...);
+</code></pre>
+<p>Điểm tinh tế cần nhớ:</p>
+<ul>
+<li><strong>Lỗi 5xx</strong> không được &quot;đóng đinh&quot; kết quả: thả khoá (xoá) để lần thử lại được xử lý. Lỗi nghiệp vụ 4xx (ví dụ hết hàng 422) <em>có thể</em> lưu — cùng khoá cho cùng đáp án.</li>
+<li>Khoá có <strong>hạn</strong> (ví dụ 24–48 giờ) và job dọn dẹp bảng — không để bảng phình vô hạn.</li>
+<li><strong>Phạm vi khoá theo người dùng/tenant</strong> (ghép <code>sub</code> vào khoá) để người này không &quot;va&quot; khoá người kia hoặc dò kết quả người khác.</li>
+<li>Thực sự an toàn khi tác dụng phụ và bản ghi khoá <strong>cùng một giao dịch</strong>. Ví dụ này lưu kết quả sau khi handler commit; nếu process chết giữa hai bước, khoá vẫn ở trạng thái &quot;đang xử lý&quot; (<code>MaTrangThai = 0</code>) dù việc đã xong — hệ thống thanh toán nghiêm túc đặt bản ghi khoá vào <strong>cùng transaction</strong> với nghiệp vụ hoặc có bước đối soát/hết hạn khoá đang chạy dở. Hãy nêu rõ giới hạn này khi chọn thiết kế.</li>
+<li>Trên cụm nhiều instance phải dùng <strong>CSDL chung</strong> (như trên) — bộ nhớ cục bộ không đủ.</li>
+</ul>
+<h3>Kết quả kiểm thử (đã chạy)</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Điều được chứng minh</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GuiLaiCungKhoa_ChiXuLyMotLan...</code></td>
+<td>gửi hai lần cùng khoá → tồn chỉ trừ <strong>một lần</strong> (10 → 7), lần hai có <code>Idempotency-Replayed</code></td>
+</tr>
+<tr>
+<td><code>KhongCoKhoa_MoiLanDeuXuLy</code></td>
+<td>không header → hành vi cũ (10 → 4)</td>
+</tr>
+<tr>
+<td><code>CungKhoaNhungNoiDungKhac_422</code></td>
+<td>cùng khoá, số lượng khác → 422</td>
+</tr>
+<tr>
+<td><code>HaiRequestCungKhoaDongThoi...</code></td>
+<td><strong>8 request song song cùng khoá</strong> → chỉ một xử lý, tồn 10 → 8</td>
+</tr>
+</tbody>
+</table>
+<h2>Consumer idempotent (thông điệp &quot;ít nhất một lần&quot;)</h2>
+<p>Outbox (Chương 8) và broker giao thông điệp <strong>ít nhất một lần</strong> — nghĩa là <strong>có thể trùng</strong>. Bên nhận phải xử lý lặp an toàn: lưu <code>MessageId</code> đã xử lý (bảng <em>inbox</em>) trong <strong>cùng giao dịch</strong> với tác dụng phụ, hoặc thiết kế thao tác tự nhiên idempotent (upsert theo khoá). Cùng nguyên lý với <code>Idempotency-Key</code>: <strong>khoá duy nhất + ràng buộc CSDL</strong>.</p>
+<h2>Nhật ký kiểm toán (audit log)</h2>
+<p><strong>Audit log</strong> trả lời &quot;ai đã làm gì, khi nào, trước/sau ra sao&quot; — phục vụ điều tra sự cố, tuân thủ (tài chính, y tế), giải quyết tranh chấp. Khác <strong>log ứng dụng</strong> (chẩn đoán, có thể xoay vòng/xoá): audit là <strong>bản ghi nghiệp vụ, chỉ thêm, giữ lâu</strong>.</p>
+<p>Ở <code>kho-clean</code>, <code>KhoDbContext.LuuAsync</code> ghi nhật ký <strong>trong cùng một giao dịch</strong> với thay đổi nghiệp vụ:</p>
+<pre class="hljs"><code><span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> e <span class="hljs-keyword">in</span> ChangeTracker.Entries&lt;SanPham&gt;().Where(e =&gt; e.State <span class="hljs-keyword">is</span> EntityState.Added <span class="hljs-keyword">or</span> EntityState.Modified))
+{
+    <span class="hljs-keyword">var</span> doi = e.State == EntityState.Modified ? e.Properties.Where(p =&gt; p.IsModified).ToList() : [];
+    NhatKy.Add(<span class="hljs-keyword">new</span> NhatKyKiemToan
+    {
+        Luc = luc, Nguoi = NguoiThucHien,
+        HanhDong = e.State == EntityState.Added ? <span class="hljs-string">&quot;Them&quot;</span> : <span class="hljs-string">&quot;Sua&quot;</span>,
+        DoiTuong = <span class="hljs-string">$&quot;SanPham:<span class="hljs-subst">{e.Entity.Ma.GiaTri}</span>&quot;</span>,
+        Truoc = doi.Count == <span class="hljs-number">0</span> ? <span class="hljs-literal">null</span> : JsonSerializer.Serialize(doi.ToDictionary(p =&gt; p.Metadata.Name, p =&gt; p.OriginalValue?.ToString())),
+        Sau   = doi.Count == <span class="hljs-number">0</span> ? <span class="hljs-literal">null</span> : JsonSerializer.Serialize(doi.ToDictionary(p =&gt; p.Metadata.Name, p =&gt; p.CurrentValue?.ToString())),
+    });
+}
+</code></pre>
+<p>Vì cùng giao dịch: <strong>nghiệp vụ đổi thành công ⇔ có dòng nhật ký</strong> — không bao giờ lệch. Test <code>NhatKy_GhiAiLamGi_KemGiaTriTruocSau</code> xác nhận: an tạo sản phẩm, bình xuất 4 → nhật ký có <code>Nguoi=binh</code>, <code>Truoc={&quot;TonKho&quot;:&quot;10&quot;}</code>, <code>Sau={&quot;TonKho&quot;:&quot;6&quot;}</code>.</p>
+<p>&quot;Ai&quot; đến từ lớp ngoài (<code>NguoiThucHien</code> do web đặt từ <code>User</code>/<code>X-Nguoi</code>; thực tế lấy từ claim <code>sub</code> của JWT — Chương 12), <strong>không</strong> để Domain biết HTTP.</p>
+<p>Nguyên tắc thiết kế audit:</p>
+<ul>
+<li><strong>Chỉ thêm</strong>, quyền ghi bảng bị hạn chế; không cho ứng dụng <code>UPDATE/DELETE</code> (dùng người dùng CSDL khác hoặc bảng <em>append-only</em>/immutable storage khi yêu cầu pháp lý).</li>
+<li>Ghi <strong>cả hành động bị từ chối</strong> với thao tác nhạy cảm (đăng nhập thất bại, truy cập trái phép).</li>
+<li><strong>Đừng ghi bí mật</strong> (mật khẩu, số thẻ) vào giá trị trước/sau; che/loại các cột nhạy cảm.</li>
+<li>Kèm <code>TraceId</code> (Chương 11) để nối audit với trace.</li>
+<li>Với hệ thống lớn: <strong>event sourcing</strong> hoặc <strong>temporal tables</strong> (SQL Server) / <strong>trigger</strong> là phương án khác; hoặc phát sự kiện miền qua outbox sang kho audit riêng.</li>
+<li>Tách <strong>audit (nghiệp vụ)</strong> khỏi <strong>log kỹ thuật</strong>; đặt chính sách lưu giữ riêng.</li>
+</ul>
+<h2>Bảo vệ dữ liệu</h2>
+<h3>Phân loại và giảm thiểu</h3>
+<ul>
+<li>Xác định dữ liệu <strong>cá nhân/nhạy cảm (PII)</strong>: tên, email, số điện thoại, địa chỉ, ID cá nhân, dữ liệu tài chính/sức khoẻ.</li>
+<li><strong>Thu thập tối thiểu</strong>: không giữ những gì không cần. Dữ liệu không có thì không thể rò rỉ.</li>
+<li>Tuân thủ quy định áp dụng (Việt Nam: <strong>Nghị định 13/2023/NĐ-CP</strong> về bảo vệ dữ liệu cá nhân; nếu phục vụ người dùng EU: GDPR): cần <strong>mục đích, sự đồng ý, quyền truy cập/xoá</strong>, thông báo khi rò rỉ. Hãy tham vấn pháp chế — sách này không phải tư vấn pháp lý.</li>
+</ul>
+<h3>Mã hoá</h3>
+<ul>
+<li><strong>Đang truyền</strong>: HTTPS/TLS mọi nơi (kể cả giữa dịch vụ nội bộ và tới CSDL).</li>
+<li><strong>Khi lưu</strong>: mã hoá đĩa/CSDL do nhà cung cấp; với cột rất nhạy cảm dùng <strong>mã hoá cấp ứng dụng</strong> (<a href="http://ASP.NET">ASP.NET</a> Core <strong>Data Protection</strong> <code>IDataProtector.Protect/Unprotect</code>, hoặc AES-GCM với khoá lưu ở <strong>Key Vault</strong>). Khoá <strong>tách khỏi</strong> dữ liệu và <strong>xoay vòng</strong> được.</li>
+<li><strong>Mật khẩu</strong>: không bao giờ mã hoá hai chiều — <strong>băm chậm có muối</strong> (<code>PasswordHasher&lt;T&gt;</code> của Identity dùng PBKDF2; hoặc Argon2/bcrypt) — Tập 2, Chương 20.</li>
+<li>Đừng tự phát minh thuật toán; dùng API chuẩn (<code>System.Security.Cryptography</code>).</li>
+</ul>
+<h3>Bí mật (secrets)</h3>
+<ul>
+<li><strong>Không bao giờ</strong> commit vào Git: chuỗi kết nối, khoá API, <code>client_secret</code>.</li>
+<li>Phát triển: <strong><code>dotnet user-secrets</code></strong>. Triển khai: <strong>biến môi trường</strong>/<strong>Key Vault</strong> (Azure Key Vault, AWS Secrets Manager, HashiCorp Vault)/secret của Kubernetes; dùng <strong>managed identity</strong> để loại bỏ secret khi có thể.</li>
+<li>Quét secret tự động trong CI (ví dụ <code>gitleaks</code>, GitHub secret scanning); xoay vòng ngay khi nghi ngờ lộ.</li>
+</ul>
+<h3>Log và dữ liệu cá nhân</h3>
+<p>Không log toàn bộ request/response body, token, mật khẩu, số thẻ. Che (<code>****1234</code>) hoặc băm. Phần nhật ký kiểm toán cũng thuộc dữ liệu cần bảo vệ và có thời hạn lưu.</p>
+<h3>Lưu giữ và xoá</h3>
+<p>Đặt <strong>thời hạn lưu</strong> cho từng loại dữ liệu và job xoá/ẩn danh hoá. Nếu người dùng yêu cầu xoá: xoá (hoặc ẩn danh) dữ liệu cá nhân nhưng giữ được bản ghi kiểm toán/tài chính bắt buộc theo luật (tách định danh khỏi giao dịch: dùng mã giả danh).</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>&quot;Kiểm tra rồi ghi&quot; khoá idempotency thay vì <strong>chiếm nguyên tử</strong> → hai request cùng thắng.</li>
+<li>Lưu kết quả lỗi 5xx bằng khoá → client không thể thử lại thành công.</li>
+<li>Không kiểm tra <strong>nội dung</strong> kèm khoá → dùng lại khoá cho yêu cầu khác trả nhầm kết quả.</li>
+<li>Idempotency chỉ ở bộ nhớ tiến trình (không chạy được khi có nhiều instance/restart).</li>
+<li>Audit ghi <strong>ngoài</strong> giao dịch nghiệp vụ → lệch khi một bên lỗi.</li>
+<li>Cho ứng dụng quyền sửa/xoá audit; ghi bí mật vào audit/log.</li>
+<li>Mã hoá mà khoá nằm cạnh dữ liệu (cùng repo/cùng bảng).</li>
+<li>Log token/PII; commit <code>appsettings</code> chứa mật khẩu.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm <code>Idempotency-Key</code> cho endpoint <code>POST /api/san-pham</code> (tạo mới) và viết test: hai request cùng khoá tạo đúng một sản phẩm (và không dựa vào ràng buộc trùng mã).</li>
+<li>Thêm hạn 24 giờ cho khoá và một <code>BackgroundService</code> dọn các bản ghi <code>TaoLucMs</code> quá hạn; viết test dùng <code>FakeTimeProvider</code>.</li>
+<li>Ghi thêm <code>TraceId</code> vào <code>NhatKyKiemToan</code> (lấy từ <code>Activity.Current</code>).</li>
+<li>Mở rộng audit cho hành động <strong>bị từ chối</strong> (xuất thiếu hàng 422) — ghi ở đâu là hợp lý (behavior trong pipeline)? Cài thử.</li>
+<li>Viết <code>ProtectedString</code> value converter dùng <code>IDataProtector</code> để mã hoá cột <code>Ghi chú</code> của sản phẩm; kiểm tra dữ liệu trong SQLite là chuỗi mã hoá.</li>
+<li>Cấu hình <code>dotnet user-secrets</code> cho chuỗi kết nối và đọc ở <code>Program.cs</code>; giải thích vì sao không dùng <code>appsettings.json</code> cho bí mật.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch12-oidc-oauth2.html">&larr; 12. OpenID Connect và OAuth 2.0</a><a class="nav-next" href="ch14-docker.html">14. Docker và docker-compose &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

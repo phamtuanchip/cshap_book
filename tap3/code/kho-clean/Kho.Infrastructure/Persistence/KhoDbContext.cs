@@ -2,6 +2,7 @@ using System.Text.Json;
 using Kho.Application.Abstractions;
 using Kho.Application.Behaviors;
 using Kho.Domain.Common;
+using Kho.Domain.DonHangs;
 using Kho.Domain.SanPhams;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,6 +58,7 @@ public class KhoDbContext(DbContextOptions<KhoDbContext> options) : DbContext(op
 {
     public DbSet<SanPham> SanPhams => Set<SanPham>();
     public DbSet<OutboxMessage> Outbox => Set<OutboxMessage>();
+    public DbSet<DonHang> DonHangs => Set<DonHang>();
     public DbSet<IdempotencyRecord> Idempotency => Set<IdempotencyRecord>();
     public DbSet<NhatKyKiemToan> NhatKy => Set<NhatKyKiemToan>();
     public DbSet<SanPhamDoc> SanPhamDocs => Set<SanPhamDoc>();          // mo hinh DOC (read model), khong qua aggregate
@@ -92,6 +94,29 @@ public class KhoDbContext(DbContextOptions<KhoDbContext> options) : DbContext(op
             e.HasNoKey();
             e.ToSqlQuery("SELECT Id, Ma, Ten, Nhom, DonGia, TonKho, MucCanhBao FROM san_pham");
             e.Property(x => x.DonGia).HasConversion<double>();
+        });
+
+        mb.Entity<DonHang>(e =>
+        {
+            e.ToTable("don_hang");
+            e.HasKey(d => d.Id);
+            e.Ignore(d => d.SuKienMien);
+            e.HasIndex(d => d.Ma).IsUnique();
+            e.Property(d => d.Ma).HasMaxLength(30);
+            e.Property(d => d.KhachHang).HasMaxLength(100);
+            e.Property(d => d.TrangThai).HasConversion<string>().HasMaxLength(20);
+            e.Property(d => d.TongTien).HasConversion(t => (double)t.SoTien, v => Tien.TuCsdl((decimal)v));
+            e.Navigation(d => d.Dong).UsePropertyAccessMode(PropertyAccessMode.Field);         // EF dung truong _dong, khong qua IReadOnlyList
+            e.OwnsMany(d => d.Dong, dong =>                                                    // "dong don" khong co bang/danh tinh doc lap: song va chet cung don
+            {
+                dong.ToTable("dong_don_hang");
+                dong.WithOwner().HasForeignKey("DonHangId");
+                dong.Property<int>("Id");
+                dong.HasKey("Id");
+                dong.Property(x => x.MaSanPham).HasMaxLength(20);
+                dong.Property(x => x.DonGia).HasConversion(t => (double)t.SoTien, v => Tien.TuCsdl((decimal)v));
+                dong.Ignore(x => x.ThanhTien);
+            });
         });
 
         mb.Entity<IdempotencyRecord>(e =>

@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 9 — Chiến lược kiểm thử — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch09-chien-luoc-kiem-thu.html">9. Chiến lược kiểm thử</a></li><li><a class="chapter-link" href="ch10-caching.html">10. Caching</a></li><li><a class="chapter-link" href="ch11-quan-sat-hieu-nang.html">11. Quan sát và hiệu năng</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-oidc-oauth2.html">12. OpenID Connect và OAuth 2.0</a></li><li><a class="chapter-link" href="ch13-idempotency-audit.html">13. Idempotency, audit log và bảo vệ dữ liệu</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><a class="chapter-link" href="ch14-docker.html">14. Docker và docker-compose</a></li><li><a class="chapter-link" href="ch15-ci-cd.html">15. CI/CD với GitHub Actions</a></li><li><a class="chapter-link" href="ch16-trien-khai-cloud.html">16. Triển khai lên máy chủ và đám mây</a></li><li><a class="chapter-link" href="ch17-microservices.html">17. Microservices và giao tiếp giữa dịch vụ</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch18-du-an-tong-hop.html">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch19-phu-luc-a-loi-thuong-gap.html">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</a></li><li><a class="chapter-link" href="ch20-phu-luc-b-tai-lieu.html">20. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch21-phu-luc-c-cheat-sheet.html">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 9 — Chiến lược kiểm thử</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Thiết kế <strong>chiến lược kiểm thử tổng thể</strong>: kim tự tháp, các loại test và <strong>cái gì test ở tầng nào</strong>.</li>
+<li>Viết test <strong>Domain / Application / Architecture / Integration</strong> như trong <code>kho-clean</code> và hiểu vì sao mỗi loại tồn tại.</li>
+<li>Dùng <strong>test data builder</strong>, fake vs mock, <strong>CSDL thật</strong> trong test (SQLite file, Testcontainers).</li>
+<li>Kiểm thử <strong>đồng thời (concurrency)</strong> và <strong>bất đồng bộ</strong> một cách xác định; đo độ phủ có ý nghĩa.</li>
+</ul>
+<p>Code: <a href="code/kho-clean/Kho.Tests/"><code>code/kho-clean/Kho.Tests/</code></a> — <strong>45 test</strong> (đã đạt) chia thành <code>DomainTests</code>, <code>ApplicationTests</code>, <code>ArchitectureTests</code>, <code>IntegrationTests</code>, <code>IdempotencyAuditTests</code> (Chương 13) (mỗi <code>Theory</code> tính nhiều ca).</p>
+<h2>Vì sao cần &quot;chiến lược&quot;?</h2>
+<p>Không có chiến lược, đội thường rơi vào một trong hai cực: <strong>quá ít test</strong> (sợ sửa code) hoặc <strong>quá nhiều test giòn</strong> (mỗi refactor làm đỏ 200 test, không ai tin test). Chiến lược trả lời: <em>test cái gì, ở tầng nào, bằng công cụ gì, để đạt độ tin cậy cao với chi phí bảo trì thấp?</em></p>
+<h2>Kim tự tháp kiểm thử</h2>
+<pre class="mermaid">flowchart TB
+    E[&quot;E2E / UI test&lt;br/&gt;ít, chậm, giòn&quot;] --&gt; I[&quot;Integration test&lt;br/&gt;một số, kiểm tra ghép nối&quot;] --&gt; U[&quot;Unit test (Domain + Application)&lt;br/&gt;rất nhiều, nhanh, ổn định&quot;]
+</pre>
+<table>
+<thead>
+<tr>
+<th>Tầng test</th>
+<th>Kiểm chứng</th>
+<th>Phụ thuộc</th>
+<th>Số lượng</th>
+<th>Ví dụ trong solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Domain unit</strong></td>
+<td>luật nghiệp vụ, bất biến, sự kiện</td>
+<td>không</td>
+<td><strong>nhiều nhất</strong></td>
+<td><code>XuatKho_ChamNguongCanhBao_PhatSapHetHangMotLan</code></td>
+</tr>
+<tr>
+<td><strong>Application</strong></td>
+<td>điều phối ca sử dụng, pipeline</td>
+<td>fake cho cổng</td>
+<td>nhiều</td>
+<td><code>ThemSanPham_SaiDinhDang_ValidationBehaviorChanTruocHandler</code></td>
+</tr>
+<tr>
+<td><strong>Architecture</strong></td>
+<td>quy tắc phụ thuộc, quy ước</td>
+<td>file/reflection</td>
+<td>ít, rẻ</td>
+<td><code>Domain_KhongPhuThuocGi</code></td>
+</tr>
+<tr>
+<td><strong>Integration</strong></td>
+<td>HTTP + DI + EF + CSDL thật ghép đúng</td>
+<td>môi trường thật (SQLite file)</td>
+<td>vừa</td>
+<td><code>XuatDongThoi_KhongBaoGioAm_...</code>, outbox</td>
+</tr>
+<tr>
+<td><strong>E2E/UI</strong></td>
+<td>luồng người dùng qua giao diện</td>
+<td>toàn hệ thống</td>
+<td><strong>rất ít</strong></td>
+<td>(ngoài phạm vi; Playwright)</td>
+</tr>
+</tbody>
+</table>
+<p>Kiến trúc sạch <strong>làm kim tự tháp khả thi</strong>: vì nghiệp vụ nằm ở Domain/Application không phụ thuộc hạ tầng, phần lớn test chạy trong <strong>micro-giây/mili-giây</strong>. Ở kiến trúc &quot;khối&quot; (Tập 2), muốn test nghiệp vụ phải dựng CSDL và HTTP → toàn integration test, chậm, nên ít khi chạy.</p>
+<h2>1. Domain test — nhanh nhất, giá trị nhất</h2>
+<pre class="hljs"><code>[<span class="hljs-meta">Fact</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">XuatKho_KhongDuHang_ThatBaiVaTonKhongDoi</span>()</span>
+{
+    <span class="hljs-keyword">var</span> sp = Tao(ton: <span class="hljs-number">2</span>);
+    sp.XoaSuKien();
+
+    <span class="hljs-keyword">var</span> kq = sp.XuatKho(<span class="hljs-number">5</span>, Gio);
+
+    Assert.False(kq.ThanhCong);
+    Assert.Equal(<span class="hljs-string">&quot;SanPham.KhongDuHang&quot;</span>, kq.Loi!.Ma);
+    Assert.Equal(<span class="hljs-number">2</span>, sp.TonKho);
+    Assert.Empty(sp.SuKienMien);                     <span class="hljs-comment">// thất bại thì KHÔNG có sự kiện</span>
+}
+</code></pre>
+<p>Không DI, không mock, không I/O. <strong>Kiểm tra hành vi quan sát được</strong> (kết quả, trạng thái, sự kiện) chứ không kiểm tra cài đặt bên trong. Thời gian truyền vào (<code>Gio</code>) thay vì <code>DateTime.Now</code> để test <strong>xác định</strong>. Dùng <code>[Theory]</code> cho biên (mã hợp lệ/không, giá âm, tồn đầu âm).</p>
+<h2>2. Application test — với bản giả (fake) cho cổng</h2>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">RepoGia</span> : <span class="hljs-title">ISanPhamRepository</span> { <span class="hljs-keyword">public</span> List&lt;SanPham&gt; Ds { <span class="hljs-keyword">get</span>; } = []; ... }
+<span class="hljs-keyword">class</span> <span class="hljs-title">UowGia</span> : <span class="hljs-title">IUnitOfWork</span> { <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> SoLanLuu { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">private</span> <span class="hljs-keyword">set</span>; } <span class="hljs-keyword">public</span> Exception? Nem { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } ... }
+
+<span class="hljs-keyword">var</span> s = <span class="hljs-keyword">new</span> ServiceCollection();
+s.AddSingleton&lt;ISanPhamRepository&gt;(_repo).AddSingleton&lt;IUnitOfWork&gt;(_uow).AddSingleton&lt;IKhoDocDuLieu&gt;(<span class="hljs-keyword">new</span> DocGia());
+s.AddLogging(); s.AddApplication();                                    <span class="hljs-comment">// pipeline THẬT + handler THẬT</span>
+_sender = s.BuildServiceProvider().CreateScope().ServiceProvider.GetRequiredService&lt;ISender&gt;();
+</code></pre>
+<p>Test đi qua <strong>mediator và toàn bộ behavior thật</strong> (<code>_sender.Send(...)</code>), chỉ thay hạ tầng. Nhờ vậy kiểm chứng cả <strong>hợp tác</strong> giữa handler–behavior: validation chặn trước handler; UoW chỉ lưu khi thành công; lỗi hạ tầng thành <code>409</code>; truy vấn không bao giờ lưu.</p>
+<p><strong>Fake hay mock?</strong></p>
+<ul>
+<li><strong>Fake</strong>: cài đặt đơn giản, hoạt động thật (repository trong <code>List</code>). Test đọc như mô tả <strong>hành vi</strong>, bền qua refactor.</li>
+<li><strong>Mock</strong> (NSubstitute/Moq): thiết lập kỳ vọng lời gọi (<code>Received(1).LuuAsync()</code>). Hợp để kiểm tra <strong>tác dụng phụ ra ngoài</strong> (gửi email), nhưng dùng quá đà làm test <strong>dính chặt vào cài đặt</strong> (đổi cách gọi là đỏ dù hành vi vẫn đúng).</li>
+<li>Quy tắc: <strong>fake cho thứ có trạng thái</strong> (repository, đồng hồ), <strong>mock/spy cho thứ chỉ &quot;gửi đi&quot;</strong> (email, message bus); ưu tiên kiểm tra <strong>kết quả</strong> hơn kiểm tra <strong>lời gọi</strong>.</li>
+</ul>
+<h2>3. Architecture test</h2>
+<p>Đã có từ Chương 1 (đọc csproj/reflection). Thêm quy ước dễ vi phạm: aggregate không có setter công khai, handler <code>sealed</code>, tên kết thúc <code>Handler</code>... Rẻ, chạy tức thì, ngăn xói mòn kiến trúc.</p>
+<h2>4. Integration test — môi trường thật, ít nhưng chắc</h2>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">KhoFactory</span> : <span class="hljs-title">WebApplicationFactory</span>&lt;<span class="hljs-title">Program</span>&gt;
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> <span class="hljs-built_in">string</span> _file = Path.Combine(Path.GetTempPath(), <span class="hljs-string">$&quot;kho-clean-test-<span class="hljs-subst">{Guid.NewGuid():N}</span>.db&quot;</span>);
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">ConfigureWebHost</span>(<span class="hljs-params">IWebHostBuilder builder</span>)</span>
+    {
+        builder.UseSetting(<span class="hljs-string">&quot;Outbox:Bat&quot;</span>, <span class="hljs-string">&quot;false&quot;</span>);                    <span class="hljs-comment">// tắt tiến trình nền → test chủ động gọi</span>
+        builder.ConfigureServices(s =&gt;
+        {
+            s.RemoveAll&lt;DbContextOptions&lt;KhoDbContext&gt;&gt;();
+            s.AddDbContext&lt;KhoDbContext&gt;(o =&gt; o.UseSqlite(<span class="hljs-string">$&quot;Data Source=<span class="hljs-subst">{_file}</span>;Default Timeout=30&quot;</span>));
+            s.RemoveAll&lt;IPhatHanhSuKien&gt;(); s.AddSingleton&lt;IPhatHanhSuKien&gt;(PhatHanh);
+        });
+    }
+}
+</code></pre>
+<p>Nguyên tắc chọn <strong>CSDL trong integration test</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Lựa chọn</th>
+<th>Đánh giá</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EF <strong>InMemory</strong> provider</td>
+<td>✘ không có ràng buộc/giao dịch/SQL thật → &quot;xanh giả&quot;</td>
+</tr>
+<tr>
+<td><strong>SQLite <code>:memory:</code></strong> (một kết nối chung)</td>
+<td>ổn cho test đơn luồng; <strong>sai lệch với test đồng thời</strong> (Tập 2, Chương 22)</td>
+</tr>
+<tr>
+<td><strong>SQLite file tạm</strong> (mỗi request một kết nối)</td>
+<td>tốt, nhanh, không cần cài; khác CSDL production ở SQL dialect</td>
+</tr>
+<tr>
+<td><strong>Testcontainers</strong> (CSDL thật trong Docker: PostgreSQL/SQL Server)</td>
+<td><strong>trung thực nhất</strong> — chậm hơn, cần Docker; nên chạy trong CI cho luồng chính</td>
+</tr>
+</tbody>
+</table>
+<p>Nếu production dùng PostgreSQL thì nên có <strong>ít nhất một bộ integration test chạy trên PostgreSQL thật</strong> (Testcontainers) vì SQLite bỏ sót khác biệt (kiểu <code>decimal</code>, phân biệt hoa/thường, khoá, <code>DateTimeOffset</code>). Kinh nghiệm thật khi viết solution này: SQLite bắt được lỗi <code>ORDER BY DateTimeOffset</code> và <code>SUM(decimal)</code> mà unit test không thấy — chính là loại lỗi &quot;ghép nối&quot; mà integration test tồn tại để bắt.</p>
+<h3>Test đồng thời</h3>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> kq = <span class="hljs-keyword">await</span> Task.WhenAll(Enumerable.Range(<span class="hljs-number">0</span>, <span class="hljs-number">15</span>).Select(_ =&gt; _c.PostAsJsonAsync(<span class="hljs-string">&quot;/api/san-pham/DD001/xuat&quot;</span>, <span class="hljs-keyword">new</span> { soLuong = <span class="hljs-number">1</span> })));
+<span class="hljs-built_in">int</span> ok = kq.Count(r =&gt; r.StatusCode == HttpStatusCode.NoContent);
+<span class="hljs-built_in">int</span> tonCuoi = (<span class="hljs-keyword">await</span> _c.GetFromJsonAsync&lt;SanPhamDto&gt;(<span class="hljs-string">&quot;/api/san-pham/DD001&quot;</span>))!.TonKho;
+Assert.True(tonCuoi &gt;= <span class="hljs-number">0</span>);            <span class="hljs-comment">// BẤT BIẾN: không bao giờ âm</span>
+Assert.Equal(<span class="hljs-number">5</span> - ok, tonCuoi);         <span class="hljs-comment">// mỗi lần thành công trừ đúng 1</span>
+</code></pre>
+<p>Điều kiện để test đồng thời <strong>có ý nghĩa</strong>: (1) cùng lúc thật sự (<code>Task.WhenAll</code>); (2) môi trường giữ đúng tính chất (kết nối riêng cho từng request); (3) <strong>khẳng định bất biến</strong> (tồn ≥ 0, tổng thành công + từ chối = tổng yêu cầu), <em>không</em> khẳng định thứ tự hay số lượng chính xác khi kết quả hợp lệ có thể khác nhau tuỳ lịch chạy. Chạy vài lần/nhân lên để tăng xác suất lộ lỗi.</p>
+<h3>Test bất đồng bộ/nền</h3>
+<p>Đã thấy ở Chương 8: tắt timer, gọi <code>XuLyMotLanAsync</code> trực tiếp, dùng cổng phát hành giả. <strong>Không <code>Thread.Sleep</code>.</strong> Nếu bắt buộc chờ điều kiện, dùng vòng thăm dò có <strong>thời hạn</strong> (<code>await Poll(() =&gt; cond, timeout)</code>), không ngủ cố định.</p>
+<h2>Test data builder</h2>
+<p>Khi tạo dữ liệu test dài dòng, dùng <strong>builder</strong> có giá trị mặc định hợp lệ, chỉ ghi đè cái liên quan:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SanPhamBuilder</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-built_in">string</span> _ma = <span class="hljs-string">&quot;LT001&quot;</span>; <span class="hljs-keyword">private</span> <span class="hljs-built_in">int</span> _ton = <span class="hljs-number">10</span>; <span class="hljs-keyword">private</span> <span class="hljs-built_in">int</span> _canhBao = <span class="hljs-number">5</span>;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> SanPhamBuilder <span class="hljs-title">Ma</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> m</span>)</span> { _ma = m; <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> SanPhamBuilder <span class="hljs-title">Ton</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> t</span>)</span> { _ton = t; <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> SanPhamBuilder <span class="hljs-title">CanhBao</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> c</span>)</span> { _canhBao = c; <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> SanPham <span class="hljs-title">Build</span>()</span> =&gt; SanPham.Tao(_ma, <span class="hljs-string">&quot;Laptop&quot;</span>, <span class="hljs-string">&quot;Thiet bi&quot;</span>, <span class="hljs-number">1000</span>, _ton, Gio, _canhBao).GiaTri;
+}
+<span class="hljs-keyword">var</span> sp = <span class="hljs-keyword">new</span> SanPhamBuilder().Ton(<span class="hljs-number">7</span>).CanhBao(<span class="hljs-number">5</span>).Build();      <span class="hljs-comment">// test đọc như văn xuôi, đổi hàm Tao không sửa 50 test</span>
+</code></pre>
+<p>Trong mã mẫu, hàm trợ giúp <code>Tao(ton, canhBao)</code> trong <code>DomainTests</code> là dạng rút gọn của ý này. Thư viện <strong>Bogus</strong>/<strong>AutoFixture</strong> sinh dữ liệu ngẫu nhiên hợp lệ khi cần.</p>
+<h2>Đặt tên, cấu trúc, độ tin cậy</h2>
+<ul>
+<li><strong>Tên</strong> mô tả <em>tình huống → kết quả</em>: <code>XuatKho_KhongDuHang_ThatBaiVaTonKhongDoi</code>. Khi đỏ, tên đã nói &quot;hỏng cái gì&quot;.</li>
+<li><strong>Arrange–Act–Assert</strong>, một hành vi mỗi test; ít điều kiện/vòng lặp.</li>
+<li><strong>Độc lập &amp; lặp lại được</strong>: không phụ thuộc thứ tự, giờ hệ thống, dữ liệu chung; dùng <code>TimeProvider</code> (<code>FakeTimeProvider</code> từ <code>Microsoft.Extensions.TimeProvider.Testing</code>).</li>
+<li><strong>Nhanh</strong>: bộ Domain+Application chạy dưới 1 giây; tách integration ra (<code>[Trait(&quot;Loai&quot;,&quot;Integration&quot;)]</code>) để chạy khi cần.</li>
+<li><strong>Xoá test flaky</strong> ngay hoặc sửa gốc rễ; test không tin cậy còn tệ hơn không test.</li>
+<li>Đừng test <strong>framework/thư viện</strong> (EF có lưu được không?) — test <strong>quyết định của bạn</strong>.</li>
+</ul>
+<h2>Độ phủ và mutation testing</h2>
+<p>Độ phủ (coverage) đo dòng được chạy qua, <strong>không</strong> đo chất lượng assert. Dùng như <strong>đèn đỏ</strong> (vùng nghiệp vụ quan trọng phủ thấp = rủi ro) chứ không như <strong>mục tiêu</strong> (đuổi 100% sinh test vô nghĩa). Công cụ mạnh hơn: <strong>mutation testing</strong> (<a href="http://Stryker.NET">Stryker.NET</a>) — tự sửa code (đổi <code>&lt;</code> thành <code>&lt;=</code>) và kiểm tra test có <strong>bắt được</strong> không; điểm mutation phản ánh sức mạnh thật của bộ test.</p>
+<pre class="hljs"><code>dotnet test --collect:&quot;XPlat Code Coverage&quot;
+dotnet tool install -g dotnet-stryker   &amp;&amp;   dotnet stryker      # mutation testing
+</code></pre>
+<h2>Kiểm thử hợp đồng và bảo mật</h2>
+<ul>
+<li><strong>Contract test</strong> (schema OpenAPI/Pact): đảm bảo client và server đồng ý hình dạng request/response — quan trọng khi nhiều đội/dịch vụ (Chương 17). Có thể snapshot OpenAPI trong CI và so sánh để <strong>phát hiện breaking change</strong>.</li>
+<li><strong>Test bảo mật</strong>: <code>401/403</code> cho mọi endpoint nhạy cảm (Tập 2, Chương 22 có <code>KhongDangNhap_MoiEndpointTra401</code>), IDOR, rate limit, header.</li>
+<li><strong>Test hiệu năng/tải</strong> (k6, NBomber): trước khi ra sản phẩm, đo độ trễ p95 và tải tối đa (Chương 11).</li>
+</ul>
+<h2>Quy trình gợi ý</h2>
+<ol>
+<li>Viết Domain test cho luật trước (TDD khi luật khó).</li>
+<li>Handler + Application test với fake.</li>
+<li>Vài integration test cho luồng chính và các lỗi ghép nối hay gặp (JSON, route, DI, migration, đồng thời).</li>
+<li>Architecture test trong CI.</li>
+<li>Test chạy trên <strong>mỗi commit</strong> (Chương 15); integration nặng (Testcontainers) chạy trên PR/đêm.</li>
+<li>Khi có bug production: <strong>viết test tái hiện trước</strong>, rồi sửa.</li>
+</ol>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Chỉ có E2E/integration test → chậm, giòn, không dám chạy thường xuyên.</li>
+<li>Test kiểm tra cài đặt (số lần gọi, thứ tự nội bộ) thay vì hành vi.</li>
+<li>Dùng EF InMemory và tin rằng CSDL &quot;đã được test&quot;.</li>
+<li><code>Thread.Sleep</code> chờ tiến trình nền.</li>
+<li>Test phụ thuộc thứ tự/dữ liệu chung → lúc xanh lúc đỏ.</li>
+<li>Mock mọi thứ, kể cả Domain.</li>
+<li>Đuổi độ phủ 100% bằng test không có assert.</li>
+<li>Không có test kiến trúc/hợp đồng: ranh giới bị phá dần mà không ai biết.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết <code>SanPhamBuilder</code> và chuyển ba test Domain sang dùng nó.</li>
+<li>Thêm integration test: <code>POST</code> thêm sản phẩm hai lần <strong>đồng thời</strong> cùng mã; đúng một <code>201</code>, còn lại <code>409</code>; không có <code>500</code>.</li>
+<li>Chạy <code>dotnet stryker</code> (hoặc tự &quot;đột biến&quot; một điều kiện trong <code>XuatKho</code>) và xem test nào bắt được.</li>
+<li>Thêm test kiến trúc: không lớp nào trong Application dùng <code>System.Net.Http</code>; hoặc mọi <code>IRequestHandler</code> nằm trong namespace <code>Kho.Application.*</code>.</li>
+<li>(Cần Docker) Thay SQLite bằng PostgreSQL trong Testcontainers cho một test; ghi lại điều gì khác biệt.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch08-su-kien-outbox.html">&larr; 8. Sự kiện miền, xử lý nền và Outbox</a><a class="nav-next" href="ch10-caching.html">10. Caching &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

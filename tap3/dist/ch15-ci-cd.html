@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 15 — CI/CD với GitHub Actions — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><a class="chapter-link" href="ch09-chien-luoc-kiem-thu.html">9. Chiến lược kiểm thử</a></li><li><a class="chapter-link" href="ch10-caching.html">10. Caching</a></li><li><a class="chapter-link" href="ch11-quan-sat-hieu-nang.html">11. Quan sát và hiệu năng</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-oidc-oauth2.html">12. OpenID Connect và OAuth 2.0</a></li><li><a class="chapter-link" href="ch13-idempotency-audit.html">13. Idempotency, audit log và bảo vệ dữ liệu</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><a class="chapter-link" href="ch14-docker.html">14. Docker và docker-compose</a></li><li><a class="chapter-link active" href="ch15-ci-cd.html">15. CI/CD với GitHub Actions</a></li><li><a class="chapter-link" href="ch16-trien-khai-cloud.html">16. Triển khai lên máy chủ và đám mây</a></li><li><a class="chapter-link" href="ch17-microservices.html">17. Microservices và giao tiếp giữa dịch vụ</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch18-du-an-tong-hop.html">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch19-phu-luc-a-loi-thuong-gap.html">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</a></li><li><a class="chapter-link" href="ch20-phu-luc-b-tai-lieu.html">20. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch21-phu-luc-c-cheat-sheet.html">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 15 — CI/CD với GitHub Actions</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>CI (tích hợp liên tục)</strong>, <strong>CD (phân phối/triển khai liên tục)</strong> và vì sao chúng giảm rủi ro thay vì tăng công sức.</li>
+<li>Viết workflow <strong>GitHub Actions</strong> build, test, quét và dựng image cho ứng dụng .NET.</li>
+<li>Thiết kế <strong>pipeline</strong> theo giai đoạn: build → test → đóng gói → triển khai staging → duyệt → production; biết <strong>chiến lược triển khai</strong> (rolling, blue-green, canary) và <strong>rollback</strong>.</li>
+<li>Quản lý <strong>secret</strong>, quyền tối thiểu, và tránh các lỗi phổ biến.</li>
+</ul>
+<p>Code: workflow thật của repo này ở <a href="../../../.github/workflows/kho-clean.yml"><code>.github/workflows/kho-clean.yml</code></a>.</p>
+<blockquote>
+<p><strong>Lưu ý trung thực:</strong> workflow chỉ chạy được trên GitHub, nên tác giả <strong>chưa chạy thật</strong>. Đã kiểm chứng cục bộ đúng các lệnh mà pipeline gọi: <code>dotnet build -c Release -warnaserror</code> (0 cảnh báo) và <code>dotnet test</code> (45 test đều đạt). Cú pháp YAML tuân theo tài liệu GitHub Actions; lần chạy đầu bạn có thể phải chỉnh nhỏ (đường dẫn, phiên bản action).</p>
+</blockquote>
+<h2>CI/CD là gì và để làm gì</h2>
+<ul>
+<li><strong>CI (Continuous Integration)</strong>: mỗi lần push/PR, máy chủ <strong>tự động build và chạy test</strong> trên môi trường sạch. Lỗi được phát hiện trong vài phút sau khi gây ra, khi còn nhớ mình vừa sửa gì — thay vì phát hiện lúc phát hành. &quot;Trên máy tôi chạy được&quot; chấm dứt vì CI là <strong>nguồn sự thật</strong>.</li>
+<li><strong>Continuous Delivery</strong>: mọi thay đổi qua CI đều <strong>sẵn sàng phát hành</strong> (artifact/image đã tạo, đã kiểm thử); việc bấm &quot;triển khai&quot; có thể là quyết định của con người.</li>
+<li><strong>Continuous Deployment</strong>: tự động triển khai lên production khi mọi kiểm tra đạt, không cần bước duyệt tay.</li>
+</ul>
+<p>Nguyên tắc: <strong>thay đổi nhỏ, thường xuyên, tự động</strong> ít rủi ro hơn phát hành lớn, hiếm, thủ công. Pipeline tốt cho đội <strong>niềm tin</strong> để triển khai nhiều lần mỗi ngày.</p>
+<h2>Các khái niệm của GitHub Actions</h2>
+<table>
+<thead>
+<tr>
+<th>Khái niệm</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Workflow</strong></td>
+<td>file YAML trong <code>.github/workflows/</code></td>
+</tr>
+<tr>
+<td><strong>Event (<code>on</code>)</strong></td>
+<td>điều kiện kích hoạt: <code>push</code>, <code>pull_request</code>, <code>schedule</code>, <code>workflow_dispatch</code> (chạy tay), <code>release</code></td>
+</tr>
+<tr>
+<td><strong>Job</strong></td>
+<td>nhóm bước chạy trên <strong>một runner</strong>; các job chạy song song trừ khi có <code>needs</code></td>
+</tr>
+<tr>
+<td><strong>Step</strong></td>
+<td>lệnh (<code>run</code>) hoặc <strong>action</strong> (<code>uses</code>) có sẵn</td>
+</tr>
+<tr>
+<td><strong>Runner</strong></td>
+<td>máy chạy job (<code>ubuntu-latest</code>, <code>windows-latest</code>, hoặc tự dựng — <em>self-hosted</em>)</td>
+</tr>
+<tr>
+<td><strong>Artifact</strong></td>
+<td>tệp giữ lại từ job (kết quả test, gói build) để job khác/người dùng tải</td>
+</tr>
+<tr>
+<td><strong>Secret / Variable</strong></td>
+<td>cấu hình mật / không mật, đặt ở repo/môi trường</td>
+</tr>
+<tr>
+<td><strong>Environment</strong></td>
+<td>&quot;staging&quot;, &quot;production&quot; — có secret riêng và <strong>quy tắc duyệt</strong></td>
+</tr>
+</tbody>
+</table>
+<h2>Workflow CI cho <code>kho-clean</code></h2>
+<pre class="hljs"><code><span class="hljs-attr">name:</span> <span class="hljs-string">kho-clean</span>
+
+<span class="hljs-attr">on:</span>
+  <span class="hljs-attr">push:</span>
+    <span class="hljs-attr">branches:</span> [<span class="hljs-string">main</span>]
+    <span class="hljs-attr">paths:</span> [<span class="hljs-string">&quot;tap3/code/kho-clean/**&quot;</span>, <span class="hljs-string">&quot;.github/workflows/kho-clean.yml&quot;</span>]
+  <span class="hljs-attr">pull_request:</span>
+    <span class="hljs-attr">paths:</span> [<span class="hljs-string">&quot;tap3/code/kho-clean/**&quot;</span>, <span class="hljs-string">&quot;.github/workflows/kho-clean.yml&quot;</span>]
+
+<span class="hljs-attr">permissions:</span>
+  <span class="hljs-attr">contents:</span> <span class="hljs-string">read</span>                     <span class="hljs-comment"># quyền TỐI THIỂU cho GITHUB_TOKEN</span>
+
+<span class="hljs-attr">concurrency:</span>
+  <span class="hljs-attr">group:</span> <span class="hljs-string">kho-clean-${{</span> <span class="hljs-string">github.ref</span> <span class="hljs-string">}}</span>
+  <span class="hljs-attr">cancel-in-progress:</span> <span class="hljs-literal">true</span>           <span class="hljs-comment"># commit mới → huỷ lần chạy cũ cùng nhánh</span>
+
+<span class="hljs-attr">defaults:</span>
+  <span class="hljs-attr">run:</span>
+    <span class="hljs-attr">working-directory:</span> <span class="hljs-string">tap3/code/kho-clean</span>
+
+<span class="hljs-attr">jobs:</span>
+  <span class="hljs-attr">build-test:</span>
+    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span>
+    <span class="hljs-attr">timeout-minutes:</span> <span class="hljs-number">15</span>
+    <span class="hljs-attr">steps:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/checkout@v4</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/setup-dotnet@v4</span>
+        <span class="hljs-attr">with:</span>
+          <span class="hljs-attr">dotnet-version:</span> <span class="hljs-number">10.0</span><span class="hljs-string">.x</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">run:</span> <span class="hljs-string">dotnet</span> <span class="hljs-string">restore</span> <span class="hljs-string">Kho.slnx</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">run:</span> <span class="hljs-string">dotnet</span> <span class="hljs-string">build</span> <span class="hljs-string">Kho.slnx</span> <span class="hljs-string">-c</span> <span class="hljs-string">Release</span> <span class="hljs-string">--no-restore</span> <span class="hljs-string">-warnaserror</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">run:</span> <span class="hljs-string">dotnet</span> <span class="hljs-string">test</span> <span class="hljs-string">Kho.slnx</span> <span class="hljs-string">-c</span> <span class="hljs-string">Release</span> <span class="hljs-string">--no-build</span> <span class="hljs-string">--logger</span> <span class="hljs-string">&quot;trx;LogFileName=ket-qua.trx&quot;</span> <span class="hljs-string">--collect:&quot;XPlat</span> <span class="hljs-string">Code</span> <span class="hljs-string">Coverage&quot;</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">if:</span> <span class="hljs-string">always()</span>
+        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/upload-artifact@v4</span>
+        <span class="hljs-attr">with:</span>
+          <span class="hljs-attr">name:</span> <span class="hljs-string">ket-qua-test</span>
+          <span class="hljs-attr">path:</span> <span class="hljs-string">tap3/code/kho-clean/**/TestResults/**</span>
+
+  <span class="hljs-attr">docker:</span>
+    <span class="hljs-attr">needs:</span> <span class="hljs-string">build-test</span>
+    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span>
+    <span class="hljs-attr">steps:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/checkout@v4</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">uses:</span> <span class="hljs-string">docker/setup-buildx-action@v3</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">uses:</span> <span class="hljs-string">docker/build-push-action@v6</span>
+        <span class="hljs-attr">with:</span>
+          <span class="hljs-attr">context:</span> <span class="hljs-string">tap3/code/kho-clean</span>
+          <span class="hljs-attr">push:</span> <span class="hljs-literal">false</span>
+          <span class="hljs-attr">tags:</span> <span class="hljs-string">kho-web:ci</span>
+          <span class="hljs-attr">cache-from:</span> <span class="hljs-string">type=gha</span>
+          <span class="hljs-attr">cache-to:</span> <span class="hljs-string">type=gha,mode=max</span>
+</code></pre>
+<p>Từng chỗ đáng chú ý:</p>
+<ul>
+<li><strong><code>paths</code></strong>: chỉ chạy khi thư mục liên quan đổi — monorepo (repo này chứa nhiều dự án) khỏi tốn phút CI vô ích.</li>
+<li><strong><code>permissions: contents: read</code></strong>: mặc định token có thể có quyền ghi rộng; <strong>luôn thu hẹp</strong> rồi chỉ cấp thêm cho job cần (ví dụ <code>packages: write</code> để đẩy image). Nguyên tắc <strong>đặc quyền tối thiểu</strong>.</li>
+<li><strong><code>concurrency</code> + <code>cancel-in-progress</code></strong>: không lãng phí runner cho commit đã bị đè.</li>
+<li><strong><code>timeout-minutes</code></strong>: job treo không ăn hết phút miễn phí.</li>
+<li><strong><code>-warnaserror</code></strong>: cảnh báo (nullable, deprecated) là <strong>nợ kỹ thuật ngầm</strong>; cho nó làm hỏng build khi dự án còn sạch. Đã xác nhận solution hiện tại build với 0 cảnh báo.</li>
+<li><strong><code>--no-build</code> / <code>--no-restore</code></strong>: không làm lại việc đã làm ở bước trước.</li>
+<li><strong><code>if: always()</code></strong> khi tải artifact: kết quả test cần có <strong>cả khi test đỏ</strong>.</li>
+<li><strong><code>needs: build-test</code></strong>: chỉ dựng image khi test đạt.</li>
+<li><strong>Ghim phiên bản action</strong> (<code>@v4</code>); với an toàn cao hơn ghim theo <strong>commit SHA</strong> (tránh tác giả action đẩy mã độc vào tag).</li>
+</ul>
+<h3>Cache NuGet</h3>
+<p>Restore mỗi lần tải lại package. <code>actions/setup-dotnet</code> hỗ trợ <code>cache: true</code> nhưng yêu cầu <strong>file khoá</strong> <code>packages.lock.json</code> (bật <code>&lt;RestorePackagesWithLockFile&gt;true&lt;/RestorePackagesWithLockFile&gt;</code> trong csproj/<code>Directory.Build.props</code>). Khoá phụ thuộc còn giúp <strong>build tái lập được</strong> và phát hiện thay đổi package ngoài ý muốn. Cách khác: <code>actions/cache</code> thư mục <code>~/.nuget/packages</code> với khoá là hash của các <code>*.csproj</code>.</p>
+<h3>Ma trận (matrix)</h3>
+<p>Kiểm thử thư viện trên nhiều hệ điều hành/phiên bản .NET:</p>
+<pre class="hljs"><code><span class="hljs-attr">strategy:</span>
+  <span class="hljs-attr">fail-fast:</span> <span class="hljs-literal">false</span>
+  <span class="hljs-attr">matrix:</span>
+    <span class="hljs-attr">os:</span> [<span class="hljs-string">ubuntu-latest</span>, <span class="hljs-string">windows-latest</span>]
+    <span class="hljs-attr">dotnet:</span> [<span class="hljs-number">10.0</span><span class="hljs-string">.x</span>]
+<span class="hljs-attr">runs-on:</span> <span class="hljs-string">${{</span> <span class="hljs-string">matrix.os</span> <span class="hljs-string">}}</span>
+</code></pre>
+<p>Ứng dụng chạy trong container Linux thì thường chỉ cần <code>ubuntu-latest</code>.</p>
+<h2>Từ CI tới CD: đẩy image và triển khai</h2>
+<p>Ví dụ phát hành: khi có tag <code>v*</code>, dựng và đẩy image lên <strong>GitHub Container Registry (GHCR)</strong>, rồi triển khai.</p>
+<pre class="hljs"><code><span class="hljs-attr">name:</span> <span class="hljs-string">phat-hanh</span>
+<span class="hljs-attr">on:</span>
+  <span class="hljs-attr">push:</span>
+    <span class="hljs-attr">tags:</span> [<span class="hljs-string">&quot;v*&quot;</span>]
+
+<span class="hljs-attr">permissions:</span>
+  <span class="hljs-attr">contents:</span> <span class="hljs-string">read</span>
+  <span class="hljs-attr">packages:</span> <span class="hljs-string">write</span>               <span class="hljs-comment"># cần để đẩy vào GHCR</span>
+
+<span class="hljs-attr">jobs:</span>
+  <span class="hljs-attr">image:</span>
+    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span>
+    <span class="hljs-attr">outputs:</span>
+      <span class="hljs-attr">digest:</span> <span class="hljs-string">${{</span> <span class="hljs-string">steps.build.outputs.digest</span> <span class="hljs-string">}}</span>
+    <span class="hljs-attr">steps:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/checkout@v4</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">uses:</span> <span class="hljs-string">docker/login-action@v3</span>
+        <span class="hljs-attr">with:</span>
+          <span class="hljs-attr">registry:</span> <span class="hljs-string">ghcr.io</span>
+          <span class="hljs-attr">username:</span> <span class="hljs-string">${{</span> <span class="hljs-string">github.actor</span> <span class="hljs-string">}}</span>
+          <span class="hljs-attr">password:</span> <span class="hljs-string">${{</span> <span class="hljs-string">secrets.GITHUB_TOKEN</span> <span class="hljs-string">}}</span>            <span class="hljs-comment"># token tự cấp, KHÔNG phải mật khẩu cá nhân</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">id:</span> <span class="hljs-string">build</span>
+        <span class="hljs-attr">uses:</span> <span class="hljs-string">docker/build-push-action@v6</span>
+        <span class="hljs-attr">with:</span>
+          <span class="hljs-attr">context:</span> <span class="hljs-string">tap3/code/kho-clean</span>
+          <span class="hljs-attr">push:</span> <span class="hljs-literal">true</span>
+          <span class="hljs-attr">tags:</span> <span class="hljs-string">ghcr.io/${{</span> <span class="hljs-string">github.repository</span> <span class="hljs-string">}}/kho-web:${{</span> <span class="hljs-string">github.ref_name</span> <span class="hljs-string">}}</span>
+
+  <span class="hljs-attr">staging:</span>
+    <span class="hljs-attr">needs:</span> <span class="hljs-string">image</span>
+    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span>
+    <span class="hljs-attr">environment:</span> <span class="hljs-string">staging</span>                                   <span class="hljs-comment"># secret + quy tắc riêng của môi trường</span>
+    <span class="hljs-attr">steps:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">run:</span> <span class="hljs-string">echo</span> <span class="hljs-string">&quot;Triển khai $<span class="hljs-template-variable">{{ github.ref_name }}</span> lên staging (lệnh cụ thể tuỳ nền tảng — Chương 16)&quot;</span>
+
+  <span class="hljs-attr">production:</span>
+    <span class="hljs-attr">needs:</span> <span class="hljs-string">staging</span>
+    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span>
+    <span class="hljs-attr">environment:</span> <span class="hljs-string">production</span>                                <span class="hljs-comment"># cấu hình &quot;Required reviewers&quot;: CHỜ NGƯỜI DUYỆT trước khi chạy</span>
+    <span class="hljs-attr">steps:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">run:</span> <span class="hljs-string">echo</span> <span class="hljs-string">&quot;Triển khai lên production&quot;</span>
+</code></pre>
+<p><strong>Environment <code>production</code> với &quot;Required reviewers&quot;</strong> chèn cổng duyệt tay giữa staging và production — Continuous <em>Delivery</em> có kiểm soát. Bỏ cổng đó là Continuous <em>Deployment</em>.</p>
+<h3>Chiến lược triển khai</h3>
+<table>
+<thead>
+<tr>
+<th>Chiến lược</th>
+<th>Cách làm</th>
+<th>Ưu</th>
+<th>Nhược</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Recreate</strong></td>
+<td>tắt bản cũ, bật bản mới</td>
+<td>đơn giản</td>
+<td>có thời gian ngừng</td>
+</tr>
+<tr>
+<td><strong>Rolling</strong></td>
+<td>thay dần từng instance</td>
+<td>không ngừng, ít tài nguyên thêm</td>
+<td>hai phiên bản chạy song song (phải <strong>tương thích ngược</strong>)</td>
+</tr>
+<tr>
+<td><strong>Blue-Green</strong></td>
+<td>dựng môi trường mới (green) đầy đủ, chuyển lưu lượng một lần</td>
+<td>rollback tức thì (chuyển lại)</td>
+<td>tốn gấp đôi tài nguyên</td>
+</tr>
+<tr>
+<td><strong>Canary</strong></td>
+<td>chuyển 1–5% lưu lượng sang bản mới, quan sát metric, tăng dần</td>
+<td>phát hiện lỗi sớm, ảnh hưởng nhỏ</td>
+<td>cần quan sát tốt (Chương 11) và định tuyến lưu lượng</td>
+</tr>
+</tbody>
+</table>
+<p>Mọi chiến lược &quot;không ngừng&quot; đòi hỏi <strong>thay đổi CSDL tương thích ngược</strong> — mẫu <strong>expand/contract</strong> (mở rộng → triển khai → thu hẹp):</p>
+<ol>
+<li><em>Expand</em>: thêm cột mới (cho phép null), mã mới ghi cả hai cột, mã cũ vẫn chạy được.</li>
+<li>Di chuyển dữ liệu; chuyển hẳn sang cột mới.</li>
+<li><em>Contract</em>: ở lần phát hành sau mới xoá cột cũ.</li>
+</ol>
+<p>Đổi tên/xoá cột trong <strong>một</strong> bước là cách chắc chắn nhất để làm hỏng rolling deployment.</p>
+<p><strong>Rollback</strong>: giữ image tag cũ, triển khai lại là quay lui code; <strong>migration</strong> thì khó lùi — thiết kế migration tương thích (expand/contract), sao lưu trước thay đổi lớn, và kiểm tra khôi phục.</p>
+<p><strong>Feature flag</strong> tách &quot;triển khai mã&quot; khỏi &quot;bật tính năng&quot;: mã lên production ở trạng thái tắt, bật dần cho nhóm người dùng, tắt ngay nếu có sự cố (<code>Microsoft.FeatureManagement</code>).</p>
+<h2>Một pipeline tốt gồm những gì</h2>
+<ol>
+<li><strong>Build + phân tích tĩnh</strong> (cảnh báo là lỗi, <code>dotnet format --verify-no-changes</code>, analyzer).</li>
+<li><strong>Test nhanh trước</strong> (đơn vị) rồi test chậm (tích hợp); báo cáo độ phủ (đừng coi độ phủ là mục tiêu tự thân).</li>
+<li><strong>Quét bảo mật</strong>: <code>dotnet list package --vulnerable --include-transitive</code>, quét secret (<code>gitleaks</code>), quét image (Trivy), CodeQL, Dependabot cập nhật phụ thuộc.</li>
+<li><strong>Dựng artifact một lần</strong> rồi <strong>thăng cấp cùng artifact</strong> qua các môi trường (build once, deploy many) — không build lại cho production.</li>
+<li><strong>Triển khai tự động lên staging</strong>, chạy <strong>smoke test</strong> (gọi <code>/health/ready</code>, vài endpoint chính) sau triển khai.</li>
+<li><strong>Cổng duyệt</strong> trước production; theo dõi metric sau triển khai (Chương 11) và <strong>tự rollback</strong> nếu tỉ lệ lỗi tăng.</li>
+<li><strong>Nhanh</strong>: mục tiêu CI dưới ~10 phút; chậm sẽ bị né tránh.</li>
+</ol>
+<h3>Migration trong pipeline</h3>
+<p>Chạy <code>dotnet ef migrations bundle</code> (tạo tệp thực thi tự chứa) như <strong>bước riêng, một lần</strong>, trước khi khởi động các instance mới; <strong>không</strong> để mọi instance cùng tự <code>MigrateAsync</code> khi cụm chạy nhiều bản.</p>
+<h2>Secret và bảo mật pipeline</h2>
+<ul>
+<li>Đặt secret ở <strong>Settings → Secrets</strong> (theo repo/environment), truy cập bằng <code>${{ secrets.TEN }}</code>; log tự che giá trị nhưng <strong>đừng in/<code>echo</code></strong> chúng và đừng truyền qua tham số dòng lệnh dễ lộ.</li>
+<li><strong>PR từ fork</strong> không nhận secret (mặc định) — đúng vì mã lạ không được đọc secret; cẩn trọng với <code>pull_request_target</code>.</li>
+<li>Ưu tiên <strong>OIDC liên kết (workload identity federation)</strong> với đám mây (Azure/AWS/GCP): job xin token ngắn hạn từ GitHub, <strong>không cần lưu khoá dài hạn</strong> trong secret (<code>permissions: id-token: write</code>).</li>
+<li><strong>Tin cậy có chọn lọc</strong> vào action bên thứ ba; ghim SHA; bật Dependabot cho chính các action.</li>
+<li>Runner tự dựng (self-hosted) cho repo <strong>công khai</strong> rất nguy hiểm.</li>
+</ul>
+<h2>Các nền tảng khác</h2>
+<p>Khái niệm y hệt ở <strong>Azure DevOps Pipelines</strong>, <strong>GitLab CI</strong>, <strong>Jenkins</strong>, <strong>TeamCity</strong>. Học một nền tảng, chuyển sang nền khác chủ yếu là học cú pháp.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Chỉ chạy CI trên nhánh chính — lỗi tới quá muộn; nên chạy trên <strong>pull request</strong> và chặn merge khi đỏ (branch protection).</li>
+<li>Cấp <code>permissions</code> rộng; dùng PAT cá nhân thay vì <code>GITHUB_TOKEN</code>.</li>
+<li>Build lại cho từng môi trường thay vì thăng cấp cùng artifact.</li>
+<li>Test chập chờn (flaky) bị &quot;bấm chạy lại&quot; cho qua — làm mất niềm tin; sửa hoặc cách ly.</li>
+<li>Tag <code>latest</code> cho image triển khai; không có cách xác định &quot;đang chạy phiên bản nào&quot;.</li>
+<li>Migration phá vỡ tương thích ngược trong rolling deployment.</li>
+<li>Không có smoke test/giám sát sau triển khai; không diễn tập rollback.</li>
+<li>Secret in ra log, lưu trong image, hoặc commit vào <code>.github</code>.</li>
+<li>Pipeline quá chậm, không cache.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Đẩy repo lên GitHub, bật workflow <code>kho-clean.yml</code>, tạo PR có test đỏ và xem PR bị chặn khi bật <em>branch protection</em>.</li>
+<li>Bật <strong>khoá phụ thuộc</strong> (<code>packages.lock.json</code>) và <code>cache: true</code> cho <code>setup-dotnet</code>; so sánh thời gian restore.</li>
+<li>Viết workflow <code>phat-hanh</code> đẩy image lên GHCR khi gắn tag <code>v1.0.0</code>; thêm environment <code>production</code> với người duyệt.</li>
+<li>Thêm bước quét <code>dotnet list package --vulnerable --include-transitive</code> và làm hỏng pipeline nếu có lỗ hổng.</li>
+<li>Thêm <strong>Dependabot</strong> (<code>.github/dependabot.yml</code>) cho NuGet, GitHub Actions và Docker, lịch hàng tuần.</li>
+<li>Vẽ kế hoạch <strong>expand/contract</strong> để đổi tên cột <code>Nhom</code> → <code>DanhMuc</code> mà không ngừng dịch vụ.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch14-docker.html">&larr; 14. Docker và docker-compose</a><a class="nav-next" href="ch16-trien-khai-cloud.html">16. Triển khai lên máy chủ và đám mây &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

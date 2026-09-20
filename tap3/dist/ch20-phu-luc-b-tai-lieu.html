@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phụ lục B — Tài liệu tham khảo — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><a class="chapter-link" href="ch09-chien-luoc-kiem-thu.html">9. Chiến lược kiểm thử</a></li><li><a class="chapter-link" href="ch10-caching.html">10. Caching</a></li><li><a class="chapter-link" href="ch11-quan-sat-hieu-nang.html">11. Quan sát và hiệu năng</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-oidc-oauth2.html">12. OpenID Connect và OAuth 2.0</a></li><li><a class="chapter-link" href="ch13-idempotency-audit.html">13. Idempotency, audit log và bảo vệ dữ liệu</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><a class="chapter-link" href="ch14-docker.html">14. Docker và docker-compose</a></li><li><a class="chapter-link" href="ch15-ci-cd.html">15. CI/CD với GitHub Actions</a></li><li><a class="chapter-link" href="ch16-trien-khai-cloud.html">16. Triển khai lên máy chủ và đám mây</a></li><li><a class="chapter-link" href="ch17-microservices.html">17. Microservices và giao tiếp giữa dịch vụ</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch18-du-an-tong-hop.html">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch19-phu-luc-a-loi-thuong-gap.html">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</a></li><li><a class="chapter-link active" href="ch20-phu-luc-b-tai-lieu.html">20. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch21-phu-luc-c-cheat-sheet.html">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Phụ lục B — Tài liệu tham khảo</h1>
+<p>Danh sách nguồn nên đọc tiếp. Địa chỉ và phiên bản có thể thay đổi; hãy đối chiếu bản mới nhất.</p>
+<h2>Tài liệu chính thức</h2>
+<ul>
+<li><strong>.NET / <a href="http://ASP.NET">ASP.NET</a> Core / EF Core</strong>: <code>learn.microsoft.com/dotnet</code>, <code>learn.microsoft.com/aspnet/core</code>, <code>learn.microsoft.com/ef/core</code>.</li>
+<li><strong>Kiến trúc</strong>: <em>.NET Microservices: Architecture for Containerized .NET Applications</em> và <em>Architecting Modern Web Applications with <a href="http://ASP.NET">ASP.NET</a> Core and Azure</em> (eBook miễn phí của Microsoft).</li>
+<li><strong>OpenTelemetry</strong>: <code>opentelemetry.io</code> (đặc tả, tài liệu .NET, Collector).</li>
+<li><strong>OAuth 2.0 / OIDC</strong>: RFC 6749 (OAuth 2.0), RFC 7636 (PKCE), RFC 9700 (best current practice), OpenID Connect Core 1.0, RFC 7519 (JWT), RFC 9110 (ngữ nghĩa HTTP).</li>
+<li><strong>W3C Trace Context</strong>: <code>w3.org/TR/trace-context</code>.</li>
+<li><strong>Docker</strong>: <code>docs.docker.com</code> (Dockerfile best practices, Compose). <strong>Kubernetes</strong>: <code>kubernetes.io/docs</code>.</li>
+<li><strong>GitHub Actions</strong>: <code>docs.github.com/actions</code>.</li>
+<li><strong>YARP</strong>: <code>microsoft.github.io/reverse-proxy</code>. <strong>.NET Aspire</strong>: tài liệu trên <a href="http://learn.microsoft.com">learn.microsoft.com</a>.</li>
+<li><strong>Nghị định 13/2023/NĐ-CP</strong> về bảo vệ dữ liệu cá nhân (Việt Nam); GDPR nếu phục vụ EU.</li>
+</ul>
+<h2>Sách</h2>
+<table>
+<thead>
+<tr>
+<th>Sách</th>
+<th>Tác giả</th>
+<th>Chủ đề</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Clean Architecture</em></td>
+<td>Robert C. Martin</td>
+<td>nguyên tắc phụ thuộc, ranh giới</td>
+</tr>
+<tr>
+<td><em>Domain-Driven Design</em></td>
+<td>Eric Evans</td>
+<td>miền, bounded context, aggregate</td>
+</tr>
+<tr>
+<td><em>Implementing Domain-Driven Design</em></td>
+<td>Vaughn Vernon</td>
+<td>DDD thực hành</td>
+</tr>
+<tr>
+<td><em>Patterns of Enterprise Application Architecture</em></td>
+<td>Martin Fowler</td>
+<td>Repository, Unit of Work...</td>
+</tr>
+<tr>
+<td><em>Designing Data-Intensive Applications</em></td>
+<td>Martin Kleppmann</td>
+<td>nhất quán, giao dịch, hệ phân tán</td>
+</tr>
+<tr>
+<td><em>Building Microservices</em></td>
+<td>Sam Newman</td>
+<td>microservices, ranh giới, dữ liệu</td>
+</tr>
+<tr>
+<td><em>Release It!</em></td>
+<td>Michael Nygard</td>
+<td>ổn định, circuit breaker, bulkhead</td>
+</tr>
+<tr>
+<td><em>Site Reliability Engineering</em></td>
+<td>Google</td>
+<td>SLO, cảnh báo, vận hành</td>
+</tr>
+<tr>
+<td><em>Accelerate</em></td>
+<td>Forsgren, Humble, Kim</td>
+<td>CI/CD, hiệu quả phát hành</td>
+</tr>
+<tr>
+<td><em>Unit Testing: Principles, Practices, and Patterns</em></td>
+<td>Vladimir Khorikov</td>
+<td>kiểm thử có giá trị</td>
+</tr>
+<tr>
+<td><em>Dependency Injection Principles, Practices, and Patterns</em></td>
+<td>Mark Seemann, Steven van Deursen</td>
+<td>DI</td>
+</tr>
+</tbody>
+</table>
+<h2>Thư viện và công cụ nhắc tới trong Tập 3</h2>
+<table>
+<thead>
+<tr>
+<th>Nhu cầu</th>
+<th>Công cụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Validation</td>
+<td>FluentValidation</td>
+</tr>
+<tr>
+<td>Mediator</td>
+<td>MediatR (thương mại từ 2025 — xem giấy phép), Wolverine, hoặc tự viết như Chương 5</td>
+</tr>
+<tr>
+<td>Kiểm thử</td>
+<td>xUnit, NSubstitute, <code>WebApplicationFactory</code>, Testcontainers, Bogus, Verify</td>
+</tr>
+<tr>
+<td>Kiểm tra kiến trúc</td>
+<td>NetArchTest, ArchUnitNET</td>
+</tr>
+<tr>
+<td>Cache</td>
+<td><code>Microsoft.Extensions.Caching.Hybrid</code>, Redis (StackExchange.Redis)</td>
+</tr>
+<tr>
+<td>Quan sát</td>
+<td>OpenTelemetry, Grafana (Tempo/Loki/Prometheus), Jaeger, Application Insights</td>
+</tr>
+<tr>
+<td>Định danh</td>
+<td>Keycloak, Microsoft Entra ID, Auth0, Duende IdentityServer, OpenIddict</td>
+</tr>
+<tr>
+<td>Messaging</td>
+<td>MassTransit, Wolverine, NServiceBus, RabbitMQ, Azure Service Bus, Kafka</td>
+</tr>
+<tr>
+<td>Gateway</td>
+<td>YARP</td>
+</tr>
+<tr>
+<td>Hạ tầng dưới dạng mã</td>
+<td>Bicep, Terraform/OpenTofu, Pulumi</td>
+</tr>
+<tr>
+<td>Tải</td>
+<td>k6, NBomber; vi mô: BenchmarkDotNet</td>
+</tr>
+<tr>
+<td>Chẩn đoán</td>
+<td><code>dotnet-counters</code>, <code>dotnet-trace</code>, <code>dotnet-dump</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Blog và cộng đồng</h2>
+<ul>
+<li>Blog .NET của Microsoft (<code>devblogs.microsoft.com/dotnet</code>), bản ghi chú phát hành .NET và <a href="http://ASP.NET">ASP.NET</a> Core.</li>
+<li>Blog của Milan Jovanović, Andrew Lock, Steve Smith (Ardalis), Nick Chapsas, Jimmy Bogard (tác giả AutoMapper/MediatR).</li>
+<li>Martin Fowler (<code>martinfowler.com</code>): mô tả các pattern kinh điển.</li>
+<li>Cộng đồng: <code>r/dotnet</code>, Stack Overflow, GitHub Discussions của dotnet, các nhóm .NET Việt Nam.</li>
+</ul>
+<h2>Ba tập của bộ sách</h2>
+<ul>
+<li><strong>Tập 1</strong> — C# và .NET nền tảng: ngôn ngữ, thư viện, bất đồng bộ, kiểm thử, ứng dụng dòng lệnh.</li>
+<li><strong>Tập 2</strong> — <a href="http://ASP.NET">ASP.NET</a> Core: HTTP, Minimal API, MVC/Razor Pages/Blazor, EF Core, xác thực, bảo mật, dự án tổng hợp.</li>
+<li><strong>Tập 3</strong> — Kiến trúc và vận hành: Clean Architecture, DDD, CQRS, outbox, kiểm thử, cache, quan sát, OIDC, Docker, CI/CD, cloud, microservices.</li>
+</ul>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch19-phu-luc-a-loi-thuong-gap.html">&larr; 19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</a><a class="nav-next" href="ch21-phu-luc-c-cheat-sheet.html">21. Phụ lục C — Cheat sheet kiến trúc và triển khai &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

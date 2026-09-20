@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phụ lục C — Cheat sheet kiến trúc và triển khai — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><a class="chapter-link" href="ch09-chien-luoc-kiem-thu.html">9. Chiến lược kiểm thử</a></li><li><a class="chapter-link" href="ch10-caching.html">10. Caching</a></li><li><a class="chapter-link" href="ch11-quan-sat-hieu-nang.html">11. Quan sát và hiệu năng</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-oidc-oauth2.html">12. OpenID Connect và OAuth 2.0</a></li><li><a class="chapter-link" href="ch13-idempotency-audit.html">13. Idempotency, audit log và bảo vệ dữ liệu</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><a class="chapter-link" href="ch14-docker.html">14. Docker và docker-compose</a></li><li><a class="chapter-link" href="ch15-ci-cd.html">15. CI/CD với GitHub Actions</a></li><li><a class="chapter-link" href="ch16-trien-khai-cloud.html">16. Triển khai lên máy chủ và đám mây</a></li><li><a class="chapter-link" href="ch17-microservices.html">17. Microservices và giao tiếp giữa dịch vụ</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch18-du-an-tong-hop.html">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch19-phu-luc-a-loi-thuong-gap.html">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</a></li><li><a class="chapter-link" href="ch20-phu-luc-b-tai-lieu.html">20. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link active" href="ch21-phu-luc-c-cheat-sheet.html">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Phụ lục C — Cheat sheet kiến trúc và triển khai</h1>
+<h2>Quy tắc phụ thuộc (Clean Architecture)</h2>
+<pre class="hljs"><code>Web ──► Application ──► Domain
+ └────► Infrastructure ──► Application (cài đặt các &quot;cổng&quot;)
+Domain: không phụ thuộc gì. Application: chỉ Domain. Infrastructure/Web: nối mọi thứ ở composition root.
+</code></pre>
+<h2>Chọn mẫu thiết kế</h2>
+<table>
+<thead>
+<tr>
+<th>Bạn cần...</th>
+<th>Dùng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bảo vệ quy tắc nghiệp vụ</td>
+<td>aggregate + phương thức nghiệp vụ, setter private</td>
+</tr>
+<tr>
+<td>Giá trị không có danh tính</td>
+<td>value object bất biến (<code>record</code>)</td>
+</tr>
+<tr>
+<td>Lỗi nghiệp vụ dự kiến</td>
+<td><code>Result&lt;T&gt;</code> (không exception)</td>
+</tr>
+<tr>
+<td>Việc dùng chung cho mọi use case</td>
+<td>pipeline behavior</td>
+</tr>
+<tr>
+<td>Tách đọc/ghi</td>
+<td>CQRS: lệnh qua aggregate, truy vấn qua read model/DTO</td>
+</tr>
+<tr>
+<td>Phát sự kiện đáng tin</td>
+<td>outbox trong cùng giao dịch</td>
+</tr>
+<tr>
+<td>Gửi lại an toàn</td>
+<td><code>Idempotency-Key</code> + khoá duy nhất (INSERT nguyên tử)</td>
+</tr>
+<tr>
+<td>Ai làm gì</td>
+<td>audit log cùng giao dịch, chỉ thêm</td>
+</tr>
+<tr>
+<td>Nghiệp vụ nhiều dịch vụ</td>
+<td>saga (bù trừ), không 2PC</td>
+</tr>
+</tbody>
+</table>
+<h2>Pipeline mặc định</h2>
+<p><code>Logging &gt; Validation &gt; UnitOfWork &gt; Handler</code> — lệnh thành công thì <code>LuuAsync</code> một lần; thất bại thì không lưu gì.</p>
+<h2>Mã trạng thái theo loại lỗi</h2>
+<table>
+<thead>
+<tr>
+<th><code>LoaiLoi</code></th>
+<th>HTTP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DuLieuKhongHopLe</td>
+<td>400</td>
+</tr>
+<tr>
+<td>KhongTimThay</td>
+<td>404</td>
+</tr>
+<tr>
+<td>XungDot (trùng, đồng thời)</td>
+<td>409</td>
+</tr>
+<tr>
+<td>NghiepVu</td>
+<td>422</td>
+</tr>
+<tr>
+<td>(không lường trước)</td>
+<td>500 ProblemDetails, không lộ chi tiết</td>
+</tr>
+<tr>
+<td>Chưa xác thực / không đủ quyền</td>
+<td>401 / 403</td>
+</tr>
+</tbody>
+</table>
+<h2>Cache</h2>
+<table>
+<thead>
+<tr>
+<th>Công cụ</th>
+<th>Dùng cho</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IMemoryCache</code></td>
+<td>cache cục bộ đơn giản, một instance</td>
+</tr>
+<tr>
+<td><code>HybridCache</code></td>
+<td>L1+L2, <strong>chống stampede</strong>, tag để vô hiệu hoá</td>
+</tr>
+<tr>
+<td>Output cache</td>
+<td>cả response HTTP, chính sách + tag</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>cache phân tán/nhiều instance</td>
+</tr>
+</tbody>
+</table>
+<p>Luôn có: TTL, chiến lược vô hiệu hoá, khoá gồm mọi tham số ảnh hưởng kết quả, không cache dữ liệu theo người dùng ở nơi dùng chung.</p>
+<h2>Quan sát</h2>
+<ul>
+<li><strong>Logs</strong> (chuyện gì), <strong>Metrics</strong> (xu hướng), <strong>Traces</strong> (đi đâu) — nối bằng <code>TraceId</code>.</li>
+<li>Metric nhãn <strong>cardinality thấp</strong>; không <code>UserId</code>/<code>OrderId</code>.</li>
+<li>Bốn tín hiệu vàng: latency, traffic, errors, saturation.</li>
+<li><strong>Liveness</strong> (còn sống? — không kiểm tra phụ thuộc) ≠ <strong>Readiness</strong> (nhận tải được? — kiểm tra phụ thuộc).</li>
+</ul>
+<h2>OAuth 2.0 / OIDC</h2>
+<ul>
+<li>Web/SPA/mobile: <strong>Authorization Code + PKCE</strong>. Không Implicit/Password.</li>
+<li><strong>ID token</strong> = ai là người dùng (cho client); <strong>access token</strong> = quyền gọi API (cho resource server).</li>
+<li>API kiểm: chữ ký, <code>iss</code>, <code>aud</code>, <code>exp</code>, <code>scope</code>/role. <code>MapInboundClaims = false</code>.</li>
+<li>Máy-với-máy: <strong>Client Credentials</strong> (ưu tiên managed identity).</li>
+</ul>
+<h2>Docker</h2>
+<pre class="hljs"><code><span class="hljs-keyword">FROM</span> mcr.microsoft.com/dotnet/sdk:<span class="hljs-number">10.0</span> AS build      <span class="hljs-comment"># copy *.csproj → restore → copy code → publish</span>
+<span class="hljs-keyword">FROM</span> mcr.microsoft.com/dotnet/aspnet:<span class="hljs-number">10.0</span> AS final   <span class="hljs-comment"># copy publish; USER $APP_UID; cổng 8080</span>
+<span class="hljs-keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="hljs-string">&quot;dotnet&quot;</span>, <span class="hljs-string">&quot;App.dll&quot;</span>]</span>
+</code></pre>
+<p>Biến môi trường: <code>A:B</code> → <code>A__B</code>. Dữ liệu ở volume/CSDL ngoài. Không secret trong image. Không <code>latest</code>.</p>
+<h2>Lệnh hay dùng</h2>
+<pre class="hljs"><code>dotnet new webapi -n Ten &amp;&amp; dotnet run
+dotnet build -c Release -warnaserror
+dotnet <span class="hljs-built_in">test</span> --logger trx
+dotnet publish -c Release -o out -p:UseAppHost=<span class="hljs-literal">false</span>
+
+dotnet ef migrations add Ten -p Infrastructure -s Web -o Persistence/Migrations
+dotnet ef database update -p Infrastructure -s Web
+dotnet ef migrations bundle -p Infrastructure -s Web        <span class="hljs-comment"># tệp chạy migration cho CI/CD</span>
+
+dotnet user-secrets init &amp;&amp; dotnet user-secrets <span class="hljs-built_in">set</span> <span class="hljs-string">&quot;Khoa&quot;</span> <span class="hljs-string">&quot;giatri&quot;</span>
+dotnet list package --vulnerable --include-transitive
+dotnet-counters monitor -p &lt;PID&gt;
+
+docker build -t app:dev . &amp;&amp; docker run --<span class="hljs-built_in">rm</span> -p 8080:8080 -v data:/data app:dev
+docker compose up --build / logs -f / down
+</code></pre>
+<h2>Triển khai và phát hành</h2>
+<ul>
+<li><strong>CI</strong>: restore → build (<code>-warnaserror</code>) → test → quét → dựng artifact <strong>một lần</strong>.</li>
+<li><strong>CD</strong>: thăng cấp cùng artifact; staging → smoke test → duyệt → production.</li>
+<li>Chiến lược: recreate, <strong>rolling</strong>, <strong>blue-green</strong>, <strong>canary</strong>; DB theo <strong>expand/contract</strong>.</li>
+<li>Migration chạy như bước riêng (bundle), không để mọi instance tự migrate.</li>
+<li>Nhiều instance: Data Protection keys chia sẻ; không trạng thái cục bộ; forwarded headers <strong>chỉ tin proxy của bạn</strong>.</li>
+</ul>
+<h2>Danh sách kiểm tra ngắn cho một thay đổi</h2>
+<ul>
+<li>[ ] Quy tắc nghiệp vụ nằm ở Domain, có test domain?</li>
+<li>[ ] Use case là lệnh/truy vấn rõ ràng; lỗi dự kiến trả <code>Result</code>?</li>
+<li>[ ] Ghi dữ liệu có thể bị gửi lặp → idempotent?</li>
+<li>[ ] Thay đổi trạng thái quan trọng có audit; sự kiện đi qua outbox?</li>
+<li>[ ] Có log/metric/trace đủ để điều tra khi lỗi?</li>
+<li>[ ] Migration tương thích ngược; có kế hoạch rollback?</li>
+<li>[ ] Không secret/PII trong mã, log, image?</li>
+<li>[ ] CI xanh; đã chạy thật (không chỉ &quot;biên dịch được&quot;)?</li>
+</ul>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch20-phu-luc-b-tai-lieu.html">&larr; 20. Phụ lục B — Tài liệu tham khảo</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

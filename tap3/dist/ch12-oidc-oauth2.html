@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 12 — OpenID Connect và OAuth 2.0 — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><a class="chapter-link" href="ch09-chien-luoc-kiem-thu.html">9. Chiến lược kiểm thử</a></li><li><a class="chapter-link" href="ch10-caching.html">10. Caching</a></li><li><a class="chapter-link" href="ch11-quan-sat-hieu-nang.html">11. Quan sát và hiệu năng</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch12-oidc-oauth2.html">12. OpenID Connect và OAuth 2.0</a></li><li><a class="chapter-link" href="ch13-idempotency-audit.html">13. Idempotency, audit log và bảo vệ dữ liệu</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><a class="chapter-link" href="ch14-docker.html">14. Docker và docker-compose</a></li><li><a class="chapter-link" href="ch15-ci-cd.html">15. CI/CD với GitHub Actions</a></li><li><a class="chapter-link" href="ch16-trien-khai-cloud.html">16. Triển khai lên máy chủ và đám mây</a></li><li><a class="chapter-link" href="ch17-microservices.html">17. Microservices và giao tiếp giữa dịch vụ</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch18-du-an-tong-hop.html">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch19-phu-luc-a-loi-thuong-gap.html">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</a></li><li><a class="chapter-link" href="ch20-phu-luc-b-tai-lieu.html">20. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch21-phu-luc-c-cheat-sheet.html">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 12 — OpenID Connect và OAuth 2.0</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Phân biệt <strong>xác thực (authentication)</strong> với <strong>uỷ quyền (authorization)</strong> và biết <strong>OAuth 2.0</strong> và <strong>OpenID Connect (OIDC)</strong> giải quyết phần nào.</li>
+<li>Nắm các vai trò (client, resource owner, authorization server, resource server) và <strong>luồng Authorization Code + PKCE</strong> — luồng chuẩn hiện nay.</li>
+<li>Biến API <a href="http://ASP.NET">ASP.NET</a> Core thành <strong>resource server</strong> kiểm tra JWT do IdP cấp: issuer, audience, chữ ký, hạn dùng; phân quyền theo <strong>scope</strong> và <strong>role</strong>.</li>
+<li>Biết chọn: tự xây đăng nhập hay dùng <strong>IdP</strong> (Keycloak, Microsoft Entra ID, Auth0, Duende IdentityServer...).</li>
+</ul>
+<p>Code: <a href="code/ch12-oidc/"><code>code/ch12-oidc/</code></a> — resource server chạy được cả khi không có IdP (chế độ demo) và với IdP thật qua cấu hình.</p>
+<blockquote>
+<p><strong>Lưu ý trung thực:</strong> ví dụ chạy với &quot;IdP giả&quot; tự ký token để bạn thử được ngay. Phần tích hợp với IdP thật (Keycloak/Entra/Auth0) chỉ khác ở <strong>cấu hình <code>Authority</code>/<code>Audience</code></strong> — chương này chỉ ra cách làm, nhưng máy tác giả không có IdP thật để chạy thử end-to-end; hãy kiểm tra theo tài liệu của IdP bạn dùng.</p>
+</blockquote>
+<h2>Vì sao không tự viết đăng nhập?</h2>
+<p>Ở Tập 2 (Chương 20) bạn tự làm đăng nhập bằng cookie và JWT. Với một ứng dụng đơn, điều đó ổn. Nhưng khi có <strong>nhiều ứng dụng/dịch vụ</strong>, mỗi nơi tự lưu mật khẩu là thảm hoạ: nhiều nơi rò rỉ, khó thêm MFA, đăng nhập một lần (SSO) bất khả thi. Giải pháp: <strong>tập trung xác thực vào một dịch vụ chuyên trách (Identity Provider — IdP)</strong>; các ứng dụng chỉ <strong>tin token</strong> do IdP cấp. Đó là điều OAuth 2.0/OIDC chuẩn hoá.</p>
+<h2>OAuth 2.0 và OIDC: hai lớp, hai câu hỏi</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Trả lời</th>
+<th>Cho ra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OAuth 2.0</strong></td>
+<td>&quot;Ứng dụng này <strong>được phép làm gì</strong> thay mặt người dùng?&quot; (uỷ quyền, uỷ thác quyền truy cập)</td>
+<td><strong>access token</strong> (kèm scope)</td>
+</tr>
+<tr>
+<td><strong>OpenID Connect</strong> (OIDC, lớp trên OAuth 2.0)</td>
+<td>&quot;Người dùng <strong>là ai</strong>?&quot; (xác thực)</td>
+<td><strong>ID token</strong> (JWT chứa <code>sub</code>, <code>name</code>, <code>email</code>...) + endpoint <code>userinfo</code></td>
+</tr>
+</tbody>
+</table>
+<p>Sai lầm kinh điển: dùng <strong>access token</strong> để chứng minh &quot;người này đã đăng nhập&quot; ở phía client. Access token dành cho <strong>API</strong> (audience là API); danh tính cho ứng dụng nằm ở <strong>ID token</strong>.</p>
+<h3>Các vai trò</h3>
+<ul>
+<li><strong>Resource Owner</strong>: người dùng.</li>
+<li><strong>Client</strong>: ứng dụng muốn truy cập (SPA, Blazor, mobile, web MVC, hay một dịch vụ khác).</li>
+<li><strong>Authorization Server / IdP</strong>: xác thực người dùng, cấp token (Keycloak, Entra ID...).</li>
+<li><strong>Resource Server</strong>: API bảo vệ tài nguyên, <strong>kiểm tra access token</strong> (chính là API của bạn).</li>
+</ul>
+<h3>Loại client</h3>
+<ul>
+<li><strong>Confidential</strong> (giữ được bí mật: ứng dụng web server-side) — có <code>client_secret</code>.</li>
+<li><strong>Public</strong> (không giữ được bí mật: SPA, mobile, desktop) — <strong>không</strong> có secret; bắt buộc <strong>PKCE</strong>.</li>
+</ul>
+<h2>Luồng Authorization Code + PKCE</h2>
+<p>Đây là luồng khuyến nghị cho mọi client tương tác (OAuth 2.1 gộp PKCE vào bắt buộc). <em>Implicit</em> và <em>Resource Owner Password</em> đã <strong>bị loại bỏ</strong> — đừng dùng.</p>
+<pre class="mermaid">sequenceDiagram
+    participant U as Người dùng (trình duyệt)
+    participant C as Client (ứng dụng)
+    participant A as IdP (Authorization Server)
+    participant R as API (Resource Server)
+    C-&gt;&gt;C: sinh code_verifier (ngẫu nhiên), code_challenge = SHA256(verifier)
+    C-&gt;&gt;A: chuyển hướng /authorize?response_type=code&amp;client_id&amp;redirect_uri&amp;scope=openid profile kho.doc&amp;state&amp;code_challenge&amp;method=S256
+    A-&gt;&gt;U: trang đăng nhập (+ MFA, đồng ý quyền)
+    U-&gt;&gt;A: xác thực
+    A-&gt;&gt;C: chuyển hướng về redirect_uri?code=...&amp;state=...
+    C-&gt;&gt;A: POST /token (code + code_verifier) qua kênh sau (back-channel)
+    A-&gt;&gt;C: id_token + access_token (+ refresh_token)
+    C-&gt;&gt;R: GET /api/... (Authorization: Bearer access_token)
+    R-&gt;&gt;R: kiểm tra chữ ký, iss, aud, exp, scope
+    R-&gt;&gt;C: dữ liệu
+</pre>
+<p>Vì sao an toàn?</p>
+<ul>
+<li><strong><code>code</code></strong> ngắn hạn, một lần, đi qua trình duyệt (có thể bị đánh cắp), nhưng <strong>vô dụng nếu thiếu <code>code_verifier</code></strong> — bí mật chỉ client giữ và gửi qua kênh trực tiếp tới IdP. Đó là <strong>PKCE</strong> (Proof Key for Code Exchange): chặn tấn công <em>chặn authorization code</em>.</li>
+<li><strong><code>state</code></strong> ngẫu nhiên chống CSRF trên bước chuyển hướng; <strong><code>nonce</code></strong> (OIDC) gắn ID token với phiên, chống replay.</li>
+<li><strong><code>redirect_uri</code></strong> phải khớp <strong>chính xác</strong> danh sách đăng ký trước — chống chuyển hướng token về kẻ tấn công.</li>
+</ul>
+<p>Tính PKCE chỉ là băm — code mẫu có endpoint <code>/pkce</code> cho đúng vector kiểm thử của RFC 7636: <code>verifier = dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk</code> → <code>challenge = E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM</code> (đã chạy và khớp).</p>
+<pre class="hljs"><code><span class="hljs-built_in">string</span> verifier  = Base64Url(RandomNumberGenerator.GetBytes(<span class="hljs-number">32</span>));
+<span class="hljs-built_in">string</span> challenge = Base64Url(SHA256.HashData(Encoding.ASCII.GetBytes(verifier)));
+<span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-built_in">string</span> <span class="hljs-title">Base64Url</span>(<span class="hljs-params"><span class="hljs-built_in">byte</span>[] b</span>)</span> =&gt; Convert.ToBase64String(b).TrimEnd(<span class="hljs-string">&#x27;=&#x27;</span>).Replace(<span class="hljs-string">&#x27;+&#x27;</span>, <span class="hljs-string">&#x27;-&#x27;</span>).Replace(<span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-string">&#x27;_&#x27;</span>);
+</code></pre>
+<p>Trong thực tế bạn <strong>không tự cài</strong> luồng này: middleware <code>AddOpenIdConnect</code> (web server-side) hoặc thư viện của SPA (<code>oidc-client-ts</code>, MSAL) làm hộ. Điều bạn cần hiểu là <em>nó làm gì</em> để cấu hình và gỡ lỗi đúng.</p>
+<h3>Các loại token</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Access token</th>
+<th>ID token</th>
+<th>Refresh token</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dành cho</td>
+<td><strong>API</strong> (resource server)</td>
+<td><strong>client</strong> (biết người dùng là ai)</td>
+<td><strong>IdP</strong> (đổi lấy token mới)</td>
+</tr>
+<tr>
+<td>Thời hạn</td>
+<td>ngắn (5–60 phút)</td>
+<td>ngắn</td>
+<td>dài (ngày–tuần), có thể <strong>xoay vòng</strong></td>
+</tr>
+<tr>
+<td>Định dạng</td>
+<td>thường JWT (hoặc opaque)</td>
+<td>luôn JWT</td>
+<td>opaque</td>
+</tr>
+<tr>
+<td>Lưu ở</td>
+<td>bộ nhớ client</td>
+<td>—</td>
+<td>nơi an toàn nhất có thể (BFF/cookie httpOnly)</td>
+</tr>
+</tbody>
+</table>
+<p>Mẫu <strong>BFF (Backend-for-Frontend)</strong>: với SPA, đặt một backend <a href="http://ASP.NET">ASP.NET</a> Core giữ token và trao cho trình duyệt <strong>cookie httpOnly</strong>, thay vì để token trong JavaScript (<code>localStorage</code> bị đánh cắp qua XSS). Blazor Server và MVC vốn đã hoạt động như vậy.</p>
+<h2>API là Resource Server</h2>
+<p>Nhiệm vụ của API rất hẹp: <strong>với mỗi request, quyết định tin token hay không</strong>, rồi dùng claim để phân quyền.</p>
+<pre class="hljs"><code>builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o =&gt;
+    {
+        o.Authority = <span class="hljs-string">&quot;https://login.example.com/realms/kho&quot;</span>;   <span class="hljs-comment">// IdP: tự tải discovery (.well-known/openid-configuration) và JWKS (khoá công khai)</span>
+        o.Audience  = <span class="hljs-string">&quot;kho-api&quot;</span>;                                 <span class="hljs-comment">// token phải DÀNH CHO API này</span>
+        o.MapInboundClaims = <span class="hljs-literal">false</span>;                              <span class="hljs-comment">// giữ tên claim gốc: &quot;sub&quot;, &quot;scope&quot;</span>
+    });
+</code></pre>
+<p><code>Authority</code> làm phần khó: tải <strong>JWKS</strong> (bộ khoá công khai) từ IdP, <strong>cache và tự cập nhật khi IdP xoay khoá</strong>. Với mỗi token, thư viện kiểm tra:</p>
+<ol>
+<li><strong>Chữ ký</strong> đúng khoá của IdP (không thể giả mạo nếu không có khoá riêng).</li>
+<li><strong><code>iss</code></strong> (issuer) là IdP bạn tin.</li>
+<li><strong><code>aud</code></strong> (audience) là API của bạn — chặn dùng token cấp cho API khác.</li>
+<li><strong><code>exp</code>/<code>nbf</code></strong>: còn hạn (có <code>ClockSkew</code> để bù lệch đồng hồ; mặc định 5 phút, nên giảm).</li>
+</ol>
+<p>Chạy code mẫu ở chế độ demo (IdP giả ký bằng khoá đối xứng nhưng vẫn kiểm tra đủ issuer, audience, hạn), kết quả thật:</p>
+<table>
+<thead>
+<tr>
+<th>Tình huống</th>
+<th>Kết quả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Không có token</td>
+<td>401</td>
+</tr>
+<tr>
+<td>Token <code>scope=kho.doc</code> gọi <code>GET</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>Token <code>kho.doc</code> gọi <code>POST</code> (cần <code>kho.ghi</code>)</td>
+<td><strong>403</strong></td>
+</tr>
+<tr>
+<td>Token <code>kho.doc kho.ghi</code> gọi <code>POST</code></td>
+<td>201</td>
+</tr>
+<tr>
+<td><code>DELETE</code> không có role <code>quan-tri</code></td>
+<td>403</td>
+</tr>
+<tr>
+<td><code>DELETE</code> với role <code>quan-tri</code></td>
+<td>204</td>
+</tr>
+<tr>
+<td>Token hết hạn</td>
+<td>401</td>
+</tr>
+<tr>
+<td>Token bị sửa chữ ký</td>
+<td>401</td>
+</tr>
+</tbody>
+</table>
+<p><strong>401</strong> = chưa xác thực được (không/sai token); <strong>403</strong> = biết bạn là ai nhưng không đủ quyền. Đừng nhầm hai mã này.</p>
+<h3>Scope và role</h3>
+<ul>
+<li><strong>Scope</strong>: quyền <strong>ứng dụng client</strong> được người dùng/IdP uỷ quyền (&quot;ứng dụng này được đọc kho&quot;). Nằm trong claim <code>scope</code> (chuỗi cách nhau dấu cách).</li>
+<li><strong>Role/nhóm</strong>: <strong>vai trò của người dùng</strong> trong tổ chức (&quot;quản trị&quot;). Nằm trong claim <code>roles</code>/<code>groups</code>, cấu hình ở IdP.</li>
+</ul>
+<p>Quyền thực sự = <strong>cả hai</strong>: client phải có scope <em>và</em> người dùng phải có vai trò. Trong code:</p>
+<pre class="hljs"><code>builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(<span class="hljs-string">&quot;DocKho&quot;</span>, p =&gt; p.RequireAuthenticatedUser().RequireAssertion(c =&gt; CoScope(c.User, <span class="hljs-string">&quot;kho.doc&quot;</span>)))
+    .AddPolicy(<span class="hljs-string">&quot;QuanTri&quot;</span>, p =&gt; p.RequireRole(<span class="hljs-string">&quot;quan-tri&quot;</span>));
+
+app.MapGet(<span class="hljs-string">&quot;/api/san-pham&quot;</span>, ...).RequireAuthorization(<span class="hljs-string">&quot;DocKho&quot;</span>);
+</code></pre>
+<p>Với dữ liệu theo từng người (ví dụ &quot;chỉ xem đơn của mình&quot;) dùng <strong><code>sub</code></strong> làm khoá chủ sở hữu và kiểm tra <strong>resource-based authorization</strong> (Tập 2, Chương 20). Scope/role không thay thế được kiểm tra &quot;đối tượng này của ai&quot;.</p>
+<h2>Ứng dụng web đăng nhập bằng OIDC</h2>
+<p>Với MVC/Razor Pages/Blazor Server, dùng cookie cho phiên cục bộ và OIDC cho đăng nhập:</p>
+<pre class="hljs"><code>builder.Services.AddAuthentication(o =&gt;
+{
+    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;     <span class="hljs-comment">// chưa đăng nhập -&gt; chuyển tới IdP</span>
+})
+.AddCookie()
+.AddOpenIdConnect(o =&gt;
+{
+    o.Authority = builder.Configuration[<span class="hljs-string">&quot;Oidc:Authority&quot;</span>];
+    o.ClientId = builder.Configuration[<span class="hljs-string">&quot;Oidc:ClientId&quot;</span>];
+    o.ClientSecret = builder.Configuration[<span class="hljs-string">&quot;Oidc:ClientSecret&quot;</span>];               <span class="hljs-comment">// từ user-secrets / biến môi trường / Key Vault, KHÔNG commit</span>
+    o.ResponseType = <span class="hljs-string">&quot;code&quot;</span>;                                                   <span class="hljs-comment">// Authorization Code (PKCE bật mặc định)</span>
+    o.SaveTokens = <span class="hljs-literal">true</span>;                                                       <span class="hljs-comment">// lưu token vào cookie phiên để gọi API thay mặt người dùng</span>
+    o.Scope.Add(<span class="hljs-string">&quot;kho.doc&quot;</span>);
+    o.GetClaimsFromUserInfoEndpoint = <span class="hljs-literal">true</span>;
+});
+</code></pre>
+<p>Web app rồi gọi API bằng <code>HttpClient</code> gắn access token (<code>GetTokenAsync(&quot;access_token&quot;)</code>), hoặc dùng thư viện quản lý làm mới token (<code>Duende.AccessTokenManagement</code>, <code>Microsoft.Identity.Web</code>).</p>
+<h2>Giữa các dịch vụ: client credentials</h2>
+<p>Dịch vụ gọi dịch vụ <strong>không có người dùng</strong>: dùng luồng <strong>Client Credentials</strong> — dịch vụ đổi <code>client_id</code> + <code>client_secret</code> (hoặc chứng chỉ/managed identity) lấy access token với scope máy-với-máy. Trên đám mây ưu tiên <strong>managed identity</strong> (Azure) / <strong>workload identity</strong> (Kubernetes) để không phải quản lý secret.</p>
+<h2>Chọn giải pháp</h2>
+<table>
+<thead>
+<tr>
+<th>Lựa chọn</th>
+<th>Khi nào</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Dịch vụ đám mây</strong> (Microsoft Entra ID / External ID, Auth0, Okta, Cognito...)</td>
+<td>ít vận hành, cần MFA/SSO/nhà cung cấp xã hội, sẵn sàng trả phí</td>
+</tr>
+<tr>
+<td><strong>Keycloak</strong> (mã nguồn mở, tự chạy)</td>
+<td>tự chủ dữ liệu, muốn miễn phí bản quyền, có năng lực vận hành</td>
+</tr>
+<tr>
+<td><strong>Duende IdentityServer / OpenIddict</strong> (framework .NET)</td>
+<td>cần tuỳ biến sâu, đội .NET mạnh (Duende có giấy phép thương mại)</td>
+</tr>
+<tr>
+<td><strong><a href="http://ASP.NET">ASP.NET</a> Core Identity</strong> riêng</td>
+<td>ứng dụng đơn, không cần liên kết nhiều hệ thống</td>
+</tr>
+</tbody>
+</table>
+<p>Nguyên tắc: <strong>đừng tự phát minh giao thức xác thực</strong>, và đừng tự lưu/băm mật khẩu nếu có thể uỷ cho IdP.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Dùng luồng <strong>Implicit</strong>/<strong>Password</strong>; SPA lưu token trong <code>localStorage</code>.</li>
+<li>Không kiểm tra <strong>audience</strong> → token của API khác dùng được.</li>
+<li>Không đặt <code>ClockSkew</code> hợp lý; token sống hàng ngày; không xoay refresh token.</li>
+<li>Quên PKCE cho public client; <code>redirect_uri</code> dùng ký tự đại diện.</li>
+<li><code>MapInboundClaims</code> mặc định đổi tên claim (<code>sub</code> → URI dài) khiến <code>FindFirst(&quot;sub&quot;)</code> trả <code>null</code> — đặt <code>false</code> hoặc dùng đúng tên.</li>
+<li>Chấp nhận token chỉ dựa vào <strong>chữ ký</strong> mà bỏ qua <code>iss</code>/<code>aud</code>; tắt <code>ValidateIssuer</code> &quot;cho nhanh&quot;.</li>
+<li>Nhầm <strong>401 với 403</strong>; phân quyền chỉ bằng role mà bỏ qua kiểm tra quyền sở hữu.</li>
+<li>Commit <code>client_secret</code>; log ra token (token là mật khẩu tạm thời).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Chạy <code>ch12-oidc</code>, lấy token <code>kho.doc</code> rồi giải mã phần payload (base64url) để xem <code>iss</code>, <code>aud</code>, <code>exp</code>, <code>scope</code>. Dùng <code>jwt.io</code> chỉ với <strong>token demo</strong>, không bao giờ dán token thật.</li>
+<li>Thêm policy <code>&quot;DonCuaToi&quot;</code>: endpoint <code>GET /api/don/{maNguoiDung}</code> chỉ cho phép khi <code>sub</code> khớp (hoặc role <code>quan-tri</code>), viết bằng <code>IAuthorizationHandler</code>.</li>
+<li>Chạy <strong>Keycloak</strong> bằng Docker (<code>quay.io/keycloak/keycloak</code>), tạo realm/client/scope <code>kho.doc</code>, đặt <code>Oidc:Authority</code> và lấy token thật từ endpoint <code>/token</code>; gọi API. (Cần Docker — chương này chưa chạy được ở máy tác giả.)</li>
+<li>Thêm test tích hợp cho <code>kho-clean</code> dùng token demo (giữ <code>WebApplicationFactory</code> cấp token cục bộ) để kiểm tra 401/403/200.</li>
+<li>Vẽ luồng Client Credentials của một dịch vụ báo cáo gọi API kho bằng sơ đồ tuần tự.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch11-quan-sat-hieu-nang.html">&larr; 11. Quan sát và hiệu năng</a><a class="nav-next" href="ch13-idempotency-audit.html">13. Idempotency, audit log và bảo vệ dữ liệu &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

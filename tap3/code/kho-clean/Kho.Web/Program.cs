@@ -35,6 +35,7 @@ app.UseMiddleware<Kho.Web.IdempotencyMiddleware>();          // sau exception ha
 
 app.MapHealthChecks("/health");
 app.MapKho();
+app.MapDonHang();
 app.MapGet("/api/nhat-ky", async (KhoDbContext db, CancellationToken ct) =>
     (await db.NhatKy.OrderByDescending(n => n.Id).Take(50).ToListAsync(ct)).Select(n => new { n.Id, n.Luc, n.Nguoi, n.HanhDong, n.DoiTuong, n.Truoc, n.Sau }));
 

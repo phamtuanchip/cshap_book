@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 11 — Quan sát và hiệu năng — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><a class="chapter-link" href="ch09-chien-luoc-kiem-thu.html">9. Chiến lược kiểm thử</a></li><li><a class="chapter-link" href="ch10-caching.html">10. Caching</a></li><li><a class="chapter-link active" href="ch11-quan-sat-hieu-nang.html">11. Quan sát và hiệu năng</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-oidc-oauth2.html">12. OpenID Connect và OAuth 2.0</a></li><li><a class="chapter-link" href="ch13-idempotency-audit.html">13. Idempotency, audit log và bảo vệ dữ liệu</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><a class="chapter-link" href="ch14-docker.html">14. Docker và docker-compose</a></li><li><a class="chapter-link" href="ch15-ci-cd.html">15. CI/CD với GitHub Actions</a></li><li><a class="chapter-link" href="ch16-trien-khai-cloud.html">16. Triển khai lên máy chủ và đám mây</a></li><li><a class="chapter-link" href="ch17-microservices.html">17. Microservices và giao tiếp giữa dịch vụ</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch18-du-an-tong-hop.html">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch19-phu-luc-a-loi-thuong-gap.html">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</a></li><li><a class="chapter-link" href="ch20-phu-luc-b-tai-lieu.html">20. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch21-phu-luc-c-cheat-sheet.html">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 11 — Quan sát và hiệu năng</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>observability</strong> (khả năng quan sát) và ba trụ cột: <strong>logs, metrics, traces</strong>.</li>
+<li>Cấu hình <strong>OpenTelemetry</strong> cho <a href="http://ASP.NET">ASP.NET</a> Core: tracing, metrics, logs, và <strong>truyền ngữ cảnh</strong> giữa các dịch vụ.</li>
+<li>Tự tạo <strong>span</strong> và <strong>metric</strong> nghiệp vụ; phân biệt <strong>liveness</strong> và <strong>readiness</strong> health check.</li>
+<li>Có phương pháp <strong>đo → tìm nút thắt → tối ưu</strong> hiệu năng, kèm danh sách kiểm tra cho EF Core và <a href="http://ASP.NET">ASP.NET</a> Core.</li>
+</ul>
+<p>Code: <a href="code/ch11-quan-sat/"><code>code/ch11-quan-sat/</code></a> — luồng đặt hàng nhiều bước, in trace/metric/log ra console.</p>
+<h2>Từ &quot;giám sát&quot; đến &quot;quan sát&quot;</h2>
+<p><strong>Giám sát (monitoring)</strong> trả lời các câu hỏi <em>đã biết trước</em> (&quot;CPU bao nhiêu? có lỗi không?&quot;). <strong>Quan sát (observability)</strong> cho phép hỏi <em>câu hỏi chưa lường trước</em> (&quot;vì sao đơn hàng của khách X chậm lúc 14:03?&quot;) bằng cách <strong>phát dữ liệu đủ giàu từ bên trong</strong>. Ba trụ cột:</p>
+<table>
+<thead>
+<tr>
+<th>Trụ cột</th>
+<th>Là gì</th>
+<th>Trả lời</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Logs</strong></td>
+<td>sự kiện rời rạc có thời điểm</td>
+<td><em>chuyện gì đã xảy ra?</em></td>
+<td>&quot;Dat hang LT001 that bai: vuot han muc&quot;</td>
+</tr>
+<tr>
+<td><strong>Metrics</strong></td>
+<td>số đo tổng hợp theo thời gian (rẻ, đếm/đo)</td>
+<td><em>hệ thống đang thế nào? xu hướng?</em></td>
+<td>số đơn/giây, p95 độ trễ, tỉ lệ lỗi</td>
+</tr>
+<tr>
+<td><strong>Traces</strong></td>
+<td>đường đi <strong>một request</strong> xuyên qua các thành phần/dịch vụ</td>
+<td><em>thời gian đi đâu? ai gọi ai?</em></td>
+<td>request → <code>KiemTraTon</code> → <code>ThanhToan</code> → dịch vụ ngoài</td>
+</tr>
+</tbody>
+</table>
+<p>Ba thứ <strong>bổ sung nhau</strong>: metric báo <em>có vấn đề</em>, trace chỉ <em>ở đâu</em>, log giải thích <em>vì sao</em>. Chìa khoá: chúng được <strong>liên kết bằng TraceId</strong>.</p>
+<h2>OpenTelemetry</h2>
+<p><strong>OpenTelemetry (OTel)</strong> là chuẩn mở (CNCF) cho việc <strong>tạo và xuất</strong> telemetry, độc lập nhà cung cấp: code của bạn phát dữ liệu theo một chuẩn (OTLP); đích là <strong>Jaeger, Grafana Tempo/Loki/Prometheus, Azure Monitor/Application Insights, Datadog, New Relic, Elastic</strong>... Đổi đích không đổi code ứng dụng. Trong .NET, OTel dựa trên API có sẵn: <strong><code>ActivitySource</code>/<code>Activity</code></strong> (trace), <strong><code>Meter</code></strong> (metrics), <strong><code>ILogger</code></strong> (logs).</p>
+<pre class="hljs"><code>builder.Services.AddOpenTelemetry()
+    .ConfigureResource(r =&gt; r.AddService(<span class="hljs-string">&quot;kho-dat-hang&quot;</span>, serviceVersion: <span class="hljs-string">&quot;1.0.0&quot;</span>))          <span class="hljs-comment">// &quot;ai phát&quot;: tên + phiên bản dịch vụ</span>
+    .WithTracing(t =&gt; t
+        .AddAspNetCoreInstrumentation()                       <span class="hljs-comment">// tự động: span cho mỗi request đến</span>
+        .AddHttpClientInstrumentation()                       <span class="hljs-comment">// tự động: span cho request đi + gắn header traceparent</span>
+        .AddSource(DatHangTelemetry.TenNguon)                 <span class="hljs-comment">// nguồn span TỰ VIẾT</span>
+        .AddConsoleExporter())                                <span class="hljs-comment">// demo. Thực tế: .AddOtlpExporter()</span>
+    .WithMetrics(m =&gt; m
+        .AddAspNetCoreInstrumentation()
+        .AddMeter(DatHangTelemetry.TenNguon)
+        .AddConsoleExporter());
+
+builder.Logging.AddOpenTelemetry(o =&gt; { o.IncludeFormattedMessage = <span class="hljs-literal">true</span>; o.ParseStateValues = <span class="hljs-literal">true</span>; });
+</code></pre>
+<p>Thực tế production: <code>.AddOtlpExporter()</code> gửi tới <strong>OpenTelemetry Collector</strong> (một tiến trình trung gian nhận, xử lý, chuyển tiếp tới nhiều đích); cấu hình endpoint bằng biến môi trường chuẩn <code>OTEL_EXPORTER_OTLP_ENDPOINT</code>, <code>OTEL_SERVICE_NAME</code>. <strong>.NET Aspire</strong> dashboard nhận OTLP sẵn, rất tiện khi phát triển (Chương 17).</p>
+<h2>Trace và span</h2>
+<p>Một <strong>trace</strong> là cây các <strong>span</strong> (mỗi span = một đoạn công việc có bắt đầu/kết thúc/tag). Trace chạy qua <strong>nhiều tiến trình</strong> nhờ header <strong><code>traceparent</code></strong> (chuẩn W3C Trace Context): <code>00-&lt;traceId&gt;-&lt;spanId&gt;-&lt;flags&gt;</code>; <code>HttpClient</code> tự thêm, <a href="http://ASP.NET">ASP.NET</a> Core tự đọc.</p>
+<pre class="mermaid">gantt
+    dateFormat x
+    axisFormat %L
+    section Trace b0fbc416...
+    POST /dat-hang/{ma} (ASP.NET Core)   :0, 100
+    DatHang (span tự viết)               :2, 98
+    KiemTraTon                           :3, 20
+    ThanhToan                            :22, 90
+    POST (HttpClient → ngoài)            :23, 89
+    POST /ngoai/thanh-toan (server bên kia) :25, 70
+</pre>
+<p>Chạy code mẫu, console in <strong>sáu span chung một TraceId</strong> cho một lần đặt hàng: <code>POST /dat-hang/{ma}</code> → <code>DatHang</code> → <code>KiemTraTon</code>, <code>ThanhToan</code> → <code>POST</code> (client) → <code>POST /ngoai/thanh-toan</code> (server). Trong hệ thống nhiều dịch vụ, cửa sổ trace cho thấy <strong>toàn bộ hành trình</strong> và cột nào chậm.</p>
+<h3>Tự tạo span</h3>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">DatHangTelemetry</span> : <span class="hljs-title">IDisposable</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> TenNguon = <span class="hljs-string">&quot;Kho.DatHang&quot;</span>;
+    <span class="hljs-keyword">public</span> ActivitySource Nguon { <span class="hljs-keyword">get</span>; } = <span class="hljs-keyword">new</span>(TenNguon);
+    ...
+}
+
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> span = tele.Nguon.StartActivity(<span class="hljs-string">&quot;DatHang&quot;</span>);            <span class="hljs-comment">// trả null nếu chưa có ai lắng nghe → luôn dùng span?.</span>
+span?.SetTag(<span class="hljs-string">&quot;san_pham.ma&quot;</span>, ma);
+<span class="hljs-keyword">using</span> (tele.Nguon.StartActivity(<span class="hljs-string">&quot;KiemTraTon&quot;</span>)) <span class="hljs-keyword">await</span> Task.Delay(<span class="hljs-number">15</span>);
+
+<span class="hljs-keyword">catch</span> (Exception e)
+{
+    span?.SetStatus(ActivityStatusCode.Error, e.Message);       <span class="hljs-comment">// đánh dấu span LỖI (hiện đỏ trong công cụ trace)</span>
+    span?.AddException(e);
+}
+</code></pre>
+<p>Quy ước: tên span mô tả <strong>thao tác</strong> (không chứa giá trị thay đổi như id — dùng <code>SetTag</code>); tag theo <strong>semantic conventions</strong> của OTel khi có (<code>http.request.method</code>, <code>db.system</code>). <strong>Đừng ghi dữ liệu nhạy cảm</strong> vào tag/log (mật khẩu, token, thông tin cá nhân). Đăng ký <code>AddSource(&quot;Kho.DatHang&quot;)</code> — nếu quên, span tự viết không được xuất.</p>
+<h2>Metrics</h2>
+<pre class="hljs"><code><span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> Meter _meter = <span class="hljs-keyword">new</span>(<span class="hljs-string">&quot;Kho.DatHang&quot;</span>);
+DonHang  = _meter.CreateCounter&lt;<span class="hljs-built_in">long</span>&gt;(<span class="hljs-string">&quot;don_hang_dat&quot;</span>, unit: <span class="hljs-string">&quot;{don}&quot;</span>, description: <span class="hljs-string">&quot;So don hang da xu ly, theo ket qua&quot;</span>);
+ThoiGian = _meter.CreateHistogram&lt;<span class="hljs-built_in">double</span>&gt;(<span class="hljs-string">&quot;thoi_gian_dat_hang&quot;</span>, unit: <span class="hljs-string">&quot;ms&quot;</span>);
+
+tele.DonHang.Add(<span class="hljs-number">1</span>, <span class="hljs-keyword">new</span> KeyValuePair&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">object</span>?&gt;(<span class="hljs-string">&quot;ket_qua&quot;</span>, ketQua));
+tele.ThoiGian.Record(dong.Elapsed.TotalMilliseconds, <span class="hljs-keyword">new</span> KeyValuePair&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">object</span>?&gt;(<span class="hljs-string">&quot;ket_qua&quot;</span>, ketQua));
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Công cụ</th>
+<th>Đo gì</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Counter&lt;T&gt;</code></td>
+<td>đại lượng chỉ tăng (số đơn, số lỗi)</td>
+</tr>
+<tr>
+<td><code>UpDownCounter&lt;T&gt;</code></td>
+<td>tăng/giảm (số kết nối đang mở)</td>
+</tr>
+<tr>
+<td><code>Histogram&lt;T&gt;</code></td>
+<td>phân phối (độ trễ) → tính <strong>p50/p95/p99</strong></td>
+</tr>
+<tr>
+<td><code>ObservableGauge&lt;T&gt;</code></td>
+<td>giá trị tức thời đọc khi cần (dung lượng hàng đợi, bộ nhớ)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nhãn (tag)</strong> cho phép cắt lát (<code>ket_qua=that_bai</code>) nhưng <strong>độ đa dạng (cardinality) phải thấp</strong>: tuyệt đối không gắn <code>UserId</code>/<code>OrderId</code> làm nhãn metric — hàng triệu tổ hợp làm sập hệ thống lưu trữ. Dùng trace/log cho dữ liệu chi tiết từng đơn.</p>
+<p><a href="http://ASP.NET">ASP.NET</a> Core sẵn có metric hạ tầng (<code>http.server.request.duration</code>, số kết nối, <code>kestrel.*</code>) và runtime (<code>dotnet.gc.*</code>, <code>dotnet.thread_pool.*</code>). Bốn &quot;tín hiệu vàng&quot; (Google SRE) nên theo dõi cho mỗi dịch vụ: <strong>độ trễ (latency), lưu lượng (traffic), lỗi (errors), độ bão hoà (saturation)</strong>.</p>
+<h2>Logs kết nối với trace</h2>
+<p>Khi <code>ILogger</code> đi qua OTel, mỗi bản ghi log <strong>tự mang <code>TraceId</code> và <code>SpanId</code></strong> của span hiện tại. Trong công cụ (Grafana/Kibana/App Insights) bạn nhảy từ một dòng log lỗi tới <strong>toàn bộ trace</strong> chứa nó và ngược lại. Kết hợp với <strong>structured logging</strong> (tham số đặt tên — Tập 1, Chương 39) để lọc theo <code>{Ma}</code>, <code>{KetQua}</code>. Trả <code>traceId</code> trong <code>ProblemDetails</code> (Tập 2, Chương 9) để người dùng báo lại và bạn tra ngay.</p>
+<p>Chính sách: mức log theo môi trường; log <strong>sự kiện nghiệp vụ quan trọng</strong> và <strong>lỗi</strong>; lấy mẫu (sampling) trace khi lưu lượng lớn (ví dụ 5–10%, nhưng giữ <strong>100% trace lỗi/chậm</strong> — <em>tail-based sampling</em> ở Collector).</p>
+<h2>Health checks: sống hay sẵn sàng?</h2>
+<pre class="hljs"><code>builder.Services.AddHealthChecks()
+    .AddCheck(<span class="hljs-string">&quot;tien-trinh&quot;</span>, () =&gt; HealthCheckResult.Healthy(), tags: [<span class="hljs-string">&quot;live&quot;</span>])
+    .AddCheck(<span class="hljs-string">&quot;csdl&quot;</span>, () =&gt; HealthCheckResult.Healthy(<span class="hljs-string">&quot;Ket noi CSDL on&quot;</span>), tags: [<span class="hljs-string">&quot;ready&quot;</span>])
+    .AddCheck(<span class="hljs-string">&quot;hang-doi&quot;</span>, () =&gt; HealthCheckResult.Degraded(<span class="hljs-string">&quot;Hang doi dang day&quot;</span>), tags: [<span class="hljs-string">&quot;ready&quot;</span>]);
+
+app.MapHealthChecks(<span class="hljs-string">&quot;/health/live&quot;</span>,  <span class="hljs-keyword">new</span>() { Predicate = c =&gt; c.Tags.Contains(<span class="hljs-string">&quot;live&quot;</span>) });
+app.MapHealthChecks(<span class="hljs-string">&quot;/health/ready&quot;</span>, <span class="hljs-keyword">new</span>() { Predicate = c =&gt; c.Tags.Contains(<span class="hljs-string">&quot;ready&quot;</span>) });
+</code></pre>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Liveness</strong> (<code>/health/live</code>)</th>
+<th><strong>Readiness</strong> (<code>/health/ready</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Câu hỏi</td>
+<td>tiến trình còn <strong>sống</strong> (không treo)?</td>
+<td>sẵn sàng <strong>nhận tải</strong> (phụ thuộc ổn)?</td>
+</tr>
+<tr>
+<td>Kiểm tra</td>
+<td>tối thiểu, <strong>không</strong> chạm phụ thuộc</td>
+<td>CSDL, cache, dịch vụ cần thiết</td>
+</tr>
+<tr>
+<td>Nếu fail</td>
+<td>orchestrator <strong>khởi động lại</strong> container</td>
+<td>load balancer <strong>ngừng gửi lưu lượng</strong> (không restart)</td>
+</tr>
+</tbody>
+</table>
+<p>Sai lầm kinh điển: gắn kiểm tra CSDL vào liveness → CSDL chậm ⇒ orchestrator <strong>restart hàng loạt</strong> dịch vụ khoẻ mạnh, làm sự cố tệ hơn. Kết quả có 3 mức: <code>Healthy</code> (200), <code>Degraded</code> (200 — chạy được nhưng cảnh báo), <code>Unhealthy</code> (503). Thư viện <code>AspNetCore.HealthChecks.*</code> có sẵn kiểm tra SQL Server, PostgreSQL, Redis, RabbitMQ...</p>
+<h2>Hiệu năng: quy trình</h2>
+<blockquote>
+<p>&quot;Premature optimization is the root of all evil&quot; — nhưng đo trước thì không.</p>
+</blockquote>
+<ol>
+<li><strong>Xác định mục tiêu</strong> (SLO): &quot;p95 &lt; 300 ms ở 200 req/s&quot;.</li>
+<li><strong>Đo</strong> ở điều kiện gần thực tế (dữ liệu và tải thật): công cụ tải <strong>k6</strong>, <strong>NBomber</strong>, <code>wrk</code>, <code>bombardier</code>.</li>
+<li><strong>Tìm nút thắt</strong> bằng trace/metric: thời gian đi vào <strong>CSDL? mạng ngoài? CPU? khoá? GC?</strong> Đừng đoán.</li>
+<li><strong>Sửa một thứ</strong>, đo lại, so sánh. Lặp lại.</li>
+<li>Dừng khi đạt mục tiêu.</li>
+</ol>
+<p>Công cụ chẩn đoán .NET: <code>dotnet-counters</code> (metric trực tiếp), <code>dotnet-trace</code> (profile CPU), <code>dotnet-dump</code>/<code>dotnet-gcdump</code> (bộ nhớ), <strong>BenchmarkDotNet</strong> (vi mô: so sánh hai cài đặt một hàm), profiler của Visual Studio/Rider/PerfView.</p>
+<h2>Danh sách kiểm tra hiệu năng (<a href="http://ASP.NET">ASP.NET</a> Core + EF Core)</h2>
+<p><strong>Truy cập dữ liệu (thường là nút thắt số 1):</strong></p>
+<ul>
+<li>Số câu SQL mỗi request là hằng số nhỏ? (không <strong>N+1</strong> — Tập 2, Chương 13)</li>
+<li>Truy vấn đọc dùng <strong>projection</strong> + <code>AsNoTracking</code>; chỉ nạp cột cần; <strong>phân trang</strong> có giới hạn.</li>
+<li>Có <strong>chỉ mục</strong> phù hợp; đọc <code>EXPLAIN</code>/ kế hoạch thực thi; tránh hàm trên cột trong <code>WHERE</code> (làm mất chỉ mục).</li>
+<li><strong>Cập nhật hàng loạt</strong> bằng <code>ExecuteUpdate/Delete</code>; <strong>batch</strong> <code>SaveChanges</code> (EF tự gom); tránh <code>SaveChanges</code> trong vòng lặp.</li>
+<li>Khoá/giao dịch <strong>ngắn</strong>; tránh giữ giao dịch mở khi gọi mạng.</li>
+<li><strong>Compiled queries</strong> cho truy vấn nóng; pooling <code>AddDbContextPool</code>.</li>
+</ul>
+<p><strong>Ứng dụng:</strong></p>
+<ul>
+<li><strong>Async đến tận cùng</strong>; không chặn luồng (<code>.Result</code>); không tạo <code>Task.Run</code> thừa (Tập 1, Chương 33).</li>
+<li><strong>Cache</strong> dữ liệu đọc nhiều (Chương 10); nén response (<code>UseResponseCompression</code>, Brotli).</li>
+<li><code>HttpClient</code> qua factory; giới hạn <strong>kích thước response</strong>, phân trang API; <code>System.Text.Json</code> <strong>source generator</strong> giảm chi phí.</li>
+<li>Tránh cấp phát thừa trong đường nóng (<code>Span&lt;T&gt;</code>, <code>ArrayPool&lt;T&gt;</code>, <code>StringBuilder</code>); nhưng <strong>đo trước</strong> khi làm phức tạp code.</li>
+<li><strong>Thread pool starvation</strong>: nhiều request chặn luồng chờ I/O → dùng async; theo dõi <code>dotnet.thread_pool.queue.length</code>.</li>
+<li><strong>Native AOT/ReadyToRun</strong> cho giảm thời gian khởi động (serverless, container mở rộng nhanh).</li>
+</ul>
+<p><strong>Hạ tầng:</strong> HTTP/2/3, reverse proxy nén và giữ kết nối, CDN cho tài nguyên tĩnh, đặt ứng dụng gần CSDL (độ trễ mạng), kích thước pool kết nối CSDL phù hợp số instance.</p>
+<h2>Cảnh báo và runbook</h2>
+<p>Telemetry vô nghĩa nếu không ai nhìn. <strong>Cảnh báo (alert)</strong> nên bắt <strong>triệu chứng ảnh hưởng người dùng</strong> (tỉ lệ lỗi 5xx &gt; 2% trong 5 phút; p95 &gt; mục tiêu), không phải mọi biến động CPU. Mỗi cảnh báo có <strong>runbook</strong>: kiểm tra gì, ai xử lý, cách khắc phục. Sau sự cố làm <strong>post-mortem không đổ lỗi</strong>, sửa gốc rễ và thêm telemetry/cảnh báo còn thiếu.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Quên <code>AddSource</code>/<code>AddMeter</code> cho nguồn tự viết → span/metric không xuất hiện.</li>
+<li><code>StartActivity</code> trả <code>null</code> (chưa có listener) mà gọi <code>.SetTag</code> không dùng <code>?.</code>.</li>
+<li>Nhãn metric có cardinality cao (<code>UserId</code>, đường dẫn với id).</li>
+<li>Log/tag chứa dữ liệu nhạy cảm; log ở mức <code>Debug</code> trong production.</li>
+<li>Gắn kiểm tra phụ thuộc vào <strong>liveness</strong> → restart dây chuyền.</li>
+<li>Ghi telemetry đồng bộ chặn request; không cấu hình sampling khi lưu lượng lớn.</li>
+<li>Tối ưu theo cảm tính, không đo; hoặc đo trên máy dev với dữ liệu nhỏ.</li>
+<li>Cảnh báo quá nhiều (&quot;mù cảnh báo&quot;) hoặc không có runbook.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm <code>UpDownCounter</code> &quot;so_don_dang_xu_ly&quot; (tăng khi vào, giảm khi ra) vào luồng đặt hàng và quan sát khi bắn tải song song.</li>
+<li>Cấu hình <code>AddOtlpExporter()</code> và chạy <strong>.NET Aspire dashboard</strong> hoặc Jaeger (Docker) để xem trace dạng đồ thị.</li>
+<li>Viết <code>DelegatingHandler</code> thêm header <code>X-Correlation-Id</code> = <code>Activity.Current.TraceId</code> cho <code>HttpClient</code> (và giải thích vì sao <code>traceparent</code> thường đã đủ).</li>
+<li>Dùng k6 bắn 200 req/s vào <code>/dat-hang</code> và đọc histogram <code>thoi_gian_dat_hang</code>; tính p95.</li>
+<li>Thêm health check &quot;ready&quot; thật kiểm tra kết nối SQLite của <code>kho-clean</code> (dùng <code>CanConnectAsync</code>) và một check <code>Degraded</code> khi outbox chờ &gt; 100 dòng.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch10-caching.html">&larr; 10. Caching</a><a class="nav-next" href="ch12-oidc-oauth2.html">12. OpenID Connect và OAuth 2.0 &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 17 — Microservices và giao tiếp giữa dịch vụ — C# và ASP.NET Core — Tập 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 3</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Kiến trúc</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-kien-truc-phan-lop.html">1. Từ khối đơn nhất đến kiến trúc phân lớp</a></li><li><a class="chapter-link" href="ch02-clean-architecture.html">2. Clean Architecture thực hành</a></li><li><a class="chapter-link" href="ch03-domain-modeling.html">3. Mô hình hoá miền (DDD cơ bản)</a></li><li><a class="chapter-link" href="ch04-repository-specification.html">4. Repository, Unit of Work và Specification</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Mẫu thiết kế nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-cqrs-mediator.html">5. CQRS và Mediator</a></li><li><a class="chapter-link" href="ch06-pipeline-behavior.html">6. Pipeline behavior: validation, logging, transaction</a></li><li><a class="chapter-link" href="ch07-result-validation.html">7. Result pattern và validation</a></li><li><a class="chapter-link" href="ch08-su-kien-outbox.html">8. Sự kiện miền, xử lý nền và Outbox</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Chất lượng vận hành</div><ul class="chapter-list"><li><a class="chapter-link" href="ch09-chien-luoc-kiem-thu.html">9. Chiến lược kiểm thử</a></li><li><a class="chapter-link" href="ch10-caching.html">10. Caching</a></li><li><a class="chapter-link" href="ch11-quan-sat-hieu-nang.html">11. Quan sát và hiệu năng</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Bảo mật nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-oidc-oauth2.html">12. OpenID Connect và OAuth 2.0</a></li><li><a class="chapter-link" href="ch13-idempotency-audit.html">13. Idempotency, audit log và bảo vệ dữ liệu</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Đóng gói và triển khai</div><ul class="chapter-list"><li><a class="chapter-link" href="ch14-docker.html">14. Docker và docker-compose</a></li><li><a class="chapter-link" href="ch15-ci-cd.html">15. CI/CD với GitHub Actions</a></li><li><a class="chapter-link" href="ch16-trien-khai-cloud.html">16. Triển khai lên máy chủ và đám mây</a></li><li><a class="chapter-link active" href="ch17-microservices.html">17. Microservices và giao tiếp giữa dịch vụ</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch18-du-an-tong-hop.html">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch19-phu-luc-a-loi-thuong-gap.html">19. Phụ lục A — Lỗi và bẫy kiến trúc thường gặp</a></li><li><a class="chapter-link" href="ch20-phu-luc-b-tai-lieu.html">20. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch21-phu-luc-c-cheat-sheet.html">21. Phụ lục C — Cheat sheet kiến trúc và triển khai</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 17 — Microservices và giao tiếp giữa dịch vụ</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>microservices</strong> là gì, cái giá của nó, và <strong>khi nào KHÔNG nên dùng</strong> (đa số dự án nên bắt đầu bằng <strong>modular monolith</strong>).</li>
+<li>Xác định <strong>ranh giới dịch vụ</strong> theo bounded context; hiểu nguyên tắc <strong>mỗi dịch vụ sở hữu dữ liệu của mình</strong>.</li>
+<li>Chọn cách giao tiếp: <strong>đồng bộ</strong> (HTTP/gRPC) hay <strong>bất đồng bộ</strong> (thông điệp/sự kiện qua broker); nắm <strong>saga</strong> thay cho giao dịch phân tán.</li>
+<li>Biết các thành phần nền: <strong>API gateway (YARP)</strong>, service discovery, resilience, quan sát phân tán, <strong>.NET Aspire</strong>.</li>
+</ul>
+<blockquote>
+<p><strong>Lưu ý trung thực:</strong> chương này thiên về <strong>tư duy thiết kế</strong> và mẫu mã ngắn theo tài liệu chính thức; dự án của sách (<code>kho-clean</code>) cố ý là <strong>một monolith có mô-đun rõ ràng</strong>, và các đoạn YARP/gRPC/MassTransit dưới đây <strong>chưa được chạy</strong> ở máy tác giả. Mục đích là giúp bạn đưa ra quyết định sáng suốt, không phải bán microservices.</p>
+</blockquote>
+<h2>Monolith, modular monolith, microservices</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Monolith &quot;spaghetti&quot;</th>
+<th><strong>Modular monolith</strong></th>
+<th><strong>Microservices</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Triển khai</td>
+<td>một khối</td>
+<td><strong>một khối</strong></td>
+<td>nhiều dịch vụ độc lập</td>
+</tr>
+<tr>
+<td>Ranh giới</td>
+<td>không rõ</td>
+<td><strong>rõ ràng trong mã</strong> (mô-đun/assembly, chỉ giao tiếp qua hợp đồng)</td>
+<td>rõ ràng, <strong>ép bởi mạng</strong></td>
+</tr>
+<tr>
+<td>Dữ liệu</td>
+<td>một CSDL, ai cũng đụng</td>
+<td>một CSDL, <strong>mỗi mô-đun một schema/bảng riêng</strong></td>
+<td><strong>mỗi dịch vụ một CSDL</strong></td>
+</tr>
+<tr>
+<td>Độ phức tạp vận hành</td>
+<td>thấp</td>
+<td>thấp</td>
+<td><strong>cao</strong></td>
+</tr>
+<tr>
+<td>Đội</td>
+<td>nhỏ</td>
+<td>nhỏ–vừa</td>
+<td>nhiều đội độc lập</td>
+</tr>
+</tbody>
+</table>
+<p>Cấu trúc ở Chương 1–2 (Clean Architecture + ranh giới rõ) chính là bước đầu của <strong>modular monolith</strong>: nếu ranh giới giữa các mô-đun đã sạch, việc <strong>tách thành dịch vụ khi thực sự cần</strong> sau này chỉ là chuyện di chuyển, không phải viết lại. Ngược lại, chia nhỏ quá sớm khi ranh giới chưa hiểu rõ tạo ra <strong>&quot;distributed monolith&quot;</strong> — tệ nhất của cả hai thế giới: chậm, dễ hỏng, khó thay đổi như monolith nhưng vận hành phức tạp như microservices.</p>
+<h3>Microservices mang lại gì — và giá phải trả</h3>
+<p><strong>Lợi ích:</strong> đội triển khai độc lập, mở rộng từng phần theo tải, chọn công nghệ riêng cho từng dịch vụ, cô lập lỗi (một dịch vụ chết không nhất thiết kéo cả hệ thống).</p>
+<p><strong>Cái giá (đừng xem nhẹ):</strong></p>
+<ul>
+<li><strong>Mạng không đáng tin</strong>: mọi lời gọi có thể chậm/lỗi/trùng (Chương 13 idempotency; Tập 2 Chương 19 resilience). Cái từng là lời gọi hàm nay là lời gọi mạng.</li>
+<li><strong>Nhất quán dữ liệu</strong>: không còn giao dịch ACID xuyên dịch vụ → saga, nhất quán cuối cùng.</li>
+<li><strong>Vận hành</strong>: mỗi dịch vụ cần CI/CD, giám sát, cấu hình, bảo mật, phiên bản riêng. Cần đội nền tảng.</li>
+<li><strong>Gỡ lỗi</strong>: một request đi qua chục dịch vụ → bắt buộc có <strong>trace phân tán</strong> (Chương 11).</li>
+<li><strong>Kiểm thử</strong>: test tích hợp/hợp đồng phức tạp hơn nhiều.</li>
+<li><strong>Thay đổi xuyên dịch vụ</strong> đắt: sửa hợp đồng cần phối hợp nhiều đội.</li>
+</ul>
+<p><strong>Quy tắc kinh nghiệm:</strong> <em>đừng dùng microservices trừ khi bạn có vấn đề mà nó giải quyết</em> — nhiều đội cần triển khai độc lập, các phần có nhu cầu mở rộng rất khác nhau, hoặc ranh giới miền đã ổn định và được hiểu rõ. Đội nhỏ/sản phẩm mới: <strong>modular monolith trước</strong>.</p>
+<h2>Xác định ranh giới: bounded context</h2>
+<p>Dùng <strong>bounded context</strong> của DDD (Chương 3): mỗi ngữ cảnh có mô hình và ngôn ngữ riêng. Ví dụ hệ thống thương mại: <strong>Danh mục</strong> (sản phẩm, giá), <strong>Kho</strong> (tồn, nhập/xuất), <strong>Đặt hàng</strong>, <strong>Thanh toán</strong>, <strong>Giao hàng</strong>, <strong>Khách hàng</strong>. Chữ &quot;Sản phẩm&quot; trong Kho (mã, tồn, vị trí) khác &quot;Sản phẩm&quot; trong Danh mục (mô tả, ảnh, giá). Đó là dấu hiệu ranh giới.</p>
+<p>Tiêu chí ranh giới tốt:</p>
+<ul>
+<li><strong>Gắn kết cao</strong> bên trong, <strong>liên kết lỏng</strong> giữa các dịch vụ.</li>
+<li>Một thay đổi nghiệp vụ thường chỉ chạm <strong>một</strong> dịch vụ.</li>
+<li>Sở hữu <strong>dữ liệu của chính mình</strong>; dịch vụ khác <strong>không truy cập thẳng CSDL</strong> của nó — chỉ qua API/sự kiện.</li>
+<li>Khớp cấu trúc đội (định luật Conway).</li>
+</ul>
+<p>Dấu hiệu chia sai: hai dịch vụ luôn phải đổi cùng nhau; một hành động người dùng cần 8 lời gọi đồng bộ nối đuôi; dịch vụ dùng chung một bảng.</p>
+<h2>Giao tiếp giữa các dịch vụ</h2>
+<h3>Đồng bộ: yêu cầu/đáp ứng</h3>
+<p><strong>HTTP/REST (JSON)</strong> — quen thuộc, dễ gỡ lỗi, tương thích rộng. <strong>gRPC</strong> — nhị phân (Protocol Buffers) trên HTTP/2: nhanh, hợp đồng chặt (<code>.proto</code>), sinh mã client/server, hỗ trợ streaming; tốt cho <strong>gọi nội bộ giữa dịch vụ</strong>, khó dùng trực tiếp từ trình duyệt.</p>
+<pre class="hljs"><code><span class="hljs-comment">// kho.proto — hợp đồng là nguồn sự thật, sinh mã C# cho cả hai phía</span>
+<span class="hljs-keyword">service </span><span class="hljs-title class_">KhoService</span> {
+  <span class="hljs-function"><span class="hljs-keyword">rpc</span> LayTon (LayTonRequest) <span class="hljs-keyword">returns</span> (LayTonReply)</span>;
+}
+<span class="hljs-keyword">message </span><span class="hljs-title class_">LayTonRequest</span> { <span class="hljs-type">string</span> ma = <span class="hljs-number">1</span>; }
+<span class="hljs-keyword">message </span><span class="hljs-title class_">LayTonReply</span>   { <span class="hljs-type">int32</span> ton = <span class="hljs-number">1</span>; }
+</code></pre>
+<p>Cách gọi đồng bộ tạo <strong>ghép nối tạm thời (temporal coupling)</strong>: dịch vụ A chỉ chạy khi B đang chạy. Chuỗi A→B→C nhân độ trễ và <strong>nhân xác suất lỗi</strong> (ba dịch vụ 99,9% → còn ≈ 99,7%). Bắt buộc có: <strong>timeout, retry có backoff + jitter, circuit breaker, bulkhead</strong> (<code>Microsoft.Extensions.Http.Resilience</code> — Tập 2, Chương 19) và <strong>idempotency</strong> cho lời gọi ghi.</p>
+<h3>Bất đồng bộ: thông điệp và sự kiện</h3>
+<p>Dịch vụ giao tiếp qua <strong>message broker</strong> (RabbitMQ, Azure Service Bus, Kafka, AWS SQS/SNS). Người gửi không chờ; người nhận xử lý khi sẵn sàng.</p>
+<table>
+<thead>
+<tr>
+<th>Loại</th>
+<th>Ý nghĩa</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Lệnh (command)</strong></td>
+<td>&quot;hãy làm X&quot; — gửi tới <strong>một</strong> người nhận</td>
+<td><code>TruTonKho</code></td>
+</tr>
+<tr>
+<td><strong>Sự kiện (event)</strong></td>
+<td>&quot;X đã xảy ra&quot; — <strong>nhiều</strong> người có thể quan tâm; người gửi không biết ai nghe</td>
+<td><code>DonHangDaDat</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sự kiện</strong> giảm ghép nối nhất: dịch vụ Đặt hàng phát <code>DonHangDaDat</code>; Kho, Thanh toán, Thông báo tự đăng ký lắng nghe — thêm người nghe mới <strong>không sửa</strong> dịch vụ Đặt hàng. Đây là hướng đi của <strong>sự kiện tích hợp (integration event)</strong>, phát qua <strong>Transactional Outbox</strong> (Chương 8) để không mất và không phát khi giao dịch thất bại.</p>
+<p>Kèm theo là các sự thật cần chấp nhận:</p>
+<ul>
+<li>Giao <strong>ít nhất một lần</strong> → người nhận phải <strong>idempotent</strong> (inbox/khoá duy nhất — Chương 13).</li>
+<li><strong>Thứ tự</strong> không đảm bảo toàn cục (Kafka đảm bảo theo partition/khoá; Service Bus theo session).</li>
+<li><strong>Nhất quán cuối cùng</strong>: dữ liệu ở dịch vụ khác cập nhật sau một khoảng trễ → giao diện/nghiệp vụ phải chịu được.</li>
+<li><strong>Thư chết (dead-letter queue)</strong> cho thông điệp xử lý mãi không được; cảnh báo và quy trình xử lý.</li>
+<li>Phiên bản hoá hợp đồng sự kiện (thêm trường tương thích, không đổi nghĩa trường cũ).</li>
+</ul>
+<p>Thư viện .NET: <strong>MassTransit</strong>, <strong>Wolverine</strong>, <strong>NServiceBus</strong> (thương mại), hoặc SDK gốc của broker (<code>Azure.Messaging.ServiceBus</code>, <code>RabbitMQ.Client</code>). Ví dụ MassTransit (theo tài liệu):</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">record</span> <span class="hljs-title">DonHangDaDat</span>(<span class="hljs-params">Guid DonHangId, <span class="hljs-built_in">string</span> MaSanPham, <span class="hljs-built_in">int</span> SoLuong</span>)</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">DonHangDaDatConsumer</span>(<span class="hljs-params">IKhoService kho</span>) : IConsumer&lt;DonHangDaDat&gt;</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">Consume</span>(<span class="hljs-params">ConsumeContext&lt;DonHangDaDat&gt; ctx</span>)</span>
+        =&gt; <span class="hljs-keyword">await</span> kho.TruTonAsync(ctx.Message.MaSanPham, ctx.Message.SoLuong, ctx.MessageId!.Value);   <span class="hljs-comment">// idempotent theo MessageId</span>
+}
+
+services.AddMassTransit(x =&gt;
+{
+    x.AddConsumer&lt;DonHangDaDatConsumer&gt;();
+    x.UsingRabbitMq((ctx, cfg) =&gt; { cfg.Host(<span class="hljs-string">&quot;rabbitmq&quot;</span>); cfg.ConfigureEndpoints(ctx); });
+});
+</code></pre>
+<p><strong>Chọn đồng bộ hay bất đồng bộ?</strong> <em>Truy vấn cần câu trả lời ngay</em> (xem giá hiện tại) → đồng bộ. <em>Thông báo một việc đã xảy ra / cần làm mà người dùng không chờ</em> → bất đồng bộ. Thường kết hợp cả hai; ưu tiên bất đồng bộ để giảm ghép nối cho luồng nghiệp vụ chính.</p>
+<h2>Dữ liệu và giao dịch phân tán</h2>
+<p><strong>Mỗi dịch vụ một CSDL</strong> nghĩa là <strong>không còn <code>JOIN</code> xuyên dịch vụ</strong> và <strong>không còn một giao dịch cho toàn nghiệp vụ</strong>. Hệ quả và cách xử lý:</p>
+<ul>
+<li><strong>Đọc dữ liệu của dịch vụ khác</strong>: gọi API; hoặc <strong>sao chép cục bộ</strong> bản chiếu chỉ đọc (read model) cập nhật bằng sự kiện (ví dụ Đặt hàng giữ bản sao tên/giá sản phẩm tại thời điểm đặt).</li>
+<li><strong>Nghiệp vụ nhiều bước</strong> → <strong>Saga</strong>: chuỗi giao dịch cục bộ, mỗi bước có <strong>hành động bù trừ (compensation)</strong> nếu bước sau thất bại.</li>
+</ul>
+<h3>Saga: đặt hàng</h3>
+<pre class="mermaid">sequenceDiagram
+    participant D as Đặt hàng
+    participant K as Kho
+    participant T as Thanh toán
+    D-&gt;&gt;D: tạo đơn (trạng thái Chờ)
+    D-&gt;&gt;K: [sự kiện] DonHangDaDat
+    K-&gt;&gt;K: giữ tồn
+    K--&gt;&gt;D: [sự kiện] TonDaGiu
+    D-&gt;&gt;T: [lệnh] ThanhToan
+    T--&gt;&gt;D: [sự kiện] ThanhToanThatBai
+    D-&gt;&gt;K: [lệnh bù] HuyGiuTon
+    K-&gt;&gt;K: trả tồn
+    D-&gt;&gt;D: đơn → Đã huỷ
+</pre>
+<p>Hai kiểu điều phối:</p>
+<ul>
+<li><strong>Choreography</strong> (tự phối hợp): mỗi dịch vụ nghe sự kiện và tự phản ứng; không có trung tâm. Đơn giản với ít bước, khó theo dõi khi nhiều bước.</li>
+<li><strong>Orchestration</strong> (nhạc trưởng): một <strong>state machine/saga orchestrator</strong> ra lệnh từng bước và quản lý bù trừ (MassTransit <em>state machine</em>, Wolverine, Temporal, Durable Functions). Dễ hiểu luồng hơn, có điểm tập trung.</li>
+</ul>
+<p>Hành động bù trừ <strong>không phải &quot;hoàn tác&quot;</strong>: gửi email rồi không thu hồi được; bù trừ là hành động nghiệp vụ mới (gửi email đính chính). Thiết kế trạng thái trung gian (<code>Chờ</code>, <code>DangGiuTon</code>) hiển thị được cho người dùng.</p>
+<h2>API Gateway và BFF</h2>
+<p>Client không nên gọi trực tiếp hàng chục dịch vụ. <strong>API Gateway</strong> là điểm vào duy nhất: định tuyến, xác thực, giới hạn tốc độ, gộp/chuyển đổi, TLS. Trong .NET dùng <strong>YARP</strong> (Yet Another Reverse Proxy, của Microsoft):</p>
+<pre class="hljs"><code>builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection(<span class="hljs-string">&quot;ReverseProxy&quot;</span>));
+app.MapReverseProxy();
+</code></pre>
+<pre class="hljs"><code><span class="hljs-attr">&quot;ReverseProxy&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;Routes&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;kho&quot;</span><span class="hljs-punctuation">:</span>   <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;ClusterId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;kho&quot;</span><span class="hljs-punctuation">,</span>   <span class="hljs-attr">&quot;Match&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;Path&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/api/kho/{**catch-all}&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>   <span class="hljs-attr">&quot;Transforms&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;PathRemovePrefix&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/api/kho&quot;</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">]</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;don&quot;</span><span class="hljs-punctuation">:</span>   <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;ClusterId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;don&quot;</span><span class="hljs-punctuation">,</span>   <span class="hljs-attr">&quot;Match&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;Path&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/api/don/{**catch-all}&quot;</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>   <span class="hljs-attr">&quot;Transforms&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;PathRemovePrefix&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/api/don&quot;</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">]</span> <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;Clusters&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;kho&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;Destinations&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;d1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;Address&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http://kho-web:8080/&quot;</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;don&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;Destinations&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;d1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;Address&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http://don-web:8080/&quot;</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><strong>BFF (Backend-for-Frontend)</strong>: một gateway/backend riêng cho <strong>từng loại client</strong> (web, mobile) gộp dữ liệu phù hợp màn hình đó (giảm số lời gọi của client) và giữ token an toàn (Chương 12). Đừng nhồi nghiệp vụ vào gateway — nó chỉ là &quot;ống dẫn thông minh&quot;.</p>
+<h2>Các mối quan tâm xuyên suốt</h2>
+<ul>
+<li><strong>Service discovery</strong>: dịch vụ tìm nhau bằng <strong>tên</strong> (DNS của compose/Kubernetes; <code>Microsoft.Extensions.ServiceDiscovery</code>), không hard-code địa chỉ IP.</li>
+<li><strong>Cấu hình và secret tập trung</strong> (Chương 16).</li>
+<li><strong>Xác thực giữa dịch vụ</strong>: token dịch vụ (client credentials — Chương 12), mTLS trong service mesh; <strong>không tin</strong> mạng nội bộ chỉ vì &quot;bên trong&quot; (zero trust).</li>
+<li><strong>Quan sát phân tán</strong>: propagation <code>traceparent</code>, correlation, metric theo dịch vụ, dashboard, cảnh báo (Chương 11). Không có nó, microservices là &quot;hộp đen&quot;.</li>
+<li><strong>Hợp đồng và kiểm thử</strong>: <strong>consumer-driven contract test</strong> (Pact) — bên tiêu thụ khai báo kỳ vọng, bên cung cấp kiểm tra được; test tích hợp trong CI với các thành phần thật (Testcontainers).</li>
+<li><strong>Phiên bản hoá API</strong>: <code>Asp.Versioning</code>; tương thích ngược; loại bỏ dần (deprecation).</li>
+<li><strong>Chống lỗi dây chuyền</strong>: timeout ngắn, circuit breaker, bulkhead, <em>load shedding</em>, hạ cấp có kiểm soát (degrade).</li>
+</ul>
+<h2>.NET Aspire</h2>
+<p><strong>.NET Aspire</strong> là bộ công cụ/khung của Microsoft cho ứng dụng <strong>phân tán, &quot;cloud-native&quot;</strong>: khai báo cả hệ thống (dịch vụ, CSDL, cache, broker) trong <strong>một dự án <code>AppHost</code> bằng C#</strong>, tự cấu hình <strong>service discovery</strong>, <strong>health check</strong>, <strong>OpenTelemetry</strong> (dashboard xem log/trace/metric cục bộ), khởi chạy container phụ thuộc, rồi xuất manifest để triển khai (Container Apps, Kubernetes). Phù hợp để phát triển và chạy thử nhiều dịch vụ trên máy dev mà không phải viết compose bằng tay:</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> builder = DistributedApplication.CreateBuilder(<span class="hljs-keyword">args</span>);
+<span class="hljs-keyword">var</span> csdl = builder.AddPostgres(<span class="hljs-string">&quot;csdl&quot;</span>).AddDatabase(<span class="hljs-string">&quot;kho&quot;</span>);
+<span class="hljs-keyword">var</span> kho  = builder.AddProject&lt;Projects.Kho_Web&gt;(<span class="hljs-string">&quot;kho-web&quot;</span>).WithReference(csdl);
+builder.AddProject&lt;Projects.Don_Web&gt;(<span class="hljs-string">&quot;don-web&quot;</span>).WithReference(kho);
+builder.Build().Run();
+</code></pre>
+<p>(Mã minh hoạ theo tài liệu; Aspire tiến hoá nhanh, xem tài liệu phiên bản hiện hành.)</p>
+<h2>Con đường thực tế: từ monolith tới dịch vụ</h2>
+<ol>
+<li>Bắt đầu <strong>modular monolith</strong> với ranh giới sạch (mô-đun giao tiếp qua giao diện/sự kiện nội bộ; <strong>kiểm tra bằng architecture test</strong> như Chương 1 và 9).</li>
+<li>Đo, tìm phần <strong>thực sự</strong> cần độc lập (mở rộng khác biệt, đội riêng, nhịp phát hành riêng).</li>
+<li><strong>Strangler Fig</strong>: dựng dịch vụ mới bên cạnh, dùng gateway chuyển dần lưu lượng từng chức năng, gỡ phần cũ khi xong.</li>
+<li>Tách <strong>dữ liệu</strong> trước rồi mới tách <strong>mã</strong> (khó nhất là dữ liệu).</li>
+<li>Đầu tư <strong>nền tảng</strong> (CI/CD, quan sát, cấu hình) <strong>trước</strong> khi có nhiều dịch vụ.</li>
+</ol>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><strong>Distributed monolith</strong>: dịch vụ gọi nhau đồng bộ theo chuỗi, chung CSDL, phải triển khai cùng nhau.</li>
+<li>Chia theo <strong>tầng kỹ thuật</strong> (dịch vụ &quot;Controller&quot;, &quot;Repository&quot;) thay vì theo <strong>nghiệp vụ</strong>.</li>
+<li>Chia quá nhỏ (&quot;nano-service&quot;) khi đội chỉ có vài người.</li>
+<li>Dùng chung CSDL/bảng giữa các dịch vụ; truy cập thẳng bảng của dịch vụ khác.</li>
+<li>Không xử lý trùng/thất bại khi dùng thông điệp; không có dead-letter; mất/không phát sự kiện vì thiếu outbox.</li>
+<li>Cố duy trì giao dịch ACID phân tán (2PC) xuyên dịch vụ.</li>
+<li>Không có trace phân tán/giám sát; gỡ lỗi bằng cách &quot;SSH vào từng máy&quot;.</li>
+<li>Coi microservices là mục tiêu thay vì phương tiện; theo thời thượng khi chưa có nhu cầu.</li>
+<li>Thiếu phiên bản hoá hợp đồng → sửa một dịch vụ phá vỡ các dịch vụ khác.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Vẽ bounded context và bản đồ ngữ cảnh (context map) cho hệ thống bán hàng gồm Danh mục, Kho, Đặt hàng, Thanh toán, Giao hàng; ghi rõ <strong>sự kiện</strong> giữa các ngữ cảnh.</li>
+<li>Trong <code>kho-clean</code>, xác định các &quot;điểm nối&quot; nếu sau này tách Kho thành dịch vụ: giao diện nào đã sẵn (<code>ISanPhamRepository</code>, sự kiện outbox <code>TonKhoThayDoi</code>)? Cái gì còn thiếu?</li>
+<li>Thiết kế saga đặt hàng: liệt kê trạng thái, sự kiện, lệnh và <strong>hành động bù trừ</strong> cho từng lỗi có thể (hết hàng, thanh toán thất bại, giao hàng lỗi). So sánh choreography với orchestration.</li>
+<li>Tính xác suất khả dụng của chuỗi 4 dịch vụ mỗi cái 99,9%; giải thích vì sao gọi bất đồng bộ cải thiện được.</li>
+<li>Viết cấu hình YARP cho hai dịch vụ giả (chạy hai bản <code>kho-clean</code> ở hai cổng) và xác minh định tuyến theo tiền tố đường dẫn.</li>
+<li>(Nâng cao) Thêm <strong>MassTransit + RabbitMQ</strong> (Docker) vào <code>kho-clean</code>: <code>OutboxProcessor</code> phát <code>TonKhoThayDoi</code> lên RabbitMQ, một consumer console in ra và xử lý idempotent.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch16-trien-khai-cloud.html">&larr; 16. Triển khai lên máy chủ và đám mây</a><a class="nav-next" href="ch18-du-an-tong-hop.html">18. Dự án tổng hợp Tập 3: Hệ thống đặt hàng &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

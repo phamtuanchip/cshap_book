@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kho.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(KhoDbContext))]
-    [Migration("20260920145840_KhoiTao")]
+    [Migration("20260920151213_KhoiTao")]
     partial class KhoiTao
     {
         /// <inheritdoc />
@@ -19,6 +19,41 @@ namespace Kho.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
+
+            modelBuilder.Entity("Kho.Domain.DonHangs.DonHang", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("DatLuc")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("KhachHang")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Ma")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("TongTien")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Ma")
+                        .IsUnique();
+
+                    b.ToTable("don_hang", (string)null);
+                });
 
             modelBuilder.Entity("Kho.Domain.SanPhams.SanPham", b =>
                 {
@@ -192,6 +227,41 @@ namespace Kho.Infrastructure.Persistence.Migrations
                     b.ToTable("SanPhamDocs");
 
                     b.ToSqlQuery("SELECT Id, Ma, Ten, Nhom, DonGia, TonKho, MucCanhBao FROM san_pham");
+                });
+
+            modelBuilder.Entity("Kho.Domain.DonHangs.DonHang", b =>
+                {
+                    b.OwnsMany("Kho.Domain.DonHangs.DongDon", "Dong", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<double>("DonGia")
+                                .HasColumnType("REAL");
+
+                            b1.Property<int>("DonHangId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("MaSanPham")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("TEXT");
+
+                            b1.Property<int>("SoLuong")
+                                .HasColumnType("INTEGER");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("DonHangId");
+
+                            b1.ToTable("dong_don_hang", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("DonHangId");
+                        });
+
+                    b.Navigation("Dong");
                 });
 #pragma warning restore 612, 618
         }

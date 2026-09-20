@@ -17,6 +17,41 @@ namespace Kho.Infrastructure.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
 
+            modelBuilder.Entity("Kho.Domain.DonHangs.DonHang", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("DatLuc")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("KhachHang")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Ma")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("TongTien")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Ma")
+                        .IsUnique();
+
+                    b.ToTable("don_hang", (string)null);
+                });
+
             modelBuilder.Entity("Kho.Domain.SanPhams.SanPham", b =>
                 {
                     b.Property<int>("Id")
@@ -59,6 +94,71 @@ namespace Kho.Infrastructure.Persistence.Migrations
 
                             t.HasCheckConstraint("ck_ton_khong_am", "TonKho >= 0");
                         });
+                });
+
+            modelBuilder.Entity("Kho.Infrastructure.Persistence.IdempotencyRecord", b =>
+                {
+                    b.Property<string>("Khoa")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DauVan")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LoaiNoiDung")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MaTrangThai")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("NoiDung")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("TaoLucMs")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Khoa");
+
+                    b.ToTable("idempotency", (string)null);
+                });
+
+            modelBuilder.Entity("Kho.Infrastructure.Persistence.NhatKyKiemToan", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("DoiTuong")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HanhDong")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("Luc")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Nguoi")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Sau")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Truoc")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Luc");
+
+                    b.ToTable("nhat_ky_kiem_toan", (string)null);
                 });
 
             modelBuilder.Entity("Kho.Infrastructure.Persistence.OutboxMessage", b =>
@@ -124,6 +224,41 @@ namespace Kho.Infrastructure.Persistence.Migrations
                     b.ToTable("SanPhamDocs");
 
                     b.ToSqlQuery("SELECT Id, Ma, Ten, Nhom, DonGia, TonKho, MucCanhBao FROM san_pham");
+                });
+
+            modelBuilder.Entity("Kho.Domain.DonHangs.DonHang", b =>
+                {
+                    b.OwnsMany("Kho.Domain.DonHangs.DongDon", "Dong", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<double>("DonGia")
+                                .HasColumnType("REAL");
+
+                            b1.Property<int>("DonHangId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("MaSanPham")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("TEXT");
+
+                            b1.Property<int>("SoLuong")
+                                .HasColumnType("INTEGER");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("DonHangId");
+
+                            b1.ToTable("dong_don_hang", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("DonHangId");
+                        });
+
+                    b.Navigation("Dong");
                 });
 #pragma warning restore 612, 618
         }
