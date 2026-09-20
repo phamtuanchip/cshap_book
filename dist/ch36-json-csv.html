@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 36 — JSON và CSV — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch31-delegate-event-lambda.html">31. Delegate, event và lambda</a></li><li><a class="chapter-link" href="ch32-csharp-hien-dai.html">32. Record, pattern matching và cú pháp mới</a></li><li><a class="chapter-link" href="ch33-async-await.html">33. Lập trình bất đồng bộ async/await</a></li><li><a class="chapter-link" href="ch34-da-luong.html">34. Đa luồng và đồng bộ hoá</a></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><a class="chapter-link" href="ch35-file-io.html">35. File I/O</a></li><li><a class="chapter-link active" href="ch36-json-csv.html">36. JSON và CSV</a></li><li><a class="chapter-link" href="ch37-reflection-attribute.html">37. Reflection, Attribute và Serialization</a></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 36 — JSON và CSV</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Chuyển object ↔ JSON bằng <code>System.Text.Json</code> (serialize/deserialize), tuỳ chỉnh bằng options và attribute.</li>
+<li>Đọc JSON không có sẵn class bằng <code>JsonDocument</code>.</li>
+<li>Đọc/ghi <strong>CSV</strong> đúng (dấu phẩy, ngoặc kép, xuống dòng trong ô) và biết khi nào nên dùng thư viện.</li>
+<li>Xử lý an toàn dữ liệu đầu vào không tin cậy.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch36-json-csv/"><code>code/ch36-json-csv/</code></a>.</p>
+<h2>JSON là gì?</h2>
+<p><strong>JSON</strong> là định dạng văn bản trao đổi dữ liệu phổ biến nhất hiện nay (API web, file cấu hình):</p>
+<pre class="hljs"><code><span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;ma&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;hoTen&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Nguyen Van An&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;diem&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">8.5</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;monHoc&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;Toan&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;Ly&quot;</span><span class="hljs-punctuation">]</span> <span class="hljs-punctuation">}</span>
+</code></pre>
+<p>Gồm đối tượng <code>{ }</code>, mảng <code>[ ]</code>, chuỗi, số, <code>true/false</code>, <code>null</code>. Trong <a href="http://ASP.NET">ASP.NET</a> Core, request/response JSON được chuyển đổi tự động
+bằng đúng cơ chế trong chương này (Tập 2). .NET có sẵn <strong><code>System.Text.Json</code></strong> (nhanh, mặc định); bạn cũng sẽ gặp <code>Newtonsoft.Json</code>
+trong code cũ.</p>
+<h2>Serialize và Deserialize</h2>
+<pre class="hljs"><code><span class="hljs-keyword">using</span> System.Text.Json;
+
+<span class="hljs-keyword">var</span> tuyChon = <span class="hljs-keyword">new</span> JsonSerializerOptions
+{
+    WriteIndented = <span class="hljs-literal">true</span>,                                  <span class="hljs-comment">// in đẹp, thụt lề</span>
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,     <span class="hljs-comment">// Ten -&gt; &quot;ten&quot;</span>
+};
+
+<span class="hljs-built_in">string</span> json = JsonSerializer.Serialize(sv, tuyChon);                       <span class="hljs-comment">// object -&gt; JSON</span>
+SinhVien? sv2 = JsonSerializer.Deserialize&lt;SinhVien&gt;(json, tuyChon);        <span class="hljs-comment">// JSON -&gt; object</span>
+</code></pre>
+<p>Quy tắc: chỉ <strong>public property</strong> (có <code>get</code>/<code>set</code>) được xử lý mặc định; field public cần <code>IncludeFields = true</code>. <code>record</code>, <code>init</code>,
+<code>required</code> đều dùng được. Tên khớp <strong>phân biệt hoa/thường</strong> trừ khi bật <code>PropertyNameCaseInsensitive = true</code>
+(hoặc dùng <code>JsonSerializerDefaults.Web</code> — camelCase + không phân biệt hoa/thường, chuẩn cho web).</p>
+<p>Tái sử dụng <code>JsonSerializerOptions</code> (tạo một lần, để <code>static readonly</code>): tạo mới mỗi lần rất tốn hiệu năng.</p>
+<h2>Tuỳ chỉnh bằng attribute</h2>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">SinhVien</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> Ma { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+
+    [<span class="hljs-meta">JsonPropertyName(<span class="hljs-string">&quot;hoTen&quot;</span>)</span>]                              <span class="hljs-comment">// đổi tên trong JSON</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Ten { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-string">&quot;&quot;</span>;
+
+    [<span class="hljs-meta">JsonConverter(typeof(JsonStringEnumConverter))</span>]         <span class="hljs-comment">// enum ghi ra chữ (&quot;Gioi&quot;) thay vì số (3)</span>
+    <span class="hljs-keyword">public</span> XepLoai XepLoai { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+
+    [<span class="hljs-meta">JsonIgnore</span>]                                             <span class="hljs-comment">// KHÔNG đưa vào JSON (dữ liệu nhạy cảm)</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> MatKhau { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-string">&quot;&quot;</span>;
+}
+</code></pre>
+<p>Chạy chương trình mẫu: <code>MatKhau</code> không xuất hiện trong JSON, và khi đọc lại nó là chuỗi rỗng. Các tuỳ chọn hữu ích
+khác: <code>[JsonPropertyOrder]</code>, <code>DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull</code>, <code>Converters</code>, <code>NumberHandling</code>.
+<code>DateOnly</code>, <code>TimeOnly</code>, <code>DateTime</code>, <code>Guid</code>, <code>decimal</code> được hỗ trợ sẵn (ngày dùng chuẩn ISO 8601).</p>
+<p><strong>Đừng bao giờ serialize thẳng entity CSDL chứa mật khẩu/băm/dữ liệu nội bộ ra ngoài</strong> — dùng DTO/<code>record</code> riêng cho đầu ra (Tập 2).</p>
+<h2>Đọc JSON không có class: <code>JsonDocument</code></h2>
+<p>Khi cấu trúc thay đổi hoặc chỉ cần lấy vài giá trị:</p>
+<pre class="hljs"><code><span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> doc = JsonDocument.Parse(jsonChuoi);
+<span class="hljs-keyword">var</span> goc = doc.RootElement;
+<span class="hljs-built_in">string</span> ten = goc.GetProperty(<span class="hljs-string">&quot;cua_hang&quot;</span>).GetProperty(<span class="hljs-string">&quot;ten&quot;</span>).GetString()!;
+<span class="hljs-built_in">decimal</span> tong = goc.GetProperty(<span class="hljs-string">&quot;cua_hang&quot;</span>).GetProperty(<span class="hljs-string">&quot;sach&quot;</span>)
+                  .EnumerateArray().Sum(x =&gt; x.GetProperty(<span class="hljs-string">&quot;gia&quot;</span>).GetDecimal());
+</code></pre>
+<p>Dùng <code>TryGetProperty</code> nếu thuộc tính có thể vắng. <code>JsonDocument</code> chỉ đọc và nên <code>Dispose</code>. Cần vừa đọc vừa sửa: <code>JsonNode</code>
+(<code>JsonNode.Parse(...)</code>, chỉ mục <code>node[&quot;a&quot;][&quot;b&quot;]</code>).</p>
+<h2>Lỗi và dữ liệu xấu</h2>
+<pre class="hljs"><code><span class="hljs-keyword">try</span> { JsonSerializer.Deserialize&lt;SinhVien&gt;(<span class="hljs-string">&quot;{ \&quot;ma\&quot;: \&quot;abc\&quot; }&quot;</span>, tuyChon); }
+<span class="hljs-keyword">catch</span> (JsonException e) { ... }        <span class="hljs-comment">// sai cú pháp hoặc sai kiểu</span>
+</code></pre>
+<p>JSON từ bên ngoài <strong>không đáng tin</strong>: kiểm tra sau khi đọc (giá trị null, khoảng hợp lệ — <code>required</code>, validation của Tập 2),
+đặt giới hạn kích thước/độ sâu (<code>MaxDepth</code>) nếu nhận từ người lạ.</p>
+<h2>File và luồng</h2>
+<pre class="hljs"><code><span class="hljs-keyword">await</span> File.WriteAllTextAsync(path, json);
+<span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> fs = File.OpenRead(path);
+<span class="hljs-keyword">var</span> t = <span class="hljs-keyword">await</span> JsonSerializer.DeserializeAsync&lt;SinhVien&gt;(fs, tuyChon);   <span class="hljs-comment">// đọc thẳng từ stream, tiết kiệm bộ nhớ</span>
+</code></pre>
+<p><code>DeserializeAsyncEnumerable&lt;T&gt;</code> đọc mảng JSON rất lớn theo từng phần tử.</p>
+<h2>CSV</h2>
+<p><strong>CSV</strong> (giá trị phân tách bằng dấu phẩy) là định dạng bảng đơn giản, mở được bằng Excel:</p>
+<pre class="hljs"><code>ma,ten,diem
+1,An,8.5
+2,&quot;Binh, Nguyen&quot;,7.0
+3,&quot;Chi &quot;&quot;Cool&quot;&quot;&quot;,9.0
+</code></pre>
+<p>Nghe đơn giản nhưng có bẫy: <strong><code>Split(',')</code> sai</strong> vì ô có thể chứa dấu phẩy (<code>&quot;Binh, Nguyen&quot;</code>), dấu ngoặc kép
+(<code>&quot;&quot;</code> biểu diễn một <code>&quot;</code>) và cả xuống dòng. Quy tắc chuẩn (RFC 4180): ô chứa <code>,</code>, <code>&quot;</code> hoặc xuống dòng phải bọc trong <code>&quot;...&quot;</code>, và
+mỗi <code>&quot;</code> bên trong nhân đôi.</p>
+<p>Code mẫu có bộ tách dòng đơn giản dạng <strong>máy trạng thái</strong> (đang trong hay ngoài ngoặc kép) để bạn hiểu nguyên lý, và hàm ghi
+<code>DongGoiCsv</code> escape đúng. Với dữ liệu thật (xuống dòng trong ô, mã hoá lạ, dấu phân cách <code>;</code>, file lớn), hãy dùng thư viện
+đã kiểm chứng như <strong>CsvHelper</strong>:</p>
+<pre class="hljs"><code>dotnet add package CsvHelper
+</code></pre>
+<pre class="hljs"><code><span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> reader = <span class="hljs-keyword">new</span> StreamReader(<span class="hljs-string">&quot;data.csv&quot;</span>);
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> csv = <span class="hljs-keyword">new</span> CsvReader(reader, CultureInfo.InvariantCulture);
+<span class="hljs-keyword">var</span> dong = csv.GetRecords&lt;SinhVien&gt;().ToList();
+</code></pre>
+<p>Lưu ý <strong>culture</strong>: số thực <code>8.5</code> hay <code>8,5</code>? Excel tiếng Việt thường dùng dấu phẩy thập phân và <code>;</code> làm dấu phân cách. Khi trao
+đổi dữ liệu máy–máy, dùng <code>CultureInfo.InvariantCulture</code> (Chương 11) và ghi rõ định dạng.</p>
+<p>Với mọi dữ liệu người dùng tải lên: cẩn thận <strong>CSV injection</strong> — ô bắt đầu bằng <code>=</code>, <code>+</code>, <code>-</code>, <code>@</code> có thể bị Excel hiểu là công
+thức; khi xuất ra cho người khác mở bằng Excel, thêm ký tự <code>'</code> phía trước các ô đó.</p>
+<h2>JSON hay CSV hay XML?</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>JSON</th>
+<th>CSV</th>
+<th>XML</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cấu trúc</td>
+<td>lồng nhau, linh hoạt</td>
+<td>bảng phẳng</td>
+<td>lồng nhau, nặng nề</td>
+</tr>
+<tr>
+<td>Dùng cho</td>
+<td>API, cấu hình, lưu object</td>
+<td>trao đổi bảng tính, báo cáo</td>
+<td>hệ thống cũ, tài liệu</td>
+</tr>
+<tr>
+<td>Kiểu dữ liệu</td>
+<td>có (số, bool, null)</td>
+<td>chỉ chuỗi</td>
+<td>chỉ chuỗi (+ schema)</td>
+</tr>
+</tbody>
+</table>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Quên <code>[JsonIgnore]</code> → lộ mật khẩu/dữ liệu nhạy cảm.</li>
+<li>Tên thuộc tính lệch hoa/thường → giá trị mặc định (không lỗi!) — kiểm tra kết quả; bật case-insensitive hoặc dùng <code>JsonSerializerDefaults.Web</code>.</li>
+<li><code>JsonException</code> do sai kiểu (<code>&quot;abc&quot;</code> vào <code>int</code>).</li>
+<li>Deserialize ra <code>null</code> (đầu vào <code>&quot;null&quot;</code>) → <code>NullReferenceException</code>.</li>
+<li>Dùng <code>Split(',')</code> cho CSV.</li>
+<li>Đọc <code>double</code> bằng <code>Parse</code> mà không chỉ culture → sai trên máy khác.</li>
+<li>Tạo <code>JsonSerializerOptions</code> mới mỗi lần gọi.</li>
+<li>Vòng tham chiếu (A trỏ B, B trỏ A) → <code>JsonException</code>; đặt <code>ReferenceHandler.IgnoreCycles</code> hoặc tách DTO.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Serialize một <code>record</code> có <code>List&lt;record&gt;</code> lồng nhau ra JSON đẹp; đọc lại và so sánh (<code>==</code>) hai object.</li>
+<li>Đọc JSON từ chuỗi gồm mảng người dùng, dùng <code>JsonDocument</code> in tên những người trên 18 tuổi.</li>
+<li>Ghi danh sách sinh viên ra file CSV và đọc lại đúng, kể cả tên có dấu phẩy và ngoặc kép.</li>
+<li>Thêm thuộc tính <code>NgayTao</code> và cấu hình để bỏ qua giá trị <code>null</code> khi ghi.</li>
+<li>Viết converter tuỳ chỉnh <code>JsonConverter&lt;T&gt;</code> đọc/ghi ngày theo định dạng <code>dd/MM/yyyy</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch35-file-io.html">&larr; 35. File I/O</a><a class="nav-next" href="ch37-reflection-attribute.html">37. Reflection, Attribute và Serialization &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

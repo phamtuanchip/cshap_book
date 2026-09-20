@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 37 — Reflection, Attribute và Serialization — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch31-delegate-event-lambda.html">31. Delegate, event và lambda</a></li><li><a class="chapter-link" href="ch32-csharp-hien-dai.html">32. Record, pattern matching và cú pháp mới</a></li><li><a class="chapter-link" href="ch33-async-await.html">33. Lập trình bất đồng bộ async/await</a></li><li><a class="chapter-link" href="ch34-da-luong.html">34. Đa luồng và đồng bộ hoá</a></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><a class="chapter-link" href="ch35-file-io.html">35. File I/O</a></li><li><a class="chapter-link" href="ch36-json-csv.html">36. JSON và CSV</a></li><li><a class="chapter-link active" href="ch37-reflection-attribute.html">37. Reflection, Attribute và Serialization</a></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 37 — Reflection, Attribute và Serialization</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Dùng <strong>reflection</strong> để khảo sát kiểu, thành viên và gọi chúng lúc chạy.</li>
+<li>Viết và đọc <strong>attribute</strong> tuỳ chỉnh (metadata gắn vào code).</li>
+<li>Hiểu vì sao framework (<a href="http://ASP.NET">ASP.NET</a> Core, EF Core, JSON, test) dựa nhiều vào hai thứ này.</li>
+<li>Nắm khái niệm <strong>serialization</strong> và khi nào nên/không nên dùng.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch37-reflection-attribute/"><code>code/ch37-reflection-attribute/</code></a>.</p>
+<h2>Reflection — chương trình tự soi mình</h2>
+<p><strong>Reflection</strong> cho phép khảo sát <strong>thông tin về kiểu lúc chạy</strong>: có những property/method nào, kiểu gì, có attribute gì, và cả
+gọi/gán chúng mà không biết trước lúc biên dịch.</p>
+<pre class="hljs"><code>Type kieu = <span class="hljs-keyword">typeof</span>(SanPham);            <span class="hljs-comment">// hoặc obj.GetType()</span>
+<span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> pr <span class="hljs-keyword">in</span> kieu.GetProperties())
+    Console.WriteLine(<span class="hljs-string">$&quot;<span class="hljs-subst">{pr.Name}</span>: <span class="hljs-subst">{pr.PropertyType.Name}</span>&quot;</span>);
+
+<span class="hljs-keyword">var</span> sp = (SanPham)Activator.CreateInstance(kieu)!;        <span class="hljs-comment">// tạo đối tượng từ Type</span>
+kieu.GetProperty(<span class="hljs-string">&quot;Ten&quot;</span>)!.SetValue(sp, <span class="hljs-string">&quot;Chuot&quot;</span>);           <span class="hljs-comment">// gán bằng tên</span>
+kieu.GetMethod(<span class="hljs-string">&quot;MoTa&quot;</span>)!.Invoke(sp, <span class="hljs-literal">null</span>);                  <span class="hljs-comment">// gọi bằng tên</span>
+</code></pre>
+<p>Các API chính (<code>System.Reflection</code>): <code>Type</code>, <code>PropertyInfo</code>, <code>MethodInfo</code>, <code>FieldInfo</code>, <code>ConstructorInfo</code>, <code>Assembly</code>.
+<code>BindingFlags</code> lọc thành viên (<code>Public | NonPublic | Instance | Static | DeclaredOnly</code>).</p>
+<h3>Ai dùng reflection?</h3>
+<p>Bạn hiếm khi viết reflection trực tiếp, nhưng <strong>mọi framework lớn đều dựa vào nó</strong>:</p>
+<ul>
+<li><a href="http://ASP.NET">ASP.NET</a> Core: tìm controller, gắn giá trị request vào tham số (model binding).</li>
+<li>JSON serializer: liệt kê property để chuyển đổi.</li>
+<li>EF Core: ánh xạ class ↔ bảng.</li>
+<li>DI container, xUnit/NUnit (tìm <code>[Fact]</code>, <code>[Test]</code>), AutoMapper...</li>
+</ul>
+<h3>Cái giá của reflection</h3>
+<ul>
+<li><strong>Chậm hơn</strong> gọi trực tiếp (hàng chục–trăm lần) — tránh trong vòng lặp nóng; nếu cần, cache <code>PropertyInfo</code>/<code>MethodInfo</code>,
+hoặc dùng <code>Expression</code>/delegate biên dịch sẵn, hoặc <strong>source generator</strong> (cách .NET hiện đại thay thế reflection).</li>
+<li><strong>Mất an toàn kiểu lúc biên dịch</strong>: gõ sai tên chuỗi <code>&quot;Ten&quot;</code> chỉ lỗi lúc chạy → dùng <code>nameof(SanPham.Ten)</code>.</li>
+<li>Có thể truy cập cả thành viên <code>private</code> → phá vỡ đóng gói; và không tương thích tốt với <strong>trimming/AOT</strong> (biên dịch
+ahead-of-time) vì công cụ cắt code không biết bạn sẽ gọi gì.</li>
+</ul>
+<p>Quy tắc: <strong>có lựa chọn thì đừng dùng reflection</strong>; dùng khi thật sự cần tính linh hoạt kiểu plugin/framework.</p>
+<h2>Attribute — metadata gắn vào code</h2>
+<p><strong>Attribute</strong> là &quot;nhãn&quot; thông tin đặt trong <code>[ ]</code> trước class, phương thức, property... Bản thân nó không làm gì; <strong>có ai đó
+(trình biên dịch, framework, code của bạn) đọc nó</strong> rồi hành động.</p>
+<p>Attribute có sẵn bạn đã gặp: <code>[Flags]</code> (enum), <code>[Obsolete(&quot;...&quot;)]</code> (cảnh báo dùng API cũ), <code>[JsonPropertyName]</code>, <code>[JsonIgnore]</code>,
+<code>[Required]</code>, <code>[HttpGet]</code>, <code>[Fact]</code>, <code>[Serializable]</code>.</p>
+<h3>Tự định nghĩa attribute</h3>
+<p>Là class kế thừa <code>Attribute</code>, tên thường kết thúc bằng <code>Attribute</code> (khi dùng có thể bỏ hậu tố):</p>
+<pre class="hljs"><code>[<span class="hljs-meta">AttributeUsage(AttributeTargets.Property)</span>]      <span class="hljs-comment">// chỉ đặt được trên property</span>
+<span class="hljs-keyword">class</span> <span class="hljs-title">BatBuocAttribute</span> : <span class="hljs-title">Attribute</span>;
+
+[<span class="hljs-meta">AttributeUsage(AttributeTargets.Property)</span>]
+<span class="hljs-keyword">class</span> <span class="hljs-title">KhoangAttribute</span>(<span class="hljs-title">double</span> <span class="hljs-title">min</span>, <span class="hljs-title">double</span> <span class="hljs-title">max</span>) : <span class="hljs-title">Attribute</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">double</span> Min { <span class="hljs-keyword">get</span>; } = min;
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">double</span> Max { <span class="hljs-keyword">get</span>; } = max;
+}
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">SanPham</span>
+{
+    [<span class="hljs-meta">BatBuoc</span>] <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Ten { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-string">&quot;&quot;</span>;
+    [<span class="hljs-meta">Khoang(0, 1000)</span>] <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> TonKho { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+}
+</code></pre>
+<h3>Đọc attribute bằng reflection — mini validator</h3>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">static</span> List&lt;<span class="hljs-built_in">string</span>&gt; <span class="hljs-title">KiemTra</span>(<span class="hljs-params"><span class="hljs-built_in">object</span> o</span>)</span>
+{
+    <span class="hljs-keyword">var</span> loi = <span class="hljs-keyword">new</span> List&lt;<span class="hljs-built_in">string</span>&gt;();
+    <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> pr <span class="hljs-keyword">in</span> o.GetType().GetProperties())
+    {
+        <span class="hljs-keyword">var</span> giaTri = pr.GetValue(o);
+        <span class="hljs-keyword">if</span> (pr.GetCustomAttribute&lt;BatBuocAttribute&gt;() <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span> &amp;&amp; (giaTri <span class="hljs-keyword">is</span> <span class="hljs-literal">null</span> || giaTri <span class="hljs-keyword">is</span> <span class="hljs-built_in">string</span> { Length: <span class="hljs-number">0</span> }))
+            loi.Add(<span class="hljs-string">$&quot;<span class="hljs-subst">{pr.Name}</span> la bat buoc&quot;</span>);
+        <span class="hljs-keyword">if</span> (pr.GetCustomAttribute&lt;KhoangAttribute&gt;() <span class="hljs-keyword">is</span> { } k &amp;&amp; giaTri <span class="hljs-keyword">is</span> IConvertible c)
+        {
+            <span class="hljs-built_in">double</span> v = c.ToDouble(<span class="hljs-literal">null</span>);
+            <span class="hljs-keyword">if</span> (v &lt; k.Min || v &gt; k.Max) loi.Add(<span class="hljs-string">$&quot;<span class="hljs-subst">{pr.Name}</span> phai trong [<span class="hljs-subst">{k.Min}</span>, <span class="hljs-subst">{k.Max}</span>]&quot;</span>);
+        }
+    }
+    <span class="hljs-keyword">return</span> loi;
+}
+</code></pre>
+<p>Đây chính xác là cách <code>[Required]</code>, <code>[Range]</code> của <strong>Data Annotations</strong> hoạt động trong <a href="http://ASP.NET">ASP.NET</a> Core: framework quét property,
+đọc attribute, kiểm tra giá trị. Bạn được dùng validator có sẵn thay vì tự viết (Tập 2), nhưng nay bạn hiểu bên trong.</p>
+<h2>Mẫu plugin: tìm kiểu cài đặt một interface</h2>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> cacPlugin = Assembly.GetExecutingAssembly().GetTypes()
+    .Where(t =&gt; <span class="hljs-keyword">typeof</span>(IPlugin).IsAssignableFrom(t) &amp;&amp; t <span class="hljs-keyword">is</span> { IsClass: <span class="hljs-literal">true</span>, IsAbstract: <span class="hljs-literal">false</span> })
+    .Select(t =&gt; (IPlugin)Activator.CreateInstance(t)!);
+</code></pre>
+<p>Thêm class <code>PluginC : IPlugin</code> là tự động được nhận ra, không sửa dòng nào — cơ chế &quot;quét và đăng ký&quot; mà các DI container
+hay dùng. (Với thư viện bên ngoài: <code>Assembly.LoadFrom(path)</code>.)</p>
+<h2>Serialization — tổng quan</h2>
+<p><strong>Serialization</strong> = chuyển <strong>đối tượng trong bộ nhớ</strong> thành dạng có thể <strong>lưu hoặc gửi đi</strong> (chuỗi, byte), và <strong>deserialization</strong> là
+chiều ngược lại. Bạn đã làm với JSON (Chương 36).</p>
+<table>
+<thead>
+<tr>
+<th>Định dạng</th>
+<th>Ưu</th>
+<th>Nhược</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>JSON</strong> (<code>System.Text.Json</code>)</td>
+<td>đọc được bằng mắt, chuẩn web, đa ngôn ngữ</td>
+<td>kích thước lớn hơn nhị phân</td>
+</tr>
+<tr>
+<td><strong>XML</strong> (<code>XmlSerializer</code>)</td>
+<td>hệ thống cũ, có schema</td>
+<td>dài dòng</td>
+</tr>
+<tr>
+<td><strong>Protobuf, MessagePack</strong></td>
+<td>nhỏ, nhanh, có schema</td>
+<td>không đọc được bằng mắt, cần thư viện</td>
+</tr>
+<tr>
+<td><strong><code>BinaryFormatter</code></strong></td>
+<td>—</td>
+<td><strong>ĐÃ BỊ LOẠI BỎ — nguy hiểm, tuyệt đối không dùng</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cảnh báo bảo mật:</strong> <code>BinaryFormatter</code> (và vài serializer nhị phân &quot;ma thuật&quot; tương tự) cho phép kẻ tấn công <strong>thực thi mã tuỳ ý</strong>
+khi deserialize dữ liệu độc hại; nó đã bị loại khỏi .NET hiện đại. Nguyên tắc chung: <strong>không bao giờ deserialize dữ liệu không tin cậy</strong> bằng cơ chế
+có thể tạo kiểu tuỳ ý. Dùng JSON với kiểu đích cố định (<code>Deserialize&lt;SinhVien&gt;</code>), tránh <code>object</code>/kiểu động và cấu hình cho phép
+kiểu đa hình tự do.</p>
+<p>Khi thiết kế dữ liệu để serialize: dùng DTO/<code>record</code> đơn giản, tránh tham chiếu vòng, không đưa thông tin nhạy cảm, và nghĩ đến
+<strong>phiên bản hoá</strong> (thêm trường mới không được làm hỏng người đọc cũ).</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Gõ sai tên thuộc tính trong <code>GetProperty(&quot;Tên&quot;)</code> → trả về <code>null</code> → <code>NullReferenceException</code> (dùng <code>nameof</code>).</li>
+<li><code>GetProperties()</code> không trả thành viên <code>private</code>/<code>static</code> (cần <code>BindingFlags</code>).</li>
+<li>Dùng reflection trong vòng lặp lớn mà không cache.</li>
+<li>Quên <code>[AttributeUsage]</code> khiến attribute đặt sai chỗ mà không báo lỗi.</li>
+<li>Nghĩ rằng attribute tự chạy: nó chỉ là dữ liệu, cần có code đọc nó.</li>
+<li>Dùng <code>BinaryFormatter</code>, hoặc deserialize dữ liệu người lạ sang kiểu tự do.</li>
+<li>Quên rằng trimming/AOT có thể loại bỏ thành viên chỉ dùng qua reflection.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết hàm <code>InThongTin(object o)</code> in tên và giá trị của mọi property public bằng reflection.</li>
+<li>Thêm attribute <code>[DoDaiToiDa(50)]</code> vào validator và kiểm tra chuỗi.</li>
+<li>Viết <code>[Ten(&quot;...&quot;)]</code> attribute cho enum và hàm đọc lấy tên hiển thị bằng reflection.</li>
+<li>Đo thời gian gán 1 triệu lần một property bằng cách gọi trực tiếp và bằng <code>PropertyInfo.SetValue</code>; sau đó cache <code>PropertyInfo</code> và đo lại.</li>
+<li>Tạo thêm <code>PluginC : IPlugin</code> và chứng minh nó tự xuất hiện trong danh sách mà không sửa chỗ quét.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch36-json-csv.html">&larr; 36. JSON và CSV</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

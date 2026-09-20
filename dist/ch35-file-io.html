@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 35 — File I/O — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch31-delegate-event-lambda.html">31. Delegate, event và lambda</a></li><li><a class="chapter-link" href="ch32-csharp-hien-dai.html">32. Record, pattern matching và cú pháp mới</a></li><li><a class="chapter-link" href="ch33-async-await.html">33. Lập trình bất đồng bộ async/await</a></li><li><a class="chapter-link" href="ch34-da-luong.html">34. Đa luồng và đồng bộ hoá</a></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch35-file-io.html">35. File I/O</a></li><li><a class="chapter-link" href="ch36-json-csv.html">36. JSON và CSV</a></li><li><a class="chapter-link" href="ch37-reflection-attribute.html">37. Reflection, Attribute và Serialization</a></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 35 — File I/O</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Đọc/ghi file văn bản và nhị phân bằng <code>File</code>, <code>StreamReader/StreamWriter</code>, <code>FileStream</code>.</li>
+<li>Làm việc với đường dẫn và thư mục một cách an toàn, <strong>đa nền tảng</strong> (<code>Path</code>, <code>Directory</code>).</li>
+<li>Biết chọn giữa đọc <strong>cả file</strong> và đọc <strong>từng dòng</strong>; đọc/ghi <strong>bất đồng bộ</strong>.</li>
+<li>Bắt và xử lý lỗi I/O; đảm bảo file luôn được đóng.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch35-file-io/"><code>code/ch35-file-io/</code></a>.</p>
+<p>Chương trình mẫu làm việc trong thư mục tạm của hệ điều hành (<code>Path.GetTempPath()</code>) và <strong>tự dọn dẹp</strong> khi xong, nên chạy
+được nhiều lần mà không làm bừa máy.</p>
+<h2>Các lớp chính (namespace <code>System.IO</code>)</h2>
+<table>
+<thead>
+<tr>
+<th>Lớp</th>
+<th>Vai trò</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>File</code></td>
+<td>thao tác nhanh trên <strong>một file</strong> (static): đọc, ghi, sao chép, xoá...</td>
+</tr>
+<tr>
+<td><code>Directory</code> / <code>DirectoryInfo</code></td>
+<td>thư mục: tạo, liệt kê, xoá</td>
+</tr>
+<tr>
+<td><code>Path</code></td>
+<td>xử lý <strong>chuỗi đường dẫn</strong> (ghép, tách, đuôi file)</td>
+</tr>
+<tr>
+<td><code>StreamReader</code> / <code>StreamWriter</code></td>
+<td>đọc/ghi <strong>văn bản</strong> theo luồng</td>
+</tr>
+<tr>
+<td><code>FileStream</code></td>
+<td>đọc/ghi <strong>byte</strong> ở mức thấp</td>
+</tr>
+<tr>
+<td><code>FileInfo</code></td>
+<td>thông tin một file (kích thước, ngày sửa...)</td>
+</tr>
+</tbody>
+</table>
+<h2>Đọc và ghi toàn bộ file (file nhỏ)</h2>
+<pre class="hljs"><code>File.WriteAllText(path, <span class="hljs-string">&quot;Dong 1\nDong 2\n&quot;</span>, Encoding.UTF8);   <span class="hljs-comment">// ghi đè</span>
+<span class="hljs-built_in">string</span> noiDung = File.ReadAllText(path);                        <span class="hljs-comment">// đọc cả file thành một chuỗi</span>
+File.AppendAllText(path, <span class="hljs-string">&quot;them dong\n&quot;</span>);                        <span class="hljs-comment">// ghi nối vào cuối</span>
+<span class="hljs-built_in">string</span>[] dong = File.ReadAllLines(path);                        <span class="hljs-comment">// mảng các dòng</span>
+File.WriteAllLines(path, [<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>]);
+<span class="hljs-built_in">byte</span>[] data = File.ReadAllBytes(path);
+</code></pre>
+<p>Tiện, nhưng <strong>nạp cả file vào bộ nhớ</strong> → chỉ nên dùng cho file nhỏ (vài MB). <strong>Luôn chỉ rõ mã hoá</strong> (<code>Encoding.UTF8</code>) khi
+ghi văn bản tiếng Việt để tránh vỡ dấu ở máy khác (mặc định .NET Core dùng UTF-8, nhưng nên tường minh khi trao đổi dữ liệu).</p>
+<h2>Đọc từng dòng, xử lý file lớn</h2>
+<pre class="hljs"><code><span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> dong <span class="hljs-keyword">in</span> File.ReadLines(path))     <span class="hljs-comment">// LƯỜI: đọc từng dòng theo yêu cầu</span>
+    <span class="hljs-keyword">if</span> (dong.Contains(<span class="hljs-string">&quot;ERROR&quot;</span>)) dem++;
+</code></pre>
+<p><code>File.ReadLines</code> trả <code>IEnumerable&lt;string&gt;</code> đọc dần (Chương 27) — dùng được cho file nhiều GB. (<code>ReadAllLines</code> thì đọc hết vào mảng.)
+Vì lười, file <strong>được mở suốt lúc duyệt</strong>; và duyệt hai lần là đọc file hai lần.</p>
+<h2><code>StreamReader</code> / <code>StreamWriter</code> và <code>using</code></h2>
+<p>Khi cần kiểm soát chi tiết (ghi dần, đọc theo điều kiện):</p>
+<pre class="hljs"><code><span class="hljs-keyword">using</span> (<span class="hljs-keyword">var</span> ghi = <span class="hljs-keyword">new</span> StreamWriter(path, append: <span class="hljs-literal">false</span>, Encoding.UTF8))
+{
+    ghi.WriteLine(<span class="hljs-string">&quot;Bat dau&quot;</span>);
+    ghi.Write(<span class="hljs-string">&quot;Ket thuc&quot;</span>);
+}   <span class="hljs-comment">// kết thúc khối using: tự Flush + đóng file</span>
+
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> doc = <span class="hljs-keyword">new</span> StreamReader(path);
+<span class="hljs-built_in">string</span>? line;
+<span class="hljs-keyword">while</span> ((line = doc.ReadLine()) <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span>)
+    Console.WriteLine(line);
+</code></pre>
+<p><strong>Luôn bọc trong <code>using</code></strong> (Chương 21): file là tài nguyên hệ điều hành; nếu không đóng, nó bị khoá (process khác không mở
+được), dữ liệu có thể chưa ghi hết (chưa <code>Flush</code>), và rò rỉ handle. <code>ReadLine()</code> trả <code>null</code> khi hết file.</p>
+<h2>Đường dẫn: <code>Path</code></h2>
+<pre class="hljs"><code>Path.Combine(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-string">&quot;c.txt&quot;</span>);                 <span class="hljs-comment">// &quot;a\b\c.txt&quot; (Windows) hay &quot;a/b/c.txt&quot; (Linux/macOS)</span>
+Path.GetFileName(p);                              <span class="hljs-comment">// &quot;thang-3.xlsx&quot;</span>
+Path.GetFileNameWithoutExtension(p);              <span class="hljs-comment">// &quot;thang-3&quot;</span>
+Path.GetExtension(p);                             <span class="hljs-comment">// &quot;.xlsx&quot;</span>
+Path.GetDirectoryName(p);
+Path.GetTempPath(); Path.GetRelativePath(goc, f); Path.GetFullPath(<span class="hljs-string">&quot;x&quot;</span>);
+</code></pre>
+<p><strong>Đừng tự nối chuỗi đường dẫn</strong> bằng <code>+ &quot;\\&quot; +</code> hay <code>&quot;/&quot;</code> — dùng <code>Path.Combine</code> để chạy đúng trên mọi hệ điều hành. Chuỗi
+đường dẫn kiểu Windows (<code>C:\...</code>) chỉ phân tích đúng trên Windows; trên Linux <code>\</code> không phải dấu phân cách.</p>
+<p><strong>Bảo mật:</strong> không ghép trực tiếp tên file do người dùng cung cấp vào đường dẫn (<code>../../etc/passwd</code> — <em>path traversal</em>).
+Kiểm tra bằng <code>Path.GetFileName(input)</code> hoặc so sánh <code>Path.GetFullPath</code> với thư mục gốc cho phép.</p>
+<h2>Thư mục và thao tác hệ thống tập tin</h2>
+<pre class="hljs"><code>Directory.CreateDirectory(dir);                    <span class="hljs-comment">// tạo (cả các cấp cha; không lỗi nếu đã có)</span>
+File.Copy(nguon, dich, overwrite: <span class="hljs-literal">true</span>);
+File.Move(nguon, dich);
+File.Delete(path);                                 <span class="hljs-comment">// không lỗi nếu file không tồn tại</span>
+Directory.Delete(dir, recursive: <span class="hljs-literal">true</span>);            <span class="hljs-comment">// xoá cả nội dung</span>
+File.Exists(path); Directory.Exists(dir);
+
+<span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> f <span class="hljs-keyword">in</span> Directory.EnumerateFiles(dir, <span class="hljs-string">&quot;*.cs&quot;</span>, SearchOption.AllDirectories))   <span class="hljs-comment">// lười</span>
+    Console.WriteLine(<span class="hljs-keyword">new</span> FileInfo(f).Length);
+</code></pre>
+<p>Ưu tiên <code>Enumerate...</code> (lười) hơn <code>Get...</code> (dựng cả mảng) với thư mục lớn.</p>
+<h2>Bất đồng bộ</h2>
+<pre class="hljs"><code><span class="hljs-keyword">await</span> File.WriteAllTextAsync(path, <span class="hljs-string">&quot;Noi dung&quot;</span>);
+<span class="hljs-built_in">string</span> s = <span class="hljs-keyword">await</span> File.ReadAllTextAsync(path);
+<span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> fs = <span class="hljs-keyword">new</span> FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, <span class="hljs-number">4096</span>, useAsync: <span class="hljs-literal">true</span>);
+</code></pre>
+<p>Trong ứng dụng web/giao diện, dùng phiên bản <code>Async</code> để không chặn thread (Chương 33).</p>
+<h2><code>FileStream</code> — byte và truy cập ngẫu nhiên</h2>
+<pre class="hljs"><code><span class="hljs-keyword">await</span> File.WriteAllBytesAsync(path, [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">255</span>]);
+
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> fs = <span class="hljs-keyword">new</span> FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+fs.Seek(<span class="hljs-number">2</span>, SeekOrigin.Begin);     <span class="hljs-comment">// nhảy tới vị trí</span>
+<span class="hljs-built_in">int</span> b = fs.ReadByte();
+</code></pre>
+<p><code>FileMode</code> (Create, Open, OpenOrCreate, Append, Truncate...), <code>FileAccess</code>, <code>FileShare</code> điều khiển cách mở. Ảnh, video, file
+nén… đều là byte; xử lý qua <code>Stream</code> (kể cả <code>MemoryStream</code>, <code>GZipStream</code>, <code>NetworkStream</code> có cùng giao diện <code>Stream</code>).</p>
+<h2>Xử lý lỗi I/O</h2>
+<p>Các ngoại lệ thường gặp:</p>
+<table>
+<thead>
+<tr>
+<th>Ngoại lệ</th>
+<th>Nguyên nhân</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FileNotFoundException</code> / <code>DirectoryNotFoundException</code></td>
+<td>không tồn tại</td>
+</tr>
+<tr>
+<td><code>UnauthorizedAccessException</code></td>
+<td>không đủ quyền / đường dẫn là thư mục</td>
+</tr>
+<tr>
+<td><code>IOException</code></td>
+<td>file đang bị process khác khoá, đĩa đầy, đường dẫn sai</td>
+</tr>
+<tr>
+<td><code>PathTooLongException</code>, <code>ArgumentException</code></td>
+<td>đường dẫn không hợp lệ</td>
+</tr>
+</tbody>
+</table>
+<pre class="hljs"><code><span class="hljs-keyword">try</span> { File.ReadAllText(path); }
+<span class="hljs-keyword">catch</span> (FileNotFoundException e) { Console.WriteLine(<span class="hljs-string">$&quot;Khong tim thay: <span class="hljs-subst">{e.FileName}</span>&quot;</span>); }
+<span class="hljs-keyword">catch</span> (IOException e) { Console.WriteLine(<span class="hljs-string">$&quot;Loi I/O: <span class="hljs-subst">{e.Message}</span>&quot;</span>); }
+</code></pre>
+<p>Đừng kiểm tra <code>File.Exists</code> rồi mới mở và tin là an toàn — giữa hai lệnh, file có thể bị xoá (<strong>race condition</strong> TOCTOU);
+vẫn phải <code>try/catch</code> khi mở.</p>
+<h2>Ghi file an toàn</h2>
+<p>Ghi trực tiếp đè lên file quan trọng mà chương trình sập giữa chừng → file hỏng. Mẫu an toàn: ghi vào <strong>file tạm</strong>, xong
+thì <code>File.Move(tam, dich, overwrite: true)</code> (thao tác đổi tên gần như nguyên tử).</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Quên <code>using</code> → file bị khoá / dữ liệu chưa ghi.</li>
+<li>Dùng <code>ReadAllText</code> cho file khổng lồ → hết bộ nhớ (<code>OutOfMemoryException</code>).</li>
+<li>Ghép đường dẫn bằng <code>+</code> và dấu <code>\</code>/<code>/</code> cứng.</li>
+<li>Đường dẫn tương đối phụ thuộc &quot;thư mục làm việc hiện tại&quot; (thay đổi tuỳ cách chạy). Dùng <code>AppContext.BaseDirectory</code> hoặc
+đường dẫn tuyệt đối/cấu hình.</li>
+<li>Sai mã hoá → tiếng Việt vỡ dấu.</li>
+<li>Ghi vào thư mục cài đặt (<code>Program Files</code>) → <code>UnauthorizedAccessException</code>; dùng thư mục dữ liệu người dùng
+(<code>Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)</code>).</li>
+<li>Đọc file đang được chương trình khác ghi (cần <code>FileShare.ReadWrite</code>).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết chương trình đếm số dòng, số từ, số ký tự của một file văn bản (dùng <code>ReadLines</code>).</li>
+<li>Sao chép toàn bộ file <code>.txt</code> từ thư mục A sang B, giữ nguyên cấu trúc thư mục con.</li>
+<li>Viết nhật ký (logger) ghi thêm dòng có timestamp vào file <code>app.log</code>, mỗi lần chạy nối tiếp.</li>
+<li>Tìm 5 file lớn nhất trong một thư mục (kèm thư mục con), in tên và kích thước.</li>
+<li>Viết hàm <code>GhiAnToan(path, noiDung)</code> ghi qua file tạm rồi đổi tên.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch34-da-luong.html">&larr; 34. Đa luồng và đồng bộ hoá</a><a class="nav-next" href="ch36-json-csv.html">36. JSON và CSV &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
