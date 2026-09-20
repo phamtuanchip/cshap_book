@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 22 — Generics — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link active" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 22 — Generics</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu vấn đề mà <strong>generics</strong> giải quyết: tái sử dụng code mà vẫn <strong>an toàn kiểu</strong>.</li>
+<li>Viết <strong>generic class</strong>, <strong>generic method</strong>, <strong>generic interface/record</strong>.</li>
+<li>Dùng <strong>constraint</strong> (<code>where</code>) để giới hạn kiểu.</li>
+<li>Hiểu ở mức khái niệm <strong>covariance</strong> / <strong>contravariance</strong> (<code>out</code> / <code>in</code>).</li>
+</ul>
+<p>Code mẫu: <a href="code/ch22-generics/"><code>code/ch22-generics/</code></a>.</p>
+<h2>Vấn đề: một ngăn xếp cho nhiều kiểu</h2>
+<p>Muốn viết ngăn xếp (stack) lưu số nguyên, rồi lại cần ngăn xếp lưu chuỗi… Có hai cách &quot;cũ&quot; đều tệ:</p>
+<ol>
+<li>Viết <code>NganXepInt</code>, <code>NganXepString</code>, ... — lặp code.</li>
+<li>Dùng <code>object</code> cho mọi thứ — mất an toàn kiểu:</li>
+</ol>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> stack = <span class="hljs-keyword">new</span> NganXepObject();
+stack.Day(<span class="hljs-number">1</span>);
+stack.Day(<span class="hljs-string">&quot;chao&quot;</span>);            <span class="hljs-comment">// vẫn chạy!</span>
+<span class="hljs-built_in">int</span> x = (<span class="hljs-built_in">int</span>)stack.Lay();     <span class="hljs-comment">// InvalidCastException lúc chạy</span>
+</code></pre>
+<p>Ngoài ra số nguyên bị <strong>boxing</strong> (bọc vào heap) khi chuyển thành <code>object</code> → chậm.</p>
+<p><strong>Generics</strong> giải quyết cả hai: viết <strong>một lần</strong> với tham số kiểu <code>T</code>, trình biên dịch kiểm tra kiểu <strong>lúc biên dịch</strong>,
+không boxing.</p>
+<h2>Generic class</h2>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">NganXep</span>&lt;<span class="hljs-title">T</span>&gt;
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> List&lt;T&gt; _ds = [];
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> SoLuong =&gt; _ds.Count;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Day</span>(<span class="hljs-params">T item</span>)</span> =&gt; _ds.Add(item);
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> T <span class="hljs-title">Lay</span>()</span>
+    {
+        <span class="hljs-keyword">if</span> (_ds.Count == <span class="hljs-number">0</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> InvalidOperationException(<span class="hljs-string">&quot;Ngan xep rong&quot;</span>);
+        T item = _ds[^<span class="hljs-number">1</span>];
+        _ds.RemoveAt(_ds.Count - <span class="hljs-number">1</span>);
+        <span class="hljs-keyword">return</span> item;
+    }
+}
+
+<span class="hljs-keyword">var</span> soNguyen = <span class="hljs-keyword">new</span> NganXep&lt;<span class="hljs-built_in">int</span>&gt;();
+soNguyen.Day(<span class="hljs-number">1</span>);
+<span class="hljs-comment">// soNguyen.Day(&quot;a&quot;);   // LỖI BIÊN DỊCH — an toàn kiểu</span>
+</code></pre>
+<p><code>T</code> là <strong>tham số kiểu</strong> (type parameter), được thay bằng kiểu cụ thể khi dùng (<code>NganXep&lt;int&gt;</code>, <code>NganXep&lt;string&gt;</code>). Quy ước
+tên: <code>T</code>, hoặc <code>TKey</code>, <code>TValue</code>, <code>TResult</code>. Bạn đã dùng generics từ lâu: <code>List&lt;T&gt;</code>, <code>Dictionary&lt;TKey, TValue&gt;</code>.</p>
+<h2>Generic method</h2>
+<p>Phương thức có tham số kiểu riêng; trình biên dịch thường <strong>suy luận</strong> được <code>T</code>:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">HoanDoi</span>&lt;<span class="hljs-title">T</span>&gt;(<span class="hljs-params"><span class="hljs-keyword">ref</span> T a, <span class="hljs-keyword">ref</span> T b</span>)</span> =&gt; (a, b) = (b, a);
+
+<span class="hljs-built_in">int</span> x = <span class="hljs-number">1</span>, y = <span class="hljs-number">2</span>;
+Tien.HoanDoi(<span class="hljs-keyword">ref</span> x, <span class="hljs-keyword">ref</span> y);      <span class="hljs-comment">// T = int (tự suy ra)</span>
+Tien.HoanDoi&lt;<span class="hljs-built_in">string</span>&gt;(<span class="hljs-keyword">ref</span> s1, <span class="hljs-keyword">ref</span> s2);   <span class="hljs-comment">// chỉ rõ khi cần</span>
+</code></pre>
+<h2>Constraint — giới hạn kiểu với <code>where</code></h2>
+<p>Với <code>T</code> bất kỳ, bạn chỉ dùng được những gì <code>object</code> có. Muốn so sánh hai <code>T</code> thì phải cho biết <code>T</code> <strong>so sánh được</strong>:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> T <span class="hljs-title">LonNhat</span>&lt;<span class="hljs-title">T</span>&gt;(<span class="hljs-params"><span class="hljs-keyword">params</span> T[] ds</span>) <span class="hljs-keyword">where</span> T : IComparable&lt;T&gt;</span>
+{
+    T max = ds[<span class="hljs-number">0</span>];
+    <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> x <span class="hljs-keyword">in</span> ds)
+        <span class="hljs-keyword">if</span> (x.CompareTo(max) &gt; <span class="hljs-number">0</span>) max = x;
+    <span class="hljs-keyword">return</span> max;
+}
+
+Tien.LonNhat(<span class="hljs-number">3</span>, <span class="hljs-number">9</span>, <span class="hljs-number">4</span>);               <span class="hljs-comment">// 9</span>
+Tien.LonNhat(<span class="hljs-string">&quot;cam&quot;</span>, <span class="hljs-string">&quot;tao&quot;</span>, <span class="hljs-string">&quot;xoai&quot;</span>);   <span class="hljs-comment">// &quot;xoai&quot;</span>
+<span class="hljs-comment">// Tien.LonNhat(new object(), ...);   // LỖI: object không IComparable&lt;object&gt;</span>
+</code></pre>
+<p>Các constraint thường gặp:</p>
+<table>
+<thead>
+<tr>
+<th>Constraint</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>where T : class</code></td>
+<td><code>T</code> là kiểu tham chiếu</td>
+</tr>
+<tr>
+<td><code>where T : struct</code></td>
+<td><code>T</code> là kiểu giá trị</td>
+</tr>
+<tr>
+<td><code>where T : new()</code></td>
+<td>có constructor không tham số (cho phép <code>new T()</code>)</td>
+</tr>
+<tr>
+<td><code>where T : BaseClass</code></td>
+<td><code>T</code> kế thừa <code>BaseClass</code></td>
+</tr>
+<tr>
+<td><code>where T : IInterface</code></td>
+<td><code>T</code> cài đặt interface</td>
+</tr>
+<tr>
+<td><code>where T : notnull</code></td>
+<td><code>T</code> không nullable</td>
+</tr>
+<tr>
+<td>Kết hợp</td>
+<td><code>where T : class, ICoMa, new()</code> (thứ tự: class/struct trước, <code>new()</code> cuối)</td>
+</tr>
+</tbody>
+</table>
+<p>Constraint cho phép <strong>dùng</strong> thành viên của kiểu ràng buộc bên trong code generic (ví dụ <code>item.Ma</code> khi <code>T : ICoMa</code>).</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">KhoTheoMa</span>&lt;<span class="hljs-title">T</span>&gt; <span class="hljs-keyword">where</span> <span class="hljs-title">T</span> : <span class="hljs-keyword">class</span>, <span class="hljs-title">ICoMa</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> Dictionary&lt;<span class="hljs-built_in">string</span>, T&gt; _ds = [];
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Them</span>(<span class="hljs-params">T item</span>)</span> =&gt; _ds[item.Ma] = item;
+    <span class="hljs-keyword">public</span> T? Tim(<span class="hljs-built_in">string</span> ma) =&gt; _ds.GetValueOrDefault(ma);
+}
+</code></pre>
+<h2>Generic interface và record</h2>
+<pre class="hljs"><code><span class="hljs-keyword">interface</span> <span class="hljs-title">IKetQua</span>&lt;<span class="hljs-keyword">out</span> <span class="hljs-title">T</span>&gt; { <span class="hljs-built_in">bool</span> ThanhCong { <span class="hljs-keyword">get</span>; } T? GiaTri { <span class="hljs-keyword">get</span>; } <span class="hljs-built_in">string</span>? Loi { <span class="hljs-keyword">get</span>; } }
+
+<span class="hljs-keyword">record</span> <span class="hljs-title">KetQua</span>&lt;<span class="hljs-title">T</span>&gt;(<span class="hljs-title">bool</span> <span class="hljs-title">ThanhCong</span>, <span class="hljs-title">T</span>? <span class="hljs-title">GiaTri</span>, <span class="hljs-title">string</span>? <span class="hljs-title">Loi</span>) : <span class="hljs-title">IKetQua</span>&lt;<span class="hljs-title">T</span>&gt;
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> KetQua&lt;T&gt; <span class="hljs-title">ThatBai</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> loi</span>)</span> =&gt; <span class="hljs-keyword">new</span>(<span class="hljs-literal">false</span>, <span class="hljs-literal">default</span>, loi);
+}
+</code></pre>
+<p><code>default</code> cho giá trị mặc định của <code>T</code> (0 với số, <code>null</code> với tham chiếu). Kiểu <strong>Result</strong> như trên là mẫu quen thuộc để
+trả về &quot;thành công hoặc lỗi&quot; mà không ném exception (sẽ gặp lại ở Tập 3).</p>
+<h2>Covariance và contravariance (cơ bản)</h2>
+<p>Câu hỏi: <code>string</code> là <code>object</code>, vậy <code>IEnumerable&lt;string&gt;</code> có là <code>IEnumerable&lt;object&gt;</code> không?</p>
+<ul>
+<li><strong>Covariance (<code>out T</code>)</strong>: giữ nguyên chiều kế thừa; an toàn khi <code>T</code> chỉ xuất hiện ở vị trí <strong>đầu ra</strong> (trả về).</li>
+</ul>
+<pre class="hljs"><code>IEnumerable&lt;<span class="hljs-built_in">string</span>&gt; tenChuoi = [<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>];
+IEnumerable&lt;<span class="hljs-built_in">object</span>&gt; tenObj = tenChuoi;   <span class="hljs-comment">// OK vì IEnumerable&lt;out T&gt;</span>
+</code></pre>
+<ul>
+<li><strong>Contravariance (<code>in T</code>)</strong>: đảo chiều; an toàn khi <code>T</code> chỉ ở vị trí <strong>đầu vào</strong> (tham số).</li>
+</ul>
+<pre class="hljs"><code>Action&lt;<span class="hljs-built_in">object</span>&gt; inRa = o =&gt; Console.WriteLine(o);
+Action&lt;<span class="hljs-built_in">string</span>&gt; inChuoi = inRa;   <span class="hljs-comment">// OK vì Action&lt;in T&gt;: nơi nhận string có thể dùng hàm nhận object</span>
+</code></pre>
+<p>Còn <code>List&lt;T&gt;</code> vừa đọc vừa ghi nên <strong>không</strong> biến thiên: <code>List&lt;object&gt; ds = new List&lt;string&gt;();</code> là lỗi — nếu cho phép,
+bạn sẽ <code>Add(5)</code> được vào một danh sách chuỗi. Bạn hiếm khi tự khai báo <code>in</code>/<code>out</code>, nhưng hiểu để đọc hiểu lỗi và API.</p>
+<h2>Khi nào nên viết generic?</h2>
+<ul>
+<li>Có cấu trúc dữ liệu/thuật toán dùng lại cho nhiều kiểu (kho lưu trữ, cache, kết quả, phân trang).</li>
+<li>Đừng generic hoá quá sớm: nếu chỉ có một kiểu dùng, cứ viết cụ thể; khi thứ hai xuất hiện hãy tổng quát hoá.</li>
+<li>Nếu constraint dài dằng dặc và lộn xộn, có thể thiết kế đang phức tạp hơn cần thiết.</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>CS0314/CS0311</code>: kiểu truyền vào không thoả constraint.</li>
+<li><code>CS0304: Cannot create an instance of the variable type 'T'</code> — thiếu <code>where T : new()</code>.</li>
+<li><code>CS0019: Operator '&gt;' cannot be applied to operands of type 'T'</code> — dùng <code>IComparable&lt;T&gt;</code> thay vì toán tử.</li>
+<li>Nhầm <code>default(T)</code>: với kiểu tham chiếu là <code>null</code> — cân nhắc <code>T?</code>/nullable.</li>
+<li>Kỳ vọng <code>List&lt;Con&gt;</code> gán được cho <code>List&lt;Cha&gt;</code> (không được, xem covariance).</li>
+<li>Khai báo tham số kiểu trùng tên kiểu có sẵn (<code>class Kho&lt;string&gt;</code> là sai — <code>string</code> không phải tên tham số).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết <code>HangDoi&lt;T&gt;</code> (queue) với <code>Them</code>, <code>Lay</code>, <code>SoLuong</code> bằng <code>LinkedList&lt;T&gt;</code> bên trong.</li>
+<li>Viết <code>static T NhoNhat&lt;T&gt;(IEnumerable&lt;T&gt; ds) where T : IComparable&lt;T&gt;</code>, thử với <code>int</code>, <code>string</code>, <code>record SanPham</code>.</li>
+<li>Viết <code>Cap&lt;TA, TB&gt;</code> (record generic hai tham số) và phương thức <code>DaoNguoc()</code> trả <code>Cap&lt;TB, TA&gt;</code>.</li>
+<li>Viết <code>Kho&lt;T&gt; where T : class, ICoMa</code> hỗ trợ <code>Xoa(string ma)</code>; thử với <code>Sach</code> và với <code>int</code> — quan sát lỗi.</li>
+<li>Giải thích vì sao <code>IReadOnlyList&lt;T&gt;</code> là covariant còn <code>IList&lt;T&gt;</code> thì không.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch21-exception.html">&larr; 21. Xử lý ngoại lệ</a><a class="nav-next" href="ch23-nullable.html">23. Nullable value type và nullable reference type &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

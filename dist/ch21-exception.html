@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 21 — Xử lý ngoại lệ — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 21 — Xử lý ngoại lệ</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>exception</strong> là gì và vì sao dùng nó thay cho mã lỗi trả về.</li>
+<li>Dùng <code>try / catch / finally</code>, nhiều <code>catch</code>, <strong>exception filter</strong> (<code>when</code>).</li>
+<li>Biết <code>throw</code> và <code>throw;</code> khác nhau thế nào; tạo <strong>custom exception</strong>.</li>
+<li>Dùng <code>using</code> để giải phóng tài nguyên; kiểm tra tham số bằng <code>ThrowIfNull</code>...</li>
+<li>Nắm nguyên tắc: khi nào bắt, khi nào để lỗi nổi lên.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch21-exception/"><code>code/ch21-exception/</code></a>.</p>
+<h2>Exception là gì?</h2>
+<p>Khi có sự cố lúc chạy (chia cho 0, file không tồn tại, mạng đứt), .NET <strong>ném (throw)</strong> một đối tượng ngoại lệ.
+Nếu không ai bắt, ngoại lệ &quot;nổi&quot; ngược lên chuỗi lời gọi (call stack) và cuối cùng <strong>làm chương trình sập</strong>.</p>
+<pre class="hljs"><code><span class="hljs-built_in">int</span> so = <span class="hljs-built_in">int</span>.Parse(<span class="hljs-string">&quot;abc&quot;</span>);   <span class="hljs-comment">// FormatException — chương trình dừng nếu không xử lý</span>
+</code></pre>
+<p>Ưu điểm so với trả mã lỗi: lỗi không thể bị <strong>lặng lẽ bỏ qua</strong>, và code xử lý lỗi tách khỏi luồng chạy bình thường.</p>
+<p>Mọi ngoại lệ kế thừa <code>System.Exception</code>. Các thuộc tính quan trọng: <code>Message</code>, <code>StackTrace</code>, <code>InnerException</code>.</p>
+<pre class="mermaid">flowchart TB
+    E[&quot;Exception&quot;] --&gt; SE[&quot;SystemException&quot;]
+    E --&gt; AE[&quot;ApplicationException (ít dùng)&quot;]
+    SE --&gt; ARG[&quot;ArgumentException&quot;]
+    ARG --&gt; ARGN[&quot;ArgumentNullException&quot;]
+    SE --&gt; IOE[&quot;InvalidOperationException&quot;]
+    SE --&gt; FE[&quot;FormatException&quot;]
+    SE --&gt; IO[&quot;IOException&quot;]
+    SE --&gt; DZ[&quot;DivideByZeroException&quot;]
+</pre>
+<h2><code>try / catch / finally</code></h2>
+<pre class="hljs"><code><span class="hljs-keyword">try</span>
+{
+    <span class="hljs-comment">// code có thể ném lỗi</span>
+}
+<span class="hljs-keyword">catch</span> (FormatException e)
+{
+    <span class="hljs-comment">// xử lý riêng cho FormatException</span>
+}
+<span class="hljs-keyword">finally</span>
+{
+    <span class="hljs-comment">// luôn chạy: dù có lỗi hay không, kể cả khi return</span>
+}
+</code></pre>
+<ul>
+<li>Có thể có <strong>nhiều <code>catch</code></strong>; CLR chọn cái <strong>đầu tiên khớp</strong>, nên đặt kiểu <strong>cụ thể trước, tổng quát sau</strong>
+(<code>catch (Exception)</code> phải đứng cuối; sai thứ tự là lỗi biên dịch).</li>
+<li><code>finally</code> dùng để dọn dẹp (đóng file, giải phóng kết nối). Nhưng thường <code>using</code> (bên dưới) gọn hơn.</li>
+<li><code>try</code> phải đi kèm ít nhất một <code>catch</code> hoặc <code>finally</code>.</li>
+</ul>
+<h2>Ném ngoại lệ và custom exception</h2>
+<pre class="hljs"><code><span class="hljs-keyword">if</span> (soLuong &gt; tonKho) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> KhongDuHangException(soLuong, tonKho);
+</code></pre>
+<p>Tự định nghĩa ngoại lệ khi cần <strong>mang thêm thông tin nghiệp vụ</strong> và cho phép bên gọi bắt chính xác:</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">KhongDuHangException</span>(<span class="hljs-title">int</span> <span class="hljs-title">soCan</span>, <span class="hljs-title">int</span> <span class="hljs-title">soCon</span>)
+    : <span class="hljs-title">Exception</span>($&quot;<span class="hljs-title">Khong</span> <span class="hljs-title">du</span> <span class="hljs-title">hang</span>: <span class="hljs-title">can</span> {soCan}, con {soCon}<span class="hljs-string">&quot;)
+{
+    public int SoCan { get; } = soCan;
+    public int SoCon { get; } = soCon;
+}
+</span></code></pre>
+<p>Quy ước: tên kết thúc bằng <code>Exception</code>, kế thừa <code>Exception</code> (không phải <code>ApplicationException</code>).</p>
+<h2>Exception filter — <code>when</code></h2>
+<pre class="hljs"><code><span class="hljs-keyword">catch</span> (HttpLoi e) <span class="hljs-keyword">when</span> (e.MaLoi <span class="hljs-keyword">is</span> &gt;= <span class="hljs-number">400</span> <span class="hljs-keyword">and</span> &lt; <span class="hljs-number">500</span>)
+{
+    Console.WriteLine(<span class="hljs-string">$&quot;Loi client <span class="hljs-subst">{e.MaLoi}</span>&quot;</span>);
+}
+</code></pre>
+<p>Chỉ bắt khi điều kiện đúng; nếu sai, ngoại lệ đi tiếp như chưa từng gặp <code>catch</code> này (và <strong>giữ nguyên stack trace</strong>).
+Tốt hơn việc bắt rồi <code>if ... else throw</code>.</p>
+<h2>Ném lại: <code>throw;</code> và <code>throw e;</code></h2>
+<pre class="hljs"><code><span class="hljs-keyword">catch</span> (Exception)
+{
+    GhiLog(...);
+    <span class="hljs-keyword">throw</span>;        <span class="hljs-comment">// ĐÚNG: giữ nguyên stack trace gốc</span>
+    <span class="hljs-comment">// throw e;   // SAI: reset stack trace, mất dấu nơi lỗi thật sự xảy ra</span>
+}
+</code></pre>
+<p>Muốn thêm ngữ cảnh, bọc ngoại lệ gốc vào <code>InnerException</code>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">catch</span> (FormatException ex)
+{
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ApplicationException(<span class="hljs-string">&quot;Doc cau hinh that bai&quot;</span>, ex);   <span class="hljs-comment">// giữ nguyên nhân gốc</span>
+}
+</code></pre>
+<h2><code>using</code> — giải phóng tài nguyên</h2>
+<p>Đối tượng giữ tài nguyên ngoài (file, kết nối, socket) cài đặt <code>IDisposable</code>. <code>using</code> bảo đảm gọi <code>Dispose()</code>
+ngay cả khi có lỗi:</p>
+<pre class="hljs"><code><span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> tn = <span class="hljs-keyword">new</span> TaiNguyen(<span class="hljs-string">&quot;ket noi DB&quot;</span>);   <span class="hljs-comment">// Dispose() chạy khi ra khỏi phạm vi</span>
+<span class="hljs-comment">// hoặc dạng khối:</span>
+<span class="hljs-keyword">using</span> (<span class="hljs-keyword">var</span> tn2 = <span class="hljs-keyword">new</span> TaiNguyen(<span class="hljs-string">&quot;x&quot;</span>)) { ... }
+</code></pre>
+<p><code>using</code> chính là <code>try/finally</code> viết gọn. Với tài nguyên bất đồng bộ dùng <code>await using</code> (Chương 33).
+Tự viết class quản lý tài nguyên thì cài <code>IDisposable</code>.</p>
+<h2>Kiểm tra tham số đầu vào (guard clause)</h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">ChaoHoi</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ten</span>)</span>
+{
+    ArgumentNullException.ThrowIfNull(ten);
+    ArgumentException.ThrowIfNullOrWhiteSpace(ten);
+    ArgumentOutOfRangeException.ThrowIfNegative(tuoi);
+    ...
+}
+</code></pre>
+<p>Kiểm tra ở <strong>đầu</strong> phương thức, ném lỗi ngay khi tham số sai — lỗi lộ ra sớm, gần nguyên nhân.</p>
+<h2>Nguyên tắc dùng exception</h2>
+<ol>
+<li><strong>Chỉ dùng cho tình huống bất thường</strong>, không dùng để điều khiển luồng thường: kiểm tra trước (<code>TryParse</code>,
+<code>ContainsKey</code>) hơn là bắt <code>FormatException</code>/<code>KeyNotFoundException</code>. Ném/bắt exception chậm hơn nhiều.</li>
+<li><strong>Chỉ bắt khi biết cách xử lý</strong>. Nếu không xử lý được, để nó nổi lên tới nơi có thể (ở web: middleware xử lý lỗi toàn cục).</li>
+<li><strong>Không bắt rồi nuốt lặng lẽ</strong> (<code>catch { }</code>): lỗi biến mất mà không ai biết.</li>
+<li><strong>Bắt kiểu cụ thể</strong>, tránh <code>catch (Exception)</code> trừ ở &quot;ranh giới&quot; chương trình (ghi log, trả lỗi 500).</li>
+<li>Thông báo lỗi nói <strong>cái gì sai và dữ liệu liên quan</strong>, không chỉ &quot;Lỗi&quot;.</li>
+<li>Dùng đúng kiểu có sẵn: <code>ArgumentException</code> (tham số sai), <code>InvalidOperationException</code> (trạng thái không cho phép),
+<code>NotSupportedException</code>, <code>NotImplementedException</code> (chưa viết)...</li>
+</ol>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>CS0160: A previous catch clause already catches all exceptions</code> — <code>catch</code> tổng quát đặt trước <code>catch</code> cụ thể.</li>
+<li><code>throw e;</code> làm mất stack trace.</li>
+<li><code>catch (Exception) { }</code> nuốt lỗi.</li>
+<li>Dùng exception cho luồng bình thường (vòng lặp bắt <code>FormatException</code> thay vì <code>TryParse</code>).</li>
+<li><code>return</code> trong <code>finally</code> làm nuốt ngoại lệ — tránh.</li>
+<li>Quên <code>Dispose</code> (rò rỉ kết nối/file) — dùng <code>using</code>.</li>
+<li><code>StackOverflowException</code>/<code>OutOfMemoryException</code> không nên (và thường không thể) bắt.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết chương trình đọc số từ bàn phím, chia 100 cho số đó, xử lý riêng <code>FormatException</code> và <code>DivideByZeroException</code>.</li>
+<li>Tạo <code>TaiKhoanKhongDuTienException</code> mang theo số dư hiện tại và số tiền cần rút; dùng trong <code>TaiKhoan.RutTien</code> (Chương 14).</li>
+<li>Viết class <code>KetNoi : IDisposable</code> in ra khi mở/đóng; dùng <code>using</code> và cố tình ném lỗi giữa chừng — Dispose có chạy?</li>
+<li>Thay <code>throw;</code> thành <code>throw e;</code> trong ví dụ và so sánh stack trace bằng <code>e.StackTrace</code>.</li>
+<li>Viết phương thức <code>TryChia(int a, int b, out int kq)</code> trả <code>bool</code> thay vì ném lỗi; khi nào nên chọn kiểu này?</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch20-object-struct-record.html">&larr; 20. Lớp object, struct và record</a><a class="nav-next" href="ch22-generics.html">22. Generics &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

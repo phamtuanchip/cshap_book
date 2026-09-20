@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 23 — Nullable value type và nullable reference type — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link active" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 23 — Nullable value type và nullable reference type</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Biểu diễn &quot;không có giá trị&quot; cho kiểu giá trị bằng <code>int?</code>, <code>DateTime?</code>...</li>
+<li>Hiểu <strong>nullable reference types</strong>: <code>string</code> vs <code>string?</code> và cảnh báo của trình biên dịch.</li>
+<li>Dùng thành thạo <code>?.</code>, <code>??</code>, <code>??=</code>, <code>is null</code>, <code>is not null</code>, <code>!</code>.</li>
+<li>Thiết kế API biểu đạt rõ ràng khi nào giá trị có thể vắng mặt.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch23-nullable/"><code>code/ch23-nullable/</code></a>.</p>
+<h2>&quot;Tỷ đô&quot;: lỗi null</h2>
+<p><code>null</code> nghĩa là &quot;không tham chiếu tới gì&quot;. Gọi phương thức trên <code>null</code> → <code>NullReferenceException</code>, lỗi phổ biến nhất
+của người viết C#. Người phát minh ra <code>null</code> gọi nó là &quot;sai lầm tỷ đô&quot;. C# hiện đại có hai công cụ để chế ngự nó.</p>
+<h2>Nullable value type: <code>T?</code></h2>
+<p>Kiểu giá trị (<code>int</code>, <code>bool</code>, <code>DateTime</code>, <code>struct</code>) mặc định <strong>không thể</strong> null. Thêm <code>?</code> để cho phép:</p>
+<pre class="hljs"><code><span class="hljs-built_in">int</span>? tuoi = <span class="hljs-literal">null</span>;                       <span class="hljs-comment">// thực chất là Nullable&lt;int&gt;</span>
+tuoi.HasValue;                          <span class="hljs-comment">// false</span>
+tuoi.GetValueOrDefault(<span class="hljs-number">-1</span>);             <span class="hljs-comment">// -1</span>
+tuoi = <span class="hljs-number">30</span>;
+tuoi.Value;                             <span class="hljs-comment">// 30 (nếu null thì ném InvalidOperationException)</span>
+</code></pre>
+<p>Ví dụ thực tế: cột CSDL có thể trống (ngày sinh chưa nhập), tham số tuỳ chọn, kết quả &quot;không tìm thấy&quot; của phép tính.</p>
+<p><strong>Lan truyền null</strong>: phép toán trên <code>int?</code> cho kết quả <code>null</code> nếu một vế là null:</p>
+<pre class="hljs"><code><span class="hljs-built_in">int</span>? a = <span class="hljs-number">5</span>, b = <span class="hljs-literal">null</span>;
+<span class="hljs-keyword">var</span> tong = a + b;    <span class="hljs-comment">// null</span>
+</code></pre>
+<h2>Nullable reference type (C# 8+)</h2>
+<p>Kiểu tham chiếu ngày trước luôn có thể null mà trình biên dịch không cảnh báo. Với <code>&lt;Nullable&gt;enable&lt;/Nullable&gt;</code> trong
+<code>.csproj</code> (mặc định trong template mới), quy ước đổi thành:</p>
+<ul>
+<li><code>string</code> — <strong>không</strong> được null (cam kết).</li>
+<li><code>string?</code> — <strong>có thể</strong> null (phải kiểm tra trước khi dùng).</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-built_in">string</span> ten = <span class="hljs-string">&quot;An&quot;</span>;         <span class="hljs-comment">// OK</span>
+<span class="hljs-built_in">string</span> ten2 = <span class="hljs-literal">null</span>;        <span class="hljs-comment">// CẢNH BÁO CS8600: gán null cho kiểu không nullable</span>
+<span class="hljs-built_in">string</span>? tuyChon = <span class="hljs-literal">null</span>;    <span class="hljs-comment">// OK</span>
+<span class="hljs-built_in">int</span> len = tuyChon.Length;  <span class="hljs-comment">// CẢNH BÁO CS8602: dereference có thể null</span>
+</code></pre>
+<p>Chỉ là <strong>cảnh báo</strong> lúc biên dịch (không đổi hành vi lúc chạy), nhưng nó phát hiện hàng loạt bug tiềm ẩn trước khi
+chạy. Thói quen tốt: <strong>coi cảnh báo nullable là lỗi</strong>, hoặc bật <code>&lt;TreatWarningsAsErrors&gt;</code> cho nullable.</p>
+<p>Quy tắc thiết kế:</p>
+<ul>
+<li>Property/tham số <strong>bắt buộc</strong> → kiểu không nullable (<code>string Ten</code>), đảm bảo gán trong constructor hoặc dùng <code>required</code>.</li>
+<li>Có thể vắng mặt → <code>string? GhiChu</code>, và người dùng buộc phải xử lý.</li>
+<li>Phương thức có thể &quot;không tìm thấy&quot; → trả <code>T?</code> (<code>NguoiDung? TimNguoi(...)</code>).</li>
+</ul>
+<h2>Toán tử làm việc với null</h2>
+<table>
+<thead>
+<tr>
+<th>Toán tử</th>
+<th>Tên</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x?.Y</code></td>
+<td>null-conditional</td>
+<td>nếu <code>x</code> null trả <code>null</code>, ngược lại <code>x.Y</code></td>
+</tr>
+<tr>
+<td><code>x?[i]</code></td>
+<td>null-conditional index</td>
+<td>như trên cho chỉ mục</td>
+</tr>
+<tr>
+<td><code>x ?? d</code></td>
+<td>null-coalescing</td>
+<td><code>x</code> nếu khác null, ngược lại <code>d</code></td>
+</tr>
+<tr>
+<td><code>x ??= d</code></td>
+<td>null-coalescing assignment</td>
+<td>gán <code>d</code> cho <code>x</code> nếu <code>x</code> đang null</td>
+</tr>
+<tr>
+<td><code>x is null</code> / <code>x is not null</code></td>
+<td>kiểm tra bằng pattern</td>
+<td>(nên dùng thay <code>== null</code>)</td>
+</tr>
+<tr>
+<td><code>x!</code></td>
+<td>null-forgiving</td>
+<td>báo trình biên dịch &quot;tin tôi, không null&quot;</td>
+</tr>
+</tbody>
+</table>
+<pre class="hljs"><code>Console.WriteLine(nguoi.DiaChi?.ThanhPho ?? <span class="hljs-string">&quot;chua co dia chi&quot;</span>);   <span class="hljs-comment">// chuỗi ?. an toàn nhiều tầng</span>
+<span class="hljs-built_in">int</span>[]? mang = <span class="hljs-literal">null</span>;
+Console.WriteLine(mang?[<span class="hljs-number">0</span>]);                                        <span class="hljs-comment">// không lỗi</span>
+
+<span class="hljs-built_in">string</span>? s = <span class="hljs-literal">null</span>;
+s ??= <span class="hljs-string">&quot;moi gan&quot;</span>;
+<span class="hljs-keyword">if</span> (s <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span>) Console.WriteLine(s.Length);   <span class="hljs-comment">// sau kiểm tra, trình biên dịch biết s không null</span>
+</code></pre>
+<p><code>?.</code> cắt cả chuỗi phía sau: <code>a?.B.C.D</code> — nếu <code>a</code> null, toàn biểu thức là <code>null</code> (không đánh giá <code>B.C.D</code>).
+Kết quả của <code>?.</code> luôn là kiểu nullable (<code>int?</code>), nên thường đi cùng <code>??</code>.</p>
+<h3>Toán tử <code>!</code> — dùng thận trọng</h3>
+<pre class="hljs"><code><span class="hljs-built_in">string</span>? chuaChac = LayChuoi();
+Console.WriteLine(chuaChac!.Length);   <span class="hljs-comment">// tắt cảnh báo, nhưng nếu thật sự null vẫn NullReferenceException</span>
+</code></pre>
+<p><code>!</code> chỉ <strong>tắt cảnh báo</strong>, không bảo vệ gì cả. Chỉ dùng khi bạn thật sự biết hơn trình biên dịch (ví dụ giá trị chắc
+chắn được khởi tạo bởi framework). Nếu thấy mình rải <code>!</code> khắp nơi, thiết kế đang có vấn đề.</p>
+<h2>Bảo vệ ở &quot;ranh giới&quot;</h2>
+<p>Với dữ liệu từ bên ngoài (người dùng, file, API), không tin vào kiểu không nullable — kiểm tra thật:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">XuLy</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> dauVao</span>)</span>
+{
+    ArgumentNullException.ThrowIfNull(dauVao);
+    ...
+}
+</code></pre>
+<p>Trong nội bộ code đã bật nullable, các hàm <code>private</code> có thể tin vào kiểu.</p>
+<h2>Thiết kế thay thế cho null</h2>
+<p>Đôi khi &quot;trả về null&quot; mơ hồ. Các lựa chọn:</p>
+<ul>
+<li><strong>Trả <code>T?</code></strong>: đơn giản, cho &quot;có hoặc không&quot; (<code>TimNguoi</code>).</li>
+<li><strong><code>TryXxx(out T)</code></strong>: <code>if (dict.TryGetValue(k, out var v))</code> — mẫu quen thuộc của .NET.</li>
+<li><strong>Trả collection rỗng</strong> thay vì <code>null</code> (<code>[]</code>, <code>Array.Empty&lt;T&gt;()</code>, <code>Enumerable.Empty&lt;T&gt;()</code>) — bên gọi khỏi kiểm tra null.</li>
+<li><strong>Giá trị mặc định có nghĩa</strong> (Null Object pattern): một đối tượng &quot;không làm gì&quot;.</li>
+<li><strong>Result/Option</strong> kết quả có kiểu (Tập 3).</li>
+</ul>
+<p>Đừng trả <code>null</code> cho collection; và đừng dùng <code>null</code> mang nhiều ý nghĩa (&quot;chưa tải&quot;, &quot;lỗi&quot;, &quot;rỗng&quot;).</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>NullReferenceException</code> — nguyên nhân số 1; đọc <code>StackTrace</code> để biết biến nào null.</li>
+<li><code>InvalidOperationException: Nullable object must have a value</code> — <code>.Value</code> trên <code>int?</code> đang null.</li>
+<li>Tắt nullable toàn cục để hết cảnh báo thay vì sửa.</li>
+<li>Rải <code>!</code> để &quot;im lặng&quot; trình biên dịch.</li>
+<li>Gán <code>null!</code> cho property để hết cảnh báo: dùng <code>required</code> hoặc khởi tạo mặc định tốt hơn.</li>
+<li>Quên rằng chuỗi <code>?.</code> cho ra kiểu nullable: <code>int len = s?.Length;</code> báo lỗi, phải <code>?? 0</code>.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết hàm <code>int? TimViTri(int[] mang, int giaTri)</code> trả <code>null</code> nếu không có; dùng <code>??</code> để hiển thị &quot;không thấy&quot;.</li>
+<li>Cho <code>record NguoiDung(string Ten, DiaChi? DiaChi)</code> — in thành phố hoặc &quot;N/A&quot; bằng một biểu thức duy nhất.</li>
+<li>Bật <code>&lt;Nullable&gt;enable&lt;/Nullable&gt;</code>, viết class có <code>string Ten</code> không khởi tạo, đọc cảnh báo và sửa bằng 3 cách (<code>required</code>, constructor, giá trị mặc định).</li>
+<li>Viết phương thức <code>TryDocSo(string? s, out int so)</code> xử lý cả <code>null</code>.</li>
+<li>So sánh: phương thức trả <code>List&lt;string&gt;?</code> với trả <code>List&lt;string&gt;</code> rỗng — khác gì với người gọi?</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch22-generics.html">&larr; 22. Generics</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

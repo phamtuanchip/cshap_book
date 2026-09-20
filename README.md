@@ -5,7 +5,7 @@ Sách lập trình C# bằng tiếng Việt, dành cho người **chưa biết g
 và các ứng dụng web nâng cao áp dụng design pattern / kiến trúc best practice của .NET — kèm code mẫu
 đầy đủ, chạy được cho từng chương.
 
-> **Trạng thái: đang viết Tập 1 — đã xong Phần 0–3 (chương 1–20).** Đã dựng khung, build được HTML (`npm run build`). Cấu trúc và pipeline tham khảo repo
+> **Trạng thái: đang viết Tập 1 — đã xong Phần 0–4 (chương 1–23).** Đã dựng khung, build được HTML (`npm run build`). Cấu trúc và pipeline tham khảo repo
 > `java_book` (đã hoàn thành 47 chương, có HTML + PDF). Định dạng phát hành: **HTML** trước, sau đó
 > **PDF** và **EPUB**.
 
@@ -164,7 +164,7 @@ không dùng mdBook/Pandoc.
 2. ✅ Viết + code mẫu Phần 0 (môi trường) — mốc: chạy được Hello World bằng `dotnet run`.
 3. ✅ Phần 1 (nền tảng).
 4. ✅ Phần 2–3 (OOP).
-5. ⬜ Phần 4–5 (exception, generics, collection, LINQ, thuật toán).
+5. ⬜ Phần 4 xong (exception, generics, nullable); Phần 5 (collection, LINQ, thuật toán) đang viết.
 6. ⬜ Phần 6–7 (delegate/async/đa luồng, I/O).
 7. ⬜ Phần 8–9 (test/tooling, pattern, SOLID, dự án tổng hợp) + phụ lục → **hoàn thành Tập 1**.
 8. ⬜ Build HTML + PDF Tập 1, rà soát link, publish.
