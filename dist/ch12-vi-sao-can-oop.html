@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 12 — Vì sao cần OOP — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">16. Kế thừa</span></li><li><span class="chapter-link pending">17. Đa hình</span></li><li><span class="chapter-link pending">18. Abstract class và Interface</span></li><li><span class="chapter-link pending">19. Static, partial, extension method, enum</span></li><li><span class="chapter-link pending">20. Lớp object, struct và record</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 12 — Vì sao cần OOP</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Thấy được <strong>vấn đề</strong> mà lập trình thủ tục gặp khi chương trình lớn dần.</li>
+<li>Hiểu tư duy hướng đối tượng: <strong>đối tượng = dữ liệu + hành vi</strong>.</li>
+<li>Nắm tổng quan bốn trụ cột: <strong>đóng gói, kế thừa, đa hình, trừu tượng</strong>.</li>
+<li>Biết vài khái niệm nền: class, object, thành viên, thông điệp.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch12-vi-sao-can-oop/"><code>code/ch12-vi-sao-can-oop/</code></a>.</p>
+<h2>Bắt đầu bằng một vấn đề</h2>
+<p>Ta cần quản lý sinh viên. Cách tự nhiên nhất với những gì đã học:</p>
+<pre class="hljs"><code><span class="hljs-built_in">string</span>[] tenSv = [<span class="hljs-string">&quot;An&quot;</span>, <span class="hljs-string">&quot;Binh&quot;</span>];
+<span class="hljs-built_in">double</span>[] diemSv = [<span class="hljs-number">8.5</span>, <span class="hljs-number">6.0</span>];
+</code></pre>
+<p>Chạy được với 2 dữ liệu. Nhưng thử để chương trình lớn lên:</p>
+<ul>
+<li>Thêm <em>ngày sinh</em>, <em>lớp</em>, <em>email</em> → thêm ba mảng, phải sửa <strong>mọi nơi</strong> đang dùng chúng.</li>
+<li>Sắp xếp theo điểm → phải hoán đổi phần tử ở <strong>tất cả</strong> các mảng song song; sót một mảng là dữ liệu lệch.</li>
+<li>Truyền một sinh viên vào phương thức → phải truyền cả đống tham số rời.</li>
+<li>Không có gì ngăn ai đó gán điểm <code>-5</code> hay <code>1000</code>.</li>
+</ul>
+<p>Gốc rễ: <strong>dữ liệu</strong> nằm một nơi, <strong>các hàm xử lý nó</strong> nằm nơi khác, không có ràng buộc giữa chúng.
+Đây là <em>lập trình thủ tục</em>: chương trình là chuỗi hàm thao tác trên dữ liệu rời rạc.</p>
+<h2>Tư duy hướng đối tượng</h2>
+<p><strong>Lập trình hướng đối tượng (OOP)</strong> gom <strong>dữ liệu</strong> và <strong>hành vi</strong> liên quan vào cùng một đơn vị gọi là
+<strong>đối tượng</strong>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">SinhVien</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Ten { <span class="hljs-keyword">get</span>; }
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">double</span> Diem { <span class="hljs-keyword">get</span>; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> <span class="hljs-title">XepLoai</span>()</span> =&gt; Diem <span class="hljs-keyword">switch</span> { &gt;= <span class="hljs-number">8</span> =&gt; <span class="hljs-string">&quot;Gioi&quot;</span>, &gt;= <span class="hljs-number">5</span> =&gt; <span class="hljs-string">&quot;Trung binh&quot;</span>, _ =&gt; <span class="hljs-string">&quot;Yeu&quot;</span> };
+}
+</code></pre>
+<p>Bây giờ <em>một sinh viên</em> là <em>một thứ</em>. Danh sách sinh viên là <code>List&lt;SinhVien&gt;</code>; sắp xếp một danh sách duy
+nhất; thêm thuộc tính chỉ sửa trong class; và class tự bảo vệ dữ liệu của mình (Chương 14).</p>
+<h3>Class và Object</h3>
+<ul>
+<li><strong>Class</strong> (lớp) là <em>bản thiết kế/khuôn</em>: mô tả một loại đối tượng có dữ liệu gì, làm được gì.</li>
+<li><strong>Object</strong> (đối tượng, còn gọi <em>instance</em>) là <em>sản phẩm cụ thể</em> tạo từ khuôn: sinh viên &quot;An&quot;, sinh viên &quot;Binh&quot;.</li>
+</ul>
+<p>Khuôn bánh (class) và những chiếc bánh (object): một khuôn, nhiều bánh, mỗi bánh có nhân riêng (dữ liệu riêng)
+nhưng cùng hình dạng và cùng cách ăn (hành vi).</p>
+<h3>Thành viên của class</h3>
+<table>
+<thead>
+<tr>
+<th>Thành viên</th>
+<th>Vai trò</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Field / Property</strong></td>
+<td>dữ liệu (trạng thái)</td>
+<td><code>Ten</code>, <code>Diem</code></td>
+</tr>
+<tr>
+<td><strong>Method</strong></td>
+<td>hành vi</td>
+<td><code>XepLoai()</code></td>
+</tr>
+<tr>
+<td><strong>Constructor</strong></td>
+<td>khởi tạo đối tượng</td>
+<td><code>new SinhVien(&quot;An&quot;, 8.5)</code></td>
+</tr>
+</tbody>
+</table>
+<p>Chương trình OOP là tập các đối tượng <strong>gửi thông điệp</strong> cho nhau (gọi phương thức) để cùng hoàn thành công việc.</p>
+<h2>Bốn trụ cột của OOP</h2>
+<p>Sẽ học chi tiết ở các chương sau; đây là bức tranh tổng quan:</p>
+<pre class="mermaid">flowchart TB
+    OOP[&quot;OOP&quot;] --&gt; DG[&quot;Đóng gói&lt;br/&gt;(Ch. 14)&quot;]
+    OOP --&gt; KT[&quot;Kế thừa&lt;br/&gt;(Ch. 16)&quot;]
+    OOP --&gt; DH[&quot;Đa hình&lt;br/&gt;(Ch. 17)&quot;]
+    OOP --&gt; TT[&quot;Trừu tượng&lt;br/&gt;(Ch. 18)&quot;]
+</pre>
+<ol>
+<li><strong>Đóng gói (Encapsulation)</strong> — giấu chi tiết bên trong, chỉ để lộ giao diện cần thiết; đối tượng tự
+bảo vệ tính hợp lệ của dữ liệu. <em>Ví dụ:</em> tài khoản ngân hàng không cho ai gán thẳng <code>SoDu = 1 tỷ</code>, chỉ cho
+<code>NapTien()</code>, <code>RutTien()</code> có kiểm tra.</li>
+<li><strong>Kế thừa (Inheritance)</strong> — class con nhận lại mọi thứ của class cha rồi bổ sung/chỉnh sửa; tái sử dụng
+code và mô hình quan hệ &quot;là một&quot; (<code>SinhVien</code> là một <code>Nguoi</code>).</li>
+<li><strong>Đa hình (Polymorphism)</strong> — cùng một lời gọi, đối tượng khác nhau phản ứng khác nhau. <code>hinh.DienTich()</code> đúng
+cho cả hình tròn, hình chữ nhật, tam giác.</li>
+<li><strong>Trừu tượng (Abstraction)</strong> — tập trung vào <em>cái gì</em> thay vì <em>làm thế nào</em>: dùng <code>interface</code>/<code>abstract</code> để
+mô tả hợp đồng mà không quan tâm cài đặt.</li>
+</ol>
+<h2>OOP giúp ích gì? Và khi nào không?</h2>
+<p><strong>Lợi ích:</strong> mô hình hoá thế giới thực tự nhiên; code dễ <strong>bảo trì</strong>, <strong>tái sử dụng</strong>, <strong>mở rộng</strong>; nhiều người
+cùng làm trên các class khác nhau; kiểm thử từng đối tượng riêng lẻ.</p>
+<p><strong>Lưu ý:</strong> OOP không phải viên đạn bạc. Thiết kế class dở (quá nhiều tầng kế thừa, class &quot;thần thánh&quot; ôm mọi
+việc) còn tệ hơn code thủ tục. C# hỗ trợ nhiều phong cách — thủ tục, hướng đối tượng, hàm (LINQ, lambda). Ta sẽ
+dùng chúng phối hợp: OOP để tổ chức chương trình, hàm để xử lý dữ liệu gọn gàng.</p>
+<h2>Cách nghĩ khi thiết kế class</h2>
+<ol>
+<li>Xác định <strong>danh từ</strong> trong bài toán → ứng viên class (sinh viên, tài khoản, đơn hàng).</li>
+<li>Xác định <strong>thuộc tính</strong> của mỗi danh từ → field/property.</li>
+<li>Xác định <strong>động từ</strong> → phương thức thuộc về đối tượng nào sở hữu dữ liệu tương ứng.</li>
+<li>Xác định <strong>quan hệ</strong>: &quot;có một&quot; (đơn hàng <em>có</em> nhiều dòng hàng) hay &quot;là một&quot; (xe hơi <em>là một</em> phương tiện).</li>
+</ol>
+<h2>Lỗi tư duy thường gặp</h2>
+<ul>
+<li>Coi class như &quot;túi đựng hàm&quot; — không có dữ liệu, chỉ có hàm tĩnh (đó vẫn là lập trình thủ tục).</li>
+<li>Public mọi thứ, để bên ngoài tuỳ ý sửa dữ liệu.</li>
+<li>Nhầm class và object (&quot;tạo class&quot; ≠ &quot;tạo object&quot;).</li>
+<li>Lạm dụng kế thừa khi chỉ cần &quot;có một&quot; (composition) — Chương 16 sẽ nói kỹ.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Với bài toán <em>quản lý thư viện</em>, liệt kê ít nhất 4 class, mỗi class 3 thuộc tính và 2 hành vi.</li>
+<li>Vẽ (giấy hoặc Mermaid) quan hệ giữa <code>DocGia</code>, <code>Sach</code>, <code>PhieuMuon</code>.</li>
+<li>Mở code mẫu, thêm thuộc tính <code>Lop</code> cho <code>SinhVien</code>: đếm số chỗ phải sửa ở cách thủ tục và cách OOP.</li>
+<li>Tìm ba vật quanh bạn (điện thoại, xe máy, cốc nước) và mô tả bằng class: dữ liệu + hành vi.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch11-chuoi.html">&larr; 11. Chuỗi (string)</a><a class="nav-next" href="ch13-class-object.html">13. Class và Object &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

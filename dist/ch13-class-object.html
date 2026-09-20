@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 13 — Class và Object — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link active" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">16. Kế thừa</span></li><li><span class="chapter-link pending">17. Đa hình</span></li><li><span class="chapter-link pending">18. Abstract class và Interface</span></li><li><span class="chapter-link pending">19. Static, partial, extension method, enum</span></li><li><span class="chapter-link pending">20. Lớp object, struct và record</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 13 — Class và Object</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Định nghĩa class với <strong>field</strong>, <strong>constructor</strong>, <strong>phương thức</strong> và tạo object bằng <code>new</code>.</li>
+<li>Hiểu <code>this</code>, thành viên <code>static</code>, và object initializer.</li>
+<li>Phân biệt <strong>kiểu tham chiếu</strong> (class) với <strong>kiểu giá trị</strong>; hiểu vì sao <code>b = a</code> không sao chép đối tượng.</li>
+<li>Hiểu <code>null</code>, và so sánh hai đối tượng.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch13-class-object/"><code>code/ch13-class-object/</code></a>.</p>
+<h2>Định nghĩa class</h2>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">HinhChuNhat</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">double</span> Rong;      <span class="hljs-comment">// field</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">double</span> Cao;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">HinhChuNhat</span>(<span class="hljs-params"><span class="hljs-built_in">double</span> rong, <span class="hljs-built_in">double</span> cao</span>)   <span class="hljs-comment">// constructor</span></span>
+    {
+        Rong = rong;
+        Cao = cao;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">double</span> <span class="hljs-title">DienTich</span>()</span> =&gt; Rong * Cao;      <span class="hljs-comment">// phương thức</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">double</span> <span class="hljs-title">ChuVi</span>()</span> =&gt; <span class="hljs-number">2</span> * (Rong + Cao);
+}
+</code></pre>
+<ul>
+<li><strong>Field</strong>: biến khai báo trong class, mỗi đối tượng có bản riêng.</li>
+<li><strong>Constructor</strong>: phương thức đặc biệt — cùng tên class, không có kiểu trả về, chạy khi <code>new</code>.</li>
+<li><strong>Phương thức</strong> thuộc class truy cập trực tiếp field của đối tượng đang gọi nó.</li>
+</ul>
+<p>Quy ước: mỗi class một file <code>.cs</code> cùng tên (<code>HinhChuNhat.cs</code>).</p>
+<h2>Tạo và dùng object</h2>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> h1 = <span class="hljs-keyword">new</span> HinhChuNhat(<span class="hljs-number">3</span>, <span class="hljs-number">4</span>);
+Console.WriteLine(h1.DienTich());   <span class="hljs-comment">// 12</span>
+h1.Rong = <span class="hljs-number">10</span>;                        <span class="hljs-comment">// truy cập field bằng dấu chấm</span>
+</code></pre>
+<p><code>new</code> cấp phát bộ nhớ, gọi constructor và trả về <strong>tham chiếu</strong> tới đối tượng. Mỗi <code>new</code> tạo một đối tượng
+mới, độc lập.</p>
+<h3>Nhiều constructor</h3>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">HinhChuNhat</span>() : <span class="hljs-title">this</span>(<span class="hljs-params"><span class="hljs-number">1</span>, <span class="hljs-number">1</span></span>)</span> { }   <span class="hljs-comment">// gọi constructor kia, tránh lặp code</span>
+</code></pre>
+<p>Nếu không viết constructor nào, C# cung cấp constructor mặc định (không tham số). <strong>Khi bạn tự viết bất kỳ
+constructor nào</strong>, constructor mặc định <em>không</em> còn được tạo tự động.</p>
+<h3>Object initializer</h3>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> h3 = <span class="hljs-keyword">new</span> HinhChuNhat { Rong = <span class="hljs-number">5</span>, Cao = <span class="hljs-number">2</span> };
+</code></pre>
+<p>Gán field/property ngay sau <code>new</code> (yêu cầu class có constructor không tham số và field/property truy cập được).</p>
+<h2>Từ khoá <code>this</code></h2>
+<p><code>this</code> là tham chiếu tới <strong>đối tượng hiện tại</strong>. Dùng khi tên tham số trùng tên field:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">DoiTen</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ten</span>)</span> =&gt; <span class="hljs-keyword">this</span>.Ten = ten;   <span class="hljs-comment">// this.Ten là field, ten là tham số</span>
+</code></pre>
+<p>hoặc để truyền chính đối tượng đi nơi khác (<code>danhSach.Add(this)</code>), hoặc gọi constructor khác (<code>: this(...)</code>).</p>
+<h2>Thành viên <code>static</code></h2>
+<p>Thành viên <code>static</code> thuộc về <strong>class</strong>, không thuộc đối tượng nào; gọi qua tên class.</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SinhVien</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> demSo = <span class="hljs-number">0</span>;                    <span class="hljs-comment">// chung cho mọi đối tượng</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> TongSoSinhVien =&gt; demSo;
+
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> Ma;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">SinhVien</span>()</span> { demSo++; Ma = demSo; }
+}
+
+Console.WriteLine(SinhVien.TongSoSinhVien);
+</code></pre>
+<p>Phương thức <code>static</code> <strong>không</strong> có <code>this</code> nên không truy cập được thành viên thường. Dùng <code>static</code> cho tiện ích
+không phụ thuộc trạng thái (<code>Math.Max</code>, <code>int.Parse</code>) và bộ đếm dùng chung; đừng lạm dụng như biến toàn cục.</p>
+<h2>Class là kiểu tham chiếu</h2>
+<p>Đây là ý quan trọng nhất của chương:</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> a = <span class="hljs-keyword">new</span> SinhVien(<span class="hljs-string">&quot;An&quot;</span>, <span class="hljs-number">8</span>);
+<span class="hljs-keyword">var</span> b = a;                 <span class="hljs-comment">// b trỏ CÙNG đối tượng, không có bản sao nào</span>
+b.DoiTen(<span class="hljs-string">&quot;Binh&quot;</span>);
+Console.WriteLine(a.Ten);  <span class="hljs-comment">// &quot;Binh&quot;</span>
+</code></pre>
+<pre class="mermaid">flowchart LR
+    a[&quot;biến a&quot;] --&gt; obj[&quot;Đối tượng SinhVien&lt;br/&gt;Ten = Binh&quot;]
+    b[&quot;biến b&quot;] --&gt; obj
+</pre>
+<p>Biến kiểu class chứa <strong>địa chỉ</strong> của đối tượng nằm trên heap. Gán <code>b = a</code> chỉ sao chép địa chỉ. Muốn bản sao
+thật phải tự tạo đối tượng mới (<code>new SinhVien(a.Ten, a.Diem)</code>).</p>
+<p>Ngược lại <code>int</code>, <code>double</code>, <code>bool</code>, <code>struct</code> là <strong>kiểu giá trị</strong>: gán là sao chép dữ liệu.</p>
+<p>Hệ quả khi truyền đối tượng vào phương thức: phương thức nhận bản sao của <em>tham chiếu</em> → sửa được <strong>nội dung</strong>
+đối tượng của người gọi.</p>
+<h2><code>null</code> và <code>NullReferenceException</code></h2>
+<p>Biến tham chiếu có thể chưa trỏ đâu cả: <code>null</code>.</p>
+<pre class="hljs"><code>SinhVien? khongCo = <span class="hljs-literal">null</span>;
+Console.WriteLine(khongCo.Ten);       <span class="hljs-comment">// NullReferenceException!</span>
+Console.WriteLine(khongCo?.Ten);      <span class="hljs-comment">// an toàn: in rỗng</span>
+</code></pre>
+<p><code>NullReferenceException</code> là lỗi phổ biến nhất của người mới. Dấu <code>?</code> sau kiểu (<code>SinhVien?</code>) báo &quot;có thể null&quot;
+để trình biên dịch giúp bạn kiểm tra (Chương 23).</p>
+<h2>So sánh đối tượng</h2>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> d1 = <span class="hljs-keyword">new</span> SinhVien(<span class="hljs-string">&quot;Dung&quot;</span>, <span class="hljs-number">7</span>);
+<span class="hljs-keyword">var</span> d2 = <span class="hljs-keyword">new</span> SinhVien(<span class="hljs-string">&quot;Dung&quot;</span>, <span class="hljs-number">7</span>);
+Console.WriteLine(d1 == d2);   <span class="hljs-comment">// False: mặc định so sánh THAM CHIẾU (có phải cùng một đối tượng?)</span>
+</code></pre>
+<p>Muốn hai đối tượng &quot;bằng nhau&quot; khi cùng nội dung, phải tự định nghĩa (<code>Equals</code>, hoặc dùng <code>record</code> — Chương 20).</p>
+<h2><code>ToString()</code></h2>
+<p>Mọi đối tượng đều có <code>ToString()</code>. Mặc định trả về tên kiểu; override để in đẹp:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-built_in">string</span> <span class="hljs-title">ToString</span>()</span> =&gt; <span class="hljs-string">$&quot;HCN <span class="hljs-subst">{Rong}</span> x <span class="hljs-subst">{Cao}</span>&quot;</span>;
+Console.WriteLine(h1);   <span class="hljs-comment">// WriteLine tự gọi ToString()</span>
+</code></pre>
+<p>(<code>override</code> sẽ giải thích ở Chương 16.)</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>NullReferenceException</code>: dùng đối tượng chưa <code>new</code> hoặc đang <code>null</code>.</li>
+<li><code>CS7036: There is no argument given that corresponds to the required parameter</code> — gọi <code>new X()</code> nhưng class chỉ có
+constructor có tham số.</li>
+<li>Nhầm rằng <code>b = a</code> là sao chép.</li>
+<li>Gọi phương thức thường từ <code>static</code> mà không có đối tượng (<code>CS0120</code>).</li>
+<li>Quên <code>new</code> khi tạo mảng đối tượng: <code>new SinhVien[3]</code> tạo 3 ô <code>null</code>, chưa có đối tượng nào.</li>
+<li>So sánh hai đối tượng bằng <code>==</code> mong so sánh nội dung.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết class <code>HinhTron</code> (bán kính) với <code>DienTich()</code>, <code>ChuVi()</code>, và <code>ToString()</code>.</li>
+<li>Viết class <code>PhanSo</code> (tử, mẫu) với <code>Cong(PhanSo other)</code> trả <code>PhanSo</code> mới (chưa cần rút gọn).</li>
+<li>Thêm bộ đếm <code>static</code> vào <code>HinhTron</code> để biết đã tạo bao nhiêu hình.</li>
+<li>Tạo mảng 3 <code>SinhVien</code>, sửa một phần tử qua tham chiếu thứ hai, quan sát mảng.</li>
+<li>Viết phương thức <code>SinhVien Sao()</code> tạo bản sao độc lập của một sinh viên.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch12-vi-sao-can-oop.html">&larr; 12. Vì sao cần OOP</a><a class="nav-next" href="ch14-encapsulation-property.html">14. Đóng gói và Property &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

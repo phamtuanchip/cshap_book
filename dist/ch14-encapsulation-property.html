@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 14 — Đóng gói và Property — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link active" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">16. Kế thừa</span></li><li><span class="chapter-link pending">17. Đa hình</span></li><li><span class="chapter-link pending">18. Abstract class và Interface</span></li><li><span class="chapter-link pending">19. Static, partial, extension method, enum</span></li><li><span class="chapter-link pending">20. Lớp object, struct và record</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 14 — Đóng gói và Property</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>đóng gói</strong> và vì sao class phải tự bảo vệ dữ liệu của nó.</li>
+<li>Dùng đúng các <strong>access modifier</strong>: <code>public</code>, <code>private</code>, <code>protected</code>, <code>internal</code>.</li>
+<li>Viết <strong>property</strong> (auto-property, <code>get</code>/<code>set</code> có kiểm tra, <code>private set</code>, <code>init</code>, <code>required</code>).</li>
+<li>Thiết kế <strong>đối tượng bất biến</strong> và không để lộ collection nội bộ.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch14-encapsulation-property/"><code>code/ch14-encapsulation-property/</code></a>.</p>
+<h2>Đóng gói là gì?</h2>
+<p><strong>Đóng gói (encapsulation)</strong> = giấu dữ liệu bên trong class và chỉ cho bên ngoài tác động qua các &quot;cửa&quot; do
+class kiểm soát. Lý do:</p>
+<ol>
+<li><strong>Bảo vệ tính hợp lệ</strong>: số dư không được âm, tuổi không được 500.</li>
+<li><strong>Tự do thay đổi bên trong</strong>: bên ngoài chỉ biết &quot;cửa&quot;, nên đổi cách lưu trữ không làm vỡ code khác.</li>
+<li><strong>Giảm phụ thuộc</strong>: ít thứ lộ ra thì ít chỗ có thể dùng sai.</li>
+</ol>
+<p>Ví dụ tệ: <code>public decimal SoDu;</code> — ai cũng gán được <code>tk.SoDu = 1_000_000_000</code>, hoặc <code>-5</code>.</p>
+<h2>Access modifier</h2>
+<table>
+<thead>
+<tr>
+<th>Modifier</th>
+<th>Ai truy cập được</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>public</code></td>
+<td>mọi nơi</td>
+</tr>
+<tr>
+<td><code>private</code></td>
+<td>chỉ bên trong chính class đó (<strong>mặc định</strong> của thành viên)</td>
+</tr>
+<tr>
+<td><code>protected</code></td>
+<td>class đó và class con (Chương 16)</td>
+</tr>
+<tr>
+<td><code>internal</code></td>
+<td>mọi code trong cùng assembly (project) — mặc định của class cấp cao nhất</td>
+</tr>
+<tr>
+<td><code>protected internal</code> / <code>private protected</code></td>
+<td>kết hợp hai điều kiện</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nguyên tắc:</strong> để mọi thứ <code>private</code>, chỉ mở (<code>public</code>) khi thật cần. Dễ mở thêm về sau, rất khó thu hẹp lại.</p>
+<h2>Property — cửa vào có kiểm soát</h2>
+<p>Property trông như field khi dùng, nhưng thực chất là cặp phương thức <code>get</code>/<code>set</code>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TaiKhoan</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-built_in">decimal</span> _soDu;   <span class="hljs-comment">// field ẩn (backing field)</span>
+
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> SoDu
+    {
+        <span class="hljs-keyword">get</span> =&gt; _soDu;
+        <span class="hljs-keyword">private</span> <span class="hljs-keyword">set</span>
+        {
+            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">value</span> &lt; <span class="hljs-number">0</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> InvalidOperationException(<span class="hljs-string">&quot;So du khong duoc am&quot;</span>);
+            _soDu = <span class="hljs-keyword">value</span>;
+        }
+    }
+}
+</code></pre>
+<ul>
+<li><code>get</code> trả giá trị; <code>set</code> nhận giá trị mới qua từ khoá <code>value</code>.</li>
+<li><code>private set</code>: bên ngoài <strong>đọc</strong> được nhưng chỉ class mới <strong>ghi</strong> được.</li>
+</ul>
+<h3>Auto-property</h3>
+<p>Khi không cần logic, dùng dạng rút gọn (trình biên dịch tự sinh backing field):</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> ChuTaiKhoan { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+<span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> SoTaiKhoan { <span class="hljs-keyword">get</span>; }          <span class="hljs-comment">// chỉ gán được trong constructor</span>
+<span class="hljs-keyword">public</span> <span class="hljs-built_in">bool</span> ConTien =&gt; _soDu &gt; <span class="hljs-number">0</span>;          <span class="hljs-comment">// property tính toán, không lưu trữ</span>
+</code></pre>
+<p><strong>Vì sao dùng property thay vì field <code>public</code>?</strong> Hôm nay <code>Ten</code> chỉ là auto-property; ngày mai cần kiểm tra hoặc
+ghi log thì thêm logic vào <code>get/set</code> mà <strong>không đổi cú pháp</strong> ở nơi gọi. Với field public không làm được.
+Ngoài ra nhiều framework (JSON, ORM, data binding) chỉ làm việc với property.</p>
+<h3><code>init</code> và <code>required</code></h3>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Sach</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">required</span> <span class="hljs-built_in">string</span> TieuDe { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">init</span>; }   <span class="hljs-comment">// bắt buộc gán, và chỉ gán lúc khởi tạo</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> NamXuatBan { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">init</span>; }
+}
+
+<span class="hljs-keyword">var</span> s = <span class="hljs-keyword">new</span> Sach { TieuDe = <span class="hljs-string">&quot;C#&quot;</span>, NamXuatBan = <span class="hljs-number">2025</span> };
+<span class="hljs-comment">// s.NamXuatBan = 2026;   // LỖI: init-only</span>
+</code></pre>
+<ul>
+<li><code>init</code>: gán được trong constructor hoặc object initializer, sau đó <strong>chỉ đọc</strong>.</li>
+<li><code>required</code> (C# 11): trình biên dịch buộc phải gán khi tạo — không quên được.</li>
+</ul>
+<h2>Phương thức thay vì setter cho nghiệp vụ</h2>
+<p>Không phải mọi thay đổi đều nên là &quot;gán thuộc tính&quot;. Với tài khoản, hành vi có ý nghĩa nghiệp vụ, nên cung cấp
+phương thức:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">NapTien</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> soTien</span>)</span>
+{
+    <span class="hljs-keyword">if</span> (soTien &lt;= <span class="hljs-number">0</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentOutOfRangeException(<span class="hljs-keyword">nameof</span>(soTien));
+    SoDu += soTien;
+    _lichSu.Add(<span class="hljs-string">$&quot;+<span class="hljs-subst">{soTien}</span>&quot;</span>);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">RutTien</span>(<span class="hljs-params"><span class="hljs-built_in">decimal</span> soTien</span>)</span>
+{
+    <span class="hljs-keyword">if</span> (soTien &lt;= <span class="hljs-number">0</span> || soTien &gt; SoDu) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    SoDu -= soTien;
+    _lichSu.Add(<span class="hljs-string">$&quot;-<span class="hljs-subst">{soTien}</span>&quot;</span>);
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}
+</code></pre>
+<p>Hai phương thức này bảo đảm mọi thay đổi đều được kiểm tra <strong>và</strong> ghi lịch sử. Không có đường nào khác để thay
+đổi số dư → đối tượng luôn hợp lệ (đây gọi là giữ <strong>bất biến của lớp</strong> — class invariant).</p>
+<h2>Đừng để lộ collection nội bộ</h2>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> List&lt;<span class="hljs-built_in">string</span>&gt; LichSu { <span class="hljs-keyword">get</span>; } = [];                     <span class="hljs-comment">// TỆ: bên ngoài tự Add/Clear được</span>
+<span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> List&lt;<span class="hljs-built_in">string</span>&gt; _lichSu = [];
+<span class="hljs-keyword">public</span> IReadOnlyList&lt;<span class="hljs-built_in">string</span>&gt; LichSu =&gt; _lichSu;               <span class="hljs-comment">// TỐT: chỉ đọc</span>
+</code></pre>
+<p>Trả về <code>IReadOnlyList&lt;T&gt;</code> (hoặc <code>IEnumerable&lt;T&gt;</code>) để bên ngoài chỉ xem mà không phá được dữ liệu.</p>
+<h2>Đối tượng bất biến (immutable)</h2>
+<p>Đối tượng không đổi sau khi tạo: mọi thuộc tính <code>get</code>/<code>init</code>. Muốn &quot;sửa&quot; thì tạo bản mới:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> DiemDat <span class="hljs-title">DichChuyen</span>(<span class="hljs-params"><span class="hljs-built_in">double</span> dx, <span class="hljs-built_in">double</span> dy</span>)</span> =&gt; <span class="hljs-keyword">new</span>() { X = X + dx, Y = Y + dy };
+</code></pre>
+<p>Ưu điểm: an toàn khi chia sẻ giữa nhiều nơi/luồng, dễ suy luận, không có trạng thái &quot;nửa vời&quot;. Dữ liệu giá trị
+(toạ độ, tiền, ngày) rất hợp phong cách này; <code>record</code> (Chương 20) làm việc này gọn hơn nữa.</p>
+<h2>Quy ước đặt tên</h2>
+<ul>
+<li>Property, phương thức, class: <code>PascalCase</code> (<code>SoDu</code>, <code>NapTien</code>).</li>
+<li>Field private: <code>_camelCase</code> (<code>_soDu</code>).</li>
+<li>Tham số, biến cục bộ: <code>camelCase</code>.</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>CS0122: 'X' is inaccessible due to its protection level</code> — truy cập thành viên <code>private</code>.</li>
+<li>Stack overflow trong property tự tham chiếu: <code>public int X { get =&gt; X; }</code> (gọi lại chính nó) — phải dùng backing field.</li>
+<li>Để <code>public List&lt;T&gt;</code> cho phép bên ngoài phá dữ liệu.</li>
+<li>Kiểm tra hợp lệ trong <code>set</code> nhưng constructor lại gán thẳng vào field, bỏ qua kiểm tra.</li>
+<li>Lạm dụng getter/setter cho mọi field: class thành &quot;túi dữ liệu&quot;, logic nằm rải rác nơi khác (giống lập trình thủ tục).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết class <code>NhanVien</code> có <code>Ten</code> (không rỗng) và <code>Luong</code> (không âm) với kiểm tra ném <code>ArgumentException</code>.</li>
+<li>Thêm vào <code>TaiKhoan</code> phương thức <code>ChuyenKhoan(TaiKhoan den, decimal soTien)</code>, đảm bảo trừ và cộng cùng thành công hoặc cùng thất bại.</li>
+<li>Viết class <code>NhietDo</code> bất biến với <code>Celsius</code> và property tính toán <code>Fahrenheit</code>.</li>
+<li>Cố tình thử các dòng bị comment trong <code>Program.cs</code> và đọc thông báo lỗi.</li>
+<li>Giải thích vì sao <code>LichSu</code> trả <code>IReadOnlyList&lt;string&gt;</code> nhưng vẫn có thể bị &quot;lách&quot; bằng ép kiểu — và cách phòng (<code>AsReadOnly()</code>).</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch13-class-object.html">&larr; 13. Class và Object</a><a class="nav-next" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
