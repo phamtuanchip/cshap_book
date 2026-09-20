@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 40 — Git, NuGet và cấu hình — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch31-delegate-event-lambda.html">31. Delegate, event và lambda</a></li><li><a class="chapter-link" href="ch32-csharp-hien-dai.html">32. Record, pattern matching và cú pháp mới</a></li><li><a class="chapter-link" href="ch33-async-await.html">33. Lập trình bất đồng bộ async/await</a></li><li><a class="chapter-link" href="ch34-da-luong.html">34. Đa luồng và đồng bộ hoá</a></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><a class="chapter-link" href="ch35-file-io.html">35. File I/O</a></li><li><a class="chapter-link" href="ch36-json-csv.html">36. JSON và CSV</a></li><li><a class="chapter-link" href="ch37-reflection-attribute.html">37. Reflection, Attribute và Serialization</a></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><a class="chapter-link" href="ch38-unit-test.html">38. Unit test với xUnit</a></li><li><a class="chapter-link" href="ch39-debug-logging.html">39. Debug và logging</a></li><li><a class="chapter-link active" href="ch40-git-nuget-cau-hinh.html">40. Git, NuGet và cấu hình</a></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 40 — Git, NuGet và cấu hình</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Dùng <strong>Git</strong> cho quy trình làm việc hằng ngày: commit, branch, merge, <code>.gitignore</code>.</li>
+<li>Quản lý gói <strong>NuGet</strong> và hiểu <code>PackageReference</code>, phiên bản, <code>dotnet restore</code>.</li>
+<li>Tách <strong>cấu hình</strong> khỏi code: <code>appsettings.json</code>, biến môi trường, <strong>user secrets</strong>, <strong>options pattern</strong>.</li>
+<li>Không bao giờ để <strong>bí mật</strong> (mật khẩu, khoá API) lọt vào Git.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch40-git-nuget-cau-hinh/"><code>code/ch40-git-nuget-cau-hinh/</code></a>.</p>
+<h2>Git — quản lý phiên bản</h2>
+<p><strong>Git</strong> ghi lại lịch sử thay đổi của dự án, cho phép quay lại, thử nghiệm song song (branch) và cộng tác. <strong>GitHub/GitLab/
+Azure DevOps</strong> lưu repository trên mạng.</p>
+<h3>Lệnh hằng ngày</h3>
+<pre class="hljs"><code>git clone &lt;url&gt;                # lấy repo về
+git status                     # xem thay đổi
+git add &lt;file&gt;  |  git add .   # đưa vào &quot;staging&quot;
+git commit -m &quot;Mo ta ngan&quot;     # chốt thành một commit
+git log --oneline              # xem lịch sử
+git diff                       # xem chi tiết chưa commit
+git pull                       # lấy thay đổi mới từ server (fetch + merge)
+git push                       # đẩy commit lên server
+</code></pre>
+<p>Ba &quot;vùng&quot;: <strong>working directory</strong> (file đang sửa) → <strong>staging</strong> (<code>add</code>) → <strong>repository</strong> (<code>commit</code>). Commit là ảnh chụp toàn bộ
+trạng thái tại một thời điểm.</p>
+<h3>Branch (nhánh)</h3>
+<p>Làm tính năng mới trên nhánh riêng để không đụng <code>main</code>:</p>
+<pre class="hljs"><code>git switch -c tinh-nang-gio-hang     # tạo và chuyển sang nhánh mới
+# ... sửa, commit ...
+git switch main
+git merge tinh-nang-gio-hang         # gộp vào main
+</code></pre>
+<p>Quy trình phổ biến (<strong>GitHub Flow</strong>): mọi công việc trên nhánh ngắn hạn → mở <strong>Pull Request</strong> → review → CI chạy test → merge vào
+<code>main</code>. Xung đột khi merge (hai người sửa cùng dòng) phải giải quyết bằng tay: Git đánh dấu <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>/<code>=======</code>/<code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>,
+bạn chọn nội dung đúng, <code>git add</code>, rồi commit.</p>
+<h3>Viết commit tốt</h3>
+<ul>
+<li>Mỗi commit <strong>một thay đổi logic</strong>, build được, test đạt.</li>
+<li>Thông điệp: dòng đầu ngắn (≤ 72 ký tự), thể hiện <em>cái gì và vì sao</em>; ví dụ <code>Them kiem tra so luong am cho GioHang</code>.</li>
+<li>Commit <strong>thường xuyên</strong>, đừng gom cả tuần vào một commit.</li>
+</ul>
+<h3><code>.gitignore</code> — không đưa gì vào Git</h3>
+<p>File <code>.gitignore</code> liệt kê thứ <strong>không</strong> theo dõi. Kho này đã có sẵn mẫu Visual Studio. Chủ yếu loại: <code>bin/</code>, <code>obj/</code>,
+<code>.vs/</code>, <code>*.user</code>, thư mục gói tải về, file log/tạm. Tạo mẫu cho dự án .NET: <code>dotnet new gitignore</code>.</p>
+<p><strong>Bài học đắt giá:</strong> thứ đã commit (dù xoá ở commit sau) <strong>vẫn nằm trong lịch sử</strong>. Bí mật lỡ commit phải coi là <strong>đã lộ</strong> — đổi
+ngay (rotate) chứ không chỉ xoá file.</p>
+<h2>NuGet — quản lý gói thư viện</h2>
+<p>Bạn đã dùng NuGet ở Chương 4. Nhắc lại và mở rộng:</p>
+<pre class="hljs"><code>dotnet add package Serilog                   # thêm bản mới nhất ổn định
+dotnet add package Serilog --version 4.2.0   # chỉ định phiên bản
+dotnet list package                          # đã dùng gói nào
+dotnet list package --outdated               # gói nào có bản mới
+dotnet list package --vulnerable             # gói có lỗ hổng bảo mật đã biết
+dotnet remove package Serilog
+dotnet restore                               # tải gói theo .csproj (build/run tự gọi)
+</code></pre>
+<p>Trong <code>.csproj</code>:</p>
+<pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">ItemGroup</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">PackageReference</span> <span class="hljs-attr">Include</span>=<span class="hljs-string">&quot;Microsoft.Extensions.Configuration.Json&quot;</span> <span class="hljs-attr">Version</span>=<span class="hljs-string">&quot;10.0.0&quot;</span> /&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">ItemGroup</span>&gt;</span>
+</code></pre>
+<ul>
+<li><strong>Phiên bản (SemVer)</strong> <code>Major.Minor.Patch</code>: tăng <em>Major</em> = có thể phá vỡ tương thích; <em>Minor</em> = thêm tính năng tương thích;
+<em>Patch</em> = sửa lỗi. Đọc <em>release notes</em> trước khi nâng Major.</li>
+<li>Gói kéo theo <strong>phụ thuộc bắc cầu</strong> (transitive): thêm một gói có thể tải hàng chục gói khác. Kiểm tra gói lỗ hổng định kỳ.</li>
+<li><strong>Central Package Management</strong> (<code>Directory.Packages.props</code>): ghi phiên bản một chỗ cho cả solution nhiều project.</li>
+<li>Chọn thư viện có uy tín: nhiều lượt tải, cập nhật gần đây, giấy phép rõ ràng, mã nguồn mở. Mỗi gói là <strong>rủi ro chuỗi cung ứng</strong>.</li>
+<li>Bạn cũng có thể đóng gói thư viện của mình (<code>dotnet pack</code>) và đẩy lên NuGet (công khai hoặc nguồn riêng của công ty).</li>
+</ul>
+<h2>Cấu hình ứng dụng</h2>
+<p>Nguyên tắc (<em>Twelve-Factor App</em>): <strong>cấu hình tách khỏi code</strong>. Chuỗi kết nối CSDL, URL dịch vụ, cờ bật/tắt tính năng, mức log…
+thay đổi giữa máy dev / test / production <strong>mà không phải sửa code hay build lại</strong>.</p>
+<p><code>Microsoft.Extensions.Configuration</code> hợp nhất nhiều <strong>nguồn</strong> cấu hình thành một cây khoá–giá trị:</p>
+<pre class="hljs"><code>IConfiguration cauHinh = <span class="hljs-keyword">new</span> ConfigurationBuilder()
+    .SetBasePath(AppContext.BaseDirectory)
+    .AddJsonFile(<span class="hljs-string">&quot;appsettings.json&quot;</span>, optional: <span class="hljs-literal">false</span>)
+    .AddJsonFile(<span class="hljs-string">$&quot;appsettings.<span class="hljs-subst">{moiTruong}</span>.json&quot;</span>, optional: <span class="hljs-literal">true</span>)
+    .AddUserSecrets&lt;Program&gt;(optional: <span class="hljs-literal">true</span>)
+    .AddEnvironmentVariables()
+    .Build();
+</code></pre>
+<p><strong>Nguồn thêm sau ghi đè nguồn thêm trước</strong> — thứ tự ở trên nghĩa là biến môi trường có ưu tiên cao nhất, rồi user secrets, rồi file
+theo môi trường, cuối cùng <code>appsettings.json</code> (giá trị mặc định). (Với <code>WebApplication.CreateBuilder</code> của <a href="http://ASP.NET">ASP.NET</a> Core, việc này đã
+được cấu hình sẵn — Tập 2.)</p>
+<h3><code>appsettings.json</code> và theo môi trường</h3>
+<pre class="hljs"><code><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;CuaHang&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;Ten&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Sach Xanh&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ThueVat&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.08</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;KenhHoTro&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span> <span class="hljs-string">&quot;email&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;dien thoai&quot;</span> <span class="hljs-punctuation">]</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;KetNoi&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;MayChu&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;localhost&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;MatKhau&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span> <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><code>appsettings.Development.json</code> chỉ chứa phần <strong>khác biệt</strong> ở môi trường dev. Môi trường lấy từ biến <code>DOTNET_ENVIRONMENT</code>
+(hoặc <code>ASPNETCORE_ENVIRONMENT</code> với web): <code>Development</code>, <code>Staging</code>, <code>Production</code>. (Trong csproj cần đặt file <code>CopyToOutputDirectory</code>
+để file JSON nằm cạnh file chạy.)</p>
+<h3>Đọc cấu hình</h3>
+<pre class="hljs"><code>cauHinh[<span class="hljs-string">&quot;CuaHang:Ten&quot;</span>]                          <span class="hljs-comment">// khoá lồng nhau dùng dấu &#x27;:&#x27;</span>
+cauHinh.GetValue&lt;<span class="hljs-built_in">int</span>&gt;(<span class="hljs-string">&quot;CuaHang:SoNgayDoiTra&quot;</span>, <span class="hljs-number">7</span>) <span class="hljs-comment">// có kiểu, kèm giá trị mặc định</span>
+<span class="hljs-keyword">var</span> cuaHang = cauHinh.GetSection(<span class="hljs-string">&quot;CuaHang&quot;</span>).Get&lt;CuaHangOptions&gt;();   <span class="hljs-comment">// BIND vào class có kiểu (khuyến nghị)</span>
+</code></pre>
+<p><strong>Options pattern</strong>: gom cấu hình liên quan vào một class đơn giản (<code>CuaHangOptions</code>) và truyền vào nơi cần qua
+<code>IOptions&lt;CuaHangOptions&gt;</code>. Code nghiệp vụ không đọc chuỗi khoá rải rác — an toàn kiểu, dễ test, dễ kiểm tra tính hợp lệ
+(<code>ValidateDataAnnotations</code>, <code>ValidateOnStart</code> — Tập 2).</p>
+<h3>Biến môi trường</h3>
+<p>Ghi đè bất kỳ khoá nào bằng biến môi trường, dùng <code>__</code> (hai gạch dưới) thay cho <code>:</code>:</p>
+<pre class="hljs"><code>CuaHang__Ten=&quot;Sach Do&quot;            # tương ứng CuaHang:Ten
+</code></pre>
+<p>Đây là cách chuẩn để cấu hình khi chạy trên container/Docker/cloud (Tập 3) mà không đụng file.</p>
+<h3>Bí mật: <code>user-secrets</code> và kho bí mật</h3>
+<p><strong>Không bao giờ</strong> đặt mật khẩu, khoá API, chuỗi kết nối chứa mật khẩu trong <code>appsettings.json</code> rồi commit.</p>
+<ul>
+<li>
+<p><strong>Lúc phát triển</strong>: <strong>User Secrets</strong> — lưu ngoài thư mục dự án (trong thư mục hồ sơ người dùng), không bị đưa vào Git:</p>
+<pre class="hljs"><code>dotnet user-secrets init
+dotnet user-secrets set &quot;KetNoi:MatKhau&quot; &quot;bi-mat-cua-toi&quot;
+dotnet user-secrets list
+</code></pre>
+</li>
+<li>
+<p><strong>Production</strong>: biến môi trường do nền tảng cấp, hoặc kho bí mật chuyên dụng (<strong>Azure Key Vault</strong>, AWS Secrets Manager,
+HashiCorp Vault) qua provider cấu hình tương ứng.</p>
+</li>
+<li>
+<p><strong>User Secrets không mã hoá</strong>; chỉ để tiện dev, không phải giải pháp production.</p>
+</li>
+</ul>
+<h2>Checklist trước khi push</h2>
+<ul>
+<li>[ ] Không có mật khẩu/khoá API/token trong code hay file cấu hình được commit (tìm <code>password</code>, <code>secret</code>, <code>apikey</code>).</li>
+<li>[ ] <code>.gitignore</code> đã loại <code>bin/</code>, <code>obj/</code>, <code>.vs/</code>, file bí mật cục bộ.</li>
+<li>[ ] Build và test đạt (<code>dotnet build</code>, <code>dotnet test</code>).</li>
+<li>[ ] Commit nhỏ, thông điệp rõ ràng.</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Commit <code>appsettings.json</code> chứa mật khẩu thật; commit <code>bin/</code>, <code>obj/</code>.</li>
+<li><code>FileNotFoundException: appsettings.json</code> — quên <code>CopyToOutputDirectory</code> hoặc đặt sai <code>SetBasePath</code>.</li>
+<li>Cấu hình đọc ra <code>null</code>/mặc định vì gõ sai khoá hoặc sai cấp lồng nhau (không có lỗi báo!). Bind vào class và kiểm tra bắt buộc.</li>
+<li>Hiểu sai thứ tự ưu tiên nguồn cấu hình (nguồn sau thắng).</li>
+<li>Sai dấu phân cách biến môi trường: dùng <code>__</code>, không phải <code>:</code> (một số shell không cho <code>:</code>).</li>
+<li>Không <code>git pull</code> trước khi <code>git push</code> → bị từ chối (non-fast-forward).</li>
+<li>Dùng <code>git add .</code> mà không xem <code>git status</code> → đưa cả file rác/bí mật vào commit.</li>
+<li>Dùng <code>git push --force</code> lên nhánh chung (ghi đè lịch sử của người khác).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Tạo repo mới, commit <code>.gitignore</code>, một dự án console, rồi tạo nhánh <code>feature/x</code>, sửa, merge về <code>main</code>.</li>
+<li>Tạo cố ý một <strong>xung đột merge</strong> (hai nhánh sửa cùng một dòng) và giải quyết nó.</li>
+<li>Thêm <code>Serilog</code> vào project bằng CLI; dùng <code>dotnet list package --outdated</code> và <code>--vulnerable</code>.</li>
+<li>Ghi đè <code>CuaHang:Ten</code> bằng biến môi trường và bằng <code>user-secrets</code>; quan sát ai thắng khi cả hai cùng có.</li>
+<li>Thêm class <code>KetNoiOptions</code> và bind mục <code>KetNoi</code>; ném lỗi khi <code>MayChu</code> rỗng ngay lúc khởi động.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch39-debug-logging.html">&larr; 39. Debug và logging</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

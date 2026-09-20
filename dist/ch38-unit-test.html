@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 38 — Unit test với xUnit — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch31-delegate-event-lambda.html">31. Delegate, event và lambda</a></li><li><a class="chapter-link" href="ch32-csharp-hien-dai.html">32. Record, pattern matching và cú pháp mới</a></li><li><a class="chapter-link" href="ch33-async-await.html">33. Lập trình bất đồng bộ async/await</a></li><li><a class="chapter-link" href="ch34-da-luong.html">34. Đa luồng và đồng bộ hoá</a></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><a class="chapter-link" href="ch35-file-io.html">35. File I/O</a></li><li><a class="chapter-link" href="ch36-json-csv.html">36. JSON và CSV</a></li><li><a class="chapter-link" href="ch37-reflection-attribute.html">37. Reflection, Attribute và Serialization</a></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch38-unit-test.html">38. Unit test với xUnit</a></li><li><a class="chapter-link" href="ch39-debug-logging.html">39. Debug và logging</a></li><li><a class="chapter-link" href="ch40-git-nuget-cau-hinh.html">40. Git, NuGet và cấu hình</a></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 38 — Unit test với xUnit</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>unit test</strong> để làm gì và các nguyên tắc của một test tốt.</li>
+<li>Viết test bằng <strong>xUnit</strong>: <code>[Fact]</code>, <code>[Theory]</code>, <code>Assert</code>, mẫu <strong>Arrange–Act–Assert</strong>.</li>
+<li>Dùng <strong>đối tượng giả (mock/stub)</strong> với NSubstitute để cô lập code cần test.</li>
+<li>Chạy test bằng <code>dotnet test</code> / IDE và đọc kết quả.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch38-unit-test/"><code>code/ch38-unit-test/</code></a> (thư viện <code>ShopLib</code> + project <code>ShopLib.Tests</code>).</p>
+<h2>Vì sao phải test?</h2>
+<p>Phần mềm thay đổi liên tục. Mỗi lần sửa, làm sao biết bạn không làm hỏng thứ đang chạy tốt? Bấm thử bằng tay thì chậm, dễ
+sót, không lặp lại được. <strong>Test tự động</strong> là chương trình kiểm tra chương trình khác — chạy trong vài giây, mỗi lần commit.</p>
+<ul>
+<li><strong>Phát hiện lỗi sớm</strong>, rẻ hơn nhiều so với lỗi lên production.</li>
+<li><strong>Tự tin sửa/tái cấu trúc code</strong> (Chương 42): test xanh nghĩa là hành vi vẫn đúng.</li>
+<li><strong>Tài liệu sống</strong>: tên test mô tả code phải làm gì.</li>
+<li>Ép bạn viết code <strong>dễ kiểm thử</strong> — thường cũng là code thiết kế tốt (tách phụ thuộc bằng interface, Chương 18).</li>
+</ul>
+<p>Các loại test (kim tự tháp): <strong>unit test</strong> (nhỏ, nhanh, nhiều nhất — một lớp/hàm) → <strong>integration test</strong> (nhiều phần ghép
+nhau, có CSDL/HTTP) → <strong>end-to-end/UI test</strong> (ít, chậm). Chương này tập trung unit test.</p>
+<h2>Tạo project test</h2>
+<pre class="hljs"><code>dotnet new classlib -n ShopLib
+dotnet new xunit -n ShopLib.Tests
+dotnet add ShopLib.Tests reference ShopLib
+dotnet sln add ShopLib ShopLib.Tests
+</code></pre>
+<p>Các thư viện thường dùng: <strong>xUnit</strong> (khung test, phổ biến nhất trong .NET; NUnit và MSTest là lựa chọn khác với ý tưởng
+tương tự), <strong>NSubstitute</strong> hoặc <strong>Moq</strong> (đối tượng giả), <strong>FluentAssertions/Shouldly</strong> (assert dễ đọc, tuỳ chọn). Quy ước:
+project test đặt tên <code>&lt;Project&gt;.Tests</code>, class test <code>&lt;Lớp&gt;Tests</code>.</p>
+<p>Chạy: <code>dotnet test</code> (hoặc <strong>Test Explorer</strong> trong IDE). Kết quả liệt kê test đạt/hỏng và thông báo lỗi chi tiết.</p>
+<h2>Test đầu tiên: <code>[Fact]</code></h2>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">GioHangTests</span>
+{
+    [<span class="hljs-meta">Fact</span>]
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">TongTien_GioHangMoi_BangKhong</span>()</span>
+    {
+        <span class="hljs-keyword">var</span> gio = <span class="hljs-keyword">new</span> GioHang();
+
+        Assert.Equal(<span class="hljs-number">0m</span>, gio.TongTien);
+    }
+}
+</code></pre>
+<ul>
+<li><code>[Fact]</code> đánh dấu một test luôn đúng. Test là một phương thức <code>public</code>, không tham số.</li>
+<li>Test <strong>đạt</strong> nếu không ném ngoại lệ; <code>Assert.X</code> ném ngoại lệ khi sai.</li>
+</ul>
+<h3>Mẫu Arrange – Act – Assert (AAA)</h3>
+<pre class="hljs"><code>[<span class="hljs-meta">Fact</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Them_HaiSanPhamKhacNhau_TinhDungTongTien</span>()</span>
+{
+    <span class="hljs-comment">// Arrange: chuẩn bị dữ liệu và đối tượng</span>
+    <span class="hljs-keyword">var</span> gio = <span class="hljs-keyword">new</span> GioHang();
+
+    <span class="hljs-comment">// Act: thực hiện đúng MỘT hành động cần kiểm tra</span>
+    gio.Them(<span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-string">&quot;Chuot&quot;</span>, <span class="hljs-number">150_000m</span>, <span class="hljs-number">2</span>);
+    gio.Them(<span class="hljs-string">&quot;B&quot;</span>, <span class="hljs-string">&quot;Ban phim&quot;</span>, <span class="hljs-number">500_000m</span>);
+
+    <span class="hljs-comment">// Assert: kiểm tra kết quả</span>
+    Assert.Equal(<span class="hljs-number">800_000m</span>, gio.TongTien);
+    Assert.Equal(<span class="hljs-number">2</span>, gio.Dong.Count);
+}
+</code></pre>
+<p><strong>Đặt tên test</strong> nói rõ <em>cái gì – trong tình huống nào – kết quả mong đợi</em>:
+<code>TenPhuongThuc_TinhHuong_KetQuaMongDoi</code>. Khi test đỏ, chỉ đọc tên đã biết hỏng ở đâu.</p>
+<h3>Các <code>Assert</code> thường dùng</h3>
+<pre class="hljs"><code>Assert.Equal(mongDoi, thucTe);      Assert.NotEqual(...)
+Assert.True(dk);                    Assert.False(dk);
+Assert.Null(x);                     Assert.NotNull(x);
+Assert.Empty(ds);                   Assert.Single(ds);       Assert.Contains(<span class="hljs-string">&quot;abc&quot;</span>, chuoi);
+Assert.Throws&lt;ArgumentException&gt;(() =&gt; gio.Them(<span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-number">1m</span>));   <span class="hljs-comment">// kiểm tra NÉM lỗi đúng kiểu</span>
+Assert.Equal(<span class="hljs-number">1.23</span>, ketQua, precision: <span class="hljs-number">2</span>);                          <span class="hljs-comment">// so sánh số thực có sai số</span>
+</code></pre>
+<p>Thứ tự tham số: <strong><code>Assert.Equal(mongDoi, thucTe)</code></strong> (mong đợi trước). Đảo ngược làm thông báo lỗi gây hiểu nhầm.</p>
+<h2><code>[Theory]</code> — một test, nhiều bộ dữ liệu</h2>
+<pre class="hljs"><code>[<span class="hljs-meta">Theory</span>]
+[<span class="hljs-meta">InlineData(0, 1_000_000, 1_000_000)</span>]
+[<span class="hljs-meta">InlineData(10, 1_000_000, 900_000)</span>]
+[<span class="hljs-meta">InlineData(100, 1_000_000, 0)</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">TinhTienSauGiamGia_PhanTramHopLe_TraVeDung</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> phanTram, <span class="hljs-built_in">int</span> gia, <span class="hljs-built_in">int</span> mongDoi</span>)</span>
+{
+    <span class="hljs-keyword">var</span> gio = <span class="hljs-keyword">new</span> GioHang();
+    gio.Them(<span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-string">&quot;Laptop&quot;</span>, gia);
+
+    Assert.Equal((<span class="hljs-built_in">decimal</span>)mongDoi, gio.TinhTienSauGiamGia(phanTram));
+}
+</code></pre>
+<p>Mỗi <code>[InlineData]</code> sinh một test riêng. Với dữ liệu phức tạp dùng <code>[MemberData]</code>/<code>[ClassData]</code>. Nhớ kiểm tra cả <strong>giá trị biên</strong>
+(0, 100, âm, 101) — nơi hay có lỗi nhất.</p>
+<h2>Vòng đời và độc lập giữa các test</h2>
+<p>xUnit tạo <strong>một đối tượng class test mới cho mỗi test</strong>. Constructor là &quot;setup&quot;, <code>IDisposable.Dispose</code> là &quot;teardown&quot;:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">DonHangServiceTests</span> : <span class="hljs-title">IDisposable</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">DonHangServiceTests</span>()</span> { <span class="hljs-comment">/* chạy trước MỖI test */</span> }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Dispose</span>()</span> { <span class="hljs-comment">/* chạy sau MỖI test */</span> }
+}
+</code></pre>
+<p>Test phải <strong>độc lập</strong>: không phụ thuộc thứ tự chạy, không dùng chung trạng thái thay đổi được (biến <code>static</code>, file, CSDL thật).
+Test có thể chạy song song.</p>
+<h2>Cô lập phụ thuộc: mock và stub</h2>
+<p>Lớp <code>DonHangService</code> cần kho hàng (CSDL) và gửi email (mạng). Unit test không nên chạm vào chúng: chậm, không ổn định, có
+tác dụng phụ (gửi email thật!). Nhờ <strong>lập trình theo interface</strong> (Chương 18), ta thay bằng <strong>đối tượng giả</strong>:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">DonHangService</span>(<span class="hljs-params">IKhoHang kho, IGuiEmail email</span>)</span> { ... }   <span class="hljs-comment">// phụ thuộc vào interface</span>
+
+<span class="hljs-comment">// Trong test:</span>
+<span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IKhoHang _kho = Substitute.For&lt;IKhoHang&gt;();
+<span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IGuiEmail _email = Substitute.For&lt;IGuiEmail&gt;();
+
+[<span class="hljs-meta">Fact</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">DatHang_DuHang_GiamTonVaGuiEmail</span>()</span>
+{
+    <span class="hljs-keyword">var</span> gio = <span class="hljs-keyword">new</span> GioHang();
+    gio.Them(<span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-string">&quot;Chuot&quot;</span>, <span class="hljs-number">100_000m</span>, <span class="hljs-number">2</span>);
+    _kho.SoLuongTon(<span class="hljs-string">&quot;A&quot;</span>).Returns(<span class="hljs-number">10</span>);           <span class="hljs-comment">// STUB: dàn kết quả trả về</span>
+
+    <span class="hljs-keyword">var</span> kq = _service.DatHang(gio, <span class="hljs-string">&quot;khach@mail.com&quot;</span>);
+
+    Assert.True(kq.OK);
+    _kho.Received(<span class="hljs-number">1</span>).GiamTon(<span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-number">2</span>);           <span class="hljs-comment">// MOCK: kiểm tra hàm ĐÃ được gọi đúng cách</span>
+    _email.Received(<span class="hljs-number">1</span>).Gui(<span class="hljs-string">&quot;khach@mail.com&quot;</span>, Arg.Any&lt;<span class="hljs-built_in">string</span>&gt;(), Arg.Any&lt;<span class="hljs-built_in">string</span>&gt;());
+}
+
+[<span class="hljs-meta">Fact</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">DatHang_KhongDuHang_KhongGiamTonKhongGuiEmail</span>()</span>
+{
+    ...
+    _kho.DidNotReceive().GiamTon(Arg.Any&lt;<span class="hljs-built_in">string</span>&gt;(), Arg.Any&lt;<span class="hljs-built_in">int</span>&gt;());
+}
+</code></pre>
+<ul>
+<li><strong>Stub</strong>: trả dữ liệu định sẵn để dẫn code vào nhánh cần test.</li>
+<li><strong>Mock</strong>: ghi lại lời gọi để bạn kiểm tra &quot;có gọi/không gọi&quot; — dùng khi hành vi quan sát được là <em>tác dụng phụ</em> (gửi email).</li>
+<li>Đừng lạm dụng mock cho mọi thứ: test bám sát chi tiết cài đặt sẽ hỏng mỗi lần tái cấu trúc. Ưu tiên kiểm tra <strong>kết quả</strong> trước,
+chỉ verify lời gọi khi đó chính là hành vi cần bảo đảm.</li>
+<li>Đây là lý do <strong>Dependency Injection</strong> (nhận phụ thuộc qua constructor) quan trọng: nó cho phép thay thế phụ thuộc khi test.</li>
+</ul>
+<h2>Nguyên tắc test tốt (FIRST)</h2>
+<ul>
+<li><strong>F</strong>ast — nhanh (mili-giây), để chạy liên tục.</li>
+<li><strong>I</strong>ndependent — độc lập nhau.</li>
+<li><strong>R</strong>epeatable — chạy lúc nào, ở đâu cũng cùng kết quả (không phụ thuộc giờ hiện tại, mạng, dữ liệu thật: bọc <code>DateTime.Now</code> sau
+interface <code>TimeProvider</code>).</li>
+<li><strong>S</strong>elf-validating — tự báo đạt/hỏng, không cần người đọc kết quả.</li>
+<li><strong>T</strong>imely — viết cùng lúc/trước code.</li>
+</ul>
+<p>Một test nên kiểm tra <strong>một hành vi</strong> (nhiều <code>Assert</code> cho cùng một hành vi là được), không có <code>if</code>/vòng lặp/logic phức tạp,
+và <strong>đọc như tài liệu</strong>. Test cũng là code: giữ sạch, tránh lặp.</p>
+<p><strong>TDD</strong> (Test-Driven Development): viết test <em>thất bại</em> trước → viết code tối thiểu cho test đạt → tái cấu trúc → lặp lại
+(Red – Green – Refactor). Không bắt buộc, nhưng luyện tập vài lần giúp thiết kế tốt hơn.</p>
+<h2>Độ phủ (code coverage)</h2>
+<p><code>dotnet test --collect:&quot;XPlat Code Coverage&quot;</code> đo bao nhiêu dòng code được test chạy qua. Độ phủ <strong>cao không có nghĩa là test tốt</strong>
+(test không có <code>Assert</code> vẫn tăng độ phủ), nhưng <strong>độ phủ thấp chắc chắn là vùng rủi ro</strong>. Đừng đuổi theo con số 100%; hãy phủ kỹ
+nghiệp vụ quan trọng và các nhánh lỗi.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Test phụ thuộc thứ tự chạy hoặc trạng thái chung → lúc đạt lúc hỏng (&quot;flaky test&quot;).</li>
+<li>Test gọi CSDL/mạng/<code>DateTime.Now</code> thật.</li>
+<li><code>Assert.Equal(thucTe, mongDoi)</code> đảo tham số.</li>
+<li>Một test làm quá nhiều việc; tên test mơ hồ (<code>Test1</code>).</li>
+<li>Bắt ngoại lệ bằng <code>try/catch</code> thay vì <code>Assert.Throws</code> (test luôn đạt nếu không ném lỗi).</li>
+<li>Mock quá nhiều → test gắn chặt vào cài đặt.</li>
+<li>Quên đặt <code>[Fact]</code>/<code>[Theory]</code> → test không bao giờ chạy (kiểm tra số test được phát hiện).</li>
+<li>So sánh số thực bằng <code>Assert.Equal(0.3, 0.1 + 0.2)</code> (dùng tham số <code>precision</code>).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết test cho <code>GioHang.Xoa</code> khi sản phẩm không tồn tại, và test gộp số lượng khi thêm cùng sản phẩm 3 lần.</li>
+<li>Dùng <code>[Theory]</code> với <code>[MemberData]</code> kiểm tra hàm kiểm tra năm nhuận cho 10 năm khác nhau.</li>
+<li>Viết <code>DonHangService</code> test cho trường hợp <code>IKhoHang</code> ném ngoại lệ (<code>_kho.When(...).Do(_ =&gt; throw ...)</code>); kiểm tra không gửi email.</li>
+<li>Làm theo TDD: viết test cho <code>TinhPhiVanChuyen(khoiLuong)</code> (miễn phí dưới 1kg, 20k đến 5kg, 50k trên đó) trước rồi mới viết hàm.</li>
+<li>Đo độ phủ và tìm các dòng chưa được test trong <code>GioHang</code>; viết thêm test cho chúng.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch37-reflection-attribute.html">&larr; 37. Reflection, Attribute và Serialization</a><a class="nav-next" href="ch39-debug-logging.html">39. Debug và logging &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

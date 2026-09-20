@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 39 — Debug và logging — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch31-delegate-event-lambda.html">31. Delegate, event và lambda</a></li><li><a class="chapter-link" href="ch32-csharp-hien-dai.html">32. Record, pattern matching và cú pháp mới</a></li><li><a class="chapter-link" href="ch33-async-await.html">33. Lập trình bất đồng bộ async/await</a></li><li><a class="chapter-link" href="ch34-da-luong.html">34. Đa luồng và đồng bộ hoá</a></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><a class="chapter-link" href="ch35-file-io.html">35. File I/O</a></li><li><a class="chapter-link" href="ch36-json-csv.html">36. JSON và CSV</a></li><li><a class="chapter-link" href="ch37-reflection-attribute.html">37. Reflection, Attribute và Serialization</a></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><a class="chapter-link" href="ch38-unit-test.html">38. Unit test với xUnit</a></li><li><a class="chapter-link active" href="ch39-debug-logging.html">39. Debug và logging</a></li><li><a class="chapter-link" href="ch40-git-nuget-cau-hinh.html">40. Git, NuGet và cấu hình</a></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 39 — Debug và logging</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Dùng debugger hiệu quả: breakpoint có điều kiện, Watch, Call Stack, Step, Exception settings.</li>
+<li>Ghi <strong>log</strong> đúng cách với <code>ILogger</code>: cấp độ, structured logging, exception, scope.</li>
+<li>Biết log cái gì và <strong>không</strong> log cái gì.</li>
+<li>Có quy trình hệ thống để tìm và sửa lỗi.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch39-debug-logging/"><code>code/ch39-debug-logging/</code></a>.</p>
+<h2>Quy trình tìm lỗi</h2>
+<p>Đừng đoán mò. Làm theo trình tự:</p>
+<ol>
+<li><strong>Tái hiện</strong> lỗi ổn định (các bước cụ thể, dữ liệu cụ thể).</li>
+<li><strong>Thu hẹp</strong> phạm vi: lỗi nằm ở tầng nào, đầu vào nào?</li>
+<li><strong>Đặt giả thuyết</strong> rồi <strong>kiểm chứng</strong> bằng debugger/log/test — không sửa thử lung tung.</li>
+<li><strong>Sửa nguyên nhân gốc</strong>, không chỉ triệu chứng.</li>
+<li><strong>Viết test</strong> chứng minh lỗi đã sửa và không quay lại (Chương 38).</li>
+</ol>
+<p>Đọc kỹ <strong>thông báo lỗi và stack trace</strong>: dòng trên cùng cho biết <em>chỗ nổ</em>, các dòng dưới cho biết <em>ai gọi đến đó</em>. Tìm dòng
+đầu tiên thuộc <strong>code của bạn</strong> — thường là nguồn gốc.</p>
+<h2>Debugger</h2>
+<p>Chạy ở chế độ <strong>Debug</strong> (<code>F5</code>, cấu hình Debug — khác Release: Release tối ưu code nên biến bị &quot;mất&quot;, thứ tự chạy khó theo dõi).</p>
+<h3>Breakpoint</h3>
+<ul>
+<li><strong>Breakpoint</strong> (<code>F9</code>): dừng trước khi chạy dòng đó.</li>
+<li><strong>Conditional breakpoint</strong>: chuột phải vào chấm đỏ → <em>Conditions</em>, ví dụ <code>i == 500</code> hay <code>ten == &quot;An&quot;</code>; chỉ dừng khi đúng.
+Vô giá khi lỗi chỉ xảy ra ở vòng lặp thứ 500.</li>
+<li><strong>Hit count</strong>: dừng ở lần thứ <em>n</em>. <strong>Tracepoint / Logpoint</strong>: in thông tin ra cửa sổ Output <strong>mà không dừng</strong> và không sửa code.</li>
+<li><strong>Exception breakpoint</strong>: dừng ngay khi ném một loại exception (Debug → <em>Windows → Exception Settings</em>), kể cả khi nó được <code>catch</code>.</li>
+</ul>
+<h3>Điều khiển chạy</h3>
+<table>
+<thead>
+<tr>
+<th>Thao tác</th>
+<th>Phím (VS / VS Code)</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Continue</td>
+<td><code>F5</code></td>
+<td>chạy tới breakpoint kế</td>
+</tr>
+<tr>
+<td>Step Over</td>
+<td><code>F10</code></td>
+<td>chạy hết dòng, không vào hàm</td>
+</tr>
+<tr>
+<td>Step Into</td>
+<td><code>F11</code></td>
+<td>đi vào hàm được gọi</td>
+</tr>
+<tr>
+<td>Step Out</td>
+<td><code>Shift+F11</code></td>
+<td>chạy hết hàm hiện tại, quay ra nơi gọi</td>
+</tr>
+<tr>
+<td>Run to Cursor</td>
+<td><code>Ctrl+F10</code></td>
+<td>chạy tới dòng đang trỏ</td>
+</tr>
+</tbody>
+</table>
+<h3>Xem trạng thái</h3>
+<ul>
+<li><strong>Locals / Autos</strong>: biến cục bộ hiện tại. <strong>Watch</strong>: gõ biểu thức bạn quan tâm (<code>danhSach.Count</code>, <code>x * 2</code>).</li>
+<li><strong>Rê chuột</strong> lên biến; ghim (pin) để theo dõi.</li>
+<li><strong>Call Stack</strong>: chuỗi hàm dẫn tới đây — bấm vào từng khung để xem biến ở tầng đó.</li>
+<li><strong>Immediate/Debug Console</strong>: chạy thử biểu thức, gọi hàm, <strong>đổi giá trị biến</strong> ngay lúc dừng.</li>
+<li><strong>Edit and Continue</strong> (Visual Studio): sửa code khi đang dừng rồi chạy tiếp mà không khởi động lại.</li>
+<li><strong>Debug.WriteLine</strong>/<strong><code>Debug.Assert</code></strong>: chỉ hoạt động ở bản Debug; bị loại khi build Release.</li>
+</ul>
+<h3>Gỡ lỗi ứng dụng web/đang chạy</h3>
+<p><em>Attach to Process</em> gắn debugger vào tiến trình đang chạy. Với <a href="http://ASP.NET">ASP.NET</a> Core, chạy dự án bằng <code>F5</code> là debug luôn; lỗi trên server
+thật thì <strong>log</strong> là công cụ chính (bạn không thể đặt breakpoint trên production).</p>
+<h2>Vì sao cần logging?</h2>
+<p>Debugger chỉ dùng được khi <em>bạn ngồi trước máy đang chạy</em>. Khi ứng dụng chạy trên server lúc 3 giờ sáng, <strong>log</strong> là &quot;hộp đen&quot;
+duy nhất ghi lại chuyện gì đã xảy ra.</p>
+<h2><code>ILogger</code> — logging chuẩn của .NET</h2>
+<p>Thư viện: <code>Microsoft.Extensions.Logging</code> (là chuẩn; <a href="http://ASP.NET">ASP.NET</a> Core dùng sẵn, nhận <code>ILogger&lt;T&gt;</code> qua dependency injection).</p>
+<pre class="hljs"><code><span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> factory = LoggerFactory.Create(b =&gt; b.SetMinimumLevel(LogLevel.Debug).AddSimpleConsole());
+ILogger&lt;Program&gt; log = factory.CreateLogger&lt;Program&gt;();
+
+log.LogInformation(<span class="hljs-string">&quot;Nguoi dung {NguoiDung} them {SoLuong} san pham&quot;</span>, nguoiDung, soLuong);
+</code></pre>
+<p>Trong lớp nghiệp vụ, nhận <code>ILogger&lt;T&gt;</code> qua constructor (Tập 2 sẽ dùng DI tự cấp):</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">DichVuTinhToan</span>(<span class="hljs-title">ILogger</span>&lt;<span class="hljs-title">DichVuTinhToan</span>&gt; <span class="hljs-title">log</span>) { ... }
+</code></pre>
+<h3>Các cấp độ (LogLevel)</h3>
+<table>
+<thead>
+<tr>
+<th>Cấp</th>
+<th>Dùng cho</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Trace</code></td>
+<td>cực kỳ chi tiết, có thể chứa dữ liệu nhạy cảm (chỉ dev)</td>
+</tr>
+<tr>
+<td><code>Debug</code></td>
+<td>thông tin cho lập trình viên khi điều tra</td>
+</tr>
+<tr>
+<td><code>Information</code></td>
+<td>luồng bình thường của ứng dụng (đã đăng nhập, đã đặt hàng)</td>
+</tr>
+<tr>
+<td><code>Warning</code></td>
+<td>bất thường nhưng vẫn chạy được (dữ liệu thiếu, dùng giá trị mặc định, sắp hết dung lượng)</td>
+</tr>
+<tr>
+<td><code>Error</code></td>
+<td>một thao tác <strong>thất bại</strong> (exception đã bắt)</td>
+</tr>
+<tr>
+<td><code>Critical</code></td>
+<td>lỗi nghiêm trọng, ứng dụng/hệ thống có nguy cơ sập</td>
+</tr>
+</tbody>
+</table>
+<p>Mức tối thiểu cấu hình theo môi trường (<code>Debug</code> khi dev, <code>Information</code>/<code>Warning</code> khi production) — <strong>không đổi code</strong> mà đổi cấu hình
+(<code>appsettings.json</code>, Chương 40; chương trình mẫu đọc biến môi trường <code>LOG_LEVEL</code>).</p>
+<h3>Structured logging — dùng tham số đặt tên, không nội suy chuỗi</h3>
+<pre class="hljs"><code>log.LogInformation(<span class="hljs-string">&quot;Nguoi dung {NguoiDung} them {SoLuong} san pham&quot;</span>, nguoiDung, soLuong);   <span class="hljs-comment">// ĐÚNG</span>
+log.LogInformation(<span class="hljs-string">$&quot;Nguoi dung <span class="hljs-subst">{nguoiDung}</span> them <span class="hljs-subst">{soLuong}</span> san pham&quot;</span>);                       <span class="hljs-comment">// SAI</span>
+</code></pre>
+<p>Bản đúng giữ lại <strong>mẫu thông điệp</strong> và <strong>các tham số riêng biệt</strong> → công cụ (Seq, Elasticsearch, Application Insights) lọc/tìm theo
+<code>NguoiDung = &quot;an&quot;</code> được, và tiết kiệm bộ nhớ khi mức log bị tắt (không phải dựng chuỗi). Bản nội suy chỉ ra một chuỗi trơn.</p>
+<h3>Ghi exception</h3>
+<pre class="hljs"><code><span class="hljs-keyword">catch</span> (DivideByZeroException e)
+{
+    log.LogError(e, <span class="hljs-string">&quot;Khong the chia {A} cho {B}&quot;</span>, a, b);    <span class="hljs-comment">// truyền exception làm tham số ĐẦU</span>
+    <span class="hljs-keyword">throw</span>;
+}
+</code></pre>
+<p>Truyền cả <code>Exception</code> để log giữ đầy đủ stack trace. <strong>Đừng vừa log vừa <code>throw</code> ở mọi tầng</strong> — cùng một lỗi bị log nhiều lần
+gây nhiễu. Quy tắc: log <strong>một lần</strong> ở nơi cuối cùng xử lý lỗi (ví dụ middleware toàn cục của web), hoặc log ở nơi có thêm ngữ
+cảnh hữu ích rồi ném lại.</p>
+<h3>Scope — gắn ngữ cảnh chung</h3>
+<pre class="hljs"><code><span class="hljs-keyword">using</span> (log.BeginScope(<span class="hljs-string">&quot;RequestId={RequestId}&quot;</span>, requestId))
+{
+    log.LogInformation(<span class="hljs-string">&quot;Bat dau xu ly&quot;</span>);   <span class="hljs-comment">// mọi dòng log trong khối đều kèm RequestId</span>
+    ...
+}
+</code></pre>
+<p>Rất hữu ích để nối các dòng log của cùng một request (correlation id).</p>
+<h3>Đích ghi log (provider) và Serilog</h3>
+<p>Mặc định .NET có provider Console, Debug, EventLog. Cho ứng dụng thật, nhiều người dùng <strong>Serilog</strong> (hoặc NLog) — cắm vào
+<code>ILogger</code> nên code của bạn không đổi — để ghi ra file (có xoay vòng), Seq, Elasticsearch, Application Insights:</p>
+<pre class="hljs"><code>dotnet add package Serilog.AspNetCore
+</code></pre>
+<p>Ở Tập 2 (<a href="http://ASP.NET">ASP.NET</a> Core) ta sẽ cấu hình Serilog và OpenTelemetry (Tập 3).</p>
+<h2>Log cái gì, không log cái gì?</h2>
+<p><strong>Nên log:</strong> khởi động/tắt ứng dụng, các sự kiện nghiệp vụ quan trọng, lỗi và cảnh báo (kèm ID/ngữ cảnh: mã đơn hàng, user id),
+thời gian xử lý các thao tác chậm, lời gọi dịch vụ ngoài và kết quả.</p>
+<p><strong>TUYỆT ĐỐI KHÔNG log:</strong> mật khẩu, token, khoá API, số thẻ, dữ liệu cá nhân nhạy cảm (số CMND, y tế...), toàn bộ body request chứa dữ
+liệu như vậy. Log thường được lưu lâu và nhiều người truy cập được → rò rỉ. Che/băm dữ liệu nhạy cảm (<code>sdt: 09****111</code>).</p>
+<p>Log <strong>đúng lượng</strong>: quá ít không đủ điều tra, quá nhiều (log trong vòng lặp nóng) làm chậm và tốn dung lượng. Mỗi dòng log
+nên giúp trả lời được: <em>cái gì xảy ra, với đối tượng nào, kết quả ra sao</em>.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Debug ở cấu hình Release rồi thắc mắc vì sao breakpoint không dừng/biến &quot;optimized away&quot;.</li>
+<li>Nội suy chuỗi trong <code>Log...</code> thay vì tham số đặt tên.</li>
+<li>Log mật khẩu/token.</li>
+<li><code>catch (Exception e) { log.LogError(e.Message); }</code> — mất stack trace; truyền <code>e</code> làm tham số đầu.</li>
+<li>Log lỗi ở mọi tầng → một sự cố ra hàng chục dòng.</li>
+<li>Đặt tất cả ở <code>Information</code>, không phân cấp → không lọc được; hoặc để <code>Debug/Trace</code> trên production.</li>
+<li>Dùng <code>Console.WriteLine</code> thay <code>ILogger</code> trong ứng dụng thật (không có cấp độ, không cấu hình được).</li>
+<li>Sửa lỗi bằng cách &quot;thử đại&quot; thay vì tái hiện và xác định nguyên nhân.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Chạy chương trình mẫu với <code>LOG_LEVEL=Debug</code> rồi <code>Warning</code>; quan sát dòng nào biến mất.</li>
+<li>Đặt breakpoint có điều kiện trong <code>TinhTong</code> chỉ dừng khi <code>x == 2</code>; dùng Watch theo dõi <code>tong</code>.</li>
+<li>Thêm log vào <code>TaiKhoan.RutTien</code> (Chương 14): <code>Information</code> khi thành công, <code>Warning</code> khi không đủ tiền — có nên log số dư?</li>
+<li>Cố tình gây <code>NullReferenceException</code>, đọc stack trace và tìm dòng gốc bằng Call Stack.</li>
+<li>Dùng Logpoint (không sửa code) để in giá trị một biến trong vòng lặp.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch38-unit-test.html">&larr; 38. Unit test với xUnit</a><a class="nav-next" href="ch40-git-nuget-cau-hinh.html">40. Git, NuGet và cấu hình &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
