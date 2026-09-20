@@ -1,0 +1,64 @@
+# CI cho tap3/code/kho-clean (Chuong 15). Chi chay khi co thay doi trong thu muc nay.
+name: kho-clean
+
+on:
+  push:
+    branches: [main]
+    paths: ["tap3/code/kho-clean/**", ".github/workflows/kho-clean.yml"]
+  pull_request:
+    paths: ["tap3/code/kho-clean/**", ".github/workflows/kho-clean.yml"]
+
+permissions:
+  contents: read          # quyen TOI THIEU cho GITHUB_TOKEN
+
+concurrency:
+  group: kho-clean-${{ github.ref }}
+  cancel-in-progress: true          # commit moi -> huy lan chay cu cua cung nhanh
+
+defaults:
+  run:
+    working-directory: tap3/code/kho-clean
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore Kho.slnx
+
+      - name: Build (canh bao = loi tren CI)
+        run: dotnet build Kho.slnx -c Release --no-restore -warnaserror
+
+      - name: Test
+        run: dotnet test Kho.slnx -c Release --no-build --logger "trx;LogFileName=ket-qua.trx" --collect:"XPlat Code Coverage"
+
+      - name: Luu ket qua test
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ket-qua-test
+          path: tap3/code/kho-clean/**/TestResults/**
+          retention-days: 7
+
+  docker:
+    needs: build-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image (khong day len registry)
+        uses: docker/build-push-action@v6
+        with:
+          context: tap3/code/kho-clean
+          push: false
+          tags: kho-web:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
