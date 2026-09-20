@@ -6,6 +6,10 @@
   "scripts": {
     "build": "node tools/build.js",
     "build:pdf": "node tools/build-pdf.js",
+    "build:tap2": "node tools/build.js tap2",
+    "build:pdf:tap2": "node tools/build-pdf.js tap2",
+    "build:tap3": "node tools/build.js tap3",
+    "build:pdf:tap3": "node tools/build-pdf.js tap3",
     "build:all": "npm run build && npm run build:pdf"
   },
   "devDependencies": {

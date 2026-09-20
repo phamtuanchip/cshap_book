@@ -61,12 +61,12 @@ await using (var fs = File.OpenRead(file))
 File.Delete(file);
 
 // 7. CSV: doc bang tay, xu ly dau ngoac kep
-string csv = """
+string csv = """"
     ma,ten,diem
     1,An,8.5
     2,"Binh, Nguyen",7.0
     3,"Chi ""Cool""",9.0
-    """;
+    """";
 var bang = new List<(int Ma, string Ten, double Diem)>();
 foreach (var dong in csv.Split('\n').Skip(1))
 {

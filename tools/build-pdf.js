@@ -9,7 +9,9 @@ const path = require('path');
 const MarkdownIt = require('markdown-it');
 const hljs = require('highlight.js');
 
-const ROOT = path.join(__dirname, '..');
+// Tham so dong lenh: ten thu muc tap (vd 'tap2'); de trong = Tap 1 (nam o goc repo)
+const VOL = process.argv[2] || '';
+const ROOT = path.join(__dirname, '..', VOL);
 const BOOK_DIR = path.join(ROOT, 'book');
 const DIST_DIR = path.join(ROOT, 'dist');
 const GITHUB_REPO_URL = 'https://github.com/phamtuanchip/cshap_book';
@@ -47,7 +49,7 @@ function chapterAnchor(chapter) {
 // duoc viet lai TRO THANG sang GitHub thay vi "../../code/..." (chi dung khi doc
 // file .md tren GitHub) hay "code/..." (chi dung trong dist/ phang cua ban HTML).
 function fixCodeLinksForPdf(html) {
-  return html.replace(/href="\.\.\/\.\.\/code\//g, `href="${GITHUB_REPO_URL}/tree/main/code/`);
+  return html.replace(/href="\.\.\/\.\.\/code\//g, `href="${GITHUB_REPO_URL}/tree/main/${VOL ? VOL + '/' : ''}code/`);
 }
 
 const allChapters = [];
@@ -153,7 +155,7 @@ fs.writeFileSync(tempHtmlPath, fullHtml, 'utf8');
     // <svg> tinh, khong can tuong tac trong PDF (khac ban HTML co pan/zoom)
     await page.waitForFunction('window.__mermaidDone === true', { timeout: 5000 }).catch(() => {});
 
-    const outPdfPath = path.join(DIST_DIR, 'csharp-tu-co-ban-den-nang-cao-tap1.pdf');
+    const outPdfPath = path.join(DIST_DIR, manifest.pdfName || 'csharp-tu-co-ban-den-nang-cao-tap1.pdf');
     await page.pdf({
       path: outPdfPath,
       format: 'A4',

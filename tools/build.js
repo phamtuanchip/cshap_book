@@ -7,7 +7,9 @@ const path = require('path');
 const MarkdownIt = require('markdown-it');
 const hljs = require('highlight.js');
 
-const ROOT = path.join(__dirname, '..');
+// Tham so dong lenh: ten thu muc tap (vd 'tap2'); de trong = Tap 1 (nam o goc repo)
+const VOL = process.argv[2] || '';
+const ROOT = path.join(__dirname, '..', VOL);
 const BOOK_DIR = path.join(ROOT, 'book');
 const CODE_DIR = path.join(ROOT, 'code');
 const DIST_DIR = path.join(ROOT, 'dist');

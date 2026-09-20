@@ -108,7 +108,12 @@ class DonHang(decimal tienHang, Func<decimal, decimal> chinhSach)
 }
 
 // Observer (bang event cua C#)
-record GiaThayDoiEventArgs(string Ma, decimal GiaCu, decimal GiaMoi) : EventArgs;
+class GiaThayDoiEventArgs(string ma, decimal giaCu, decimal giaMoi) : EventArgs
+{
+    public string Ma { get; } = ma;
+    public decimal GiaCu { get; } = giaCu;
+    public decimal GiaMoi { get; } = giaMoi;
+}
 
 class CuaHangGiaCoPhieu
 {

@@ -10,8 +10,8 @@ và các ứng dụng web nâng cao áp dụng design pattern / kiến trúc bes
 > build lại từ nguồn Markdown. Còn lại: EPUB, **Tập 2** (ASP.NET Core) và **Tập 3** (web nâng cao). Cấu trúc và pipeline tham khảo
 > repo `java_book`.
 >
-> **Lưu ý:** code mẫu được viết trên máy chưa cài .NET SDK nên **chưa được biên dịch/chạy thử tự động** — cần chạy
-> `dotnet build` và `dotnet test` trên máy có .NET 10 SDK và sửa các lỗi nhỏ (nếu có) trước khi phát hành chính thức.
+> **Kiểm chứng:** toàn bộ code mẫu Tập 1 đã được biên dịch và chạy thử bằng .NET SDK 10.0 — 0 lỗi biên dịch,
+> 25 unit test (ch38, ch43) đạt, các chương trình in đúng kết quả như trong sách.
 
 ## 1. Mục tiêu
 
@@ -171,7 +171,7 @@ không dùng mdBook/Pandoc.
 5. ✅ Phần 4–5 (exception, generics, nullable, collection, LINQ, thuật toán).
 6. ✅ Phần 6–7 (delegate, C# hiện đại, async, đa luồng, I/O, JSON/CSV, reflection).
 7. ✅ Phần 8–9 (test/tooling, pattern, SOLID, dự án tổng hợp) + phụ lục → **hoàn thành nội dung Tập 1**.
-8. ✅ Build HTML + PDF Tập 1 (đã rà soát: 0 link code hỏng, đủ 46 mục). ⬜ Còn: chạy thử toàn bộ code mẫu bằng .NET SDK, đọc soát PDF, publish.
+8. ✅ Build HTML + PDF Tập 1 (đã rà soát: 0 link code hỏng, đủ 46 mục). ✅ Đã chạy thử toàn bộ code mẫu bằng .NET SDK 10. ⬜ Còn: đọc soát PDF, publish.
 9. ⬜ Tập 2: Dữ liệu → Web API → MVC/Razor Pages/Blazor.
 10. ⬜ Tập 3: Kiến trúc → Sản xuất → Dự án tổng hợp.
 11. ⬜ Xuất bản EPUB cho cả 3 tập.
