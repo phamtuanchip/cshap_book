@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 13 — Quan hệ, truy vấn nâng cao và hiệu năng — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-sql-sqlite.html">11. SQL cơ bản và SQLite</a></li><li><a class="chapter-link" href="ch12-efcore-co-ban.html">12. Entity Framework Core cơ bản</a></li><li><a class="chapter-link active" href="ch13-efcore-quan-he.html">13. Quan hệ, truy vấn nâng cao và hiệu năng</a></li><li><a class="chapter-link" href="ch14-api-voi-efcore.html">14. Web API hoàn chỉnh với EF Core</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><span class="chapter-link pending">15. ASP.NET Core MVC</span></li><li><span class="chapter-link pending">16. Razor Pages</span></li><li><span class="chapter-link pending">17. Form, validation phía server và chống CSRF</span></li><li><span class="chapter-link pending">18. Blazor</span></li><li><span class="chapter-link pending">19. Gọi API ngoài với HttpClient</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 13 — Quan hệ, truy vấn nâng cao và hiệu năng</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Mô hình hoá quan hệ <strong>1–nhiều, nhiều–nhiều, kiểu sở hữu (owned)</strong> trong EF Core.</li>
+<li>Chọn cách tải dữ liệu liên quan: <code>Include</code>, <code>AsSplitQuery</code>, <strong>projection</strong>, explicit loading — và <strong>nhận ra/sửa N+1</strong>.</li>
+<li>Dùng <strong>query filter</strong> (xoá mềm), <strong>concurrency token</strong> (xung đột đồng thời), SQL thuần, <strong>phân trang</strong> (offset và keyset).</li>
+</ul>
+<p>Code mẫu: <a href="code/ch13-efcore-quan-he/"><code>code/ch13-efcore-quan-he/</code></a> — mỗi mục in ra <strong>số câu SQL thực sự chạy</strong> để bạn thấy khác biệt bằng số liệu.</p>
+<h2>Quan hệ trong EF Core</h2>
+<h3>1–nhiều</h3>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Nhom</span>     { <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> Id { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } <span class="hljs-keyword">public</span> List&lt;SanPham&gt; SanPhams { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = []; }   <span class="hljs-comment">// &quot;một&quot; (principal)</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SanPham</span>  { <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> NhomId { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } <span class="hljs-keyword">public</span> Nhom Nhom { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-literal">null</span>!; }          <span class="hljs-comment">// &quot;nhiều&quot; (dependent)</span>
+</code></pre>
+<p>Cặp <strong>khoá ngoại</strong> (<code>NhomId</code>) + <strong>navigation</strong> (<code>Nhom</code>, <code>SanPhams</code>) được EF tự nhận theo quy ước; cấu hình rõ bằng Fluent API:</p>
+<pre class="hljs"><code>e.HasOne(s =&gt; s.Nhom).WithMany(n =&gt; n.SanPhams).HasForeignKey(s =&gt; s.NhomId);
+</code></pre>
+<p>Thêm bằng navigation: <code>new SanPham { Nhom = phuKien }</code> — EF tự điền khoá ngoại khi <code>SaveChanges</code>.</p>
+<h3>Nhiều–nhiều</h3>
+<p>Sản phẩm có nhiều thẻ, thẻ gắn nhiều sản phẩm. Từ EF Core 5 <strong>không cần</strong> class cho bảng nối:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SanPham</span> { <span class="hljs-keyword">public</span> List&lt;The&gt; The { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = []; }
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">The</span>     { <span class="hljs-keyword">public</span> List&lt;SanPham&gt; SanPhams { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = []; }
+e.HasMany(s =&gt; s.The).WithMany(t =&gt; t.SanPhams);        <span class="hljs-comment">// EF tự tạo bảng nối SanPhamThe</span>
+</code></pre>
+<p>Khi bảng nối <strong>có dữ liệu riêng</strong> (số lượng, đơn giá của <code>ChiTietDon</code>), hãy tạo entity nối tường minh với <strong>khoá chính kết hợp</strong>:</p>
+<pre class="hljs"><code>e.HasKey(c =&gt; <span class="hljs-keyword">new</span> { c.DonHangId, c.SanPhamId });
+</code></pre>
+<h3>Kiểu sở hữu (owned type) — value object</h3>
+<p>Một khái niệm không có danh tính riêng (địa chỉ) nhưng muốn đóng gói thành class:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">DiaChi</span> { <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Duong { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-string">&quot;&quot;</span>; <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> ThanhPho { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-string">&quot;&quot;</span>; }
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">KhachHang</span> { <span class="hljs-keyword">public</span> DiaChi? DiaChi { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } }
+mb.Entity&lt;KhachHang&gt;().OwnsOne(k =&gt; k.DiaChi);           <span class="hljs-comment">// cột DiaChi_Duong, DiaChi_ThanhPho nằm CHUNG bảng khach_hang</span>
+</code></pre>
+<p>Truy vấn tự nhiên: <code>db.KhachHangs.Count(k =&gt; k.DiaChi!.ThanhPho == &quot;Ha Noi&quot;)</code>. Đây là cách ánh xạ <strong>value object</strong> của thiết kế hướng miền (Tập 3).</p>
+<h2>Tải dữ liệu liên quan</h2>
+<p>Mặc định EF <strong>không</strong> nạp navigation — <code>don.ChiTiets</code> rỗng nếu bạn không yêu cầu. Bốn cách, đánh đổi khác nhau. Chạy code mẫu với 20 đơn hàng, mỗi đơn 2 dòng:</p>
+<table>
+<thead>
+<tr>
+<th>Cách</th>
+<th>Số câu SQL</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Explicit loading trong vòng lặp</td>
+<td><strong>21</strong></td>
+<td>✘ <strong>N+1</strong></td>
+</tr>
+<tr>
+<td><code>Include</code> + <code>ThenInclude</code></td>
+<td>1</td>
+<td>JOIN một lần</td>
+</tr>
+<tr>
+<td><code>Include</code> + <code>AsSplitQuery</code></td>
+<td>2</td>
+<td>tách thành câu đơn giản</td>
+</tr>
+<tr>
+<td><strong>Projection</strong> (<code>Select</code>)</td>
+<td>1</td>
+<td>chỉ lấy cột cần, tính trong SQL</td>
+</tr>
+</tbody>
+</table>
+<h3>N+1 — vấn đề hiệu năng kinh điển</h3>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">await</span> db.DonHangs.ToListAsync();                          <span class="hljs-comment">// 1 câu: lấy 20 đơn</span>
+<span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> d <span class="hljs-keyword">in</span> ds)
+    <span class="hljs-keyword">await</span> db.Entry(d).Collection(x =&gt; x.ChiTiets).LoadAsync();      <span class="hljs-comment">// + 20 câu: mỗi đơn một câu → tổng 21</span>
+</code></pre>
+<p>&quot;N+1&quot;: <strong>1</strong> câu lấy danh sách + <strong>N</strong> câu cho từng phần tử. Với 10.000 đơn là 10.001 lượt gọi CSDL — mỗi lượt tốn độ trễ mạng — ứng dụng chậm dần theo dữ liệu. Nó cũng xảy ra <strong>ẩn</strong> khi bạn truy cập <code>d.KhachHang.Ten</code> trong <code>foreach</code> với <strong>lazy loading</strong> (nên tắt/không dùng), hoặc khi gọi truy vấn trong vòng lặp.</p>
+<p><strong>Cách phát hiện:</strong> đếm câu SQL (như mẫu, hoặc log <code>Microsoft.EntityFrameworkCore.Database.Command</code>), MiniProfiler, Application Insights. Quy tắc: <em>số câu SQL của một request phải là hằng số nhỏ, không tăng theo số dòng.</em></p>
+<h3><code>Include</code> — nạp kèm bằng JOIN</h3>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">await</span> db.DonHangs.Include(d =&gt; d.ChiTiets).ThenInclude(c =&gt; c.SanPham).ToListAsync();   <span class="hljs-comment">// 1 câu</span>
+</code></pre>
+<p>Đơn giản nhưng nạp <strong>toàn bộ cột</strong> của mọi entity liên quan, và các collection lồng nhau tạo <strong>cartesian explosion</strong>: đơn hàng × dòng × thẻ… thành hàng trăm nghìn dòng trùng lặp. Khi có ≥ 2 collection cùng <code>Include</code>, cân nhắc <code>.AsSplitQuery()</code> — EF chạy <strong>một câu cho mỗi collection</strong> (ít dữ liệu truyền hơn, đổi lại nhiều lượt gọi hơn và có thể không nhất quán tuyệt đối nếu dữ liệu đổi giữa các câu).</p>
+<h3>Projection — cách tốt nhất khi chỉ đọc</h3>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> tong = <span class="hljs-keyword">await</span> db.DonHangs
+    .Select(d =&gt; <span class="hljs-keyword">new</span>
+    {
+        d.Id,
+        KhachHang = d.KhachHang.Ten,
+        SoDong = d.ChiTiets.Count,
+        TongTien = d.ChiTiets.Sum(c =&gt; c.SoLuong * c.DonGia),
+    })
+    .OrderByDescending(x =&gt; x.TongTien).Take(<span class="hljs-number">3</span>).ToListAsync();          <span class="hljs-comment">// 1 câu, EF tự JOIN + SUM trong SQL</span>
+</code></pre>
+<p>Chỉ những cột bạn <code>Select</code> được lấy, kết quả không bị theo dõi (không tốn bộ nhớ tracking), phép tính chạy ở CSDL. <strong>Quy tắc:</strong> truy vấn cho <strong>API/báo cáo (đọc)</strong> → dùng projection sang DTO. Truy vấn để <strong>sửa</strong> entity → tải entity (kèm <code>Include</code> cần thiết).</p>
+<h3>Explicit loading</h3>
+<p><code>db.Entry(d).Collection(x =&gt; x.ChiTiets).LoadAsync()</code> — nạp có chủ đích cho <strong>một</strong> entity đã có. Hợp khi cần nạp tuỳ điều kiện, không hợp trong vòng lặp.</p>
+<h2>Nhiều–nhiều, truy vấn qua quan hệ</h2>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> coTheMoi = <span class="hljs-keyword">await</span> db.SanPhams.Where(s =&gt; s.The.Any(t =&gt; t.Ten == <span class="hljs-string">&quot;moi&quot;</span>)).Select(s =&gt; s.Ma).ToListAsync();
+</code></pre>
+<p>EF dịch <code>Any</code> trên collection thành <code>EXISTS</code> trong SQL — viết theo cách nghĩ đối tượng, không cần tự viết JOIN bảng nối.</p>
+<h2>Query filter — xoá mềm (soft delete)</h2>
+<p>Nhiều hệ thống không xoá thật mà đánh dấu <code>DaXoa = true</code> (giữ lịch sử, hoá đơn cũ vẫn tham chiếu được). <strong>Global query filter</strong> tự thêm điều kiện vào <strong>mọi</strong> truy vấn:</p>
+<pre class="hljs"><code>e.HasQueryFilter(s =&gt; !s.DaXoa);
+
+<span class="hljs-keyword">await</span> db.SanPhams.CountAsync();                          <span class="hljs-comment">// 3 (ẩn sản phẩm đã xoá mềm)</span>
+<span class="hljs-keyword">await</span> db.SanPhams.IgnoreQueryFilters().CountAsync();     <span class="hljs-comment">// 4 (bỏ qua filter khi cần, ví dụ trang quản trị)</span>
+</code></pre>
+<p>Dùng nhiều cho <strong>đa tenant</strong> (<code>TenantId == hiện tại</code>). Cảnh báo quan trọng: filter trên entity là đầu <strong>bắt buộc</strong> của một quan hệ khiến các dòng phụ thuộc &quot;biến mất&quot; (EF cảnh báo khi tạo model). Ví dụ <code>ChiTietDon → SanPham</code> bị lọc làm đơn hàng cũ mất dòng — xử lý bằng <code>IgnoreQueryFilters()</code> ở truy vấn đơn hàng (như Chương 14) hoặc cấu hình navigation tuỳ chọn.</p>
+<h2>Xung đột đồng thời (optimistic concurrency)</h2>
+<p>Hai người cùng mở sản phẩm có tồn kho 30, mỗi người bán vài cái rồi lưu — nếu không phòng ngừa, người lưu sau <strong>ghi đè</strong> thay đổi của người trước (&quot;lost update&quot;). <strong>Optimistic concurrency</strong>: không khoá dòng khi đọc (lạc quan là hiếm khi xung đột), nhưng khi ghi kiểm tra &quot;dòng còn nguyên như lúc tôi đọc không?&quot;:</p>
+<pre class="hljs"><code>e.Property(s =&gt; s.PhienBan).IsConcurrencyToken();      <span class="hljs-comment">// hoặc [ConcurrencyCheck] / [Timestamp] (SQL Server: rowversion)</span>
+</code></pre>
+<p>EF sinh: <code>UPDATE ... SET Ton=@moi, PhienBan=@pb WHERE Id=@id AND PhienBan=@pbCu</code>. Nếu không cập nhật được dòng nào (vì người khác đã đổi), ném <strong><code>DbUpdateConcurrencyException</code></strong>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">try</span> { <span class="hljs-keyword">await</span> b.SaveChangesAsync(); }
+<span class="hljs-keyword">catch</span> (DbUpdateConcurrencyException) { <span class="hljs-comment">/* tải lại dữ liệu mới, hoặc báo 409 để client thử lại */</span> }
+</code></pre>
+<p>Mục 5 của mẫu mô phỏng hai <code>DbContext</code>: người A lưu được, người B nhận <code>DbUpdateConcurrencyException</code>. Ở API trả <code>409 Conflict</code>. Trên SQL Server dùng cột <code>rowversion</code> (<code>[Timestamp] byte[]</code>) để DB tự đổi phiên bản mỗi lần sửa; ở PostgreSQL dùng <code>xmin</code>.</p>
+<h2>SQL thuần khi cần</h2>
+<pre class="hljs"><code><span class="hljs-built_in">decimal</span> giaToiThieu = <span class="hljs-number">200_000</span>;
+<span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">await</span> db.SanPhams
+    .FromSqlInterpolated(<span class="hljs-string">$&quot;SELECT * FROM SanPhams WHERE Gia &gt;= <span class="hljs-subst">{giaToiThieu}</span> ORDER BY Gia&quot;</span>)   <span class="hljs-comment">// {..} thành THAM SỐ</span>
+    .ToListAsync();
+</code></pre>
+<p><code>FromSqlInterpolated</code> <strong>tham số hoá</strong> các giá trị chèn qua <code>{}</code> — an toàn. <strong>Không</strong> dùng <code>FromSqlRaw</code> với chuỗi nối. Kết quả có thể ghép tiếp LINQ. Với truy vấn trả kiểu không phải entity: <code>db.Database.SqlQuery&lt;T&gt;(...)</code>. Câu SQL phải trả <strong>đủ cột</strong> của entity.</p>
+<h2>Phân trang</h2>
+<pre class="hljs"><code><span class="hljs-comment">// Offset: Skip/Take (đơn giản; trang càng sâu càng chậm vì CSDL phải đếm bỏ qua)</span>
+<span class="hljs-keyword">var</span> trang3 = <span class="hljs-keyword">await</span> db.DonHangs.OrderBy(d =&gt; d.Id).Skip(<span class="hljs-number">2</span> * kichThuoc).Take(kichThuoc).ToListAsync();
+
+<span class="hljs-comment">// Keyset / cursor: &quot;sau khoá cuối cùng đã xem&quot; (nhanh, ổn định ở mọi trang)</span>
+<span class="hljs-keyword">var</span> tiep = <span class="hljs-keyword">await</span> db.DonHangs.Where(d =&gt; d.Id &gt; idCuoi).OrderBy(d =&gt; d.Id).Take(kichThuoc).ToListAsync();
+</code></pre>
+<ul>
+<li><strong>Luôn <code>OrderBy</code></strong> trước <code>Skip/Take</code> (không có thứ tự, kết quả không xác định).</li>
+<li><strong>Offset</strong> cho phép nhảy tới trang bất kỳ, hiển thị &quot;trang 3/12&quot; (cần <code>Count</code>); nhược điểm chậm ở trang sâu và dữ liệu trùng/thiếu nếu có thêm/xoá giữa các lần gọi.</li>
+<li><strong>Keyset</strong> hợp cho cuộn vô hạn/nguồn cấp dữ liệu lớn; chỉ đi tuần tự &quot;trang kế&quot;.</li>
+<li><strong>Luôn giới hạn</strong> <code>kichThuoc</code> phía server (<code>Math.Clamp</code>) — đừng để client xin &quot;1 triệu dòng&quot;.</li>
+</ul>
+<h2>Danh sách kiểm tra hiệu năng truy vấn</h2>
+<ol>
+<li>Số câu SQL mỗi request có phải hằng số nhỏ? (không N+1)</li>
+<li>Truy vấn đọc dùng <strong>projection</strong>/<code>AsNoTracking</code>?</li>
+<li>Có <strong>chỉ mục</strong> cho cột lọc/sắp xếp/khoá ngoại? (Chương 11 — đọc <code>EXPLAIN</code>)</li>
+<li>Có <strong>phân trang</strong> và giới hạn kích thước?</li>
+<li>Không kéo cả bảng về rồi lọc trong bộ nhớ (<code>ToList()</code> trước <code>Where</code>)?</li>
+<li>Không gọi CSDL trong vòng lặp?</li>
+<li><code>Include</code> có kéo thừa quá nhiều? Xem xét split query hoặc projection.</li>
+<li>Đo bằng số liệu (log, profiler), đừng đoán.</li>
+</ol>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>N+1 do truy cập navigation/gọi truy vấn trong vòng lặp.</li>
+<li><code>NullReferenceException</code> vì navigation chưa nạp (<code>don.ChiTiets</code> rỗng, <code>d.KhachHang</code> null) — quên <code>Include</code>.</li>
+<li><code>Include</code> mọi thứ &quot;cho chắc&quot; rồi ngạc nhiên vì chậm/tốn bộ nhớ.</li>
+<li>Vòng tham chiếu khi serialize entity ra JSON (<code>Nhom → SanPham → Nhom</code>) — đừng trả entity, dùng DTO (Chương 8).</li>
+<li>Quên <code>OrderBy</code> khi phân trang.</li>
+<li>Dùng <code>FromSqlRaw</code> nối chuỗi (SQL injection).</li>
+<li>Quên concurrency token cho dữ liệu như số dư/tồn kho cập nhật đồng thời.</li>
+<li>Query filter làm dữ liệu liên quan &quot;biến mất&quot; ngoài ý muốn.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết truy vấn projection trả về mỗi khách hàng cùng số đơn và tổng chi tiêu (một câu SQL); kiểm chứng bằng bộ đếm.</li>
+<li>Cố tình tạo N+1 bằng lazy loading (<code>UseLazyLoadingProxies</code>) rồi sửa bằng <code>Include</code> và bằng projection.</li>
+<li>Thêm thẻ vào sản phẩm bằng cách gán <code>sp.The.Add(the)</code> và kiểm tra bảng nối trong SQLite.</li>
+<li>Viết phân trang keyset theo cặp <code>(Ngay, Id)</code> để ổn định khi nhiều đơn cùng ngày.</li>
+<li>Tạo hai <code>DbContext</code> xung đột nhau theo mẫu mục 5, bắt <code>DbUpdateConcurrencyException</code> và viết vòng <strong>thử lại</strong> (tối đa 3 lần) tải lại giá trị mới rồi áp dụng phép trừ.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch12-efcore-co-ban.html">&larr; 12. Entity Framework Core cơ bản</a><a class="nav-next" href="ch14-api-voi-efcore.html">14. Web API hoàn chỉnh với EF Core &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

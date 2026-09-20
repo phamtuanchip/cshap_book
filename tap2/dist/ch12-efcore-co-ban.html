@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 12 — Entity Framework Core cơ bản — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-sql-sqlite.html">11. SQL cơ bản và SQLite</a></li><li><a class="chapter-link active" href="ch12-efcore-co-ban.html">12. Entity Framework Core cơ bản</a></li><li><a class="chapter-link" href="ch13-efcore-quan-he.html">13. Quan hệ, truy vấn nâng cao và hiệu năng</a></li><li><a class="chapter-link" href="ch14-api-voi-efcore.html">14. Web API hoàn chỉnh với EF Core</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><span class="chapter-link pending">15. ASP.NET Core MVC</span></li><li><span class="chapter-link pending">16. Razor Pages</span></li><li><span class="chapter-link pending">17. Form, validation phía server và chống CSRF</span></li><li><span class="chapter-link pending">18. Blazor</span></li><li><span class="chapter-link pending">19. Gọi API ngoài với HttpClient</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 12 — Entity Framework Core cơ bản</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>ORM</strong> và vai trò của EF Core: entity, <code>DbContext</code>, <code>DbSet</code>, <strong>change tracking</strong>.</li>
+<li>Thực hiện <strong>CRUD</strong> bằng LINQ; đọc được SQL mà EF sinh ra (<code>ToQueryString</code>).</li>
+<li>Cấu hình mô hình bằng quy ước, attribute và <strong>Fluent API</strong>; tạo/áp dụng <strong>migration</strong>.</li>
+<li>Phân biệt <code>AsNoTracking</code>, <code>ExecuteUpdate/ExecuteDelete</code>; hiểu <code>SaveChanges</code> là một giao dịch.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch12-efcore-co-ban/"><code>code/ch12-efcore-co-ban/</code></a> (có sẵn thư mục <code>Migrations/</code> sinh từ <code>dotnet ef</code>).</p>
+<h2>ORM là gì?</h2>
+<p>Chương 11 bạn viết SQL và đọc từng cột bằng <code>r.GetString(0)</code> — dài dòng, dễ sai, không có kiểm tra kiểu lúc biên dịch. <strong>ORM</strong> (Object–Relational Mapper) ánh xạ <strong>bảng ↔ class</strong>, <strong>dòng ↔ đối tượng</strong>, <strong>cột ↔ property</strong>; bạn thao tác bằng C#/LINQ, ORM sinh SQL. <strong>Entity Framework Core (EF Core)</strong> là ORM chính thức, mã nguồn mở, đa nền tảng của .NET (hỗ trợ SQL Server, PostgreSQL, MySQL, SQLite, Cosmos DB…).</p>
+<pre class="mermaid">flowchart LR
+    C[&quot;Code C#&lt;br/&gt;LINQ + entity&quot;] --&gt; EF[&quot;EF Core&lt;br/&gt;DbContext&quot;]
+    EF --&gt;|&quot;sinh SQL&quot;| P[&quot;Provider&lt;br/&gt;(SQLite/SQL Server/…)&quot;]
+    P --&gt; DB[(&quot;CSDL&quot;)]
+    DB --&gt;|&quot;dòng dữ liệu&quot;| P --&gt; EF --&gt;|&quot;đối tượng entity&quot;| C
+</pre>
+<p>Lợi: năng suất, an toàn kiểu, tham số hoá tự động (chống SQL injection), migration, chuyển đổi CSDL dễ hơn. Cái giá: <strong>trừu tượng che khuất SQL</strong> — dùng bừa sẽ gây truy vấn chậm (N+1, Chương 13). Nguyên tắc: <strong>dùng EF cho phần lớn công việc, và biết SQL để kiểm soát nó</strong>.</p>
+<h2>Cài đặt</h2>
+<pre class="hljs"><code>dotnet add package Microsoft.EntityFrameworkCore.Sqlite          # provider (đổi provider = đổi CSDL)
+dotnet add package Microsoft.EntityFrameworkCore.Design          # công cụ migration (PrivateAssets)
+dotnet tool install --global dotnet-ef                            # lệnh dotnet ef
+</code></pre>
+<h2>Entity và DbContext</h2>
+<p><strong>Entity</strong> là class C# thường (POCO) ứng với một bảng:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SanPham</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> Id { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }              <span class="hljs-comment">// quy ước: &quot;Id&quot; hoặc &quot;&lt;Tên&gt;Id&quot; là khoá chính</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Ma { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-string">&quot;&quot;</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Ten { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-string">&quot;&quot;</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> Gia { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> Ton { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> NhomId { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }          <span class="hljs-comment">// khoá ngoại</span>
+    <span class="hljs-keyword">public</span> Nhom? Nhom { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }          <span class="hljs-comment">// navigation property (Chương 13)</span>
+}
+</code></pre>
+<p><strong><code>DbContext</code></strong> là đối tượng trung tâm: một <strong>phiên làm việc</strong> với CSDL (mẫu <strong>Unit of Work + Repository</strong>). Mỗi <code>DbSet&lt;T&gt;</code> đại diện một bảng:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">CuaHangDbContext</span> : <span class="hljs-title">DbContext</span>
+{
+    <span class="hljs-keyword">public</span> DbSet&lt;Nhom&gt; Nhoms =&gt; Set&lt;Nhom&gt;();
+    <span class="hljs-keyword">public</span> DbSet&lt;SanPham&gt; SanPhams =&gt; Set&lt;SanPham&gt;();
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">CuaHangDbContext</span>()</span> { }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">CuaHangDbContext</span>(<span class="hljs-params">DbContextOptions&lt;CuaHangDbContext&gt; options</span>) : <span class="hljs-title">base</span>(<span class="hljs-params">options</span>)</span> { }   <span class="hljs-comment">// dùng với DI ở web</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnConfiguring</span>(<span class="hljs-params">DbContextOptionsBuilder options</span>)</span>
+    {
+        <span class="hljs-keyword">if</span> (!options.IsConfigured) options.UseSqlite(<span class="hljs-string">&quot;Data Source=cuahang.db&quot;</span>);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnModelCreating</span>(<span class="hljs-params">ModelBuilder mb</span>)</span> { <span class="hljs-comment">/* Fluent API */</span> }
+}
+</code></pre>
+<p>Trong web, <code>DbContext</code> được <strong>đăng ký DI</strong> (<code>AddDbContext</code>, Chương 14) với vòng đời <strong>Scoped</strong> — một <code>DbContext</code> cho mỗi request. Trong console (như mẫu) tạo bằng <code>new</code> trong khối <code>await using</code>. <strong><code>DbContext</code> rẻ để tạo, ngắn để sống, và không thread-safe</strong> — đừng dùng chung nhiều luồng, đừng giữ mãi trong Singleton.</p>
+<h2>Cấu hình mô hình</h2>
+<p>Ba tầng, cái sau thắng cái trước:</p>
+<ol>
+<li><strong>Quy ước</strong> (mặc định): <code>Id</code> là khoá chính; <code>NhomId</code> + <code>Nhom</code> là quan hệ; <code>string?</code> cho phép NULL.</li>
+<li><strong>Attribute</strong> (<code>[Key]</code>, <code>[Required]</code>, <code>[MaxLength(100)]</code>, <code>[Column(&quot;ten&quot;)]</code>, <code>[Table(&quot;san_pham&quot;)]</code>, <code>[NotMapped]</code>).</li>
+<li><strong>Fluent API</strong> trong <code>OnModelCreating</code> — mạnh nhất, gom cấu hình ra khỏi entity (nên ưu tiên trong dự án lớn):</li>
+</ol>
+<pre class="hljs"><code>mb.Entity&lt;SanPham&gt;(e =&gt;
+{
+    e.ToTable(<span class="hljs-string">&quot;san_pham&quot;</span>);
+    e.HasIndex(s =&gt; s.Ma).IsUnique();
+    e.Property(s =&gt; s.Ma).IsRequired().HasMaxLength(<span class="hljs-number">20</span>);
+    e.ToTable(t =&gt; t.HasCheckConstraint(<span class="hljs-string">&quot;ck_san_pham_gia&quot;</span>, <span class="hljs-string">&quot;Gia &gt;= 0&quot;</span>));
+    e.HasOne(s =&gt; s.Nhom).WithMany(n =&gt; n.SanPhams).HasForeignKey(s =&gt; s.NhomId)
+     .OnDelete(DeleteBehavior.Restrict);               <span class="hljs-comment">// không cho xoá nhóm còn sản phẩm</span>
+});
+
+mb.Entity&lt;Nhom&gt;().HasData(<span class="hljs-keyword">new</span> Nhom { Id = <span class="hljs-number">1</span>, Ten = <span class="hljs-string">&quot;Phu kien&quot;</span> }, <span class="hljs-keyword">new</span> Nhom { Id = <span class="hljs-number">2</span>, Ten = <span class="hljs-string">&quot;Thiet bi&quot;</span> });   <span class="hljs-comment">// dữ liệu khởi tạo</span>
+</code></pre>
+<p>Ghi chú SQLite: nó không có kiểu <code>decimal</code> thật. Mẫu dùng <code>cfg.Properties&lt;decimal&gt;().HaveConversion&lt;double&gt;()</code> để <code>Gia</code> so sánh/sắp xếp/tổng được trong SQL. Với SQL Server/PostgreSQL dùng <code>.HasPrecision(18, 2)</code> và kiểu <code>decimal</code> gốc.</p>
+<h2>Migration — quản lý phiên bản schema</h2>
+<p>Schema (bảng/cột) thay đổi theo thời gian. <strong>Migration</strong> là các file C# mô tả từng bước thay đổi, được sinh từ khác biệt giữa mô hình và snapshot trước đó:</p>
+<pre class="hljs"><code>dotnet ef migrations add KhoiTao           # sinh Migrations/2026..._KhoiTao.cs (+ Designer, Snapshot)
+dotnet ef database update                  # áp dụng migration chưa chạy lên CSDL
+dotnet ef migrations script                # xuất SQL để DBA xem/duyệt
+dotnet ef migrations remove                # bỏ migration cuối (nếu chưa áp dụng)
+</code></pre>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">partial</span> <span class="hljs-keyword">class</span> <span class="hljs-title">KhoiTao</span> : <span class="hljs-title">Migration</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Up</span>(<span class="hljs-params">MigrationBuilder mb</span>)      <span class="hljs-comment">// đi tới phiên bản này</span></span>
+    {
+        mb.CreateTable(name: <span class="hljs-string">&quot;san_pham&quot;</span>, columns: table =&gt; <span class="hljs-keyword">new</span> { ... }, constraints: table =&gt; { ... });
+    }
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Down</span>(<span class="hljs-params">MigrationBuilder mb</span>)</span> =&gt; ...   <span class="hljs-comment">// quay lui</span>
+}
+</code></pre>
+<p>Quy trình: <strong>sửa entity/cấu hình → <code>migrations add &lt;Mô-tả&gt;</code> → xem lại file sinh ra → <code>database update</code> → commit cả file migration vào Git</strong>. Migration đã áp dụng lên môi trường chung <strong>không sửa lại</strong> — thêm migration mới. Trong code, <code>db.Database.Migrate()</code> áp dụng migration khi khởi động (thuận tiện cho dev/demo; production thường chạy bước migrate riêng trong pipeline triển khai để kiểm soát rủi ro). <code>EnsureCreated()</code> chỉ tạo bảng theo mô hình hiện tại <strong>không</strong> dùng migration — chỉ để thử nhanh/test, không trộn với migration.</p>
+<h2>CRUD</h2>
+<h3>Create</h3>
+<pre class="hljs"><code>db.SanPhams.Add(<span class="hljs-keyword">new</span> SanPham { Ma = <span class="hljs-string">&quot;CH001&quot;</span>, Ten = <span class="hljs-string">&quot;Chuot khong day&quot;</span>, Gia = <span class="hljs-number">150_000</span>, Ton = <span class="hljs-number">30</span>, NhomId = <span class="hljs-number">1</span> });
+db.SanPhams.AddRange(a, b, c);
+<span class="hljs-built_in">int</span> soDong = <span class="hljs-keyword">await</span> db.SaveChangesAsync();      <span class="hljs-comment">// ← MỚI ghi xuống CSDL, trong MỘT giao dịch</span>
+</code></pre>
+<p><code>Add</code> chỉ <strong>đánh dấu</strong> entity là &quot;sẽ thêm&quot; trong bộ nhớ. <code>SaveChanges</code> mới gửi SQL. Nhiều thay đổi gom lại được gửi theo <strong>lô</strong>, cùng một giao dịch.</p>
+<h3>Read — LINQ thành SQL</h3>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> truyVan = db.SanPhams
+    .Where(s =&gt; s.Gia &gt;= <span class="hljs-number">200_000</span>)
+    .OrderByDescending(s =&gt; s.Gia)
+    .Select(s =&gt; <span class="hljs-keyword">new</span> { s.Ma, s.Ten, s.Gia });
+
+Console.WriteLine(truyVan.ToQueryString());
+</code></pre>
+<pre class="hljs"><code><span class="hljs-keyword">SELECT</span> &quot;s&quot;.&quot;Ma&quot;, &quot;s&quot;.&quot;Ten&quot;, &quot;s&quot;.&quot;Gia&quot;
+<span class="hljs-keyword">FROM</span> &quot;san_pham&quot; <span class="hljs-keyword">AS</span> &quot;s&quot;
+<span class="hljs-keyword">WHERE</span> &quot;s&quot;.&quot;Gia&quot; <span class="hljs-operator">&gt;=</span> <span class="hljs-number">200000.0</span>
+<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> &quot;s&quot;.&quot;Gia&quot; <span class="hljs-keyword">DESC</span>
+</code></pre>
+<p><code>ToQueryString()</code> là công cụ học và gỡ lỗi quý giá. Truy vấn <strong>chỉ chạy khi bạn duyệt/hiện thực hoá</strong>: <code>ToListAsync</code>, <code>FirstOrDefaultAsync</code>, <code>SingleAsync</code>, <code>CountAsync</code>, <code>AnyAsync</code>, <code>SumAsync</code>… (thực thi trì hoãn, Tập 1, Chương 30 — <code>IQueryable</code> khác <code>IEnumerable</code> ở chỗ biểu thức được <strong>dịch sang SQL</strong> thay vì chạy trong bộ nhớ).</p>
+<pre class="hljs"><code><span class="hljs-keyword">await</span> db.SanPhams.FindAsync(<span class="hljs-number">1</span>);                              <span class="hljs-comment">// theo khoá chính; kiểm tra bộ nhớ trước</span>
+<span class="hljs-keyword">await</span> db.SanPhams.FirstOrDefaultAsync(s =&gt; s.Ma == <span class="hljs-string">&quot;BP001&quot;</span>);  <span class="hljs-comment">// null nếu không có</span>
+<span class="hljs-keyword">await</span> db.SanPhams.SingleAsync(s =&gt; s.Ma == <span class="hljs-string">&quot;CH001&quot;</span>);          <span class="hljs-comment">// đúng 1 dòng, không thì ném lỗi</span>
+</code></pre>
+<p><strong>Quan trọng:</strong> trong <code>Where/Select/OrderBy</code> chỉ dùng thứ EF dịch được sang SQL. Gọi hàm C# tuỳ ý (<code>s.Ten.LamDep()</code>) sẽ lỗi (hoặc EF đành lấy dữ liệu về xử lý trong bộ nhớ). Với chuỗi, <code>Contains</code> dịch sang <code>instr</code>/<code>LIKE</code> <strong>có thể phân biệt hoa/thường tuỳ CSDL</strong> — dùng <code>EF.Functions.Like(...)</code> khi cần rõ ràng.</p>
+<h3>Update — change tracking</h3>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> sp = <span class="hljs-keyword">await</span> db.SanPhams.SingleAsync(s =&gt; s.Ma == <span class="hljs-string">&quot;CH001&quot;</span>);   <span class="hljs-comment">// &quot;tracked&quot;: EF nhớ giá trị gốc</span>
+sp.Gia = <span class="hljs-number">175_000</span>;                                                <span class="hljs-comment">// chỉ sửa đối tượng trong bộ nhớ</span>
+Console.WriteLine(db.Entry(sp).State);                           <span class="hljs-comment">// Modified</span>
+<span class="hljs-keyword">await</span> db.SaveChangesAsync();                                     <span class="hljs-comment">// EF so sánh → UPDATE chỉ cột Gia</span>
+</code></pre>
+<p><strong>Change tracker</strong> theo dõi mọi entity nạp qua context. Trạng thái: <code>Detached</code>, <code>Unchanged</code>, <code>Added</code>, <code>Modified</code>, <code>Deleted</code>. <code>SaveChanges</code> sinh <code>INSERT/UPDATE/DELETE</code> tương ứng. Bạn không cần gọi &quot;Update()&quot; cho entity đã theo dõi.</p>
+<h3>Delete</h3>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> sp = <span class="hljs-keyword">await</span> db.SanPhams.SingleAsync(s =&gt; s.Ma == <span class="hljs-string">&quot;MH001&quot;</span>);
+db.SanPhams.Remove(sp);
+<span class="hljs-keyword">await</span> db.SaveChangesAsync();
+</code></pre>
+<h2><code>AsNoTracking</code> — đọc thì đừng theo dõi</h2>
+<p>Với dữ liệu <strong>chỉ để đọc/trả về API</strong>, tracking là phí bộ nhớ và CPU:</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">await</span> db.SanPhams.AsNoTracking().ToListAsync();
+<span class="hljs-comment">// db.ChangeTracker.Entries().Count() == 0</span>
+</code></pre>
+<p>Quy tắc: truy vấn <strong>đọc</strong> → <code>AsNoTracking()</code> (hoặc <code>Select</code> projection — không theo dõi tự nhiên); truy vấn để <strong>sửa</strong> → mặc định tracking.</p>
+<h2><code>ExecuteUpdate</code> / <code>ExecuteDelete</code> — thao tác hàng loạt</h2>
+<p>Với cập nhật/xoá nhiều dòng, nạp từng entity lên rồi sửa là lãng phí:</p>
+<pre class="hljs"><code><span class="hljs-built_in">int</span> n = <span class="hljs-keyword">await</span> db.SanPhams.Where(s =&gt; s.NhomId == <span class="hljs-number">1</span>)
+    .ExecuteUpdateAsync(s =&gt; s.SetProperty(x =&gt; x.Ton, x =&gt; x.Ton + <span class="hljs-number">10</span>));     <span class="hljs-comment">// MỘT câu UPDATE, không nạp dữ liệu</span>
+<span class="hljs-keyword">await</span> db.SanPhams.Where(s =&gt; s.Ton == <span class="hljs-number">0</span> &amp;&amp; s.DaXoa).ExecuteDeleteAsync();
+</code></pre>
+<p>Chúng chạy <strong>ngay</strong> (không cần <code>SaveChanges</code>), <strong>bỏ qua change tracker</strong> và không kích hoạt logic của entity. Cũng là cách tăng <code>Ton = Ton + n</code> <strong>nguyên tử</strong> (tránh đọc-rồi-ghi gây mất cập nhật khi đồng thời).</p>
+<h2><code>SaveChanges</code> là một giao dịch</h2>
+<p>Mọi thay đổi trong một lần <code>SaveChanges</code> cùng thành công hoặc cùng huỷ. Mục 8 của code mẫu thêm hai sản phẩm, một hợp lệ và một trùng mã; kết quả: <code>DbUpdateException</code> và <strong>cả hai</strong> bị huỷ (<code>OK001</code> không tồn tại). Khi cần giao dịch bao nhiều lần <code>SaveChanges</code> hay lệnh SQL: <code>await using var tx = await db.Database.BeginTransactionAsync(); ... await tx.CommitAsync();</code>.</p>
+<p>Vi phạm ràng buộc (UNIQUE, CHECK, FK) trở thành <code>DbUpdateException</code> với <code>InnerException</code> mang lỗi CSDL — nơi chuyển thành <code>409 Conflict</code>/<code>400</code> ở web (Chương 14).</p>
+<h2>Xem SQL mà EF chạy</h2>
+<pre class="hljs"><code>options.LogTo(Console.WriteLine, LogLevel.Information);          <span class="hljs-comment">// hoặc lọc theo sự kiện</span>
+options.EnableSensitiveDataLogging();                              <span class="hljs-comment">// CHỈ dev: hiện cả giá trị tham số</span>
+</code></pre>
+<p>Trong <a href="http://ASP.NET">ASP.NET</a> Core đặt mức log <code>Microsoft.EntityFrameworkCore.Database.Command</code> = <code>Information</code> trong <code>appsettings.json</code> (Chương 6). Luôn nhìn SQL khi truy vấn có vẻ chậm.</p>
+<h2>Khi nào <strong>không</strong> dùng EF?</h2>
+<p>EF rất tốt cho CRUD và nghiệp vụ thông thường. Với báo cáo phức tạp, xử lý hàng triệu dòng, hoặc tối ưu tuyệt đối, dùng SQL thuần (<code>FromSql</code>, <code>Database.SqlQuery&lt;T&gt;</code>) hoặc micro-ORM <strong>Dapper</strong> cho đúng chỗ đó — có thể cùng tồn tại trong một dự án.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Quên <code>SaveChanges</code> → &quot;không thấy dữ liệu đâu&quot;.</li>
+<li>Quên <code>await</code> (hoặc dùng <code>.Result</code>) với phương thức <code>...Async</code>.</li>
+<li>Dùng <code>DbContext</code> dùng chung nhiều luồng (<code>InvalidOperationException: A second operation was started on this context</code>).</li>
+<li><code>ToList()</code> quá sớm rồi lọc trong bộ nhớ — kéo cả bảng về (hãy <code>Where</code> trên <code>IQueryable</code>).</li>
+<li>Dùng hàm C# EF không dịch được trong truy vấn.</li>
+<li>Sửa migration đã áp dụng, hoặc quên commit file migration.</li>
+<li><code>EnsureCreated</code> lẫn <code>Migrate</code> → schema không khớp.</li>
+<li>Lưu <code>decimal</code> trên SQLite mà không có converter → sắp xếp/tổng sai hoặc lỗi.</li>
+<li><code>DbContext</code> Singleton (&quot;captive dependency&quot;, Chương 5).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm entity <code>KhachHang</code> (Ten, Email unique), tạo migration <code>ThemKhachHang</code>, xem file sinh ra và áp dụng.</li>
+<li>Viết truy vấn đếm sản phẩm theo nhóm (<code>GroupBy</code>); in SQL bằng <code>ToQueryString()</code>.</li>
+<li>Viết hàm <code>GiamGiaNhom(int nhomId, decimal phanTram)</code> bằng <code>ExecuteUpdateAsync</code> và so với cách nạp-sửa-lưu; đếm số câu SQL bằng <code>LogTo</code>.</li>
+<li>Cố tình <code>Add</code> hai entity, một vi phạm <code>CHECK</code> (giá âm); chứng minh bằng truy vấn rằng entity còn lại cũng không được lưu.</li>
+<li>Chạy <code>dotnet ef migrations script</code> và đọc SQL của migration <code>KhoiTao</code>; đối chiếu với <code>schema.sql</code> của Chương 11.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch11-sql-sqlite.html">&larr; 11. SQL cơ bản và SQLite</a><a class="nav-next" href="ch13-efcore-quan-he.html">13. Quan hệ, truy vấn nâng cao và hiệu năng &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

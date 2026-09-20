@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 14 — Web API hoàn chỉnh với EF Core — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-sql-sqlite.html">11. SQL cơ bản và SQLite</a></li><li><a class="chapter-link" href="ch12-efcore-co-ban.html">12. Entity Framework Core cơ bản</a></li><li><a class="chapter-link" href="ch13-efcore-quan-he.html">13. Quan hệ, truy vấn nâng cao và hiệu năng</a></li><li><a class="chapter-link active" href="ch14-api-voi-efcore.html">14. Web API hoàn chỉnh với EF Core</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><span class="chapter-link pending">15. ASP.NET Core MVC</span></li><li><span class="chapter-link pending">16. Razor Pages</span></li><li><span class="chapter-link pending">17. Form, validation phía server và chống CSRF</span></li><li><span class="chapter-link pending">18. Blazor</span></li><li><span class="chapter-link pending">19. Gọi API ngoài với HttpClient</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 14 — Web API hoàn chỉnh với EF Core</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Tích hợp EF Core vào <a href="http://ASP.NET">ASP.NET</a> Core: <code>AddDbContext</code>, <strong>DbContext theo request</strong>, migration khi khởi động.</li>
+<li>Xây API CRUD có <strong>lọc, sắp xếp, phân trang</strong> an toàn, DTO/projection, xoá mềm.</li>
+<li>Viết nghiệp vụ <strong>đặt hàng</strong> dùng giao dịch và xử lý <strong>xung đột đồng thời</strong> → <code>409</code>.</li>
+<li>Kiểm thử API với <strong>SQLite in-memory</strong> bằng <code>WebApplicationFactory</code>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch14-api-voi-efcore/"><code>code/ch14-api-voi-efcore/</code></a> — <code>CuaHangApi</code> (API) + <code>CuaHangApi.Tests</code> (10 test tích hợp).</p>
+<p>Chương này ghép các mảnh: Minimal API (Ch. 4), DI (5), cấu hình (6), DTO/validation (8), xử lý lỗi (9), kiểm thử (10), EF Core (12–13).</p>
+<h2>Cấu trúc dự án</h2>
+<pre class="hljs"><code>CuaHangApi/
+├── Program.cs                     # cấu hình DI, pipeline, migrate + seed
+├── Dtos.cs                        # request/response + exception nghiệp vụ
+├── Data/
+│   ├── Entities.cs                # Nhom, SanPham, KhachHang, DonHang, ChiTietDon
+│   └── CuaHangDbContext.cs        # cấu hình mô hình (Fluent API)
+├── Endpoints/
+│   ├── SanPhamEndpoints.cs        # /api/san-pham, /api/nhom
+│   ├── DonHangEndpoints.cs        # /api/don-hang
+│   └── KiemTraHopLeFilter.cs      # endpoint filter validation dùng chung
+├── Services/DonHangService.cs     # nghiệp vụ đặt hàng
+└── Migrations/                    # sinh từ `dotnet ef migrations add KhoiTao`
+</code></pre>
+<p>Nguyên tắc tổ chức: <strong>endpoint mỏng</strong> (HTTP), <strong>nghiệp vụ phức tạp trong service</strong> (<code>DonHangService</code>), <strong>truy vấn đơn giản có thể để trong endpoint</strong> (không cần bọc <code>Repository</code> thừa mỏng lên <code>DbContext</code> — Tập 3 bàn khi nào cần).</p>
+<h2>Đăng ký <code>DbContext</code></h2>
+<pre class="hljs"><code>builder.Services.AddDbContext&lt;CuaHangDbContext&gt;(o =&gt;
+    o.UseSqlite(builder.Configuration.GetConnectionString(<span class="hljs-string">&quot;CuaHang&quot;</span>) ?? <span class="hljs-string">&quot;Data Source=cuahang.db&quot;</span>));
+</code></pre>
+<ul>
+<li>Vòng đời <strong>Scoped</strong>: <strong>một <code>DbContext</code> cho mỗi HTTP request</strong>, hết request thì được dispose — đúng với mẫu <strong>unit of work</strong> (Chương 5).</li>
+<li>Chuỗi kết nối lấy từ cấu hình (<code>ConnectionStrings:CuaHang</code>), không viết cứng; bí mật để ngoài Git (Chương 6).</li>
+<li><code>DbContext</code> nhận <code>DbContextOptions&lt;T&gt;</code> qua constructor để <strong>DI và test thay CSDL</strong> dễ dàng:</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">CuaHangDbContext</span>(<span class="hljs-params">DbContextOptions&lt;CuaHangDbContext&gt; options</span>) : <span class="hljs-title">DbContext</span>(<span class="hljs-params">options</span>)</span> { ... }
+</code></pre>
+<p>Đổi sang PostgreSQL/SQL Server chỉ thay dòng <code>UseSqlite</code> (và package) — code endpoint không đổi (lưu ý kiểu <code>decimal</code>, phân biệt hoa/thường, hàm ngày giờ).</p>
+<p><code>AddDbContextPool</code> tái sử dụng đối tượng để giảm cấp phát; <code>IDbContextFactory&lt;T&gt;</code> dành cho nơi cần tự tạo context (Blazor Server, tác vụ nền).</p>
+<h2>Migration và dữ liệu mẫu khi khởi động</h2>
+<pre class="hljs"><code><span class="hljs-keyword">if</span> (app.Configuration.GetValue(<span class="hljs-string">&quot;MigrateOnStartup&quot;</span>, <span class="hljs-literal">true</span>))
+{
+    <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> scope = app.Services.CreateAsyncScope();       <span class="hljs-comment">// DbContext là Scoped → cần tự tạo scope ngoài request</span>
+    <span class="hljs-keyword">var</span> db = scope.ServiceProvider.GetRequiredService&lt;CuaHangDbContext&gt;();
+    <span class="hljs-keyword">await</span> db.Database.MigrateAsync();
+    <span class="hljs-keyword">await</span> DuLieuMau.NapAsync(db);                                   <span class="hljs-comment">// chỉ nạp khi chưa có dữ liệu</span>
+}
+</code></pre>
+<p>Tiện cho dev/demo/test. <strong>Production:</strong> tránh tự migrate khi nhiều instance khởi động cùng lúc và khi migration có thể phá dữ liệu — chạy migration ở bước triển khai riêng (<code>dotnet ef migrations bundle</code> hoặc script SQL đã duyệt), bảng cờ <code>MigrateOnStartup=false</code> để tắt. Khi tạo migration bằng công cụ, truyền cờ: <code>dotnet ef migrations add KhoiTao -- --MigrateOnStartup false</code> (để công cụ chạy <code>Program.cs</code> mà không mở CSDL).</p>
+<h2>API danh sách: lọc, sắp xếp, phân trang</h2>
+<pre class="hljs"><code>GET /api/san-pham?tim=laptop&amp;nhomId=2&amp;sapXep=-gia&amp;trang=1&amp;kichThuoc=10
+</code></pre>
+<pre class="hljs"><code>IQueryable&lt;SanPham&gt; q = db.SanPhams.AsNoTracking();
+<span class="hljs-keyword">if</span> (!<span class="hljs-built_in">string</span>.IsNullOrWhiteSpace(tim))
+    q = q.Where(s =&gt; EF.Functions.Like(s.Ten, <span class="hljs-string">$&quot;%<span class="hljs-subst">{tim}</span>%&quot;</span>) || EF.Functions.Like(s.Ma, <span class="hljs-string">$&quot;%<span class="hljs-subst">{tim}</span>%&quot;</span>));
+<span class="hljs-keyword">if</span> (nhomId <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span>) q = q.Where(s =&gt; s.NhomId == nhomId);
+
+q = sapXep <span class="hljs-keyword">switch</span>                                          <span class="hljs-comment">// WHITELIST: không bao giờ đưa chuỗi client vào OrderBy</span>
+{
+    <span class="hljs-string">&quot;gia&quot;</span> =&gt; q.OrderBy(s =&gt; s.Gia),
+    <span class="hljs-string">&quot;-gia&quot;</span> =&gt; q.OrderByDescending(s =&gt; s.Gia),
+    <span class="hljs-string">&quot;ten&quot;</span> =&gt; q.OrderBy(s =&gt; s.Ten),
+    _ =&gt; q.OrderBy(s =&gt; s.Id),
+};
+
+<span class="hljs-built_in">int</span> tongSo = <span class="hljs-keyword">await</span> q.CountAsync(ct);
+<span class="hljs-keyword">var</span> muc = <span class="hljs-keyword">await</span> q.Skip((trang - <span class="hljs-number">1</span>) * kichThuoc).Take(kichThuoc)
+    .Select(s =&gt; <span class="hljs-keyword">new</span> SanPhamDto(s.Id, s.Ma, s.Ten, s.Gia, s.Ton, s.Nhom.Ten))   <span class="hljs-comment">// projection: JOIN tên nhóm, không N+1</span>
+    .ToListAsync(ct);
+<span class="hljs-keyword">return</span> TypedResults.Ok(<span class="hljs-keyword">new</span> TrangKetQua&lt;SanPhamDto&gt;(muc, trang, kichThuoc, tongSo));
+</code></pre>
+<p>Điểm đáng nhớ:</p>
+<ul>
+<li><strong>Xây <code>IQueryable</code> từng bước</strong>, thêm điều kiện khi tham số có mặt — EF chỉ sinh <strong>một</strong> câu SQL cuối cùng.</li>
+<li><strong><code>Math.Clamp(kichThuoc, 1, 100)</code></strong> chặn client đòi cả bảng.</li>
+<li><strong>Whitelist sắp xếp</strong>: cho client gửi <code>sapXep=...</code> và ghép vào SQL/<code>OrderBy</code> động là lỗ hổng (SQL injection/lộ dữ liệu).</li>
+<li><strong>Tìm kiếm không phân biệt hoa/thường:</strong> <code>Contains()</code> trên SQLite phân biệt (dịch sang <code>instr</code>), còn SQL Server mặc định không — chênh lệch giữa CSDL. <code>EF.Functions.Like</code> cho hành vi rõ ràng (đã phát hiện qua test thất bại đầu tiên khi viết chương này!). Với tìm kiếm văn bản thật sự dùng full-text search của CSDL.</li>
+<li>Trả <code>TrangKetQua&lt;T&gt;</code> chứa cả <code>TongSo</code>, <code>TongTrang</code>, <code>CoTrangSau</code> để client dựng phân trang.</li>
+<li>Trả <code>AsNoTracking</code> + projection: nhanh, nhẹ.</li>
+</ul>
+<h2>Tạo, sửa, xoá</h2>
+<pre class="hljs"><code><span class="hljs-comment">// POST: 201 + Location, 404 nếu nhóm không có, 409 nếu trùng mã</span>
+<span class="hljs-keyword">var</span> sp = <span class="hljs-keyword">new</span> SanPham { Ma = req.Ma!, Ten = req.Ten!.Trim(), Gia = req.Gia, Ton = req.Ton, Nhom = nhom };
+db.SanPhams.Add(sp);
+<span class="hljs-keyword">try</span> { <span class="hljs-keyword">await</span> db.SaveChangesAsync(ct); }
+<span class="hljs-keyword">catch</span> (DbUpdateException) { <span class="hljs-keyword">return</span> TypedResults.Conflict(<span class="hljs-string">$&quot;Ma san pham <span class="hljs-subst">{req.Ma}</span> da ton tai&quot;</span>); }   <span class="hljs-comment">// UNIQUE(Ma)</span>
+</code></pre>
+<p>Ở đây <strong>CSDL là người canh gác cuối cùng</strong>: dù ứng dụng có kiểm tra &quot;mã đã tồn tại chưa&quot; trước, hai request đồng thời vẫn có thể cùng vượt qua kiểm tra — chỉ ràng buộc <code>UNIQUE</code> chặn được. Bắt <code>DbUpdateException</code> và dịch sang <code>409</code>.</p>
+<pre class="hljs"><code><span class="hljs-comment">// DELETE: xoá mềm bằng MỘT câu UPDATE, không nạp entity</span>
+<span class="hljs-built_in">int</span> n = <span class="hljs-keyword">await</span> db.SanPhams.Where(s =&gt; s.Id == id).ExecuteUpdateAsync(s =&gt; s.SetProperty(x =&gt; x.DaXoa, <span class="hljs-literal">true</span>), ct);
+<span class="hljs-keyword">return</span> n == <span class="hljs-number">0</span> ? TypedResults.NotFound() : TypedResults.NoContent();
+
+<span class="hljs-comment">// POST /{id}/nhap-kho: tăng tồn NGUYÊN TỬ, không đọc-rồi-ghi → không mất cập nhật khi nhiều người nhập cùng lúc</span>
+<span class="hljs-keyword">await</span> db.SanPhams.Where(s =&gt; s.Id == id).ExecuteUpdateAsync(s =&gt; s.SetProperty(x =&gt; x.Ton, x =&gt; x.Ton + req.SoLuong), ct);
+</code></pre>
+<p>Validation đầu vào dùng <code>KiemTraHopLeFilter&lt;T&gt;</code> (Chương 8) gắn lên endpoint: <code>.AddEndpointFilter&lt;KiemTraHopLeFilter&lt;TaoSanPhamRequest&gt;&gt;()</code>.</p>
+<h2>Nghiệp vụ đặt hàng: giao dịch và xung đột</h2>
+<p><code>POST /api/don-hang</code> với <code>{ &quot;khachHangId&quot;: 1, &quot;dong&quot;: [ { &quot;sanPhamId&quot;: 3, &quot;soLuong&quot;: 2 }, ... ] }</code>. Yêu cầu: <strong>kiểm tra tồn kho, trừ kho và tạo đơn cùng thành công hoặc cùng thất bại</strong>.</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> can = req.Dong.GroupBy(d =&gt; d.SanPhamId).ToDictionary(g =&gt; g.Key, g =&gt; g.Sum(d =&gt; d.SoLuong));   <span class="hljs-comment">// gộp dòng trùng</span>
+<span class="hljs-keyword">var</span> sanPhams = <span class="hljs-keyword">await</span> db.SanPhams.Where(s =&gt; can.Keys.Contains(s.Id)).ToDictionaryAsync(s =&gt; s.Id, ct); <span class="hljs-comment">// MỘT truy vấn, không N+1</span>
+
+<span class="hljs-keyword">var</span> don = <span class="hljs-keyword">new</span> DonHang { KhachHang = khach, Ngay = DateOnly.FromDateTime(dongHo.GetLocalNow().DateTime) };
+<span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> (id, soLuong) <span class="hljs-keyword">in</span> can)
+{
+    <span class="hljs-keyword">var</span> sp = sanPhams[id] ?? <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> KhongTimThayException(...);
+    <span class="hljs-keyword">if</span> (sp.Ton &lt; soLuong) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> KhongDuHangException(sp.Ma, soLuong, sp.Ton);
+    sp.Ton -= soLuong;                                                                       <span class="hljs-comment">// trừ kho (entity được theo dõi)</span>
+    don.ChiTiets.Add(<span class="hljs-keyword">new</span> ChiTietDon { SanPham = sp, SoLuong = soLuong, DonGia = sp.Gia });  <span class="hljs-comment">// chốt giá lúc đặt</span>
+}
+db.DonHangs.Add(don);
+<span class="hljs-keyword">await</span> db.SaveChangesAsync(ct);          <span class="hljs-comment">// MỘT giao dịch: mọi UPDATE kho + INSERT đơn</span>
+</code></pre>
+<ul>
+<li>Kiểm tra <strong>mọi dòng trước khi ghi</strong>; một dòng thiếu hàng → ném exception → <strong>không có gì được lưu</strong> (test <code>DatHang_NhieuDong_MotDongThieuHang_KhongDongNaoBiTru</code> chứng minh dòng A không bị trừ).</li>
+<li><strong>Chốt <code>DonGia</code></strong> vào chi tiết đơn: giá sản phẩm đổi sau này không làm thay đổi hoá đơn cũ (Chương 11).</li>
+<li><strong>Concurrency token trên <code>Ton</code></strong>: hai đơn cùng đọc tồn 5 và cùng trừ 4 → lệnh <code>UPDATE ... WHERE Ton = 5</code> của đơn thứ hai không khớp dòng nào → <code>DbUpdateConcurrencyException</code>, bắt và chuyển thành <code>XungDotException</code> → <code>409 Conflict</code> (&quot;Ton kho vua thay doi&quot;). Không có nó, tồn kho có thể thành số âm hoặc sai (mất cập nhật). Ràng buộc <code>CHECK (Ton &gt;= 0)</code> là lưới an toàn cuối.</li>
+<li>Exception nghiệp vụ (<code>KhongTimThay</code> → 404, <code>KhongDuHang</code>/<code>XungDot</code> → 409, <code>LoiNghiepVu</code> khác → 422) được <strong>handler toàn cục</strong> (Chương 9) biến thành ProblemDetails — endpoint không cần <code>try/catch</code>.</li>
+</ul>
+<p>Bạn cũng có thể để client <strong>tự thử lại</strong> khi nhận <code>409</code> (idempotency: nếu mạng lỗi, gửi lại cùng đơn có thể tạo đơn thứ hai — thiết kế khoá idempotency ở Tập 3).</p>
+<h2>Lưu ý về xoá mềm và quan hệ</h2>
+<p>Sản phẩm đã xoá mềm bị <code>HasQueryFilter</code> giấu khỏi mọi truy vấn — kể cả khi <strong>hiển thị đơn hàng cũ có chứa nó</strong>. Vì vậy <code>DonHangService.LayAsync</code> dùng <code>.IgnoreQueryFilters()</code> (Chương 13). Khi tạo migration EF cảnh báo đúng về điều này: đó là <strong>thiết kế cần chủ động xử lý</strong>, không phải lỗi.</p>
+<h2>Kiểm thử với SQLite trong bộ nhớ</h2>
+<p>Test chạy API <strong>thật</strong> với CSDL SQLite <strong>thật</strong> (có ràng buộc, SQL thật), nhưng nằm trong bộ nhớ:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ApiFactory</span> : <span class="hljs-title">WebApplicationFactory</span>&lt;<span class="hljs-title">Program</span>&gt;
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> SqliteConnection _conn = <span class="hljs-keyword">new</span>(<span class="hljs-string">&quot;DataSource=:memory:&quot;</span>);    <span class="hljs-comment">// giữ MỞ, nếu không CSDL mất</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">ConfigureWebHost</span>(<span class="hljs-params">IWebHostBuilder builder</span>)</span>
+    {
+        _conn.Open();
+        builder.UseEnvironment(<span class="hljs-string">&quot;Testing&quot;</span>);
+        builder.ConfigureServices(s =&gt;
+        {
+            s.RemoveAll&lt;DbContextOptions&lt;CuaHangDbContext&gt;&gt;();
+            s.AddDbContext&lt;CuaHangDbContext&gt;(o =&gt; o.UseSqlite(_conn));
+        });
+    }
+}
+</code></pre>
+<p>Lúc khởi động app chạy <code>Migrate()</code> + seed trên CSDL bộ nhớ, nên test có dữ liệu mẫu sẵn. Ưu điểm so với &quot;EF InMemory provider&quot; (Chương 10): các ràng buộc <code>UNIQUE/CHECK/FK</code>, giao dịch, SQL thật đều hoạt động → test bắt được lỗi thật (ví dụ 409 khi trùng mã đến từ CSDL). Mười test bao phủ: phân trang/sắp xếp, tìm kiếm, trùng mã (409), mã sai (400), xoá mềm, nhập kho, đặt hàng thành công/thiếu hàng/nhiều dòng/khách không tồn tại.</p>
+<p>Nhớ viết test <strong>độc lập thứ tự</strong> (mỗi test tạo mã sản phẩm riêng như <code>&quot;DH001&quot;</code>, <code>&quot;DH002&quot;</code>) vì factory chia sẻ một CSDL cho cả class.</p>
+<h2>Chạy thử</h2>
+<pre class="hljs"><code>cd CuaHangApi
+dotnet run
+curl &quot;http://localhost:5000/api/san-pham?sapXep=-gia&amp;kichThuoc=3&quot;
+curl -X POST http://localhost:5000/api/don-hang -H &quot;Content-Type: application/json&quot; \
+     -d '{&quot;khachHangId&quot;:1,&quot;dong&quot;:[{&quot;sanPhamId&quot;:1,&quot;soLuong&quot;:2}]}'
+dotnet test ../CuaHangApi.Tests
+</code></pre>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>DbContext</code> dùng trong Singleton/<code>BackgroundService</code> mà không tạo scope (Chương 5).</li>
+<li>Trả entity (có navigation vòng) thay vì DTO → lỗi serialize/lộ dữ liệu.</li>
+<li>Quên <code>await</code> → request trả về trước khi <code>SaveChanges</code> xong.</li>
+<li>Tin kiểm tra &quot;trùng mã&quot; ở tầng ứng dụng mà quên ràng buộc UNIQUE.</li>
+<li>Đọc-rồi-ghi <code>Ton</code> không có concurrency token → âm kho / mất cập nhật.</li>
+<li>Migrate khi khởi động trên production với nhiều instance.</li>
+<li>Test dùng EF InMemory rồi &quot;xanh giả&quot;.</li>
+<li><code>Skip/Take</code> không <code>OrderBy</code>; không giới hạn <code>kichThuoc</code>.</li>
+<li>Đưa <code>sapXep</code> từ client thẳng vào <code>OrderBy</code> động.</li>
+<li>Quên <code>IgnoreQueryFilters</code> ở truy vấn lịch sử/đơn hàng cũ.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm <code>PUT /api/khach-hang/{id}</code> và <code>POST /api/khach-hang</code> (email duy nhất → <code>409</code>), kèm test.</li>
+<li>Thêm <code>GET /api/don-hang?khachHangId=1&amp;trang=1</code> trả <code>TrangKetQua&lt;DonHangDto&gt;</code> bằng <strong>một</strong> câu SQL (đo bằng <code>LogTo</code>).</li>
+<li>Thêm endpoint <code>POST /api/don-hang/{id}/huy</code> hoàn lại tồn kho trong cùng một giao dịch; viết test.</li>
+<li>Đổi provider sang PostgreSQL (<code>Npgsql.EntityFrameworkCore.PostgreSQL</code>) bằng biến cấu hình và liệt kê những chỗ code/migration phải sửa (gợi ý: <code>decimal</code>, <code>Like</code>).</li>
+<li>Viết test kiểm chứng xung đột đồng thời: hai request đặt hàng song song (<code>Task.WhenAll</code>) cho sản phẩm còn 1 cái; chỉ một thành công, một nhận <code>409</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch13-efcore-quan-he.html">&larr; 13. Quan hệ, truy vấn nâng cao và hiệu năng</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

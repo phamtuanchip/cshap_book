@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 11 — SQL cơ bản và SQLite — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch11-sql-sqlite.html">11. SQL cơ bản và SQLite</a></li><li><a class="chapter-link" href="ch12-efcore-co-ban.html">12. Entity Framework Core cơ bản</a></li><li><a class="chapter-link" href="ch13-efcore-quan-he.html">13. Quan hệ, truy vấn nâng cao và hiệu năng</a></li><li><a class="chapter-link" href="ch14-api-voi-efcore.html">14. Web API hoàn chỉnh với EF Core</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><span class="chapter-link pending">15. ASP.NET Core MVC</span></li><li><span class="chapter-link pending">16. Razor Pages</span></li><li><span class="chapter-link pending">17. Form, validation phía server và chống CSRF</span></li><li><span class="chapter-link pending">18. Blazor</span></li><li><span class="chapter-link pending">19. Gọi API ngoài với HttpClient</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 11 — SQL cơ bản và SQLite</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu cơ sở dữ liệu <strong>quan hệ</strong>: bảng, khoá chính, khoá ngoại, ràng buộc, chỉ mục.</li>
+<li>Viết SQL cơ bản: <code>SELECT</code>, <code>WHERE</code>, <code>JOIN</code>, <code>GROUP BY</code>, <code>HAVING</code>, truy vấn con, <code>INSERT/UPDATE/DELETE</code>.</li>
+<li>Hiểu <strong>giao dịch (transaction)</strong> và vì sao ràng buộc bảo vệ dữ liệu.</li>
+<li>Biết <strong>SQL injection</strong> là gì và cách chặn bằng <strong>truy vấn có tham số</strong>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch11-sql-sqlite/"><code>code/ch11-sql-sqlite/</code></a> — <code>schema.sql</code> (chạy được trong mọi công cụ SQLite) và chương trình console dùng <code>Microsoft.Data.Sqlite</code>.</p>
+<h2>Vì sao học SQL khi đã có EF Core?</h2>
+<p>Chương 12–14 dùng <strong>Entity Framework Core</strong> để làm việc với CSDL bằng C#. EF Core chỉ là lớp phiên dịch: mọi LINQ cuối cùng thành <strong>SQL</strong>. Nếu không hiểu SQL bạn sẽ không đọc được câu lệnh EF sinh ra, không biết vì sao truy vấn chậm, không thiết kế được bảng đúng. Hiểu SQL là điều kiện để dùng EF hiệu quả.</p>
+<h2>SQLite — CSDL để học</h2>
+<p><strong>SQLite</strong> là CSDL nằm gọn trong <strong>một file</strong> (hoặc bộ nhớ), không cần cài server: hợp học tập, thử nghiệm, test, ứng dụng nhỏ. Sản phẩm thật nhiều người dùng thường chọn <strong>PostgreSQL</strong>, <strong>SQL Server</strong> hoặc <strong>MySQL</strong> — SQL căn bản giống nhau, khác ở chi tiết (kiểu dữ liệu, hàm ngày giờ, cú pháp phân trang). Sách dùng SQLite để mọi ví dụ chạy được ngay; các chỗ khác biệt sẽ được ghi chú.</p>
+<p>Công cụ: <code>sqlite3</code> (dòng lệnh), <strong>DB Browser for SQLite</strong>, extension SQLite cho VS Code, hoặc chính chương trình mẫu.</p>
+<h2>Mô hình quan hệ</h2>
+<p>Dữ liệu chia vào các <strong>bảng</strong>; mỗi bảng có <strong>cột</strong> (kiểu dữ liệu) và <strong>dòng</strong> (bản ghi). Bảng liên kết nhau bằng khoá:</p>
+<pre class="mermaid">erDiagram
+    NHOM ||--o{ SAN_PHAM : &quot;co&quot;
+    KHACH_HANG ||--o{ DON_HANG : &quot;dat&quot;
+    DON_HANG ||--|{ CHI_TIET_DON : &quot;gom&quot;
+    SAN_PHAM ||--o{ CHI_TIET_DON : &quot;duoc ban trong&quot;
+    NHOM { int id PK  string ten }
+    SAN_PHAM { int id PK  string ma  string ten  int gia  int ton  int nhom_id FK }
+    KHACH_HANG { int id PK  string ten  string email }
+    DON_HANG { int id PK  int khach_hang_id FK  date ngay }
+    CHI_TIET_DON { int don_hang_id FK  int san_pham_id FK  int so_luong  int don_gia }
+</pre>
+<ul>
+<li><strong>Khoá chính (PK)</strong>: định danh duy nhất một dòng (<code>id</code>).</li>
+<li><strong>Khoá ngoại (FK)</strong>: cột trỏ tới khoá chính của bảng khác (<code>san_pham.nhom_id → nhom.id</code>), CSDL <strong>bảo đảm</strong> không trỏ vào chỗ không tồn tại.</li>
+<li><strong>Quan hệ</strong>: 1–nhiều (một nhóm có nhiều sản phẩm), nhiều–nhiều (đơn hàng ↔ sản phẩm, qua bảng nối <code>chi_tiet_don</code> — bảng này còn mang dữ liệu riêng như số lượng, đơn giá).</li>
+</ul>
+<p><strong>Chuẩn hoá</strong>: mỗi sự thật chỉ lưu <strong>một chỗ</strong> (tên nhóm nằm ở bảng <code>nhom</code>, không lặp trên từng sản phẩm). Lưu ý <code>chi_tiet_don.don_gia</code>: <strong>chụp lại</strong> giá lúc bán, vì giá sản phẩm sẽ đổi mà hoá đơn cũ thì không được đổi.</p>
+<h2>Định nghĩa bảng và ràng buộc</h2>
+<pre class="hljs"><code><span class="hljs-keyword">CREATE TABLE</span> san_pham (
+    id       <span class="hljs-type">INTEGER</span> <span class="hljs-keyword">PRIMARY KEY</span> AUTOINCREMENT,
+    ma       TEXT    <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">UNIQUE</span>,
+    ten      TEXT    <span class="hljs-keyword">NOT NULL</span>,
+    gia      <span class="hljs-type">INTEGER</span> <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">CHECK</span> (gia <span class="hljs-operator">&gt;=</span> <span class="hljs-number">0</span>),
+    ton      <span class="hljs-type">INTEGER</span> <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-number">0</span> <span class="hljs-keyword">CHECK</span> (ton <span class="hljs-operator">&gt;=</span> <span class="hljs-number">0</span>),
+    nhom_id  <span class="hljs-type">INTEGER</span> <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">REFERENCES</span> nhom(id)
+);
+<span class="hljs-keyword">CREATE</span> INDEX ix_san_pham_nhom <span class="hljs-keyword">ON</span> san_pham(nhom_id);
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Ràng buộc</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PRIMARY KEY</code></td>
+<td>định danh duy nhất, không NULL</td>
+</tr>
+<tr>
+<td><code>NOT NULL</code></td>
+<td>bắt buộc có giá trị</td>
+</tr>
+<tr>
+<td><code>UNIQUE</code></td>
+<td>không trùng (mã sản phẩm, email)</td>
+</tr>
+<tr>
+<td><code>CHECK (điều kiện)</code></td>
+<td>giá trị phải thoả điều kiện (giá ≥ 0)</td>
+</tr>
+<tr>
+<td><code>DEFAULT</code></td>
+<td>giá trị mặc định</td>
+</tr>
+<tr>
+<td><code>FOREIGN KEY / REFERENCES</code></td>
+<td>phải trỏ tới dòng tồn tại; <code>ON DELETE CASCADE/RESTRICT</code> quyết định khi xoá dòng cha</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ràng buộc là hàng phòng thủ cuối cùng.</strong> Ứng dụng có validation (Chương 8) nhưng có bug, có nhiều ứng dụng cùng ghi vào một CSDL, có người sửa tay — chỉ CSDL mới bảo đảm dữ liệu không bao giờ sai. Chạy code mẫu, mục 9: chèn trùng mã, giá âm, nhóm không tồn tại đều bị từ chối:</p>
+<pre class="hljs"><code>UNIQUE constraint failed: san_pham.ma
+CHECK constraint failed: gia &gt;= 0
+FOREIGN KEY constraint failed
+</code></pre>
+<p>(SQLite cần <code>PRAGMA foreign_keys = ON</code> cho mỗi kết nối để thực thi khoá ngoại; các CSDL khác luôn bật.)</p>
+<p><strong>Kiểu tiền tệ:</strong> đừng dùng số thực (<code>REAL/FLOAT</code>) cho tiền vì sai số (Tập 1, Chương 5). Dùng số nguyên (đồng) hoặc <code>DECIMAL(18,2)</code> ở CSDL hỗ trợ.</p>
+<h2>Truy vấn dữ liệu</h2>
+<h3><code>SELECT</code>, <code>WHERE</code>, <code>ORDER BY</code>, <code>LIMIT</code></h3>
+<pre class="hljs"><code><span class="hljs-keyword">SELECT</span> ma, ten, gia
+<span class="hljs-keyword">FROM</span> san_pham
+<span class="hljs-keyword">WHERE</span> gia <span class="hljs-operator">&gt;=</span> <span class="hljs-number">200000</span>
+<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> gia <span class="hljs-keyword">DESC</span>
+LIMIT <span class="hljs-number">3</span>;
+</code></pre>
+<p>Thứ tự <strong>xử lý</strong> logic: <code>FROM</code> → <code>WHERE</code> → <code>GROUP BY</code> → <code>HAVING</code> → <code>SELECT</code> → <code>ORDER BY</code> → <code>LIMIT</code>. Toán tử: <code>= &lt;&gt; &lt; &gt; &lt;= &gt;=</code>, <code>AND OR NOT</code>, <code>IN (...)</code>, <code>BETWEEN a AND b</code>, <code>LIKE '%an%'</code>, <code>IS NULL</code> (không dùng <code>= NULL</code>). <strong><code>NULL</code> nghĩa là &quot;không biết&quot;</strong>: <code>NULL = NULL</code> không phải đúng.</p>
+<h3><code>JOIN</code> — ghép bảng</h3>
+<pre class="hljs"><code><span class="hljs-keyword">SELECT</span> sp.ma, sp.ten, n.ten <span class="hljs-keyword">AS</span> nhom, sp.gia
+<span class="hljs-keyword">FROM</span> san_pham sp
+<span class="hljs-keyword">JOIN</span> nhom n <span class="hljs-keyword">ON</span> n.id <span class="hljs-operator">=</span> sp.nhom_id        <span class="hljs-comment">-- INNER JOIN: chỉ dòng có cặp khớp ở cả hai bảng</span>
+<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> n.ten, sp.ten;
+</code></pre>
+<ul>
+<li><strong><code>INNER JOIN</code></strong>: chỉ giữ dòng khớp cả hai phía.</li>
+<li><strong><code>LEFT JOIN</code></strong>: giữ <strong>mọi dòng bảng trái</strong>, phía phải không có thì <code>NULL</code>:</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">SELECT</span> k.ten, <span class="hljs-built_in">COUNT</span>(d.id) <span class="hljs-keyword">AS</span> so_don
+<span class="hljs-keyword">FROM</span> khach_hang k
+<span class="hljs-keyword">LEFT</span> <span class="hljs-keyword">JOIN</span> don_hang d <span class="hljs-keyword">ON</span> d.khach_hang_id <span class="hljs-operator">=</span> k.id
+<span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> k.id;
+<span class="hljs-comment">-- Le Chi: 0 don (INNER JOIN sẽ làm khách này biến mất)</span>
+</code></pre>
+<h3><code>GROUP BY</code> và hàm tổng hợp</h3>
+<pre class="hljs"><code><span class="hljs-keyword">SELECT</span> k.ten, <span class="hljs-built_in">SUM</span>(c.so_luong <span class="hljs-operator">*</span> c.don_gia) <span class="hljs-keyword">AS</span> doanh_thu
+<span class="hljs-keyword">FROM</span> khach_hang k
+<span class="hljs-keyword">JOIN</span> don_hang d <span class="hljs-keyword">ON</span> d.khach_hang_id <span class="hljs-operator">=</span> k.id
+<span class="hljs-keyword">JOIN</span> chi_tiet_don c <span class="hljs-keyword">ON</span> c.don_hang_id <span class="hljs-operator">=</span> d.id
+<span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> k.id
+<span class="hljs-keyword">HAVING</span> <span class="hljs-built_in">SUM</span>(c.so_luong <span class="hljs-operator">*</span> c.don_gia) <span class="hljs-operator">&gt;</span> <span class="hljs-number">1000000</span>     <span class="hljs-comment">-- HAVING lọc SAU khi gom nhóm (WHERE lọc trước)</span>
+<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> doanh_thu <span class="hljs-keyword">DESC</span>;
+</code></pre>
+<p>Hàm: <code>COUNT</code>, <code>SUM</code>, <code>AVG</code>, <code>MIN</code>, <code>MAX</code>. Mọi cột trong <code>SELECT</code> không nằm trong hàm tổng hợp phải nằm trong <code>GROUP BY</code> (một số CSDL, như SQLite, nới lỏng — đừng dựa vào).</p>
+<h3>Truy vấn con</h3>
+<pre class="hljs"><code><span class="hljs-keyword">SELECT</span> ma, ten <span class="hljs-keyword">FROM</span> san_pham sp
+<span class="hljs-keyword">WHERE</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">EXISTS</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-number">1</span> <span class="hljs-keyword">FROM</span> chi_tiet_don c <span class="hljs-keyword">WHERE</span> c.san_pham_id <span class="hljs-operator">=</span> sp.id);   <span class="hljs-comment">-- sản phẩm chưa từng bán</span>
+</code></pre>
+<h3>Ghi dữ liệu</h3>
+<pre class="hljs"><code><span class="hljs-keyword">INSERT INTO</span> khach_hang (ten, email) <span class="hljs-keyword">VALUES</span> (<span class="hljs-string">&#x27;Pham Dung&#x27;</span>, <span class="hljs-string">&#x27;dung@example.com&#x27;</span>);
+<span class="hljs-keyword">UPDATE</span> san_pham <span class="hljs-keyword">SET</span> ton <span class="hljs-operator">=</span> ton <span class="hljs-operator">+</span> <span class="hljs-number">10</span> <span class="hljs-keyword">WHERE</span> ma <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;TN001&#x27;</span>;
+<span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">FROM</span> khach_hang <span class="hljs-keyword">WHERE</span> email <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;dung@example.com&#x27;</span>;
+</code></pre>
+<blockquote>
+<p><strong>Nhớ <code>WHERE</code>!</strong> <code>UPDATE</code>/<code>DELETE</code> thiếu <code>WHERE</code> tác động <strong>cả bảng</strong>. Thói quen: viết <code>SELECT</code> với cùng <code>WHERE</code> để kiểm tra trước, và thao tác quan trọng trong giao dịch.</p>
+</blockquote>
+<h2>Chỉ mục (index)</h2>
+<p>Không có chỉ mục, tìm <code>WHERE ten = '...'</code> phải <strong>quét toàn bộ bảng</strong> (chậm dần theo số dòng). <strong>Chỉ mục</strong> là cấu trúc dữ liệu phụ (thường cây B-tree) giúp tìm nhanh, đổi lại tốn bộ nhớ và làm ghi chậm hơn một chút. <code>EXPLAIN QUERY PLAN</code> cho thấy CSDL định làm gì:</p>
+<pre class="hljs"><code>SEARCH san_pham USING INDEX ix_san_pham_nhom (nhom_id=?)     -- có chỉ mục: tìm nhanh
+SCAN san_pham                                                -- không có: quét toàn bảng
+</code></pre>
+<p>Quy tắc: đặt chỉ mục trên <strong>khoá ngoại</strong> và các cột hay dùng trong <code>WHERE/JOIN/ORDER BY</code>; <code>PRIMARY KEY</code> và <code>UNIQUE</code> tự có chỉ mục. Đừng đặt bừa mọi cột.</p>
+<h2>Giao dịch (transaction)</h2>
+<p>Một thao tác nghiệp vụ thường gồm nhiều lệnh (trừ kho <strong>và</strong> tạo đơn). Giao dịch bảo đảm <strong>tất cả cùng thành công hoặc cùng huỷ</strong> (nguyên tắc <strong>ACID</strong>: Atomicity, Consistency, Isolation, Durability):</p>
+<pre class="hljs"><code><span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> tx = (SqliteTransaction)<span class="hljs-keyword">await</span> conn.BeginTransactionAsync();
+<span class="hljs-keyword">try</span>
+{
+    <span class="hljs-keyword">await</span> LenhTrongGiaoDichAsync(conn, tx, <span class="hljs-string">&quot;UPDATE san_pham SET ton = ton - 1 WHERE ma = &#x27;LT001&#x27;&quot;</span>);
+    <span class="hljs-keyword">await</span> LenhTrongGiaoDichAsync(conn, tx, <span class="hljs-string">&quot;INSERT INTO chi_tiet_don VALUES (999, 5, 1, 1)&quot;</span>);  <span class="hljs-comment">// lỗi khoá ngoại</span>
+    <span class="hljs-keyword">await</span> tx.CommitAsync();
+}
+<span class="hljs-keyword">catch</span> (SqliteException) { <span class="hljs-keyword">await</span> tx.RollbackAsync(); }     <span class="hljs-comment">// lệnh UPDATE trước đó cũng bị hoàn tác</span>
+</code></pre>
+<p>Chạy mẫu: sau <code>ROLLBACK</code>, tồn kho <code>LT001</code> vẫn là <code>3</code>. Với EF Core (Chương 12), <code>SaveChanges()</code> tự bọc mọi thay đổi trong một giao dịch.</p>
+<h2>SQL từ C#: truy vấn có tham số</h2>
+<p>Chương trình mẫu dùng <code>Microsoft.Data.Sqlite</code> (trình điều khiển SQLite hiện đại của .NET; các CSDL khác có <code>Npgsql</code> cho PostgreSQL, <code>Microsoft.Data.SqlClient</code> cho SQL Server — cùng mô hình):</p>
+<pre class="hljs"><code><span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> cmd = conn.CreateCommand();
+cmd.CommandText = <span class="hljs-string">&quot;SELECT ten, gia FROM san_pham WHERE ten LIKE $tuKhoa AND gia &lt;= $giaToiDa&quot;</span>;
+cmd.Parameters.AddWithValue(<span class="hljs-string">&quot;$tuKhoa&quot;</span>, <span class="hljs-string">&quot;%an%&quot;</span>);
+cmd.Parameters.AddWithValue(<span class="hljs-string">&quot;$giaToiDa&quot;</span>, <span class="hljs-number">1_000_000</span>);
+<span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> r = <span class="hljs-keyword">await</span> cmd.ExecuteReaderAsync();
+<span class="hljs-keyword">while</span> (<span class="hljs-keyword">await</span> r.ReadAsync()) Console.WriteLine(<span class="hljs-string">$&quot;<span class="hljs-subst">{r.GetString(<span class="hljs-number">0</span>)}</span> - <span class="hljs-subst">{r.GetInt64(<span class="hljs-number">1</span>):N0}</span>&quot;</span>);
+</code></pre>
+<p>Bạn sẽ hiếm khi viết mã như vậy khi đã có EF Core, nhưng cần hiểu nền tảng — và cần SQL thuần cho báo cáo phức tạp/tối ưu (Chương 13).</p>
+<h2>SQL injection — lỗ hổng nguy hiểm bậc nhất</h2>
+<p>Khi <strong>nối chuỗi</strong> dữ liệu người dùng vào câu SQL, kẻ tấn công thay đổi ý nghĩa câu lệnh:</p>
+<pre class="hljs"><code><span class="hljs-built_in">string</span> dauVao = <span class="hljs-string">&quot;x&#x27; OR &#x27;1&#x27;=&#x27;1&quot;</span>;
+<span class="hljs-built_in">string</span> sql = <span class="hljs-string">$&quot;SELECT COUNT(*) FROM khach_hang WHERE email = &#x27;<span class="hljs-subst">{dauVao}</span>&#x27;&quot;</span>;     <span class="hljs-comment">// ✘ NGUY HIỂM</span>
+<span class="hljs-comment">// → SELECT COUNT(*) FROM khach_hang WHERE email = &#x27;x&#x27; OR &#x27;1&#x27;=&#x27;1&#x27;           → luôn đúng: trả TẤT CẢ (3 khách)</span>
+</code></pre>
+<p>Ví dụ điển hình: form đăng nhập bị bypass mật khẩu; tệ hơn là <code>'; DROP TABLE khach_hang; --</code> xoá dữ liệu hoặc đánh cắp toàn bộ CSDL qua <code>UNION</code>. Nó nằm trong nhóm lỗ hổng phổ biến nhất của OWASP nhiều năm.</p>
+<p><strong>Cách phòng duy nhất đáng tin: tham số hoá</strong> — dữ liệu và lệnh đi <strong>hai kênh riêng</strong>, CSDL không bao giờ hiểu dữ liệu là mã:</p>
+<pre class="hljs"><code>cmd.CommandText = <span class="hljs-string">&quot;SELECT COUNT(*) FROM khach_hang WHERE email = $email&quot;</span>;     <span class="hljs-comment">// ✔</span>
+cmd.Parameters.AddWithValue(<span class="hljs-string">&quot;$email&quot;</span>, dauVao);                                   <span class="hljs-comment">// → 0 khách</span>
+</code></pre>
+<p>Quy tắc bắt buộc:</p>
+<ol>
+<li><strong>Không bao giờ</strong> nối/nội suy dữ liệu bên ngoài vào SQL. Kể cả dữ liệu &quot;có vẻ an toàn&quot; (số, tham số sắp xếp).</li>
+<li>Tên bảng/cột không tham số hoá được → dùng <strong>whitelist</strong> (chỉ chấp nhận <code>&quot;gia&quot;</code>, <code>&quot;ten&quot;</code> như Chương 14).</li>
+<li>EF Core với LINQ tự tham số hoá; <code>FromSqlInterpolated($&quot;... {x}&quot;)</code> cũng tham số hoá (khác <code>FromSqlRaw</code> với chuỗi nối — nguy hiểm).</li>
+<li>Tài khoản CSDL của ứng dụng chỉ nên có quyền tối thiểu (không <code>DROP</code>).</li>
+</ol>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>UPDATE</code>/<code>DELETE</code> thiếu <code>WHERE</code>.</li>
+<li>Dùng <code>INNER JOIN</code> khi cần <code>LEFT JOIN</code> (mất dòng không có cặp), hoặc <code>JOIN</code> nhân đôi dòng rồi <code>SUM</code> sai.</li>
+<li>So sánh <code>= NULL</code> thay vì <code>IS NULL</code>.</li>
+<li>Lưu tiền bằng <code>REAL/FLOAT</code>.</li>
+<li>Thiếu chỉ mục trên khoá ngoại/cột lọc → chậm khi dữ liệu lớn; đặt chỉ mục thừa → ghi chậm.</li>
+<li><code>SELECT *</code> trong code ứng dụng (lấy thừa cột, vỡ khi đổi schema).</li>
+<li>Nối chuỗi SQL với dữ liệu người dùng.</li>
+<li>Quên bật <code>foreign_keys</code> trên SQLite rồi thắc mắc vì sao khoá ngoại không có tác dụng.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết truy vấn: 3 sản phẩm bán nhiều nhất (theo tổng số lượng) kèm tên nhóm.</li>
+<li>Tìm khách hàng chưa mua sản phẩm nào thuộc nhóm &quot;Thiet bi&quot;.</li>
+<li>Thêm cột <code>ngay_tao</code> vào <code>san_pham</code> và chỉ mục cho <code>don_hang.ngay</code>; dùng <code>EXPLAIN QUERY PLAN</code> để so sánh trước/sau khi có chỉ mục khi lọc theo ngày.</li>
+<li>Thử <code>ON DELETE CASCADE</code>: xoá một <code>don_hang</code> và kiểm tra <code>chi_tiet_don</code>; sau đó thử xoá một <code>nhom</code> đang có sản phẩm.</li>
+<li>Viết lại đoạn &quot;SQL injection&quot; với dữ liệu đầu vào <code>'; DELETE FROM khach_hang; --</code> ở cả hai cách (nối chuỗi có thể chạy nhiều lệnh tuỳ trình điều khiển) và giải thích vì sao tham số hoá miễn nhiễm.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch10-kiem-thu-api.html">&larr; 10. Kiểm thử API</a><a class="nav-next" href="ch12-efcore-co-ban.html">12. Entity Framework Core cơ bản &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
