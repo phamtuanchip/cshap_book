@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 5 — Dependency Injection — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link active" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><span class="chapter-link pending">7. Web API với Controller</span></li><li><span class="chapter-link pending">8. DTO và Validation</span></li><li><span class="chapter-link pending">9. Xử lý lỗi, versioning và OpenAPI</span></li><li><span class="chapter-link pending">10. Kiểm thử API</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><span class="chapter-link pending">11. SQL cơ bản và SQLite</span></li><li><span class="chapter-link pending">12. Entity Framework Core cơ bản</span></li><li><span class="chapter-link pending">13. Quan hệ, truy vấn nâng cao và hiệu năng</span></li><li><span class="chapter-link pending">14. Web API hoàn chỉnh với EF Core</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><span class="chapter-link pending">15. ASP.NET Core MVC</span></li><li><span class="chapter-link pending">16. Razor Pages</span></li><li><span class="chapter-link pending">17. Form, validation phía server và chống CSRF</span></li><li><span class="chapter-link pending">18. Blazor</span></li><li><span class="chapter-link pending">19. Gọi API ngoài với HttpClient</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 5 — Dependency Injection</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>DI container</strong> của <a href="http://ASP.NET">ASP.NET</a> Core và vì sao mọi thứ đều &quot;được tiêm&quot;.</li>
+<li>Đăng ký dịch vụ với ba vòng đời: <strong>Transient</strong>, <strong>Scoped</strong>, <strong>Singleton</strong> — và chọn đúng.</li>
+<li>Tránh lỗi kinh điển: <strong>captive dependency</strong>, dùng dịch vụ Scoped trong Singleton.</li>
+<li>Dùng đăng ký nhiều cài đặt, <strong>keyed services</strong>, factory.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch05-dependency-injection/"><code>code/ch05-dependency-injection/</code></a>.</p>
+<h2>Từ nguyên lý đến công cụ</h2>
+<p>Tập 1, Chương 42 giới thiệu <strong>Dependency Inversion</strong>: lớp nghiệp vụ nhận phụ thuộc qua <strong>constructor dưới dạng interface</strong> thay vì tự <code>new</code>. Ai sẽ <strong>lắp ráp</strong> các đối tượng đó? Ở Tập 1 ta làm tay ở <em>composition root</em> (<code>Program.cs</code>). Khi ứng dụng có hàng trăm lớp phụ thuộc nhau nhiều tầng, việc đó tự động hoá bằng <strong>DI container</strong> (IoC container) có sẵn trong <a href="http://ASP.NET">ASP.NET</a> Core: <code>builder.Services</code>.</p>
+<pre class="hljs"><code><span class="hljs-comment">// (1) ĐĂNG KÝ (trước Build): &quot;khi ai xin IGuiThongBao, đưa GuiEmail&quot;</span>
+builder.Services.AddScoped&lt;IGuiThongBao, GuiEmail&gt;();
+
+<span class="hljs-comment">// (2) SỬ DỤNG: khai báo cần gì, container tạo và đưa cho</span>
+app.MapGet(<span class="hljs-string">&quot;/gui&quot;</span>, (IGuiThongBao gui) =&gt; gui.Gui(<span class="hljs-string">&quot;xin chao&quot;</span>));
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">DatHangService</span>(<span class="hljs-title">IGuiThongBao</span> <span class="hljs-title">gui</span>, <span class="hljs-title">IKhoHang</span> <span class="hljs-title">kho</span>) { ... }    <span class="hljs-comment">// tiêm qua constructor</span>
+</code></pre>
+<p>Container xây <strong>đồ thị phụ thuộc</strong> tự động: xin <code>DatHangService</code> → tự tạo <code>GuiEmail</code> và <code>KhoHang</code> trước (đệ quy). Bạn viết code gắn kết lỏng (loose coupling); đổi cài đặt (email → SMS, CSDL thật → giả khi test) chỉ sửa <strong>một dòng đăng ký</strong>.</p>
+<h2>Ba vòng đời (lifetime)</h2>
+<table>
+<thead>
+<tr>
+<th>Vòng đời</th>
+<th>Đăng ký</th>
+<th>Đối tượng được tạo…</th>
+<th>Dùng cho</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Transient</strong></td>
+<td><code>AddTransient</code></td>
+<td><strong>mỗi lần</strong> được xin (mỗi lần tiêm là một bản mới)</td>
+<td>dịch vụ nhẹ, không giữ trạng thái</td>
+</tr>
+<tr>
+<td><strong>Scoped</strong></td>
+<td><code>AddScoped</code></td>
+<td><strong>một lần cho mỗi scope</strong> — trong web, mỗi <strong>HTTP request</strong></td>
+<td>dịch vụ gắn với request: <code>DbContext</code>, unit of work, user hiện tại</td>
+</tr>
+<tr>
+<td><strong>Singleton</strong></td>
+<td><code>AddSingleton</code></td>
+<td><strong>một lần duy nhất</strong> cho cả vòng đời ứng dụng</td>
+<td>cấu hình, cache, <code>HttpClient</code> factory, dịch vụ không trạng thái/thread-safe</td>
+</tr>
+</tbody>
+</table>
+<p>Chạy code mẫu và gọi <code>/thoi-gian</code> hai lần để <strong>thấy tận mắt</strong>:</p>
+<pre class="hljs"><code><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;transient&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;lan1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;7c8b...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;lan2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9051...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;giongNhau&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;scoped&quot;</span><span class="hljs-punctuation">:</span>    <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;lan1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;c7c6...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;lan2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;c7c6...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;giongNhau&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;dungChungVoiDichVu&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;singleton&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;lan1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;93aa...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;lan2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;93aa...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;giongNhau&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span> <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<ul>
+<li><strong>Transient</strong>: hai lần xin cùng một request → hai GUID khác nhau.</li>
+<li><strong>Scoped</strong>: trong <em>một</em> request, mọi nơi (endpoint, <code>DichVuA</code>, <code>DichVuB</code>) thấy <strong>cùng một</strong> đối tượng; sang request mới → GUID khác.</li>
+<li><strong>Singleton</strong>: mọi request đều cùng một GUID (thấy ở lần gọi thứ hai vẫn <code>93aa...</code>).</li>
+</ul>
+<pre class="mermaid">flowchart LR
+    subgraph &quot;Ứng dụng (Singleton sống suốt)&quot;
+        S[&quot;Singleton&quot;]
+        subgraph &quot;Request 1 (Scoped)&quot;
+            SC1[&quot;Scoped #1&quot;]
+            T1[&quot;Transient a&quot;]
+            T2[&quot;Transient b&quot;]
+        end
+        subgraph &quot;Request 2 (Scoped)&quot;
+            SC2[&quot;Scoped #2&quot;]
+            T3[&quot;Transient c&quot;]
+        end
+    end
+</pre>
+<h2>Quy tắc chọn vòng đời</h2>
+<ol>
+<li><strong>Mặc định <code>Scoped</code></strong> cho dịch vụ nghiệp vụ trong web (an toàn, gắn theo request).</li>
+<li><strong><code>Singleton</code></strong> cho thứ tốn kém khi tạo hoặc cần chia sẻ: cache, cấu hình, bộ đếm — <strong>bắt buộc thread-safe</strong> (nhiều request cùng lúc — Tập 1, Chương 34).</li>
+<li><strong><code>Transient</code></strong> cho dịch vụ nhỏ, không trạng thái; nếu cài <code>IDisposable</code> thì container sẽ giữ tham chiếu để dispose cuối scope.</li>
+<li><strong><code>DbContext</code> luôn Scoped</strong> (Chương 12) — không thread-safe.</li>
+</ol>
+<h3>Captive dependency — lỗi kinh điển</h3>
+<p>Một dịch vụ <strong>sống lâu</strong> không được phụ thuộc dịch vụ <strong>sống ngắn hơn</strong>:</p>
+<pre class="hljs"><code>builder.Services.AddSingleton&lt;DichVuToanCuc&gt;();   <span class="hljs-comment">// sống mãi</span>
+builder.Services.AddScoped&lt;AppDbContext&gt;();       <span class="hljs-comment">// sống một request</span>
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">DichVuToanCuc</span>(<span class="hljs-title">AppDbContext</span> <span class="hljs-title">db</span>) { }          <span class="hljs-comment">// ✘ Singleton &quot;giam&quot; DbContext của request đầu tiên mãi mãi</span>
+</code></pre>
+<p>Kết quả: <code>DbContext</code> bị dùng lại giữa nhiều request/luồng → lỗi lạ, dữ liệu cũ, đa luồng hỏng. Ở môi trường <strong>Development</strong>, <a href="http://ASP.NET">ASP.NET</a> Core bật <code>ValidateScopes</code> và ném lỗi ngay:</p>
+<pre class="hljs"><code>Cannot consume scoped service 'AppDbContext' from singleton 'DichVuToanCuc'.
+</code></pre>
+<p>Cách sửa: hạ Singleton xuống Scoped; hoặc Singleton tự tạo scope khi cần bằng <strong><code>IServiceScopeFactory</code></strong>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">TacVuNen</span>(<span class="hljs-title">IServiceScopeFactory</span> <span class="hljs-title">factory</span>)
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">ChayAsync</span>()</span>
+    {
+        <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> scope = factory.CreateScope();
+        <span class="hljs-keyword">var</span> db = scope.ServiceProvider.GetRequiredService&lt;AppDbContext&gt;();   <span class="hljs-comment">// Scoped lấy trong scope tự tạo</span>
+        ...
+    }
+}
+</code></pre>
+<p>Mẫu này bắt buộc khi dùng dịch vụ Scoped trong <code>BackgroundService</code> (Tập 3).</p>
+<h2>Cách đăng ký</h2>
+<pre class="hljs"><code>services.AddScoped&lt;IX, X&gt;();                     <span class="hljs-comment">// interface → cài đặt (phổ biến nhất)</span>
+services.AddScoped&lt;X&gt;();                          <span class="hljs-comment">// chỉ lớp cụ thể</span>
+services.AddSingleton&lt;IX&gt;(<span class="hljs-keyword">new</span> X(<span class="hljs-string">&quot;cau-hinh&quot;</span>));     <span class="hljs-comment">// đối tượng có sẵn</span>
+services.AddScoped&lt;IX&gt;(sp =&gt; <span class="hljs-keyword">new</span> X(sp.GetRequiredService&lt;Y&gt;()));   <span class="hljs-comment">// factory tuỳ biến</span>
+services.AddSingleton&lt;IX, X&gt;().AddSingleton&lt;IY, Y&gt;();
+services.TryAddScoped&lt;IX, X&gt;();                   <span class="hljs-comment">// chỉ thêm nếu chưa đăng ký (dùng khi viết thư viện)</span>
+</code></pre>
+<h3>Nhiều cài đặt cho một interface</h3>
+<pre class="hljs"><code>builder.Services.AddSingleton&lt;IQuyTacGiamGia, GiamCuoiTuan&gt;();
+builder.Services.AddSingleton&lt;IQuyTacGiamGia, GiamDonLon&gt;();
+
+app.MapGet(<span class="hljs-string">&quot;/giam-gia&quot;</span>, (<span class="hljs-built_in">decimal</span> tien, IEnumerable&lt;IQuyTacGiamGia&gt; quyTac) =&gt; ...);
+</code></pre>
+<p>Xin <code>IEnumerable&lt;IQuyTacGiamGia&gt;</code> nhận <strong>tất cả</strong> theo thứ tự đăng ký; xin <code>IQuyTacGiamGia</code> (một) nhận cái <strong>đăng ký sau cùng</strong>. Đây chính là <strong>Strategy</strong> (Tập 1, Chương 41) do container tổ chức: thêm quy tắc mới = thêm một dòng đăng ký, không sửa nơi dùng (Open/Closed).</p>
+<h3>Keyed services (.NET 8+)</h3>
+<p>Chọn cài đặt theo khoá:</p>
+<pre class="hljs"><code>builder.Services.AddKeyedSingleton&lt;IGuiThongBao, GuiEmail&gt;(<span class="hljs-string">&quot;email&quot;</span>);
+builder.Services.AddKeyedSingleton&lt;IGuiThongBao, GuiSms&gt;(<span class="hljs-string">&quot;sms&quot;</span>);
+
+app.MapGet(<span class="hljs-string">&quot;/x&quot;</span>, ([FromKeyedServices(<span class="hljs-string">&quot;sms&quot;</span>)] IGuiThongBao gui) =&gt; gui.Gui(<span class="hljs-string">&quot;hi&quot;</span>));
+<span class="hljs-keyword">class</span> <span class="hljs-title">XuLy</span>([<span class="hljs-title">FromKeyedServices</span>(&quot;<span class="hljs-title">email</span>&quot;)] <span class="hljs-title">IGuiThongBao</span> <span class="hljs-title">gui</span>) { }
+</code></pre>
+<p>Hoặc dùng factory <code>Func&lt;string, IGuiThongBao&gt;</code> (code mẫu) khi khoá chỉ biết lúc chạy.</p>
+<h2>Đăng ký gọn bằng extension method</h2>
+<p>Dự án lớn có hàng chục dịch vụ. Gom theo tính năng:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title">DangKyDichVu</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> IServiceCollection <span class="hljs-title">AddDonHang</span>(<span class="hljs-params"><span class="hljs-keyword">this</span> IServiceCollection services</span>)</span>
+    {
+        services.AddScoped&lt;IDonHangService, DonHangService&gt;();
+        services.AddScoped&lt;IKhoHang, KhoHang&gt;();
+        <span class="hljs-keyword">return</span> services;
+    }
+}
+
+builder.Services.AddDonHang();      <span class="hljs-comment">// Program.cs gọn</span>
+</code></pre>
+<p>Đó cũng là cách các thư viện tự tích hợp (<code>AddDbContext</code>, <code>AddAuthentication</code>, <code>AddOpenApi</code>…).</p>
+<h2>Dùng DI ở nhiều nơi</h2>
+<ul>
+<li><strong>Minimal API</strong>: tham số handler. <strong>Controller/Razor Pages/Blazor</strong>: constructor (primary constructor của C# 12 rất gọn).</li>
+<li><strong>Middleware</strong>: constructor (Singleton) / <code>InvokeAsync</code> (Scoped).</li>
+<li><strong>Lấy thủ công</strong>: <code>HttpContext.RequestServices.GetRequiredService&lt;T&gt;()</code> hay <code>IServiceProvider</code> — dùng <strong>rất hạn chế</strong>. Việc rải <code>GetService&lt;T&gt;()</code> khắp nơi gọi là <strong>Service Locator</strong> — phản mẫu: che giấu phụ thuộc, khó test.</li>
+<li><strong>Kiểm thử</strong>: dựng đối tượng bằng tay với bản giả (Tập 1, Chương 38); hoặc thay đăng ký trong <code>WebApplicationFactory</code> (Chương 10).</li>
+</ul>
+<h2>Container có sẵn không làm gì?</h2>
+<p>Container mặc định cố ý <strong>đơn giản</strong>: không có property injection, interceptor, đăng ký theo quy ước tự động (scan assembly), decorator sẵn. Cần những thứ đó có thể dùng thư viện <strong>Scrutor</strong> (scan + decorate) hoặc container ngoài (Autofac) — nhưng hầu hết dự án chỉ cần bộ mặc định.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>InvalidOperationException: Unable to resolve service for type 'X'</code> — <strong>quên đăng ký</strong> (hoặc đăng ký sai interface).</li>
+<li><code>Cannot consume scoped service from singleton</code> — captive dependency (xem trên).</li>
+<li><strong>Vòng phụ thuộc</strong>: A cần B, B cần A → <code>A circular dependency was detected</code>. Thiết kế lại (tách lớp thứ ba, dùng sự kiện).</li>
+<li>Dùng <code>new</code> bên trong lớp nghiệp vụ, bỏ qua container → không thay được khi test.</li>
+<li>Singleton giữ trạng thái người dùng/request (ví dụ lưu &quot;người dùng hiện tại&quot; vào field) → lẫn dữ liệu giữa các request.</li>
+<li>Constructor nhận quá nhiều (7–8+) phụ thuộc → lớp làm quá nhiều việc (vi phạm SRP).</li>
+<li>Quên rằng <code>Transient</code> <code>IDisposable</code> không được dispose nếu tạo bằng <code>new</code> ngoài container.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm dịch vụ <code>IDemTruyCap</code> (Singleton) đếm số request bằng <code>Interlocked</code> và endpoint <code>/dem</code> trả số đếm.</li>
+<li>Đăng ký <code>IGuiThongBao</code> thứ ba (<code>GuiZalo</code>); thêm vào factory và kiểm tra bằng <code>/gui?kenh=zalo</code>.</li>
+<li>Cố tình tạo captive dependency (Singleton dùng Scoped) và đọc thông báo lỗi ở Development; sửa bằng <code>IServiceScopeFactory</code>.</li>
+<li>Gom các dịch vụ chương này thành <code>services.AddNghiepVu()</code> trong file <code>DangKyDichVu.cs</code>.</li>
+<li>Viết unit test cho <code>DichVuA</code> bằng cách tạo tay <code>IThoiGianScoped</code> giả, không dùng container.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch04-minimal-api.html">&larr; 4. Routing và Minimal API</a><a class="nav-next" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

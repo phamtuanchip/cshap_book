@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 2 — Dự án ASP.NET Core đầu tiên — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link active" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><span class="chapter-link pending">7. Web API với Controller</span></li><li><span class="chapter-link pending">8. DTO và Validation</span></li><li><span class="chapter-link pending">9. Xử lý lỗi, versioning và OpenAPI</span></li><li><span class="chapter-link pending">10. Kiểm thử API</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><span class="chapter-link pending">11. SQL cơ bản và SQLite</span></li><li><span class="chapter-link pending">12. Entity Framework Core cơ bản</span></li><li><span class="chapter-link pending">13. Quan hệ, truy vấn nâng cao và hiệu năng</span></li><li><span class="chapter-link pending">14. Web API hoàn chỉnh với EF Core</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><span class="chapter-link pending">15. ASP.NET Core MVC</span></li><li><span class="chapter-link pending">16. Razor Pages</span></li><li><span class="chapter-link pending">17. Form, validation phía server và chống CSRF</span></li><li><span class="chapter-link pending">18. Blazor</span></li><li><span class="chapter-link pending">19. Gọi API ngoài với HttpClient</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 2 — Dự án <a href="http://ASP.NET">ASP.NET</a> Core đầu tiên</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Tạo, chạy và <strong>hot reload</strong> một dự án <a href="http://ASP.NET">ASP.NET</a> Core bằng <code>dotnet</code> CLI.</li>
+<li>Đọc hiểu file <code>Program.cs</code> theo bốn bước: <strong>builder → services → middleware/endpoint → run</strong>.</li>
+<li>Biết các mẫu dự án (<code>web</code>, <code>webapi</code>, <code>mvc</code>, <code>razor</code>, <code>blazor</code>) và cấu trúc thư mục.</li>
+<li>Hiểu <strong>Kestrel</strong>, <code>launchSettings.json</code>, môi trường <code>Development</code>/<code>Production</code>, HTTPS dev certificate.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch02-du-an-dau-tien/"><code>code/ch02-du-an-dau-tien/</code></a>.</p>
+<h2><a href="http://ASP.NET">ASP.NET</a> Core là gì?</h2>
+<p><strong><a href="http://ASP.NET">ASP.NET</a> Core</strong> là framework mã nguồn mở, đa nền tảng của Microsoft để xây dựng ứng dụng web, API, dịch vụ nền, ứng dụng thời gian thực… trên .NET. Chạy trên Windows, macOS, Linux, container; hiệu năng thuộc nhóm hàng đầu. Nó là <strong>một</strong> framework thống nhất với nhiều &quot;kiểu ứng dụng&quot; xây trên cùng nền:</p>
+<table>
+<thead>
+<tr>
+<th>Kiểu</th>
+<th>Dùng cho</th>
+<th>Chương</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Minimal API</strong> / <strong>Web API (controller)</strong></td>
+<td>API JSON cho web/mobile/dịch vụ khác</td>
+<td>4, 7</td>
+</tr>
+<tr>
+<td><strong>MVC</strong></td>
+<td>web nhiều trang phía server (HTML)</td>
+<td>15</td>
+</tr>
+<tr>
+<td><strong>Razor Pages</strong></td>
+<td>web trang-là-đơn-vị, đơn giản hơn MVC</td>
+<td>16</td>
+</tr>
+<tr>
+<td><strong>Blazor</strong></td>
+<td>giao diện tương tác bằng <strong>C#</strong> (thay JavaScript)</td>
+<td>18</td>
+</tr>
+<tr>
+<td><strong>SignalR</strong>, <strong>gRPC</strong>, <strong>Worker Service</strong></td>
+<td>thời gian thực, RPC, dịch vụ nền</td>
+<td>Tập 3</td>
+</tr>
+</tbody>
+</table>
+<p>Tất cả dùng chung: middleware pipeline, dependency injection, cấu hình, logging, xác thực — học một lần dùng mọi nơi.</p>
+<h2>Tạo dự án</h2>
+<pre class="hljs"><code>dotnet new list web                # xem các template web
+dotnet new web -n WebDauTien       # ứng dụng rỗng tối thiểu
+cd WebDauTien
+dotnet run
+</code></pre>
+<p>Terminal hiển thị:</p>
+<pre class="hljs"><code>info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5102
+</code></pre>
+<p>Mở địa chỉ đó bằng trình duyệt: thấy <code>Hello World!</code>. Nhấn <code>Ctrl+C</code> để dừng.</p>
+<table>
+<thead>
+<tr>
+<th>Template</th>
+<th>Lệnh</th>
+<th>Gồm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rỗng</td>
+<td><code>dotnet new web</code></td>
+<td>chỉ <code>Program.cs</code> — nền tảng để học (dùng trong chương này)</td>
+</tr>
+<tr>
+<td>Web API</td>
+<td><code>dotnet new webapi</code></td>
+<td>API mẫu + OpenAPI</td>
+</tr>
+<tr>
+<td>MVC</td>
+<td><code>dotnet new mvc</code></td>
+<td>Controllers/Views/Models</td>
+</tr>
+<tr>
+<td>Razor Pages</td>
+<td><code>dotnet new razor</code></td>
+<td>thư mục <code>Pages</code></td>
+</tr>
+<tr>
+<td>Blazor Web App</td>
+<td><code>dotnet new blazor</code></td>
+<td>components Razor</td>
+</tr>
+</tbody>
+</table>
+<p>Trong Visual Studio: <strong>File → New → Project → <a href="http://ASP.NET">ASP.NET</a> Core Empty</strong>. Chọn <em>&quot;Configure for HTTPS&quot;</em> và đừng bật <em>&quot;Enable container support&quot;</em> ở giai đoạn này.</p>
+<h2><code>Program.cs</code> — bốn bước</h2>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> builder = WebApplication.CreateBuilder(<span class="hljs-keyword">args</span>);   <span class="hljs-comment">// (1) Cấu hình</span>
+
+<span class="hljs-comment">// (2) Đăng ký dịch vụ vào DI container: builder.Services.AddXxx(...)</span>
+
+<span class="hljs-keyword">var</span> app = builder.Build();                            <span class="hljs-comment">// Dựng ứng dụng</span>
+
+<span class="hljs-comment">// (3) Cấu hình middleware pipeline + endpoint: app.UseXxx(), app.MapGet(...)</span>
+app.MapGet(<span class="hljs-string">&quot;/&quot;</span>, () =&gt; <span class="hljs-string">&quot;Xin chao ASP.NET Core!&quot;</span>);
+app.MapGet(<span class="hljs-string">&quot;/chao/{ten}&quot;</span>, (<span class="hljs-built_in">string</span> ten) =&gt; <span class="hljs-string">$&quot;Xin chao, <span class="hljs-subst">{ten}</span>!&quot;</span>);
+app.MapGet(<span class="hljs-string">&quot;/cong&quot;</span>, (<span class="hljs-built_in">int</span> a, <span class="hljs-built_in">int</span> b) =&gt; <span class="hljs-keyword">new</span> { a, b, tong = a + b });
+
+app.Run();                                            <span class="hljs-comment">// (4) Chạy máy chủ, chặn tới khi tắt</span>
+</code></pre>
+<ol>
+<li><strong><code>WebApplication.CreateBuilder(args)</code></strong>: tạo builder đã cấu hình sẵn: nạp <code>appsettings.json</code>, biến môi trường, tham số dòng lệnh, logging, Kestrel, DI. Bạn hầu như không cần tự cấu hình những thứ này.</li>
+<li><strong><code>builder.Services</code></strong>: đăng ký dịch vụ (Chương 5) — <em>trước</em> <code>Build()</code>; sau <code>Build()</code> không đăng ký thêm được.</li>
+<li><strong><code>app.Use…/Map…</code></strong>: xếp middleware theo thứ tự (Chương 3) và khai báo endpoint (Chương 4).</li>
+<li><strong><code>app.Run()</code></strong>: khởi động và <strong>chặn</strong> luồng hiện tại cho tới khi nhận tín hiệu tắt (Ctrl+C, SIGTERM).</li>
+</ol>
+<p>Đây là <strong>minimal hosting model</strong>: không còn <code>Startup.cs</code> như <a href="http://ASP.NET">ASP.NET</a> Core 3.x/5 — một file duy nhất, nhờ <em>top-level statements</em> (Tập 1, Chương 3). Lambda <code>() =&gt; ...</code> là <strong>route handler</strong>; giá trị trả về được tự chuyển thành response: <code>string</code> → <code>text/plain</code>, object → <strong>JSON</strong>, <code>IResult</code> → tuỳ ý.</p>
+<p>Kiểm tra các endpoint:</p>
+<pre class="hljs"><code>curl http://localhost:5102/
+curl http://localhost:5102/chao/An
+curl &quot;http://localhost:5102/cong?a=2&amp;b=3&quot;      # {&quot;a&quot;:2,&quot;b&quot;:3,&quot;tong&quot;:5}
+</code></pre>
+<p>Tham số handler được <strong>tự động gắn (bind)</strong>: <code>ten</code> lấy từ đường dẫn <code>{ten}</code>, <code>a</code>,<code>b</code> từ query string, kiểu <code>int</code> được chuyển đổi và kiểm tra (gửi <code>?a=abc</code> sẽ nhận <code>400</code>). Chương 4 sẽ nói kỹ.</p>
+<h2>File <code>.csproj</code> và cấu trúc thư mục</h2>
+<pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">Project</span> <span class="hljs-attr">Sdk</span>=<span class="hljs-string">&quot;Microsoft.NET.Sdk.Web&quot;</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">PropertyGroup</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">TargetFramework</span>&gt;</span>net10.0<span class="hljs-tag">&lt;/<span class="hljs-name">TargetFramework</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Nullable</span>&gt;</span>enable<span class="hljs-tag">&lt;/<span class="hljs-name">Nullable</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">ImplicitUsings</span>&gt;</span>enable<span class="hljs-tag">&lt;/<span class="hljs-name">ImplicitUsings</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">PropertyGroup</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">Project</span>&gt;</span>
+</code></pre>
+<p>Khác Tập 1: SDK là <strong><code>Microsoft.NET.Sdk.Web</code></strong> (thêm framework <a href="http://ASP.NET">ASP.NET</a> Core; <code>ImplicitUsings</code> thêm <code>Microsoft.AspNetCore.*</code>). Thư mục điển hình:</p>
+<pre class="hljs"><code>WebDauTien/
+├── WebDauTien.csproj
+├── Program.cs                     # điểm vào
+├── appsettings.json               # cấu hình chung
+├── appsettings.Development.json   # cấu hình riêng cho môi trường Development
+├── Properties/launchSettings.json # cấu hình chạy khi phát triển (URL, biến môi trường)
+├── wwwroot/                       # file tĩnh (css, js, ảnh) — nếu có UseStaticFiles
+└── bin/  obj/                     # sinh ra khi build (không đưa vào Git)
+</code></pre>
+<h2><code>launchSettings.json</code>, môi trường và HTTPS</h2>
+<pre class="hljs"><code><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;profiles&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;http&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;commandName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Project&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;launchBrowser&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;applicationUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http://localhost:5102&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;environmentVariables&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;ASPNETCORE_ENVIRONMENT&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Development&quot;</span> <span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<ul>
+<li>
+<p>File này <strong>chỉ dùng khi phát triển</strong> (<code>dotnet run</code>, F5) — không được đóng gói khi publish.</p>
+</li>
+<li>
+<p><strong><code>ASPNETCORE_ENVIRONMENT</code></strong>: <code>Development</code>, <code>Staging</code>, <code>Production</code> (mặc định <code>Production</code> nếu không đặt). Quyết định file <code>appsettings.{Env}.json</code> nào được nạp và hành vi như trang lỗi chi tiết:</p>
+<pre class="hljs"><code><span class="hljs-keyword">if</span> (app.Environment.IsDevelopment()) { <span class="hljs-comment">/* công cụ chỉ cho dev */</span> }
+</code></pre>
+</li>
+<li>
+<p><strong>HTTPS khi phát triển</strong>: <code>dotnet dev-certs https --trust</code> (một lần) để trình duyệt tin chứng chỉ cục bộ; thêm profile <code>https</code> với <code>applicationUrl: &quot;https://localhost:7102;http://localhost:5102&quot;</code>. Production luôn dùng HTTPS thật (Chương 22 và Tập 3).</p>
+</li>
+<li>
+<p>Đổi URL không cần sửa file: <code>dotnet run --urls http://localhost:6000</code> hoặc biến <code>ASPNETCORE_URLS</code>.</p>
+</li>
+</ul>
+<h2>Kestrel</h2>
+<p><strong>Kestrel</strong> là máy chủ web tích hợp sẵn, đa nền tảng, rất nhanh; nhận kết nối TCP, phân tích HTTP/1.1, HTTP/2, HTTP/3 rồi chuyển vào pipeline của bạn. Khi triển khai thật thường đặt <strong>sau một reverse proxy</strong> (Nginx, IIS, YARP, load balancer đám mây, ingress Kubernetes) để lo TLS, nén, cân bằng tải (Tập 3). Không cần cài IIS/Apache khi phát triển.</p>
+<h2>Hot reload — sửa code không cần khởi động lại</h2>
+<pre class="hljs"><code>dotnet watch run
+</code></pre>
+<p>Lưu file → ứng dụng tự nạp lại (nhiều thay đổi được áp dụng <strong>ngay khi đang chạy</strong> — hot reload; thay đổi lớn thì tự khởi động lại). Trong Visual Studio dùng <strong>Hot Reload</strong> (🔥) khi F5. Tiết kiệm rất nhiều thời gian thử–sửa.</p>
+<h2>Một endpoint thử nghiệm hữu ích</h2>
+<pre class="hljs"><code>app.MapGet(<span class="hljs-string">&quot;/moi-truong&quot;</span>, (IWebHostEnvironment env) =&gt; <span class="hljs-keyword">new</span>
+{
+    env.EnvironmentName,
+    env.ApplicationName,
+    Cwd = Environment.CurrentDirectory,
+});
+</code></pre>
+<p>Tham số <code>IWebHostEnvironment</code> được <strong>tiêm</strong> (Dependency Injection) vào handler — bạn khai báo cần gì, framework đưa cho. Đây là ý tưởng trung tâm của <a href="http://ASP.NET">ASP.NET</a> Core, Chương 5 sẽ đi sâu.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>Address already in use</code> — cổng đang bị chương trình khác/tiến trình cũ giữ; đổi <code>--urls</code> hoặc tắt tiến trình.</li>
+<li>Trình duyệt báo chứng chỉ không tin cậy: chạy <code>dotnet dev-certs https --trust</code>.</li>
+<li>Sửa code mà kết quả không đổi: đang chạy bản cũ; dừng rồi chạy lại hoặc dùng <code>dotnet watch</code>.</li>
+<li><code>System.InvalidOperationException: Cannot modify ServiceCollection after application started</code> — gọi <code>builder.Services.Add...</code> sau <code>Build()</code>.</li>
+<li>Nhầm Development/Production: trang lỗi chi tiết chỉ hiện ở Development (an toàn — không lộ stack trace ra ngoài).</li>
+<li>Commit thư mục <code>bin/</code>, <code>obj/</code>, hoặc <code>launchSettings.json</code> chứa bí mật.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Tạo dự án <code>dotnet new web</code>, thêm ba endpoint: <code>/gio</code>, <code>/nhan-doi/{so:int}</code>, <code>/chao?ten=...</code>. Thử bằng <code>curl</code>.</li>
+<li>Thêm endpoint <code>/phien-ban</code> trả về <code>Environment.Version</code> và <code>RuntimeInformation.OSDescription</code>.</li>
+<li>Chạy bằng <code>dotnet run --urls http://localhost:7000</code> rồi đặt <code>ASPNETCORE_ENVIRONMENT=Production</code> và so sánh <code>/moi-truong</code>.</li>
+<li>Bật <code>dotnet watch</code>, sửa chuỗi trả về và quan sát ứng dụng tự cập nhật.</li>
+<li>Tạo thêm dự án <code>dotnet new webapi</code> và so sánh <code>Program.cs</code> của nó với dự án rỗng: template đã thêm những gì?</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch01-http-co-ban.html">&larr; 1. Web hoạt động thế nào: HTTP và REST</a><a class="nav-next" href="ch03-middleware.html">3. Middleware và request pipeline &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

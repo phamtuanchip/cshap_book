@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 3 — Middleware và request pipeline — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><span class="chapter-link pending">7. Web API với Controller</span></li><li><span class="chapter-link pending">8. DTO và Validation</span></li><li><span class="chapter-link pending">9. Xử lý lỗi, versioning và OpenAPI</span></li><li><span class="chapter-link pending">10. Kiểm thử API</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><span class="chapter-link pending">11. SQL cơ bản và SQLite</span></li><li><span class="chapter-link pending">12. Entity Framework Core cơ bản</span></li><li><span class="chapter-link pending">13. Quan hệ, truy vấn nâng cao và hiệu năng</span></li><li><span class="chapter-link pending">14. Web API hoàn chỉnh với EF Core</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><span class="chapter-link pending">15. ASP.NET Core MVC</span></li><li><span class="chapter-link pending">16. Razor Pages</span></li><li><span class="chapter-link pending">17. Form, validation phía server và chống CSRF</span></li><li><span class="chapter-link pending">18. Blazor</span></li><li><span class="chapter-link pending">19. Gọi API ngoài với HttpClient</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 3 — Middleware và request pipeline</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>request pipeline</strong> là chuỗi middleware xử lý request/response theo dạng &quot;củ hành&quot;.</li>
+<li>Viết middleware inline (<code>Use</code>), dạng class, nhánh (<code>Map</code>, <code>MapWhen</code>) và middleware <strong>ngắn mạch</strong>.</li>
+<li>Nắm <strong>thứ tự</strong> middleware chuẩn của <a href="http://ASP.NET">ASP.NET</a> Core và vì sao nó quan trọng.</li>
+<li>Biết chỗ đặt xử lý lỗi, HTTPS redirection, CORS, xác thực, static files.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch03-middleware/"><code>code/ch03-middleware/</code></a>.</p>
+<h2>Pipeline: chuỗi củ hành</h2>
+<p>Mỗi request đi <strong>vào</strong> qua một dãy <strong>middleware</strong> (mỗi cái làm một việc), tới endpoint, rồi response đi <strong>ngược ra</strong> qua chính các middleware đó:</p>
+<pre class="mermaid">flowchart LR
+    R[&quot;Request&quot;] --&gt; M1[&quot;Middleware 1&lt;br/&gt;(log)&quot;]
+    M1 --&gt; M2[&quot;Middleware 2&lt;br/&gt;(xác thực)&quot;]
+    M2 --&gt; M3[&quot;Middleware 3&lt;br/&gt;(routing)&quot;]
+    M3 --&gt; E[&quot;Endpoint&lt;br/&gt;(handler)&quot;]
+    E -.-&gt;|&quot;Response&quot;| M3
+    M3 -.-&gt; M2
+    M2 -.-&gt; M1
+    M1 -.-&gt; Res[&quot;Response&quot;]
+</pre>
+<p>Mỗi middleware có thể: (1) làm gì đó <strong>trước</strong> khi gọi cái kế tiếp, (2) gọi <strong><code>next</code></strong> để chuyển tiếp, (3) làm gì đó <strong>sau</strong> khi các middleware phía sau hoàn tất, hoặc (4) <strong>không</strong> gọi <code>next</code> để kết thúc sớm (<strong>ngắn mạch</strong>). Đây là mẫu <strong>Decorator/Chain of Responsibility</strong> (Tập 1, Chương 41). Logging, xác thực, nén, CORS, xử lý lỗi… đều là middleware.</p>
+<h2>Middleware inline: <code>app.Use</code></h2>
+<pre class="hljs"><code>app.Use(<span class="hljs-keyword">async</span> (ctx, next) =&gt;
+{
+    app.Logger.LogInformation(<span class="hljs-string">&quot;[1] vao  {Method} {Path}&quot;</span>, ctx.Request.Method, ctx.Request.Path);
+    <span class="hljs-keyword">await</span> next(ctx);                                                     <span class="hljs-comment">// chuyển sang middleware kế tiếp</span>
+    app.Logger.LogInformation(<span class="hljs-string">&quot;[1] ra   -&gt; {Status}&quot;</span>, ctx.Response.StatusCode);
+});
+</code></pre>
+<p><code>ctx</code> là <strong><code>HttpContext</code></strong> — gói mọi thứ về request hiện tại: <code>Request</code>, <code>Response</code>, <code>User</code>, <code>RequestServices</code> (DI), <code>Items</code> (dữ liệu tạm trong request), <code>RequestAborted</code>… Mã trước <code>await next(ctx)</code> chạy lúc đi vào; mã sau chạy lúc đi ra.</p>
+<h2>Middleware dạng class</h2>
+<p>Khi cần tái sử dụng hoặc có phụ thuộc:</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">DoThoiGianMiddleware</span>(<span class="hljs-title">RequestDelegate</span> <span class="hljs-title">next</span>, <span class="hljs-title">ILogger</span>&lt;<span class="hljs-title">DoThoiGianMiddleware</span>&gt; <span class="hljs-title">log</span>)
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">InvokeAsync</span>(<span class="hljs-params">HttpContext ctx</span>)</span>
+    {
+        <span class="hljs-keyword">var</span> dong = Stopwatch.StartNew();
+        ctx.Response.OnStarting(() =&gt;
+        {
+            ctx.Response.Headers[<span class="hljs-string">&quot;X-Thoi-Gian-Ms&quot;</span>] = dong.ElapsedMilliseconds.ToString();
+            <span class="hljs-keyword">return</span> Task.CompletedTask;
+        });
+        <span class="hljs-keyword">try</span> { <span class="hljs-keyword">await</span> next(ctx); }
+        <span class="hljs-keyword">catch</span> (Exception e)
+        {
+            log.LogError(e, <span class="hljs-string">&quot;Loi khong xu ly tai {Path}&quot;</span>, ctx.Request.Path);
+            ctx.Response.StatusCode = <span class="hljs-number">500</span>;
+            <span class="hljs-keyword">await</span> ctx.Response.WriteAsync(<span class="hljs-string">&quot;Da co loi xay ra.&quot;</span>);
+        }
+    }
+}
+
+app.UseMiddleware&lt;DoThoiGianMiddleware&gt;();
+</code></pre>
+<ul>
+<li>Constructor nhận <code>RequestDelegate next</code> và các dịch vụ <strong>Singleton</strong>; <code>InvokeAsync(HttpContext, ...)</code> có thể nhận thêm dịch vụ <strong>Scoped</strong> làm tham số.</li>
+<li><strong><code>Response.OnStarting</code></strong>: header chỉ thêm được <strong>trước khi</strong> response bắt đầu gửi; sau khi body đã ghi thì không sửa header/status nữa. Callback này chạy đúng lúc trước khi gửi.</li>
+<li>Middleware ở ngoài bắt được ngoại lệ từ mọi middleware/endpoint <strong>phía trong</strong> — nên xử lý lỗi toàn cục đặt <strong>sớm</strong> trong pipeline.</li>
+</ul>
+<p>Thường bọc thành extension method (Tập 1, Chương 19): <code>app.UseDoThoiGian()</code>.</p>
+<h2>Ngắn mạch (short-circuit)</h2>
+<pre class="hljs"><code>app.Use(<span class="hljs-keyword">async</span> (ctx, next) =&gt;
+{
+    <span class="hljs-keyword">if</span> (ctx.Request.Path.StartsWithSegments(<span class="hljs-string">&quot;/bi-chan&quot;</span>))
+    {
+        ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+        <span class="hljs-keyword">await</span> ctx.Response.WriteAsync(<span class="hljs-string">&quot;Bi chan boi middleware.&quot;</span>);
+        <span class="hljs-keyword">return</span>;                      <span class="hljs-comment">// KHÔNG gọi next → endpoint không bao giờ chạy</span>
+    }
+    <span class="hljs-keyword">await</span> next(ctx);
+});
+</code></pre>
+<p>Ứng dụng: từ chối sớm (không xác thực, quá giới hạn tốc độ, IP bị chặn), trả file tĩnh, health check, trả từ bộ nhớ đệm.</p>
+<h2>Nhánh: <code>Map</code>, <code>MapWhen</code>, <code>Run</code></h2>
+<pre class="hljs"><code>app.MapWhen(ctx =&gt; ctx.Request.Query.ContainsKey(<span class="hljs-string">&quot;debug&quot;</span>), nhanh =&gt;
+    nhanh.Run(<span class="hljs-keyword">async</span> ctx =&gt; <span class="hljs-keyword">await</span> ctx.Response.WriteAsync(<span class="hljs-string">&quot;Che do debug&quot;</span>)));
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Phương thức</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app.Use(...)</code></td>
+<td>middleware gọi tiếp <code>next</code></td>
+</tr>
+<tr>
+<td><code>app.Run(...)</code></td>
+<td>middleware <strong>cuối/terminal</strong> — không có <code>next</code></td>
+</tr>
+<tr>
+<td><code>app.Map(&quot;/duong-dan&quot;, nhanh =&gt; ...)</code></td>
+<td>rẽ nhánh theo tiền tố đường dẫn</td>
+</tr>
+<tr>
+<td><code>app.MapWhen(predicate, nhanh =&gt; ...)</code></td>
+<td>rẽ nhánh theo điều kiện tuỳ ý</td>
+</tr>
+<tr>
+<td><code>app.UseWhen(predicate, nhanh =&gt; ...)</code></td>
+<td>rẽ nhánh nhưng <strong>quay lại</strong> pipeline chính sau đó</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Bẫy quan trọng:</strong> trong ứng dụng dùng <code>MapGet/MapControllers</code>, <strong>endpoint chạy ở cuối pipeline</strong>. Nếu bạn đặt <code>app.Run(async ctx =&gt; ...)</code> <em>trước</em> các <code>MapGet</code>, middleware terminal đó sẽ chặn mọi request và endpoint <strong>không bao giờ</strong> được gọi (mọi URL đều rơi vào nó). Muốn xử lý &quot;không khớp endpoint nào&quot; hãy dùng <strong><code>app.MapFallback(...)</code></strong> như trong code mẫu. Chạy code mẫu và thử <code>/cham</code>, <code>/khong-co</code> để thấy.</p>
+</blockquote>
+<h2>Thứ tự middleware chuẩn</h2>
+<p><strong>Thứ tự đăng ký = thứ tự thực thi</strong>, và nó có ý nghĩa. Thứ tự khuyến nghị của Microsoft:</p>
+<pre class="mermaid">flowchart TB
+    A[&quot;1. Xử lý lỗi (UseExceptionHandler / UseDeveloperExceptionPage)&quot;] --&gt; B[&quot;2. HSTS (Production)&quot;]
+    B --&gt; C[&quot;3. HTTPS redirection&quot;]
+    C --&gt; D[&quot;4. Static files (UseStaticFiles)&quot;]
+    D --&gt; E[&quot;5. Routing (UseRouting)&quot;]
+    E --&gt; F[&quot;6. CORS (UseCors)&quot;]
+    F --&gt; G[&quot;7. Authentication (UseAuthentication)&quot;]
+    G --&gt; H[&quot;8. Authorization (UseAuthorization)&quot;]
+    H --&gt; I[&quot;9. Custom middleware, session, response caching…&quot;]
+    I --&gt; J[&quot;10. Endpoints (MapGet, MapControllers, MapRazorPages…)&quot;]
+</pre>
+<p>Lý do: xử lý lỗi phải <strong>bọc ngoài cùng</strong> để bắt lỗi của mọi thứ bên trong; <strong>static files</strong> đặt trước xác thực để phục vụ file công khai nhanh, không tốn tài nguyên; <strong><code>UseAuthentication</code> phải đứng trước <code>UseAuthorization</code></strong> (biết bạn là ai rồi mới kiểm tra quyền) và cả hai sau <code>UseRouting</code>, trước endpoint (cần biết endpoint nào để đọc <code>[Authorize]</code>); CORS phải chạy trước xác thực để phản hồi preflight. Với <code>WebApplication</code>, routing và endpoints được thêm tự động, nhưng bạn vẫn phải gọi <code>UseAuthentication/UseAuthorization/UseCors</code> đúng vị trí.</p>
+<p>Ví dụ pipeline điển hình:</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> app = builder.Build();
+
+<span class="hljs-keyword">if</span> (app.Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
+<span class="hljs-keyword">else</span> { app.UseExceptionHandler(<span class="hljs-string">&quot;/loi&quot;</span>); app.UseHsts(); }
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapGet(<span class="hljs-string">&quot;/&quot;</span>, () =&gt; <span class="hljs-string">&quot;Trang chu&quot;</span>);
+app.Run();
+</code></pre>
+<h2>Middleware có sẵn thường dùng</h2>
+<table>
+<thead>
+<tr>
+<th>Middleware</th>
+<th>Việc làm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>UseExceptionHandler</code></td>
+<td>bắt ngoại lệ, trả trang/JSON lỗi (Chương 9)</td>
+</tr>
+<tr>
+<td><code>UseHttpsRedirection</code>, <code>UseHsts</code></td>
+<td>ép dùng HTTPS</td>
+</tr>
+<tr>
+<td><code>UseStaticFiles</code></td>
+<td>phục vụ file trong <code>wwwroot</code></td>
+</tr>
+<tr>
+<td><code>UseRouting</code></td>
+<td>chọn endpoint theo URL</td>
+</tr>
+<tr>
+<td><code>UseCors</code></td>
+<td>cho phép trình duyệt từ origin khác gọi API</td>
+</tr>
+<tr>
+<td><code>UseAuthentication/Authorization</code></td>
+<td>xác thực/phân quyền (Chương 20)</td>
+</tr>
+<tr>
+<td><code>UseRateLimiter</code></td>
+<td>giới hạn tốc độ (Chương 21)</td>
+</tr>
+<tr>
+<td><code>UseResponseCompression</code>, <code>UseOutputCache</code></td>
+<td>nén, cache đầu ra</td>
+</tr>
+<tr>
+<td><code>UseRequestLocalization</code></td>
+<td>đa ngôn ngữ</td>
+</tr>
+<tr>
+<td><code>UseForwardedHeaders</code></td>
+<td>đọc <code>X-Forwarded-*</code> khi sau reverse proxy</td>
+</tr>
+</tbody>
+</table>
+<h2>Endpoint filter và middleware — khác nhau thế nào?</h2>
+<p>Middleware áp dụng cho <strong>mọi request</strong> (trước khi biết endpoint) — hợp cho vấn đề xuyên suốt (log, lỗi, xác thực). <strong>Filter</strong> (endpoint filter/action filter, Chương 4 và 7) áp dụng cho <strong>từng endpoint/nhóm endpoint</strong> và biết tham số đã bind — hợp cho validation, xử lý kết quả theo endpoint.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><strong>Sai thứ tự</strong>: <code>UseAuthorization</code> trước <code>UseAuthentication</code> → luôn bị từ chối; <code>UseCors</code> sau xác thực → preflight bị 401.</li>
+<li>Đặt <code>app.Run(...)</code> terminal trước các endpoint → endpoint không chạy.</li>
+<li>Quên <code>await next(ctx)</code> → request treo; hoặc gọi <code>next</code> <strong>hai lần</strong>.</li>
+<li>Sửa header/status <strong>sau khi</strong> response đã bắt đầu: <code>InvalidOperationException: Headers are read-only, response has already started</code>. Dùng <code>OnStarting</code>.</li>
+<li>Ghi vào <code>Response</code> rồi vẫn gọi <code>next</code> (endpoint cũng ghi) → nội dung lộn xộn.</li>
+<li>Middleware nuốt ngoại lệ không log.</li>
+<li>Dùng dịch vụ Scoped trong constructor của middleware (Singleton) → lỗi; đưa vào tham số <code>InvokeAsync</code>.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết middleware <code>RequestIdMiddleware</code> thêm header <code>X-Request-Id</code> (GUID) vào mọi response và đưa vào <code>ctx.Items</code>.</li>
+<li>Viết middleware chặn mọi request có header <code>User-Agent</code> chứa &quot;bot&quot; bằng <code>403</code>.</li>
+<li>Viết middleware chỉ chạy cho đường dẫn <code>/api</code> bằng <code>UseWhen</code>, tính và log thời gian xử lý.</li>
+<li>Cố tình đặt <code>UseAuthorization</code> trước <code>UseAuthentication</code> (ở chương xác thực) rồi giải thích triệu chứng.</li>
+<li>Vẽ sơ đồ thứ tự thực thi (vào/ra) cho ba middleware A, B, C trong đó B ngắn mạch với một số request.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch02-du-an-dau-tien.html">&larr; 2. Dự án ASP.NET Core đầu tiên</a><a class="nav-next" href="ch04-minimal-api.html">4. Routing và Minimal API &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 4 — Routing và Minimal API — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link active" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><span class="chapter-link pending">7. Web API với Controller</span></li><li><span class="chapter-link pending">8. DTO và Validation</span></li><li><span class="chapter-link pending">9. Xử lý lỗi, versioning và OpenAPI</span></li><li><span class="chapter-link pending">10. Kiểm thử API</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><span class="chapter-link pending">11. SQL cơ bản và SQLite</span></li><li><span class="chapter-link pending">12. Entity Framework Core cơ bản</span></li><li><span class="chapter-link pending">13. Quan hệ, truy vấn nâng cao và hiệu năng</span></li><li><span class="chapter-link pending">14. Web API hoàn chỉnh với EF Core</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><span class="chapter-link pending">15. ASP.NET Core MVC</span></li><li><span class="chapter-link pending">16. Razor Pages</span></li><li><span class="chapter-link pending">17. Form, validation phía server và chống CSRF</span></li><li><span class="chapter-link pending">18. Blazor</span></li><li><span class="chapter-link pending">19. Gọi API ngoài với HttpClient</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 4 — Routing và Minimal API</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Định nghĩa route với <code>MapGet/MapPost/MapPut/MapDelete</code>, route constraint và <code>MapGroup</code>.</li>
+<li>Hiểu <strong>parameter binding</strong>: route, query, header, body, dịch vụ (DI).</li>
+<li>Trả kết quả bằng <code>TypedResults</code> và khai báo rõ kiểu trả về (<code>Results&lt;...&gt;</code>).</li>
+<li>Xây một API <strong>CRUD</strong> hoàn chỉnh cho <code>Todo</code>, có validation và tài liệu OpenAPI.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch04-minimal-api/"><code>code/ch04-minimal-api/</code></a>.</p>
+<h2>Routing là gì?</h2>
+<p><strong>Routing</strong> khớp <strong>phương thức + đường dẫn</strong> của request với một <strong>endpoint</strong> (handler). Trong pipeline (Chương 3), middleware routing chọn endpoint, các middleware sau đọc metadata của nó (vd <code>[Authorize]</code>), rồi endpoint chạy.</p>
+<pre class="hljs"><code>app.MapGet(<span class="hljs-string">&quot;/chao/{ten}&quot;</span>, (<span class="hljs-built_in">string</span> ten) =&gt; <span class="hljs-string">$&quot;Xin chao, <span class="hljs-subst">{ten}</span>!&quot;</span>);
+app.MapPost(<span class="hljs-string">&quot;/todos&quot;</span>, (TaoTodo req) =&gt; ...);
+app.MapPut(<span class="hljs-string">&quot;/todos/{id}&quot;</span>, ...);
+app.MapDelete(<span class="hljs-string">&quot;/todos/{id}&quot;</span>, ...);
+app.MapMethods(<span class="hljs-string">&quot;/x&quot;</span>, [<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">&quot;HEAD&quot;</span>], handler);
+</code></pre>
+<h3>Tham số route và ràng buộc (constraint)</h3>
+<pre class="hljs"><code>app.MapGet(<span class="hljs-string">&quot;/todos/{id:int}&quot;</span>, (<span class="hljs-built_in">int</span> id) =&gt; ...);          <span class="hljs-comment">// chỉ khớp khi id là số nguyên</span>
+app.MapGet(<span class="hljs-string">&quot;/nguoi-dung/{ten:alpha:minlength(3)}&quot;</span>, ...);
+app.MapGet(<span class="hljs-string">&quot;/file/{**duongDan}&quot;</span>, (<span class="hljs-built_in">string</span> duongDan) =&gt; ...);   <span class="hljs-comment">// &quot;catch-all&quot;: bắt cả phần còn lại</span>
+app.MapGet(<span class="hljs-string">&quot;/bai-viet/{slug?}&quot;</span>, (<span class="hljs-built_in">string</span>? slug) =&gt; ...);       <span class="hljs-comment">// tham số tuỳ chọn</span>
+</code></pre>
+<p>Constraint thường dùng: <code>int</code>, <code>long</code>, <code>guid</code>, <code>bool</code>, <code>datetime</code>, <code>alpha</code>, <code>min(1)</code>, <code>max(100)</code>, <code>range(1,10)</code>, <code>length(5)</code>, <code>regex(...)</code>. Không khớp → <code>404</code> (không tới handler).</p>
+<h2>Parameter binding</h2>
+<p>Minimal API tự suy ra nguồn dữ liệu của mỗi tham số handler:</p>
+<table>
+<thead>
+<tr>
+<th>Nguồn</th>
+<th>Khi nào</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Route</strong></td>
+<td>tên khớp <code>{tham-so}</code> trong đường dẫn</td>
+<td><code>int id</code></td>
+</tr>
+<tr>
+<td><strong>Query string</strong></td>
+<td>kiểu đơn giản, không có trong route</td>
+<td><code>bool? done</code>, <code>string? tim</code></td>
+</tr>
+<tr>
+<td><strong>Body (JSON)</strong></td>
+<td>kiểu phức tạp (class/record)</td>
+<td><code>TaoTodoRequest req</code></td>
+</tr>
+<tr>
+<td><strong>Header</strong></td>
+<td><code>[FromHeader]</code></td>
+<td><code>[FromHeader(Name=&quot;X-Khach&quot;)] string? khach</code></td>
+</tr>
+<tr>
+<td><strong>Dịch vụ (DI)</strong></td>
+<td>kiểu đã đăng ký trong container</td>
+<td><code>TodoStore kho</code>, <code>ILogger&lt;Program&gt; log</code></td>
+</tr>
+<tr>
+<td><strong>Đặc biệt</strong></td>
+<td><code>HttpContext</code>, <code>HttpRequest</code>, <code>ClaimsPrincipal</code>, <code>CancellationToken</code>, <code>IFormFile</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Có thể chỉ định tường minh: <code>[FromRoute]</code>, <code>[FromQuery]</code>, <code>[FromBody]</code>, <code>[FromServices]</code>, <code>[FromForm]</code>. Gom nhiều tham số query vào một kiểu bằng <code>[AsParameters]</code>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">record</span> <span class="hljs-title">TimKiem</span>(<span class="hljs-title">int</span> <span class="hljs-title">Trang</span> = <span class="hljs-number">1</span>, <span class="hljs-built_in">int</span> KichThuoc = <span class="hljs-number">10</span>);
+app.MapGet(<span class="hljs-string">&quot;/vi-du/{id:int}&quot;</span>, (<span class="hljs-built_in">int</span> id, [AsParameters] TimKiem tk) =&gt; <span class="hljs-keyword">new</span> { id, tk.Trang, tk.KichThuoc });
+<span class="hljs-comment">// GET /vi-du/7?trang=2&amp;kichThuoc=5</span>
+</code></pre>
+<p>Kiểu <strong>nullable</strong> (<code>bool? done</code>, <code>string? tim</code>) nghĩa là <strong>tuỳ chọn</strong>; kiểu không nullable mà thiếu thì <code>400 Bad Request</code> tự động. Body chỉ được có <strong>một</strong> tham số kiểu phức tạp.</p>
+<h2>Kết quả trả về</h2>
+<p>Trả <code>string</code>, object (→ JSON) cho nhanh; hoặc <code>Results/TypedResults</code> để kiểm soát mã trạng thái:</p>
+<pre class="hljs"><code>TypedResults.Ok(todo)                                  <span class="hljs-comment">// 200 + JSON</span>
+TypedResults.Created(<span class="hljs-string">$&quot;/api/todos/<span class="hljs-subst">{id}</span>&quot;</span>, todo)         <span class="hljs-comment">// 201 + header Location</span>
+TypedResults.NoContent()                               <span class="hljs-comment">// 204</span>
+TypedResults.NotFound()                                <span class="hljs-comment">// 404</span>
+TypedResults.BadRequest(<span class="hljs-string">&quot;Ly do&quot;</span>)                       <span class="hljs-comment">// 400</span>
+TypedResults.ValidationProblem(loi)                    <span class="hljs-comment">// 400 + dạng ProblemDetails (RFC 9457)</span>
+TypedResults.Conflict(), .Unauthorized(), .Forbid(), .File(...), .Redirect(...), .Stream(...)
+</code></pre>
+<p>Nên dùng <strong><code>TypedResults</code></strong> (kiểu cụ thể) và khai báo kiểu trả về là <strong><code>Results&lt;A, B, ...&gt;</code></strong> — trình biên dịch biết mọi trường hợp có thể xảy ra, OpenAPI tự sinh đúng, và test dễ (kiểm tra kiểu kết quả):</p>
+<pre class="hljs"><code>todos.MapGet(<span class="hljs-string">&quot;/{id:int}&quot;</span>, Results&lt;Ok&lt;Todo&gt;, NotFound&gt; (<span class="hljs-built_in">int</span> id, TodoStore kho)
+    =&gt; kho.Tim(id) <span class="hljs-keyword">is</span> { } t ? TypedResults.Ok(t) : TypedResults.NotFound())
+    .WithName(<span class="hljs-string">&quot;LayTodo&quot;</span>);
+</code></pre>
+<p>Đây là cách dùng pattern matching <code>is { } t</code> (Tập 1, Chương 32). Khi trả lỗi, luôn đi kèm <strong>mã đúng</strong>: <code>201</code> cho tạo mới, <code>204</code> cho cập nhật/xoá không body, <code>404</code> cho không tìm thấy, <code>400</code> cho dữ liệu sai.</p>
+<h2><code>MapGroup</code> — nhóm endpoint</h2>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> todos = app.MapGroup(<span class="hljs-string">&quot;/api/todos&quot;</span>).WithTags(<span class="hljs-string">&quot;Todos&quot;</span>);
+todos.MapGet(<span class="hljs-string">&quot;/&quot;</span>, ...);          <span class="hljs-comment">// GET /api/todos</span>
+todos.MapGet(<span class="hljs-string">&quot;/{id:int}&quot;</span>, ...);  <span class="hljs-comment">// GET /api/todos/5</span>
+todos.MapPost(<span class="hljs-string">&quot;/&quot;</span>, ...);         <span class="hljs-comment">// POST /api/todos</span>
+</code></pre>
+<p>Nhóm dùng chung <strong>tiền tố</strong>, <strong>metadata</strong> (<code>WithTags</code>, <code>RequireAuthorization()</code>, <code>RequireRateLimiting</code>), <strong>filter</strong> — đỡ lặp lại. Có thể lồng nhóm (<code>api.MapGroup(&quot;/v1&quot;)</code>).</p>
+<h2>CRUD hoàn chỉnh</h2>
+<pre class="hljs"><code><span class="hljs-comment">// LIST + lọc: GET /api/todos?done=true&amp;tim=hoc</span>
+todos.MapGet(<span class="hljs-string">&quot;/&quot;</span>, (TodoStore kho, <span class="hljs-built_in">bool</span>? done, <span class="hljs-built_in">string</span>? tim) =&gt;
+{
+    <span class="hljs-keyword">var</span> ds = kho.TatCa().AsEnumerable();
+    <span class="hljs-keyword">if</span> (done <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span>) ds = ds.Where(t =&gt; t.Done == done);
+    <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">string</span>.IsNullOrWhiteSpace(tim)) ds = ds.Where(t =&gt; t.Title.Contains(tim, StringComparison.OrdinalIgnoreCase));
+    <span class="hljs-keyword">return</span> TypedResults.Ok(ds.ToList());
+});
+
+<span class="hljs-comment">// CREATE: 201 + Location, hoặc 400 khi dữ liệu sai</span>
+todos.MapPost(<span class="hljs-string">&quot;/&quot;</span>, Results&lt;Created&lt;Todo&gt;, ValidationProblem&gt; (TaoTodoRequest req, TodoStore kho) =&gt;
+{
+    <span class="hljs-keyword">var</span> loi = req.KiemTra();
+    <span class="hljs-keyword">if</span> (loi.Count &gt; <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> TypedResults.ValidationProblem(loi);
+    <span class="hljs-keyword">var</span> moi = kho.Them(req.Title!.Trim());
+    <span class="hljs-keyword">return</span> TypedResults.Created(<span class="hljs-string">$&quot;/api/todos/<span class="hljs-subst">{moi.Id}</span>&quot;</span>, moi);
+});
+
+<span class="hljs-comment">// UPDATE / DELETE: 204 hoặc 404</span>
+todos.MapPut(<span class="hljs-string">&quot;/{id:int}&quot;</span>, ...);
+todos.MapDelete(<span class="hljs-string">&quot;/{id:int}&quot;</span>, ...);
+</code></pre>
+<p>Thử bằng <code>curl</code>:</p>
+<pre class="hljs"><code>curl -i -X POST http://localhost:5204/api/todos -H &quot;Content-Type: application/json&quot; -d '{&quot;title&quot;:&quot;Viet sach&quot;}'
+# HTTP/1.1 201 Created   Location: /api/todos/3
+
+curl -X POST http://localhost:5204/api/todos -H &quot;Content-Type: application/json&quot; -d '{&quot;title&quot;:&quot;&quot;}'
+# {&quot;type&quot;:&quot;https://tools.ietf.org/html/rfc9110#section-15.5.1&quot;,&quot;title&quot;:&quot;One or more validation errors occurred.&quot;,&quot;status&quot;:400,&quot;errors&quot;:{&quot;title&quot;:[&quot;Tieu de khong duoc rong&quot;]}}
+</code></pre>
+<p>Body lỗi theo chuẩn <strong><code>ProblemDetails</code></strong> (RFC 9457) — cách thống nhất mô tả lỗi cho client (Chương 8, 9).</p>
+<h2>Dữ liệu dùng chung an toàn đa luồng</h2>
+<p><code>TodoStore</code> đăng ký <code>AddSingleton</code> và được <strong>nhiều request chạy song song</strong> gọi cùng lúc → mọi thao tác trên <code>List</code> bên trong phải <strong>khoá</strong> (<code>lock</code>, Tập 1, Chương 34). Ở Chương 12 ta thay bằng cơ sở dữ liệu (EF Core) — lúc đó CSDL lo tính đúng đắn. Quy tắc nhớ: <strong>singleton phải thread-safe</strong>.</p>
+<h2>Endpoint filter</h2>
+<p>Filter cho chạy code <strong>trước/sau handler</strong>, đã biết tham số:</p>
+<pre class="hljs"><code>todos.MapPost(<span class="hljs-string">&quot;/&quot;</span>, handler).AddEndpointFilter(<span class="hljs-keyword">async</span> (ctx, next) =&gt;
+{
+    <span class="hljs-keyword">var</span> req = ctx.GetArgument&lt;TaoTodoRequest&gt;(<span class="hljs-number">0</span>);
+    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">string</span>.IsNullOrWhiteSpace(req.Title))
+        <span class="hljs-keyword">return</span> TypedResults.ValidationProblem(<span class="hljs-keyword">new</span> Dictionary&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>[]&gt; { [<span class="hljs-string">&quot;title&quot;</span>] = [<span class="hljs-string">&quot;Bat buoc&quot;</span>] });
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> next(ctx);       <span class="hljs-comment">// hợp lệ → chạy handler</span>
+});
+</code></pre>
+<p>Dùng cho validation dùng chung, log theo endpoint, chuẩn hoá kết quả. Áp cho cả nhóm: <code>todos.AddEndpointFilter(...)</code>.</p>
+<h2>OpenAPI — tài liệu API tự sinh</h2>
+<pre class="hljs"><code>builder.Services.AddOpenApi();                                    <span class="hljs-comment">// package Microsoft.AspNetCore.OpenApi</span>
+<span class="hljs-keyword">if</span> (app.Environment.IsDevelopment()) app.MapOpenApi();            <span class="hljs-comment">// GET /openapi/v1.json</span>
+</code></pre>
+<p>Tài liệu mô tả mọi endpoint, tham số, kiểu request/response, mã trạng thái (lấy từ <code>Results&lt;...&gt;</code>). Các công cụ như <strong>Swagger UI</strong>, <strong>Scalar</strong>, Postman đọc file này để dựng giao diện thử API và sinh code client. Chi tiết ở Chương 9.</p>
+<h2>Khi nào Minimal API, khi nào Controller?</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Minimal API</th>
+<th>Controller (Chương 7)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Độ dài code</td>
+<td>rất ngắn</td>
+<td>nhiều &quot;nghi thức&quot; hơn</td>
+</tr>
+<tr>
+<td>Tổ chức</td>
+<td>tự do (nhóm, file riêng, class static)</td>
+<td>quy ước rõ ràng, class theo tài nguyên</td>
+</tr>
+<tr>
+<td>Tính năng nâng cao (filters, model binding tuỳ biến, versioning sẵn)</td>
+<td>có, đang hoàn thiện</td>
+<td>đầy đủ, lâu đời</td>
+</tr>
+<tr>
+<td>Hợp với</td>
+<td>microservice, API nhỏ–vừa, dự án mới</td>
+<td>API lớn, đội quen MVC, cần nhiều convention</td>
+</tr>
+</tbody>
+</table>
+<p>Hai phong cách cùng nền tảng, có thể <strong>dùng chung trong một dự án</strong>. Khi dự án lớn, đừng nhét mọi thứ vào <code>Program.cs</code>: tách mỗi tài nguyên thành một <strong>extension method</strong> <code>app.MapTodoEndpoints()</code> trong file riêng.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>400</code> do quên <code>Content-Type: application/json</code> hoặc JSON sai → kiểm tra body/header.</li>
+<li>Handler có hai tham số phức tạp → lỗi khi khởi động (&quot;cannot infer body&quot;); gộp thành một kiểu hoặc chỉ định <code>[FromServices]</code>.</li>
+<li>Route bị xung đột (<code>AmbiguousMatchException</code>) — hai endpoint khớp cùng URL; thu hẹp bằng constraint/đổi URL.</li>
+<li>Quên constraint <code>:int</code> → <code>/todos/abc</code> rơi vào handler và lỗi bind.</li>
+<li>Trả <code>200</code> kèm <code>null</code> cho &quot;không tìm thấy&quot; thay vì <code>404</code>.</li>
+<li>Singleton giữ dữ liệu mà không khoá / không thread-safe.</li>
+<li>Đặt logic nghiệp vụ dài dằng dặc ngay trong lambda — hãy tách vào dịch vụ (Chương 5).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm <code>PATCH /api/todos/{id}/hoan-thanh</code> đánh dấu xong; trả <code>204</code> hoặc <code>404</code>.</li>
+<li>Thêm phân trang <code>GET /api/todos?trang=1&amp;kichThuoc=10</code> dùng <code>[AsParameters]</code> và trả header <code>X-Tong-So</code>.</li>
+<li>Thêm route constraint để <code>GET /api/todos/{id:int:min(1)}</code> từ chối <code>0</code>, <code>-5</code>.</li>
+<li>Viết endpoint filter chung cho nhóm <code>/api/todos</code> bắt buộc header <code>X-Api-Key</code>, trả <code>401</code> nếu thiếu.</li>
+<li>Tách các endpoint Todo thành extension method <code>MapTodoEndpoints</code> trong file <code>TodoEndpoints.cs</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch03-middleware.html">&larr; 3. Middleware và request pipeline</a><a class="nav-next" href="ch05-dependency-injection.html">5. Dependency Injection &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

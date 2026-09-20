@@ -1,0 +1,188 @@
+{
+  "title": "C# và ASP.NET Core — Tập 2",
+  "subtitle": "Lập trình web hiện đại với ASP.NET Core, Entity Framework Core và Blazor — giả định đã nắm Tập 1",
+  "pdfName": "csharp-aspnet-core-tap2.pdf",
+  "parts": [
+    {
+      "id": "part0-nen-tang-web",
+      "title": "Phần 0 — Nền tảng web và môi trường",
+      "dir": "part0-nen-tang-web",
+      "chapters": [
+        {
+          "num": 1,
+          "slug": "http-co-ban",
+          "title": "Web hoạt động thế nào: HTTP và REST"
+        },
+        {
+          "num": 2,
+          "slug": "du-an-dau-tien",
+          "title": "Dự án ASP.NET Core đầu tiên"
+        }
+      ]
+    },
+    {
+      "id": "part1-cot-loi",
+      "title": "Phần 1 — Cốt lõi ASP.NET Core",
+      "dir": "part1-cot-loi",
+      "chapters": [
+        {
+          "num": 3,
+          "slug": "middleware",
+          "title": "Middleware và request pipeline"
+        },
+        {
+          "num": 4,
+          "slug": "minimal-api",
+          "title": "Routing và Minimal API"
+        },
+        {
+          "num": 5,
+          "slug": "dependency-injection",
+          "title": "Dependency Injection"
+        },
+        {
+          "num": 6,
+          "slug": "cau-hinh-logging",
+          "title": "Cấu hình, Options và Logging"
+        }
+      ]
+    },
+    {
+      "id": "part2-web-api",
+      "title": "Phần 2 — Web API",
+      "dir": "part2-web-api",
+      "chapters": [
+        {
+          "num": 7,
+          "slug": "controller-api",
+          "title": "Web API với Controller"
+        },
+        {
+          "num": 8,
+          "slug": "dto-validation",
+          "title": "DTO và Validation"
+        },
+        {
+          "num": 9,
+          "slug": "loi-openapi",
+          "title": "Xử lý lỗi, versioning và OpenAPI"
+        },
+        {
+          "num": 10,
+          "slug": "kiem-thu-api",
+          "title": "Kiểm thử API"
+        }
+      ]
+    },
+    {
+      "id": "part3-du-lieu",
+      "title": "Phần 3 — Dữ liệu với EF Core",
+      "dir": "part3-du-lieu",
+      "chapters": [
+        {
+          "num": 11,
+          "slug": "sql-sqlite",
+          "title": "SQL cơ bản và SQLite"
+        },
+        {
+          "num": 12,
+          "slug": "efcore-co-ban",
+          "title": "Entity Framework Core cơ bản"
+        },
+        {
+          "num": 13,
+          "slug": "efcore-quan-he",
+          "title": "Quan hệ, truy vấn nâng cao và hiệu năng"
+        },
+        {
+          "num": 14,
+          "slug": "api-voi-efcore",
+          "title": "Web API hoàn chỉnh với EF Core"
+        }
+      ]
+    },
+    {
+      "id": "part4-giao-dien",
+      "title": "Phần 4 — Giao diện web",
+      "dir": "part4-giao-dien",
+      "chapters": [
+        {
+          "num": 15,
+          "slug": "mvc",
+          "title": "ASP.NET Core MVC"
+        },
+        {
+          "num": 16,
+          "slug": "razor-pages",
+          "title": "Razor Pages"
+        },
+        {
+          "num": 17,
+          "slug": "form-validation",
+          "title": "Form, validation phía server và chống CSRF"
+        },
+        {
+          "num": 18,
+          "slug": "blazor",
+          "title": "Blazor"
+        },
+        {
+          "num": 19,
+          "slug": "httpclient",
+          "title": "Gọi API ngoài với HttpClient"
+        }
+      ]
+    },
+    {
+      "id": "part5-bao-mat",
+      "title": "Phần 5 — Bảo mật cơ bản",
+      "dir": "part5-bao-mat",
+      "chapters": [
+        {
+          "num": 20,
+          "slug": "xac-thuc",
+          "title": "Xác thực và phân quyền"
+        },
+        {
+          "num": 21,
+          "slug": "bao-mat-web",
+          "title": "Bảo mật ứng dụng web"
+        }
+      ]
+    },
+    {
+      "id": "part6-du-an",
+      "title": "Phần 6 — Dự án tổng hợp",
+      "dir": "part6-du-an",
+      "chapters": [
+        {
+          "num": 22,
+          "slug": "du-an-tong-hop",
+          "title": "Dự án tổng hợp Tập 2: Web quản lý kho"
+        }
+      ]
+    },
+    {
+      "id": "part7-phu-luc",
+      "title": "Phụ lục",
+      "dir": "part7-phu-luc",
+      "chapters": [
+        {
+          "num": 23,
+          "slug": "phu-luc-a-loi-thuong-gap",
+          "title": "Phụ lục A — Lỗi thường gặp ASP.NET Core"
+        },
+        {
+          "num": 24,
+          "slug": "phu-luc-b-tai-lieu",
+          "title": "Phụ lục B — Tài liệu tham khảo"
+        },
+        {
+          "num": 25,
+          "slug": "phu-luc-c-cheat-sheet",
+          "title": "Phụ lục C — Cheat sheet ASP.NET Core"
+        }
+      ]
+    }
+  ]
+}

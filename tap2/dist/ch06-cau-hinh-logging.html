@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 6 — Cấu hình, Options và Logging — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link active" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><span class="chapter-link pending">7. Web API với Controller</span></li><li><span class="chapter-link pending">8. DTO và Validation</span></li><li><span class="chapter-link pending">9. Xử lý lỗi, versioning và OpenAPI</span></li><li><span class="chapter-link pending">10. Kiểm thử API</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><span class="chapter-link pending">11. SQL cơ bản và SQLite</span></li><li><span class="chapter-link pending">12. Entity Framework Core cơ bản</span></li><li><span class="chapter-link pending">13. Quan hệ, truy vấn nâng cao và hiệu năng</span></li><li><span class="chapter-link pending">14. Web API hoàn chỉnh với EF Core</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><span class="chapter-link pending">15. ASP.NET Core MVC</span></li><li><span class="chapter-link pending">16. Razor Pages</span></li><li><span class="chapter-link pending">17. Form, validation phía server và chống CSRF</span></li><li><span class="chapter-link pending">18. Blazor</span></li><li><span class="chapter-link pending">19. Gọi API ngoài với HttpClient</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 6 — Cấu hình, Options và Logging</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu cách <a href="http://ASP.NET">ASP.NET</a> Core <strong>nạp cấu hình</strong> từ nhiều nguồn và thứ tự ưu tiên.</li>
+<li>Dùng <strong>Options pattern</strong> (<code>IOptions</code>, <code>IOptionsSnapshot</code>, <code>IOptionsMonitor</code>) và <strong>kiểm tra cấu hình lúc khởi động</strong>.</li>
+<li>Cấu hình theo <strong>môi trường</strong>, giữ <strong>bí mật</strong> đúng cách.</li>
+<li>Ghi log có cấu trúc, cấp độ, scope, <strong>source-generated logging</strong>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch06-cau-hinh-logging/"><code>code/ch06-cau-hinh-logging/</code></a>.</p>
+<p>Chương này áp dụng vào web những gì Tập 1 (Chương 39–40) đã giới thiệu — <code>WebApplication.CreateBuilder</code> đã <strong>cấu hình sẵn</strong> phần lớn cho bạn.</p>
+<h2>Nguồn cấu hình mặc định</h2>
+<p><code>WebApplication.CreateBuilder(args)</code> nạp theo thứ tự (<strong>nguồn sau ghi đè nguồn trước</strong>):</p>
+<ol>
+<li><code>appsettings.json</code></li>
+<li><code>appsettings.{Environment}.json</code> (vd <code>appsettings.Development.json</code>)</li>
+<li><strong>User Secrets</strong> (chỉ ở <code>Development</code>)</li>
+<li><strong>Biến môi trường</strong></li>
+<li><strong>Tham số dòng lệnh</strong></li>
+</ol>
+<p>Hợp nhất thành một cây khoá–giá trị (<code>builder.Configuration</code>, kiểu <code>IConfiguration</code>). Khoá lồng nhau dùng dấu <code>:</code>; biến môi trường dùng <code>__</code>:</p>
+<pre class="hljs"><code>CuaHang:Ten                     # trong JSON
+CuaHang__Ten=&quot;Sach Do&quot;          # biến môi trường
+--CuaHang:Ten=&quot;Sach Xanh&quot;       # dòng lệnh
+</code></pre>
+<p><code>appsettings.json</code> của code mẫu:</p>
+<pre class="hljs"><code><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;Logging&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;LogLevel&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;Default&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Information&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;Microsoft.AspNetCore&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Warning&quot;</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;CuaHang&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;Ten&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Sach Xanh&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;ThueVat&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.08</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;PhiVanChuyenToiThieu&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">15000</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;PhiVanChuyenToiDa&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">60000</span> <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;ConnectionStrings&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;Mac_Dinh&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Data Source=app.db&quot;</span> <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><code>appsettings.Development.json</code> chỉ ghi <strong>phần khác biệt</strong> (đổi tên cửa hàng thành &quot;(DEV)&quot;, log <code>Debug</code>).</p>
+<h2>Đọc cấu hình</h2>
+<pre class="hljs"><code>builder.Configuration[<span class="hljs-string">&quot;CuaHang:Ten&quot;</span>]                          <span class="hljs-comment">// chuỗi thô</span>
+builder.Configuration.GetValue&lt;<span class="hljs-built_in">int</span>&gt;(<span class="hljs-string">&quot;CuaHang:SoNgay&quot;</span>, <span class="hljs-number">7</span>)      <span class="hljs-comment">// có kiểu + mặc định</span>
+builder.Configuration.GetConnectionString(<span class="hljs-string">&quot;Mac_Dinh&quot;</span>)         <span class="hljs-comment">// &quot;ConnectionStrings:Mac_Dinh&quot;</span>
+builder.Configuration.GetSection(<span class="hljs-string">&quot;CuaHang&quot;</span>).Get&lt;CuaHangOptions&gt;()
+</code></pre>
+<p>Đọc chuỗi khoá rải rác rất dễ sai chính tả (trả <code>null</code> mà không báo lỗi). <strong>Ưu tiên Options pattern.</strong></p>
+<h2>Options pattern</h2>
+<p>Gom cấu hình liên quan vào một class, gắn vào một mục, tiêm vào nơi cần:</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">CuaHangOptions</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> TenMuc = <span class="hljs-string">&quot;CuaHang&quot;</span>;
+
+    [<span class="hljs-meta">Required, MinLength(2)</span>] <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Ten { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-string">&quot;&quot;</span>;
+    [<span class="hljs-meta">Range(0, 1)</span>] <span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> ThueVat { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+    [<span class="hljs-meta">Range(0, 1_000_000)</span>] <span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> PhiVanChuyenToiThieu { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+    [<span class="hljs-meta">Range(0, 1_000_000)</span>] <span class="hljs-keyword">public</span> <span class="hljs-built_in">decimal</span> PhiVanChuyenToiDa { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+    <span class="hljs-keyword">public</span> List&lt;<span class="hljs-built_in">string</span>&gt; KenhHoTro { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = [];
+}
+
+builder.Services
+    .AddOptions&lt;CuaHangOptions&gt;()
+    .Bind(builder.Configuration.GetSection(CuaHangOptions.TenMuc))
+    .ValidateDataAnnotations()                                                      <span class="hljs-comment">// kiểm tra [Required], [Range]...</span>
+    .Validate(o =&gt; o.PhiVanChuyenToiThieu &lt;= o.PhiVanChuyenToiDa, <span class="hljs-string">&quot;Phi toi thieu khong duoc lon hon phi toi da&quot;</span>)
+    .ValidateOnStart();                                                              <span class="hljs-comment">// kiểm tra NGAY khi khởi động</span>
+
+app.MapGet(<span class="hljs-string">&quot;/cau-hinh&quot;</span>, (IOptions&lt;CuaHangOptions&gt; opt) =&gt; opt.Value);
+</code></pre>
+<p><code>ValidateOnStart()</code> là chi tiết rất đáng giá: thử chạy với <code>CuaHang__ThueVat=5</code>, ứng dụng <strong>từ chối khởi động</strong> với thông báo rõ ràng:</p>
+<pre class="hljs"><code>OptionsValidationException: DataAnnotation validation failed for 'CuaHangOptions' members: 'ThueVat' with the error: 'The field ThueVat must be between 0 and 1.'
+</code></pre>
+<p>Sự cố cấu hình lộ ra <strong>lúc deploy</strong>, không phải lúc một khách hàng đầu tiên gọi vào tính năng đó lúc 3 giờ sáng (&quot;fail fast&quot;).</p>
+<h3>Ba dạng <code>IOptions</code></h3>
+<table>
+<thead>
+<tr>
+<th>Kiểu</th>
+<th>Vòng đời</th>
+<th>Nạp lại khi file đổi?</th>
+<th>Dùng khi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IOptions&lt;T&gt;</code></td>
+<td>Singleton</td>
+<td><strong>Không</strong> (đọc một lần)</td>
+<td>cấu hình cố định suốt đời ứng dụng</td>
+</tr>
+<tr>
+<td><code>IOptionsSnapshot&lt;T&gt;</code></td>
+<td>Scoped</td>
+<td>Có, <strong>mỗi request</strong> đọc lại</td>
+<td>cấu hình đổi được, cần ổn định trong một request</td>
+</tr>
+<tr>
+<td><code>IOptionsMonitor&lt;T&gt;</code></td>
+<td>Singleton</td>
+<td>Có, <strong>theo dõi thay đổi</strong> (<code>OnChange</code>)</td>
+<td>dịch vụ Singleton cần giá trị mới nhất</td>
+</tr>
+</tbody>
+</table>
+<p><code>appsettings.json</code> được nạp với <code>reloadOnChange: true</code>, nên đổi file khi đang chạy → <code>IOptionsSnapshot/IOptionsMonitor</code> thấy giá trị mới (ví dụ: bật/tắt cờ tính năng mà không khởi động lại).</p>
+<h2>Môi trường</h2>
+<pre class="hljs"><code>app.Environment.IsDevelopment();   IsStaging();   IsProduction();   EnvironmentName
+</code></pre>
+<p>Đặt bằng <code>ASPNETCORE_ENVIRONMENT</code>. Dùng <code>if (env.IsDevelopment())</code> cho những thứ <strong>chỉ dev</strong> (trang lỗi chi tiết, OpenAPI/Swagger UI, seed dữ liệu). Đừng dùng môi trường làm &quot;công tắc nghiệp vụ&quot; — khác biệt hành vi nghiệp vụ nên là <strong>cấu hình</strong>, không phải rẽ nhánh theo tên môi trường.</p>
+<h2>Bí mật (secrets)</h2>
+<p>Nguyên tắc từ Tập 1, Chương 40, giờ áp dụng vào web:</p>
+<ul>
+<li><strong>Không</strong> để mật khẩu/khoá API/chuỗi kết nối có mật khẩu trong <code>appsettings.json</code> được commit.</li>
+<li><strong>Dev</strong>: <code>dotnet user-secrets</code> (lưu ngoài repo).</li>
+<li><strong>Production</strong>: biến môi trường do nền tảng cấp, hoặc kho bí mật (Azure Key Vault, AWS Secrets Manager, Docker/Kubernetes secrets).</li>
+<li>Không log giá trị bí mật; không trả chúng qua endpoint (code mẫu chỉ in &quot;đã cấu hình&quot; thay vì nội dung chuỗi kết nối).</li>
+</ul>
+<h2>Logging</h2>
+<p><code>ILogger&lt;T&gt;</code> được tiêm sẵn; <code>T</code> (thường là chính lớp đang dùng) trở thành <strong>category</strong> của dòng log:</p>
+<pre class="hljs"><code>app.MapGet(<span class="hljs-string">&quot;/log&quot;</span>, (ILogger&lt;Program&gt; log, <span class="hljs-built_in">string</span>? nguoiDung) =&gt;
+{
+    log.LogDebug(<span class="hljs-string">&quot;Debug: nguoi dung {NguoiDung}&quot;</span>, nguoiDung);
+    log.LogInformation(<span class="hljs-string">&quot;Information: nguoi dung {NguoiDung} vua goi /log&quot;</span>, nguoiDung ?? <span class="hljs-string">&quot;an danh&quot;</span>);
+    log.LogWarning(<span class="hljs-string">&quot;Warning: canh bao mau&quot;</span>);
+    log.LogError(<span class="hljs-keyword">new</span> InvalidOperationException(<span class="hljs-string">&quot;loi mau&quot;</span>), <span class="hljs-string">&quot;Error: mot loi minh hoa&quot;</span>);
+    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;ok&quot;</span>;
+});
+</code></pre>
+<p>Kết quả console (ở <code>Development</code>, mức <code>Debug</code>):</p>
+<pre class="hljs"><code>dbug: Program[0]
+      Debug: nguoi dung an
+info: Program[0]
+      Information: nguoi dung an vua goi /log
+warn: Program[0]
+      Warning: canh bao mau
+fail: Program[0]
+      Error: mot loi minh hoa
+      System.InvalidOperationException: loi mau
+</code></pre>
+<p>Nguyên tắc (nhắc lại Tập 1, Chương 39): dùng <strong>tham số đặt tên</strong> <code>{NguoiDung}</code> chứ không nội suy <code>$&quot;...&quot;</code>; truyền <code>Exception</code> làm tham số <strong>đầu</strong> của <code>LogError</code>; không log dữ liệu nhạy cảm.</p>
+<h3>Cấp độ và lọc theo category</h3>
+<p>Cấu hình trong <code>appsettings.json</code>, <strong>không cần sửa code</strong>:</p>
+<pre class="hljs"><code><span class="hljs-attr">&quot;Logging&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;LogLevel&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;Default&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Information&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;Microsoft.AspNetCore&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Warning&quot;</span><span class="hljs-punctuation">,</span>                  <span class="hljs-comment">// framework &quot;ồn ào&quot;: chỉ Warning trở lên</span>
+    <span class="hljs-attr">&quot;Microsoft.EntityFrameworkCore.Database.Command&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Information&quot;</span><span class="hljs-punctuation">,</span>   <span class="hljs-comment">// xem câu SQL</span>
+    <span class="hljs-attr">&quot;MyApp.DonHang&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Debug&quot;</span>
+<span class="hljs-punctuation">}</span> <span class="hljs-punctuation">}</span>
+</code></pre>
+<p>Đặt thấp hơn cho vùng đang điều tra, cao hơn cho vùng ồn — giảm log rác trên production.</p>
+<h3>Scope</h3>
+<pre class="hljs"><code><span class="hljs-keyword">using</span> (log.BeginScope(<span class="hljs-string">&quot;CorrelationId={CorrelationId}&quot;</span>, id))
+{
+    log.LogInformation(<span class="hljs-string">&quot;Bat dau&quot;</span>);    <span class="hljs-comment">// mọi dòng trong khối đều kèm CorrelationId</span>
+}
+</code></pre>
+<p>Console mặc định <strong>không hiển thị scope</strong>; bật bằng <code>builder.Logging.AddSimpleConsole(o =&gt; o.IncludeScopes = true)</code>. Framework tự tạo scope cho mỗi request (có <code>RequestId</code>, <code>TraceId</code>) — công cụ log tập trung dùng để nối các dòng thuộc cùng một request.</p>
+<h3>Source-generated logging</h3>
+<pre class="hljs"><code><span class="hljs-keyword">static</span> <span class="hljs-keyword">partial</span> <span class="hljs-keyword">class</span> <span class="hljs-title">NhatKy</span>
+{
+    [<span class="hljs-meta">LoggerMessage(EventId = 1001, Level = LogLevel.Information,
+        Message = <span class="hljs-string">&quot;Dat hang thanh cong: don {SoDon}, tong {TongTien}&quot;</span>)</span>]
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">partial</span> <span class="hljs-keyword">void</span> <span class="hljs-title">DatHangThanhCong</span>(<span class="hljs-params"><span class="hljs-keyword">this</span> ILogger logger, <span class="hljs-built_in">int</span> soDon, <span class="hljs-built_in">decimal</span> tongTien</span>)</span>;
+}
+
+log.DatHangThanhCong(<span class="hljs-number">42</span>, <span class="hljs-number">250_000m</span>);
+</code></pre>
+<p>Trình sinh mã tạo phương thức: <strong>nhanh hơn</strong> (không cấp phát/boxing khi mức log tắt), <strong>an toàn kiểu</strong> (tham số sai là lỗi biên dịch), mẫu thông điệp tập trung. Khuyến nghị cho log ở đường nóng và cho log nghiệp vụ quan trọng.</p>
+<h3>Log ra đâu?</h3>
+<p>Mặc định: console, debug, event source. Cho production dùng <strong>Serilog</strong> hoặc NLog (cắm vào <code>ILogger</code>, ghi file/Seq/Elasticsearch) hoặc <strong>OpenTelemetry</strong> để gửi log/trace/metric tới hệ thống quan sát (Tập 3). Trong container, cứ ghi ra <strong>console (stdout)</strong> — nền tảng sẽ thu thập.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Cấu hình đọc ra <code>null</code>/mặc định vì gõ sai khoá hoặc sai cấp lồng — dùng Options + <code>ValidateOnStart</code>.</li>
+<li>Tưởng <code>IOptions&lt;T&gt;</code> tự nạp lại khi file đổi (phải <code>IOptionsSnapshot</code>/<code>IOptionsMonitor</code>).</li>
+<li>Dùng <code>IOptionsSnapshot</code> (Scoped) trong dịch vụ Singleton → lỗi captive dependency.</li>
+<li>Commit <code>appsettings.Production.json</code> có mật khẩu.</li>
+<li>Biến môi trường dùng <code>:</code> thay <code>__</code> (một số shell/OS không cho <code>:</code>).</li>
+<li>Log bằng nội suy chuỗi, log mật khẩu/token, log mỗi vòng lặp ở mức <code>Information</code>.</li>
+<li>Để <code>Default: Debug/Trace</code> trên production → tràn dung lượng, lộ dữ liệu.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm mục <code>Email</code> (<code>MayChu</code>, <code>Cong</code>, <code>TenDangNhap</code>) vào cấu hình, bind vào <code>EmailOptions</code> với kiểm tra <code>[Required]</code>, <code>[Range(1, 65535)]</code> và <code>ValidateOnStart</code>.</li>
+<li>Ghi đè <code>CuaHang:Ten</code> bằng biến môi trường và bằng tham số dòng lệnh; xác nhận thứ tự ưu tiên.</li>
+<li>Đặt <code>Microsoft.AspNetCore</code> ở <code>Information</code> và xem log của từng request; sau đó đặt lại <code>Warning</code>.</li>
+<li>Viết <code>[LoggerMessage]</code> cho ba sự kiện nghiệp vụ (<code>DonHangTao</code>, <code>KhoSapHet</code>, <code>ThanhToanLoi</code>) với <code>EventId</code> khác nhau.</li>
+<li>Dùng <code>IOptionsMonitor&lt;T&gt;.OnChange</code> để in log mỗi khi bạn sửa <code>appsettings.json</code> khi ứng dụng đang chạy.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch05-dependency-injection.html">&larr; 5. Dependency Injection</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

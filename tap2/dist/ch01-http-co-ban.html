@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 1 — Web hoạt động thế nào: HTTP và REST — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><span class="chapter-link pending">7. Web API với Controller</span></li><li><span class="chapter-link pending">8. DTO và Validation</span></li><li><span class="chapter-link pending">9. Xử lý lỗi, versioning và OpenAPI</span></li><li><span class="chapter-link pending">10. Kiểm thử API</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><span class="chapter-link pending">11. SQL cơ bản và SQLite</span></li><li><span class="chapter-link pending">12. Entity Framework Core cơ bản</span></li><li><span class="chapter-link pending">13. Quan hệ, truy vấn nâng cao và hiệu năng</span></li><li><span class="chapter-link pending">14. Web API hoàn chỉnh với EF Core</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><span class="chapter-link pending">15. ASP.NET Core MVC</span></li><li><span class="chapter-link pending">16. Razor Pages</span></li><li><span class="chapter-link pending">17. Form, validation phía server và chống CSRF</span></li><li><span class="chapter-link pending">18. Blazor</span></li><li><span class="chapter-link pending">19. Gọi API ngoài với HttpClient</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 1 — Web hoạt động thế nào: HTTP và REST</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu mô hình <strong>client – server</strong> và một <strong>request/response HTTP</strong> gồm những phần nào.</li>
+<li>Đọc hiểu <strong>phương thức</strong>, <strong>mã trạng thái</strong>, <strong>header</strong>, <strong>body</strong> và cấu trúc một <strong>URL</strong>.</li>
+<li>Nắm các nguyên tắc <strong>REST</strong> và cách thiết kế URL cho một API.</li>
+<li>Dùng công cụ (<code>curl</code>, trình duyệt, file <code>.http</code>) để &quot;nói chuyện&quot; trực tiếp với một server.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch01-http-co-ban/"><code>code/ch01-http-co-ban/</code></a> — chương trình console tự dựng một máy chủ HTTP thô để bạn <strong>nhìn thấy</strong> nguyên văn request và response.</p>
+<blockquote>
+<p>Tập 2 giả định bạn đã đọc Tập 1 (C#, OOP, LINQ, <code>async/await</code>, JSON, DI qua constructor, unit test). Khi cần ôn, sách ghi rõ <em>&quot;Tập 1, Chương N&quot;</em>.</p>
+</blockquote>
+<h2>Mô hình client – server</h2>
+<p>Mọi ứng dụng web đều là cuộc <strong>hỏi – đáp</strong> giữa hai bên:</p>
+<ul>
+<li><strong>Client</strong> (trình duyệt, ứng dụng di động, chương trình khác) <strong>gửi request</strong> để hỏi/nhờ.</li>
+<li><strong>Server</strong> (<a href="http://ASP.NET">ASP.NET</a> Core chạy trên máy chủ) <strong>trả response</strong>.</li>
+</ul>
+<pre class="mermaid">sequenceDiagram
+    participant C as Client (trình duyệt/app)
+    participant S as Server (ASP.NET Core)
+    C-&gt;&gt;S: Request: GET /api/todos/1
+    S--&gt;&gt;C: Response: 200 OK + JSON
+    C-&gt;&gt;S: Request: POST /api/todos (kèm dữ liệu)
+    S--&gt;&gt;C: Response: 201 Created
+</pre>
+<p><strong>HTTP</strong> (HyperText Transfer Protocol) là &quot;ngôn ngữ&quot; quy định cách hai bên viết request và response. Nó chạy trên TCP (và <strong>HTTPS</strong> = HTTP + mã hoá TLS). Đặc điểm cốt lõi: <strong>phi trạng thái (stateless)</strong> — mỗi request độc lập, server không tự nhớ request trước (muốn nhớ phải dùng cookie, token, session).</p>
+<h2>Giải phẫu một request</h2>
+<p>Chạy code mẫu, bạn sẽ thấy đúng nguyên văn văn bản mà <code>HttpClient</code> gửi đi:</p>
+<pre class="hljs"><code>GET /api/chao?ten=An&amp;lang=vi HTTP/1.1
+Host: 127.0.0.1:64457
+Accept: application/json
+X-Yeu-Cau: thu-nghiem
+
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Phần</th>
+<th>Ví dụ</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Request line</strong></td>
+<td><code>GET /api/chao?ten=An HTTP/1.1</code></td>
+<td>phương thức + đường dẫn (kèm query) + phiên bản</td>
+</tr>
+<tr>
+<td><strong>Headers</strong></td>
+<td><code>Host</code>, <code>Accept</code>, <code>Authorization</code>, <code>Content-Type</code></td>
+<td>siêu dữ liệu về request</td>
+</tr>
+<tr>
+<td>Dòng trống</td>
+<td></td>
+<td>ngăn cách header và body</td>
+</tr>
+<tr>
+<td><strong>Body</strong> (tuỳ chọn)</td>
+<td><code>{&quot;title&quot;:&quot;Hoc C#&quot;}</code></td>
+<td>dữ liệu gửi kèm (POST/PUT/PATCH)</td>
+</tr>
+</tbody>
+</table>
+<h3>URL</h3>
+<pre class="hljs"><code>https://api.cuahang.vn:8443/api/san-pham/42?nhom=phu-kien&amp;sapXep=gia#chi-tiet
+└─┬─┘   └──────┬──────┘└┬─┘└──────┬───────┘└────────┬───────────┘└───┬───┘
+scheme       host     port      path             query           fragment
+</code></pre>
+<p><code>fragment</code> (<code>#...</code>) <strong>không</strong> gửi lên server — chỉ dùng phía client. <code>query</code> (<code>?a=1&amp;b=2</code>) là các cặp tên–giá trị. Ký tự đặc biệt phải được mã hoá phần trăm (<code>%20</code> cho dấu cách) — <code>Uri</code>/<code>HttpClient</code> lo giúp.</p>
+<h2>Phương thức HTTP</h2>
+<table>
+<thead>
+<tr>
+<th>Phương thức</th>
+<th>Dùng để</th>
+<th>An toàn*</th>
+<th>Idempotent**</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><strong>đọc</strong> tài nguyên</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><strong>tạo</strong> mới / thực hiện hành động</td>
+<td>✘</td>
+<td>✘</td>
+</tr>
+<tr>
+<td><code>PUT</code></td>
+<td><strong>thay thế</strong> toàn bộ tài nguyên</td>
+<td>✘</td>
+<td>✔</td>
+</tr>
+<tr>
+<td><code>PATCH</code></td>
+<td><strong>sửa một phần</strong></td>
+<td>✘</td>
+<td>thường không</td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td><strong>xoá</strong></td>
+<td>✘</td>
+<td>✔</td>
+</tr>
+<tr>
+<td><code>HEAD</code>/<code>OPTIONS</code></td>
+<td>lấy header / hỏi khả năng (CORS)</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+</tbody>
+</table>
+<p>* <em>An toàn</em>: không làm thay đổi dữ liệu trên server. ** <em>Idempotent</em>: gọi nhiều lần cho kết quả cuối giống gọi một lần (xoá hai lần vẫn là &quot;đã xoá&quot;). Tính chất này quyết định việc có thể <strong>tự động gửi lại</strong> khi mạng lỗi hay không — không bao giờ để <code>GET</code> làm thay đổi dữ liệu.</p>
+<h2>Mã trạng thái (status code)</h2>
+<p>Hàng trăm đầu tiên cho biết <strong>nhóm</strong> kết quả:</p>
+<table>
+<thead>
+<tr>
+<th>Nhóm</th>
+<th>Ý nghĩa</th>
+<th>Thường gặp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1xx</strong></td>
+<td>thông tin</td>
+<td>ít gặp</td>
+</tr>
+<tr>
+<td><strong>2xx</strong></td>
+<td>thành công</td>
+<td><code>200 OK</code>, <code>201 Created</code>, <code>204 No Content</code></td>
+</tr>
+<tr>
+<td><strong>3xx</strong></td>
+<td>chuyển hướng</td>
+<td><code>301/302</code> (redirect), <code>304 Not Modified</code></td>
+</tr>
+<tr>
+<td><strong>4xx</strong></td>
+<td><strong>lỗi do client</strong></td>
+<td><code>400 Bad Request</code>, <code>401 Unauthorized</code>, <code>403 Forbidden</code>, <code>404 Not Found</code>, <code>409 Conflict</code>, <code>422</code>, <code>429 Too Many Requests</code></td>
+</tr>
+<tr>
+<td><strong>5xx</strong></td>
+<td><strong>lỗi do server</strong></td>
+<td><code>500 Internal Server Error</code>, <code>502/503/504</code></td>
+</tr>
+</tbody>
+</table>
+<p>Phân biệt hay nhầm: <strong>401</strong> = chưa xác thực (chưa đăng nhập / token sai); <strong>403</strong> = đã biết bạn là ai nhưng <strong>không đủ quyền</strong>. Chọn mã đúng là phần quan trọng của thiết kế API: <code>POST</code> tạo mới nên trả <code>201 Created</code> kèm header <code>Location</code>; xoá thành công thường <code>204</code>.</p>
+<h2>Header và body</h2>
+<p>Header thường gặp:</p>
+<table>
+<thead>
+<tr>
+<th>Header</th>
+<th>Hướng</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Content-Type</code></td>
+<td>cả hai</td>
+<td>định dạng body (<code>application/json</code>, <code>text/html</code>, <code>multipart/form-data</code>)</td>
+</tr>
+<tr>
+<td><code>Accept</code></td>
+<td>request</td>
+<td>định dạng client muốn nhận</td>
+</tr>
+<tr>
+<td><code>Authorization</code></td>
+<td>request</td>
+<td>thông tin xác thực (<code>Bearer &lt;token&gt;</code>)</td>
+</tr>
+<tr>
+<td><code>Cookie</code> / <code>Set-Cookie</code></td>
+<td>request / response</td>
+<td>duy trì trạng thái</td>
+</tr>
+<tr>
+<td><code>Location</code></td>
+<td>response</td>
+<td>URL tài nguyên mới tạo/chuyển hướng</td>
+</tr>
+<tr>
+<td><code>Cache-Control</code>, <code>ETag</code></td>
+<td>response</td>
+<td>điều khiển bộ nhớ đệm</td>
+</tr>
+</tbody>
+</table>
+<p>Body JSON (Tập 1, Chương 36) là định dạng chính của API hiện đại. Form HTML gửi <code>application/x-www-form-urlencoded</code> hoặc <code>multipart/form-data</code> (tải file).</p>
+<h2>REST — thiết kế API theo tài nguyên</h2>
+<p><strong>REST</strong> là phong cách thiết kế API xoay quanh <strong>tài nguyên</strong> (danh từ) được định danh bằng URL, và thao tác bằng <strong>phương thức HTTP</strong> (động từ):</p>
+<table>
+<thead>
+<tr>
+<th>Việc cần làm</th>
+<th>Request</th>
+<th>Kết quả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lấy danh sách</td>
+<td><code>GET /api/todos</code></td>
+<td><code>200</code> + mảng</td>
+</tr>
+<tr>
+<td>Lấy một</td>
+<td><code>GET /api/todos/5</code></td>
+<td><code>200</code> hoặc <code>404</code></td>
+</tr>
+<tr>
+<td>Tạo mới</td>
+<td><code>POST /api/todos</code></td>
+<td><code>201</code> + <code>Location: /api/todos/6</code></td>
+</tr>
+<tr>
+<td>Thay thế</td>
+<td><code>PUT /api/todos/5</code></td>
+<td><code>204</code> hoặc <code>404</code></td>
+</tr>
+<tr>
+<td>Sửa một phần</td>
+<td><code>PATCH /api/todos/5</code></td>
+<td><code>200</code>/<code>204</code></td>
+</tr>
+<tr>
+<td>Xoá</td>
+<td><code>DELETE /api/todos/5</code></td>
+<td><code>204</code></td>
+</tr>
+<tr>
+<td>Quan hệ</td>
+<td><code>GET /api/khach-hang/3/don-hang</code></td>
+<td>các đơn của khách 3</td>
+</tr>
+</tbody>
+</table>
+<p>Quy tắc đặt URL: dùng <strong>danh từ số nhiều</strong>, chữ thường, phân cách bằng <code>-</code>, không đặt động từ vào URL (<code>/api/todos</code>, không phải <code>/api/layDanhSachTodo</code>); lọc/sắp xếp/phân trang qua query (<code>?done=true&amp;sort=ten&amp;page=2&amp;pageSize=20</code>); phiên bản qua đường dẫn hoặc header (<code>/api/v1/...</code>).</p>
+<p>Một API REST <strong>không</strong> phụ thuộc trạng thái phiên: mỗi request mang đủ thông tin (token) để xử lý. Đó là lý do nó mở rộng ngang dễ dàng (thêm server sau bộ cân bằng tải).</p>
+<h2>Công cụ để thử request</h2>
+<ul>
+<li>
+<p><strong>Trình duyệt</strong>: gõ URL (chỉ <code>GET</code>); <strong>DevTools → Network</strong> xem mọi request/response, header, thời gian.</p>
+</li>
+<li>
+<p><strong><code>curl</code></strong> (có sẵn Windows 10+, macOS, Linux):</p>
+<pre class="hljs"><code>curl -i http://localhost:5000/api/todos
+curl -i -X POST http://localhost:5000/api/todos -H &quot;Content-Type: application/json&quot; -d '{&quot;title&quot;:&quot;Hoc REST&quot;}'
+</code></pre>
+<p><code>-i</code> in cả header response; <code>-X</code> chọn phương thức; <code>-H</code> thêm header; <code>-d</code> gửi body.</p>
+</li>
+<li>
+<p><strong>File <code>.http</code></strong> (Visual Studio 2022+ và VS Code với REST Client): request lưu ngay trong repo, chạy được từ IDE:</p>
+<pre class="hljs"><code>### Lay danh sach
+GET {{host}}/api/todos
+Accept: application/json
+
+### Tao moi
+POST {{host}}/api/todos
+Content-Type: application/json
+
+{ &quot;title&quot;: &quot;Hoc HTTP&quot; }
+</code></pre>
+</li>
+<li>
+<p><strong>Postman/Insomnia/Bruno</strong>: giao diện đồ hoạ, lưu bộ sưu tập request.</p>
+</li>
+<li>
+<p><strong>Swagger UI / Scalar</strong>: giao diện thử API sinh từ tài liệu OpenAPI (Chương 9).</p>
+</li>
+</ul>
+<h2>Từ code C# nhìn HTTP</h2>
+<p>Trong code mẫu, <code>HttpClient.GetAsync(url)</code> (Tập 1, Chương 33 — async) gửi request; server thô đọc và in ra nguyên văn, rồi trả:</p>
+<pre class="hljs"><code>HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 58
+X-May-Chu: demo
+Connection: close
+
+{&quot;loiChao&quot;:&quot;Xin chao tu may chu tu viet&quot;,&quot;thanhCong&quot;:true}
+</code></pre>
+<p><a href="http://ASP.NET">ASP.NET</a> Core làm đúng việc đó — nhưng lo giúp bạn: phân tích request, định tuyến, chuyển JSON ↔ đối tượng C#, header, mã hoá, đa luồng, keep-alive, HTTP/2... Bạn viết nghiệp vụ, framework lo giao thức.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Dùng <code>GET</code> để <strong>thay đổi</strong> dữ liệu (mất tính an toàn; trình duyệt/crawler có thể gọi lại).</li>
+<li>Trả <code>200 OK</code> kèm nội dung lỗi thay vì mã <code>4xx/5xx</code> đúng nghĩa.</li>
+<li>Nhầm <code>401</code> với <code>403</code>.</li>
+<li>Đặt động từ trong URL, dùng danh từ số ít/số nhiều lộn xộn.</li>
+<li>Quên <code>Content-Type: application/json</code> khi gửi body JSON → server không đọc được.</li>
+<li>Nhét dữ liệu nhạy cảm (mật khẩu, token) vào <strong>URL/query</strong> — URL bị ghi vào log và lịch sử trình duyệt; đặt vào header/body qua HTTPS.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Chạy code mẫu; giải thích từng dòng của request in ra. Đổi header <code>Accept</code> rồi quan sát.</li>
+<li>Dùng DevTools mở một trang web bất kỳ, tìm request <code>GET</code> đầu tiên, ghi lại mã trạng thái và 3 header của response.</li>
+<li>Thiết kế (chỉ viết ra giấy) bộ URL REST cho hệ thống &quot;thư viện&quot;: sách, độc giả, phiếu mượn (kể cả &quot;trả sách&quot;).</li>
+<li>Dùng <code>curl -i https://example.com</code> và giải thích mọi dòng header.</li>
+<li>Viết chương trình dùng <code>HttpClient</code> gọi <code>https://httpbin.org/status/404</code> và in mã trạng thái (cần Internet); xử lý bằng <code>response.IsSuccessStatusCode</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><span></span><a class="nav-next" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
