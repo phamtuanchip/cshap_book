@@ -1,0 +1,313 @@
+{
+  "title": "C# từ Cơ bản đến Nâng cao — Tập 1",
+  "subtitle": "Sách lập trình C# và .NET hiện đại cho người mới bắt đầu — dạy OOP từ số 0 (Tập 2: ASP.NET Core, Tập 3: Web nâng cao & design pattern)",
+  "parts": [
+    {
+      "id": "part0-setup",
+      "title": "Phần 0 — Chuẩn bị môi trường",
+      "dir": "part0-setup",
+      "chapters": [
+        {
+          "num": 1,
+          "slug": "gioi-thieu-csharp-dotnet",
+          "title": "Giới thiệu C# và .NET"
+        },
+        {
+          "num": 2,
+          "slug": "cai-dat-moi-truong",
+          "title": "Cài đặt .NET SDK và IDE"
+        },
+        {
+          "num": 3,
+          "slug": "chuong-trinh-dau-tien",
+          "title": "Chương trình C# đầu tiên"
+        },
+        {
+          "num": 4,
+          "slug": "lam-quen-ide",
+          "title": "Làm quen IDE, solution và NuGet"
+        }
+      ]
+    },
+    {
+      "id": "part1-fundamentals",
+      "title": "Phần 1 — Nền tảng lập trình",
+      "dir": "part1-fundamentals",
+      "chapters": [
+        {
+          "num": 5,
+          "slug": "bien-kieu-du-lieu",
+          "title": "Biến, kiểu dữ liệu, ép kiểu"
+        },
+        {
+          "num": 6,
+          "slug": "toan-tu-bieu-thuc",
+          "title": "Toán tử và biểu thức"
+        },
+        {
+          "num": 7,
+          "slug": "cau-truc-dieu-khien",
+          "title": "Cấu trúc điều khiển: if/else, switch"
+        },
+        {
+          "num": 8,
+          "slug": "vong-lap",
+          "title": "Vòng lặp"
+        },
+        {
+          "num": 9,
+          "slug": "mang",
+          "title": "Mảng"
+        },
+        {
+          "num": 10,
+          "slug": "phuong-thuc",
+          "title": "Phương thức"
+        },
+        {
+          "num": 11,
+          "slug": "chuoi",
+          "title": "Chuỗi (string)"
+        }
+      ]
+    },
+    {
+      "id": "part2-oop-basics",
+      "title": "Phần 2 — Nhập môn OOP",
+      "dir": "part2-oop-basics",
+      "chapters": [
+        {
+          "num": 12,
+          "slug": "vi-sao-can-oop",
+          "title": "Vì sao cần OOP"
+        },
+        {
+          "num": 13,
+          "slug": "class-object",
+          "title": "Class và Object"
+        },
+        {
+          "num": 14,
+          "slug": "encapsulation-property",
+          "title": "Đóng gói và Property"
+        },
+        {
+          "num": 15,
+          "slug": "namespace-using",
+          "title": "Namespace, using và tổ chức project"
+        }
+      ]
+    },
+    {
+      "id": "part3-oop-advanced",
+      "title": "Phần 3 — OOP nâng cao",
+      "dir": "part3-oop-advanced",
+      "chapters": [
+        {
+          "num": 16,
+          "slug": "ke-thua",
+          "title": "Kế thừa"
+        },
+        {
+          "num": 17,
+          "slug": "da-hinh",
+          "title": "Đa hình"
+        },
+        {
+          "num": 18,
+          "slug": "abstract-interface",
+          "title": "Abstract class và Interface"
+        },
+        {
+          "num": 19,
+          "slug": "static-extension-enum",
+          "title": "Static, partial, extension method, enum"
+        },
+        {
+          "num": 20,
+          "slug": "object-struct-record",
+          "title": "Lớp object, struct và record"
+        }
+      ]
+    },
+    {
+      "id": "part4-exceptions-generics",
+      "title": "Phần 4 — Xử lý lỗi và Generics",
+      "dir": "part4-exceptions-generics",
+      "chapters": [
+        {
+          "num": 21,
+          "slug": "exception",
+          "title": "Xử lý ngoại lệ"
+        },
+        {
+          "num": 22,
+          "slug": "generics",
+          "title": "Generics"
+        },
+        {
+          "num": 23,
+          "slug": "nullable",
+          "title": "Nullable value type và nullable reference type"
+        }
+      ]
+    },
+    {
+      "id": "part5-collections-linq",
+      "title": "Phần 5 — Collection và LINQ",
+      "dir": "part5-collections-linq",
+      "chapters": [
+        {
+          "num": 24,
+          "slug": "tong-quan-collection",
+          "title": "Tổng quan collection"
+        },
+        {
+          "num": 25,
+          "slug": "list-linkedlist",
+          "title": "List và LinkedList"
+        },
+        {
+          "num": 26,
+          "slug": "dictionary-hashset",
+          "title": "Dictionary, HashSet và họ hàng"
+        },
+        {
+          "num": 27,
+          "slug": "ienumerable-yield",
+          "title": "IEnumerable, yield và sắp xếp"
+        },
+        {
+          "num": 28,
+          "slug": "thuat-toan-tim-kiem",
+          "title": "Thuật toán tìm kiếm"
+        },
+        {
+          "num": 29,
+          "slug": "bfs-dfs",
+          "title": "Duyệt đồ thị/cây: BFS và DFS"
+        },
+        {
+          "num": 30,
+          "slug": "linq",
+          "title": "LINQ"
+        }
+      ]
+    },
+    {
+      "id": "part6-modern-async",
+      "title": "Phần 6 — C# hiện đại và bất đồng bộ",
+      "dir": "part6-modern-async",
+      "chapters": [
+        {
+          "num": 31,
+          "slug": "delegate-event-lambda",
+          "title": "Delegate, event và lambda"
+        },
+        {
+          "num": 32,
+          "slug": "csharp-hien-dai",
+          "title": "Record, pattern matching và cú pháp mới"
+        },
+        {
+          "num": 33,
+          "slug": "async-await",
+          "title": "Lập trình bất đồng bộ async/await"
+        },
+        {
+          "num": 34,
+          "slug": "da-luong",
+          "title": "Đa luồng và đồng bộ hoá"
+        }
+      ]
+    },
+    {
+      "id": "part7-io",
+      "title": "Phần 7 — Nhập/Xuất và xử lý dữ liệu",
+      "dir": "part7-io",
+      "chapters": [
+        {
+          "num": 35,
+          "slug": "file-io",
+          "title": "File I/O"
+        },
+        {
+          "num": 36,
+          "slug": "json-csv",
+          "title": "JSON và CSV"
+        },
+        {
+          "num": 37,
+          "slug": "reflection-attribute",
+          "title": "Reflection, Attribute và Serialization"
+        }
+      ]
+    },
+    {
+      "id": "part8-tooling-testing",
+      "title": "Phần 8 — Công cụ, kiểm thử, quản lý dự án",
+      "dir": "part8-tooling-testing",
+      "chapters": [
+        {
+          "num": 38,
+          "slug": "unit-test",
+          "title": "Unit test với xUnit"
+        },
+        {
+          "num": 39,
+          "slug": "debug-logging",
+          "title": "Debug và logging"
+        },
+        {
+          "num": 40,
+          "slug": "git-nuget-cau-hinh",
+          "title": "Git, NuGet và cấu hình"
+        }
+      ]
+    },
+    {
+      "id": "part9-architecture",
+      "title": "Phần 9 — Kiến trúc cơ bản và dự án tổng hợp",
+      "dir": "part9-architecture",
+      "chapters": [
+        {
+          "num": 41,
+          "slug": "design-pattern",
+          "title": "Design pattern cơ bản"
+        },
+        {
+          "num": 42,
+          "slug": "solid",
+          "title": "Nguyên lý SOLID"
+        },
+        {
+          "num": 43,
+          "slug": "du-an-tong-hop",
+          "title": "Dự án tổng hợp Tập 1"
+        }
+      ]
+    },
+    {
+      "id": "part10-appendix",
+      "title": "Phụ lục",
+      "dir": "part10-appendix",
+      "chapters": [
+        {
+          "num": 44,
+          "slug": "phu-luc-a-loi-thuong-gap",
+          "title": "Phụ lục A — Lỗi thường gặp"
+        },
+        {
+          "num": 45,
+          "slug": "phu-luc-b-tai-lieu",
+          "title": "Phụ lục B — Tài liệu tham khảo"
+        },
+        {
+          "num": 46,
+          "slug": "phu-luc-c-cheat-sheet",
+          "title": "Phụ lục C — Cheat sheet C#"
+        }
+      ]
+    }
+  ]
+}

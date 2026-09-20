@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 4 — Làm quen IDE, solution và NuGet — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link active" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><span class="chapter-link pending">5. Biến, kiểu dữ liệu, ép kiểu</span></li><li><span class="chapter-link pending">6. Toán tử và biểu thức</span></li><li><span class="chapter-link pending">7. Cấu trúc điều khiển: if/else, switch</span></li><li><span class="chapter-link pending">8. Vòng lặp</span></li><li><span class="chapter-link pending">9. Mảng</span></li><li><span class="chapter-link pending">10. Phương thức</span></li><li><span class="chapter-link pending">11. Chuỗi (string)</span></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><span class="chapter-link pending">12. Vì sao cần OOP</span></li><li><span class="chapter-link pending">13. Class và Object</span></li><li><span class="chapter-link pending">14. Đóng gói và Property</span></li><li><span class="chapter-link pending">15. Namespace, using và tổ chức project</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">16. Kế thừa</span></li><li><span class="chapter-link pending">17. Đa hình</span></li><li><span class="chapter-link pending">18. Abstract class và Interface</span></li><li><span class="chapter-link pending">19. Static, partial, extension method, enum</span></li><li><span class="chapter-link pending">20. Lớp object, struct và record</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 4 — Làm quen IDE, solution và NuGet</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Tạo được <strong>solution</strong> chứa nhiều project (một ứng dụng + một thư viện) bằng cả IDE lẫn <code>dotnet</code> CLI.</li>
+<li>Chạy và <strong>gỡ lỗi</strong> (debug) cơ bản: breakpoint, step over/into, xem biến.</li>
+<li>Thêm thư viện từ <strong>NuGet</strong> và hiểu nó được ghi vào đâu trong <code>.csproj</code>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch04-lam-quen-ide/"><code>code/ch04-lam-quen-ide/</code></a>.</p>
+<h2>Solution và project</h2>
+<ul>
+<li><strong>Project</strong> (<code>.csproj</code>): một đơn vị biên dịch, cho ra một <code>.dll</code> hoặc <code>.exe</code>.</li>
+<li><strong>Solution</strong> (<code>.sln</code> hoặc <code>.slnx</code>): &quot;hộp&quot; gom nhiều project lại để build/mở cùng nhau.</li>
+</ul>
+<p>Dự án thực tế hiếm khi chỉ có một project. Ta sẽ dựng solution gồm ứng dụng <code>App</code> dùng thư viện
+<code>MayTinh</code>:</p>
+<pre class="hljs"><code>dotnet new sln -n LamQuenIde
+dotnet new console -n App
+dotnet new classlib -n MayTinh
+dotnet sln add App MayTinh
+dotnet add App reference MayTinh
+</code></pre>
+<ul>
+<li><code>classlib</code> tạo <strong>thư viện lớp</strong> (không chạy độc lập, để project khác dùng).</li>
+<li><code>dotnet add App reference MayTinh</code> khai báo <code>App</code> phụ thuộc <code>MayTinh</code> (thêm dòng <code>ProjectReference</code>
+vào <code>App.csproj</code>).</li>
+</ul>
+<p>Trong Visual Studio: <strong>File → New → Project</strong>, làm tương tự qua giao diện. Trong VS Code: mở thư mục
+solution, dùng <strong>Solution Explorer</strong> của C# Dev Kit.</p>
+<p>Thư viện <code>MayTinh/PhepTinh.cs</code>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">namespace</span> <span class="hljs-title">MayTinh</span>;
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title">PhepTinh</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> <span class="hljs-title">Cong</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> a, <span class="hljs-built_in">int</span> b</span>)</span> =&gt; a + b;
+}
+</code></pre>
+<p><code>App/Program.cs</code>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">using</span> MayTinh;
+
+Console.WriteLine(<span class="hljs-string">$&quot;7 + 5 = <span class="hljs-subst">{PhepTinh.Cong(<span class="hljs-number">7</span>, <span class="hljs-number">5</span>)}</span>&quot;</span>);
+</code></pre>
+<p>Từ khoá <code>public</code> cho phép project khác truy cập class — nếu thiếu, <code>App</code> sẽ báo không thấy <code>PhepTinh</code>
+(học kỹ ở Chương 14). Chạy: <code>dotnet run --project App</code>.</p>
+<h2>Chạy và debug trong IDE</h2>
+<p>Debug là kỹ năng quan trọng nhất sau khi viết được code. Quy trình cơ bản:</p>
+<ol>
+<li><strong>Đặt breakpoint</strong>: bấm vào lề trái cạnh số dòng (hoặc phím <code>F9</code>). Chương trình sẽ dừng <em>trước
+khi</em> chạy dòng đó.</li>
+<li><strong>Chạy chế độ debug</strong>: <code>F5</code> (Visual Studio / VS Code), không phải <code>Ctrl+F5</code> (chạy không debug).</li>
+<li>Khi dừng ở breakpoint, dùng:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Thao tác</th>
+<th>Phím (VS)</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Step Over</td>
+<td><code>F10</code></td>
+<td>Chạy hết dòng hiện tại, không đi vào phương thức được gọi</td>
+</tr>
+<tr>
+<td>Step Into</td>
+<td><code>F11</code></td>
+<td>Đi vào bên trong phương thức đang gọi</td>
+</tr>
+<tr>
+<td>Step Out</td>
+<td><code>Shift+F11</code></td>
+<td>Chạy nốt phương thức hiện tại, quay về nơi gọi</td>
+</tr>
+<tr>
+<td>Continue</td>
+<td><code>F5</code></td>
+<td>Chạy tiếp đến breakpoint kế</td>
+</tr>
+</tbody>
+</table>
+<ol start="4">
+<li><strong>Xem giá trị biến</strong>: rê chuột lên biến, hoặc mở cửa sổ <strong>Locals / Watch</strong>. Thử đặt breakpoint ở
+dòng gọi <code>PhepTinh.Cong</code>, nhấn <code>F11</code> để đi vào phương thức và xem <code>a</code>, <code>b</code>.</li>
+</ol>
+<p>Debug chi tiết hơn (điều kiện breakpoint, logging) sẽ học ở Chương 39.</p>
+<h2>NuGet: dùng thư viện của người khác</h2>
+<p><strong>NuGet</strong> là kho thư viện .NET (tại <a href="https://www.nuget.org">nuget.org</a>). Ví dụ thêm thư viện
+<strong>Humanizer</strong> (chuyển đổi thời gian/số thành văn bản dễ đọc) vào <code>App</code>:</p>
+<pre class="hljs"><code>dotnet add App package Humanizer.Core
+</code></pre>
+<p>Lệnh này (1) tải thư viện về bộ nhớ đệm cục bộ, (2) ghi một dòng vào <code>App.csproj</code>:</p>
+<pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">ItemGroup</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">PackageReference</span> <span class="hljs-attr">Include</span>=<span class="hljs-string">&quot;Humanizer.Core&quot;</span> <span class="hljs-attr">Version</span>=<span class="hljs-string">&quot;...&quot;</span> /&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">ItemGroup</span>&gt;</span>
+</code></pre>
+<p>Dùng thử:</p>
+<pre class="hljs"><code><span class="hljs-keyword">using</span> Humanizer;
+<span class="hljs-keyword">using</span> MayTinh;
+
+Console.WriteLine(<span class="hljs-string">$&quot;7 + 5 = <span class="hljs-subst">{PhepTinh.Cong(<span class="hljs-number">7</span>, <span class="hljs-number">5</span>)}</span>&quot;</span>);
+Console.WriteLine(<span class="hljs-string">$&quot;Khoang thoi gian: <span class="hljs-subst">{TimeSpan.FromDays(<span class="hljs-number">3</span>).Humanize()}</span>&quot;</span>);
+</code></pre>
+<pre class="hljs"><code>7 + 5 = 12
+Khoang thoi gian: 3 days
+</code></pre>
+<p>Các lệnh liên quan: <code>dotnet list package</code> (xem đã dùng gì), <code>dotnet remove package &lt;tên&gt;</code> (gỡ),
+<code>dotnet restore</code> (tải lại các gói theo <code>.csproj</code> — <code>dotnet build</code>/<code>run</code> tự gọi khi cần). Trong IDE có
+giao diện <strong>Manage NuGet Packages</strong>.</p>
+<blockquote>
+<p><strong>Quy tắc chọn thư viện</strong>: xem số lượt tải, ngày cập nhật gần nhất, giấy phép và mức độ được cộng
+đồng tin dùng trước khi thêm vào dự án. Mỗi gói thêm vào là một phụ thuộc bạn phải gánh lâu dài.</p>
+</blockquote>
+<h2>Cấu trúc thư mục nên có</h2>
+<pre class="hljs"><code>LamQuenIde/
+├── LamQuenIde.sln
+├── App/          (console, tham chiếu MayTinh)
+└── MayTinh/      (class library)
+</code></pre>
+<p>Đặt code dùng chung vào thư viện, code khởi chạy vào ứng dụng — kiểu tách này là nền của kiến trúc
+phân lớp ở Tập 3.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><strong><code>The type or namespace name 'MayTinh' could not be found</code></strong>: quên <code>dotnet add App reference MayTinh</code>,
+hoặc quên <code>using MayTinh;</code>.</li>
+<li><strong><code>'PhepTinh' is inaccessible due to its protection level</code></strong>: class/phương thức thiếu <code>public</code>.</li>
+<li><strong>Breakpoint có hình tròn rỗng, không dừng</strong>: đang chạy bản Release, hoặc file nguồn không khớp
+bản build. Chạy lại ở cấu hình <strong>Debug</strong>.</li>
+<li><strong>Restore package thất bại</strong>: kiểm tra mạng, hoặc chạy <code>dotnet nuget locals all --clear</code> rồi thử lại.</li>
+<li><strong>Lỡ <code>dotnet run</code> ở thư mục solution có nhiều project</strong>: chỉ định <code>--project &lt;tên&gt;</code>.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm phương thức <code>Nhan(int a, int b)</code> vào <code>PhepTinh</code>, gọi từ <code>App</code>, và debug bước vào nó bằng <code>F11</code>.</li>
+<li>Dùng Humanizer để in <code>1234567</code> dưới dạng chữ (tìm trong tài liệu phương thức <code>ToWords()</code>).</li>
+<li>Thêm project thứ ba <code>dotnet new console -n App2</code> vào solution, cho nó cũng tham chiếu <code>MayTinh</code>.</li>
+<li>Mở <code>App.csproj</code> bằng editor và chỉ ra <code>ProjectReference</code> và <code>PackageReference</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch03-chuong-trinh-dau-tien.html">&larr; 3. Chương trình C# đầu tiên</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

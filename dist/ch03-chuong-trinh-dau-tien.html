@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 3 — Chương trình C# đầu tiên — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link active" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><span class="chapter-link pending">5. Biến, kiểu dữ liệu, ép kiểu</span></li><li><span class="chapter-link pending">6. Toán tử và biểu thức</span></li><li><span class="chapter-link pending">7. Cấu trúc điều khiển: if/else, switch</span></li><li><span class="chapter-link pending">8. Vòng lặp</span></li><li><span class="chapter-link pending">9. Mảng</span></li><li><span class="chapter-link pending">10. Phương thức</span></li><li><span class="chapter-link pending">11. Chuỗi (string)</span></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><span class="chapter-link pending">12. Vì sao cần OOP</span></li><li><span class="chapter-link pending">13. Class và Object</span></li><li><span class="chapter-link pending">14. Đóng gói và Property</span></li><li><span class="chapter-link pending">15. Namespace, using và tổ chức project</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">16. Kế thừa</span></li><li><span class="chapter-link pending">17. Đa hình</span></li><li><span class="chapter-link pending">18. Abstract class và Interface</span></li><li><span class="chapter-link pending">19. Static, partial, extension method, enum</span></li><li><span class="chapter-link pending">20. Lớp object, struct và record</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 3 — Chương trình C# đầu tiên</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Tạo, biên dịch và chạy một chương trình C# chỉ bằng dòng lệnh <code>dotnet</code>, không cần IDE.</li>
+<li>Đọc hiểu file <code>Program.cs</code> dạng <strong>top-level statements</strong> và biết dạng <code>Main</code> truyền thống tương ứng.</li>
+<li>Đọc hiểu file dự án <code>.csproj</code> và các thư mục sinh ra (<code>bin/</code>, <code>obj/</code>).</li>
+<li>Nhận đối số dòng lệnh qua <code>args</code>.</li>
+</ul>
+<p>Code mẫu đầy đủ: <a href="code/ch03-hello-world/"><code>code/ch03-hello-world/</code></a>.</p>
+<h2>Tạo project</h2>
+<pre class="hljs"><code>dotnet new console -n HelloWorld
+cd HelloWorld
+</code></pre>
+<p>Lệnh này sinh ra thư mục <code>HelloWorld</code> gồm:</p>
+<pre class="hljs"><code>HelloWorld/
+├── HelloWorld.csproj    # file mô tả dự án
+└── Program.cs           # mã nguồn
+</code></pre>
+<h2>Chương trình đầu tiên</h2>
+<p>Mở <code>Program.cs</code>, nội dung chỉ gồm một dòng:</p>
+<pre class="hljs"><code>Console.WriteLine(<span class="hljs-string">&quot;Xin chao, C#!&quot;</span>);
+</code></pre>
+<p>Chạy:</p>
+<pre class="hljs"><code>dotnet run
+</code></pre>
+<p>Kết quả:</p>
+<pre class="hljs"><code>Xin chao, C#!
+</code></pre>
+<p>Chỉ một dòng — vậy <code>class</code>, <code>Main</code>, <code>using System;</code> đâu rồi? Câu trả lời ở phần tiếp theo.</p>
+<h2>Top-level statements và dạng <code>Main</code> truyền thống</h2>
+<p>Từ C# 9, chương trình nhỏ có thể viết <strong>top-level statements</strong>: lệnh đặt thẳng trong file, trình biên
+dịch tự sinh ra class và phương thức <code>Main</code> cho bạn. Đây là dạng dùng trong sách để ví dụ ngắn gọn.</p>
+<p>Dạng tương đương viết đầy đủ (cũng hợp lệ, và bạn sẽ gặp nhiều trong code cũ):</p>
+<pre class="hljs"><code><span class="hljs-keyword">namespace</span> <span class="hljs-title">HelloWorld</span>;
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">Program</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Main</span>(<span class="hljs-params"><span class="hljs-built_in">string</span>[] <span class="hljs-keyword">args</span></span>)</span>
+    {
+        Console.WriteLine(<span class="hljs-string">&quot;Xin chao, C#!&quot;</span>);
+    }
+}
+</code></pre>
+<p>Giải phẫu:</p>
+<ul>
+<li><code>class Program</code> — mọi phương thức trong C# đều thuộc một class (học kỹ ở Chương 13).</li>
+<li><code>static void Main(string[] args)</code> — <strong>điểm vào</strong> (entry point): nơi chương trình bắt đầu chạy.
+<code>static</code> nghĩa là gọi được mà không cần tạo đối tượng; <code>void</code> nghĩa là không trả về giá trị;
+<code>args</code> là mảng đối số dòng lệnh.</li>
+<li><code>Console.WriteLine(...)</code> — gọi phương thức <code>WriteLine</code> của class <code>Console</code> (thuộc namespace
+<code>System</code>) để in một dòng ra màn hình.</li>
+</ul>
+<p>Dòng <code>using System;</code> không còn cần viết: mẫu project bật <strong><code>ImplicitUsings</code></strong>, tự thêm sẵn các
+<code>using</code> phổ biến (<code>System</code>, <code>System.IO</code>, <code>System.Linq</code>, <code>System.Collections.Generic</code>...).</p>
+<blockquote>
+<p>Mỗi project chỉ được có <strong>một</strong> điểm vào. Top-level statements chỉ được dùng trong <strong>một</strong> file.</p>
+</blockquote>
+<h2>File <code>.csproj</code> — hồ sơ của dự án</h2>
+<pre class="hljs"><code><span class="hljs-tag">&lt;<span class="hljs-name">Project</span> <span class="hljs-attr">Sdk</span>=<span class="hljs-string">&quot;Microsoft.NET.Sdk&quot;</span>&gt;</span>
+
+  <span class="hljs-tag">&lt;<span class="hljs-name">PropertyGroup</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">OutputType</span>&gt;</span>Exe<span class="hljs-tag">&lt;/<span class="hljs-name">OutputType</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">TargetFramework</span>&gt;</span>net10.0<span class="hljs-tag">&lt;/<span class="hljs-name">TargetFramework</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">ImplicitUsings</span>&gt;</span>enable<span class="hljs-tag">&lt;/<span class="hljs-name">ImplicitUsings</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Nullable</span>&gt;</span>enable<span class="hljs-tag">&lt;/<span class="hljs-name">Nullable</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">PropertyGroup</span>&gt;</span>
+
+<span class="hljs-tag">&lt;/<span class="hljs-name">Project</span>&gt;</span>
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Thuộc tính</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Sdk=&quot;Microsoft.NET.Sdk&quot;</code></td>
+<td>Dùng bộ build tiêu chuẩn của .NET</td>
+</tr>
+<tr>
+<td><code>OutputType</code></td>
+<td><code>Exe</code> = chương trình chạy được; thư viện dùng <code>Library</code> (mặc định)</td>
+</tr>
+<tr>
+<td><code>TargetFramework</code></td>
+<td>Phiên bản .NET nhắm tới: <code>net10.0</code></td>
+</tr>
+<tr>
+<td><code>ImplicitUsings</code></td>
+<td>Tự thêm các <code>using</code> phổ biến (đã nói ở trên)</td>
+</tr>
+<tr>
+<td><code>Nullable</code></td>
+<td>Bật kiểm tra tham chiếu null của trình biên dịch (Chương 23)</td>
+</tr>
+</tbody>
+</table>
+<p>Không cần liệt kê từng file <code>.cs</code> — SDK tự lấy mọi file <code>.cs</code> trong thư mục.</p>
+<h2><code>dotnet run</code> làm gì?</h2>
+<p><code>dotnet run</code> gồm hai bước: <strong>build</strong> rồi <strong>chạy</strong>. Khi build, các thư mục mới xuất hiện:</p>
+<ul>
+<li><code>obj/</code> — file trung gian của quá trình build.</li>
+<li><code>bin/Debug/net10.0/</code> — kết quả build: <code>HelloWorld.dll</code> (IL) và file <code>HelloWorld</code> / <code>HelloWorld.exe</code>
+(bộ khởi chạy). Có thể chạy trực tiếp file này mà không cần lệnh <code>dotnet run</code>.</li>
+</ul>
+<p>Hai thư mục này sinh ra tự động và <strong>không đưa vào Git</strong> (file <code>.gitignore</code> của repo đã loại trừ).
+Xoá chúng đi bất kỳ lúc nào cũng an toàn — build lại sẽ tạo lại.</p>
+<p>Để phát hành bản dùng thật: <code>dotnet publish -c Release</code>.</p>
+<h2>Đối số dòng lệnh</h2>
+<p>Trong top-level statements, biến <code>args</code> có sẵn (kiểu <code>string[]</code>):</p>
+<pre class="hljs"><code><span class="hljs-built_in">string</span> ten = <span class="hljs-keyword">args</span>.Length &gt; <span class="hljs-number">0</span> ? <span class="hljs-keyword">args</span>[<span class="hljs-number">0</span>] : <span class="hljs-string">&quot;hoc vien&quot;</span>;
+
+Console.WriteLine(<span class="hljs-string">$&quot;Xin chao, <span class="hljs-subst">{ten}</span>!&quot;</span>);
+Console.WriteLine(<span class="hljs-string">$&quot;Day la doi so dong lenh nhan duoc: <span class="hljs-subst">{<span class="hljs-keyword">args</span>.Length}</span> doi so.&quot;</span>);
+</code></pre>
+<ul>
+<li><code>args.Length</code> là số đối số. Biểu thức <code>điều_kiện ? a : b</code> chọn <code>a</code> nếu đúng, <code>b</code> nếu sai.</li>
+<li><code>$&quot;...{ten}...&quot;</code> là <strong>chuỗi nội suy</strong>: chèn giá trị biến vào chuỗi (chi tiết ở Chương 11).</li>
+</ul>
+<p>Chạy, lưu ý dấu <code>--</code> tách tham số của <code>dotnet run</code> khỏi đối số của chương trình:</p>
+<pre class="hljs"><code>dotnet run -- Tuan
+</code></pre>
+<pre class="hljs"><code>Xin chao, Tuan!
+Day la doi so dong lenh nhan duoc: 1 doi so.
+</code></pre>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><strong><code>Couldn't find a project to run</code></strong>: bạn đang đứng sai thư mục. Chạy <code>dotnet run</code> trong thư mục có
+file <code>.csproj</code>, hoặc dùng <code>dotnet run --project HelloWorld</code>.</li>
+<li><strong>Thiếu dấu <code>;</code> cuối lệnh</strong> → lỗi biên dịch <code>CS1002: ; expected</code>. Mỗi câu lệnh C# kết thúc bằng <code>;</code>.</li>
+<li><strong>Sai hoa/thường</strong>: <code>console.writeline</code> là sai; đúng là <code>Console.WriteLine</code>. C# <strong>phân biệt</strong> hoa/thường.</li>
+<li><strong>Hai điểm vào</strong> (<code>CS0017: Program has more than one entry point</code>): dùng cả top-level statements ở
+nhiều file, hoặc vừa có <code>Main</code> vừa có top-level statements.</li>
+<li><strong>Quên <code>--</code> khi truyền đối số</strong>, khiến <code>dotnet run</code> hiểu nhầm đối số là tuỳ chọn của chính nó.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Sửa chương trình in ra tên và tuổi của bạn trên hai dòng.</li>
+<li>Viết lại <code>Greeter</code> bằng dạng <code>class Program</code> + <code>Main</code> truyền thống, kết quả phải giống hệt.</li>
+<li>Cố tình đổi <code>WriteLine</code> thành <code>Writeline</code> và đọc thông báo lỗi. Trình biên dịch nói gì, chỉ vào dòng nào?</li>
+<li>Sửa <code>Greeter</code> để ghép <strong>mọi</strong> đối số thành một câu chào (gợi ý: <code>string.Join(&quot; &quot;, args)</code>).</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch02-cai-dat-moi-truong.html">&larr; 2. Cài đặt .NET SDK và IDE</a><a class="nav-next" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

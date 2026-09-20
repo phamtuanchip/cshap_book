@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 1 — Giới thiệu C# và .NET — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><span class="chapter-link pending">5. Biến, kiểu dữ liệu, ép kiểu</span></li><li><span class="chapter-link pending">6. Toán tử và biểu thức</span></li><li><span class="chapter-link pending">7. Cấu trúc điều khiển: if/else, switch</span></li><li><span class="chapter-link pending">8. Vòng lặp</span></li><li><span class="chapter-link pending">9. Mảng</span></li><li><span class="chapter-link pending">10. Phương thức</span></li><li><span class="chapter-link pending">11. Chuỗi (string)</span></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><span class="chapter-link pending">12. Vì sao cần OOP</span></li><li><span class="chapter-link pending">13. Class và Object</span></li><li><span class="chapter-link pending">14. Đóng gói và Property</span></li><li><span class="chapter-link pending">15. Namespace, using và tổ chức project</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">16. Kế thừa</span></li><li><span class="chapter-link pending">17. Đa hình</span></li><li><span class="chapter-link pending">18. Abstract class và Interface</span></li><li><span class="chapter-link pending">19. Static, partial, extension method, enum</span></li><li><span class="chapter-link pending">20. Lớp object, struct và record</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 1 — Giới thiệu C# và .NET</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Phân biệt được <strong>C#</strong> (ngôn ngữ) và <strong>.NET</strong> (nền tảng chạy và thư viện).</li>
+<li>Hiểu SDK, runtime, CLR, BCL là gì và chúng đóng vai trò gì khi bạn viết và chạy chương trình.</li>
+<li>Biết vì sao sách này dùng <strong>.NET hiện đại</strong> (đa nền tảng) và chọn bản LTS.</li>
+<li>Hình dung được lộ trình cả bộ sách: từ console đến web với <a href="http://ASP.NET">ASP.NET</a> Core.</li>
+</ul>
+<h2>C# là gì, .NET là gì?</h2>
+<ul>
+<li><strong>C#</strong> (đọc &quot;xi-sharp&quot;) là một <strong>ngôn ngữ lập trình</strong> hướng đối tượng, kiểu tĩnh, do Microsoft
+thiết kế, hiện là chuẩn mở. Bạn viết code C# trong các file <code>.cs</code>.</li>
+<li><strong>.NET</strong> là <strong>nền tảng</strong> để biên dịch, chạy chương trình và cung cấp sẵn kho thư viện khổng lồ
+(đọc file, gọi mạng, làm web, truy cập CSDL...). Ngoài C#, .NET còn chạy F# và Visual Basic, nhưng
+C# là ngôn ngữ phổ biến nhất.</li>
+</ul>
+<p>Hình dung đơn giản: C# là <em>tiếng bạn nói</em>, .NET là <em>môi trường và bộ công cụ</em> giúp lời bạn nói được
+máy tính thực thi.</p>
+<h2>Những thuật ngữ bạn sẽ gặp mãi</h2>
+<table>
+<thead>
+<tr>
+<th>Thuật ngữ</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SDK</strong> (Software Development Kit)</td>
+<td>Bộ công cụ cho người <strong>viết</strong> code: trình biên dịch, lệnh <code>dotnet</code>, template project. Cài SDK là đủ để vừa viết vừa chạy.</td>
+</tr>
+<tr>
+<td><strong>Runtime</strong></td>
+<td>Phần tối thiểu để <strong>chạy</strong> chương trình đã biên dịch (máy người dùng chỉ cần runtime).</td>
+</tr>
+<tr>
+<td><strong>CLR</strong> (Common Language Runtime)</td>
+<td>&quot;Động cơ&quot; bên trong runtime: nạp code, quản lý bộ nhớ (garbage collector), biên dịch JIT, kiểm tra an toàn.</td>
+</tr>
+<tr>
+<td><strong>BCL</strong> (Base Class Library)</td>
+<td>Thư viện chuẩn có sẵn: <code>System.Console</code>, <code>System.IO</code>, <code>System.Collections</code>, <code>System.Linq</code>...</td>
+</tr>
+<tr>
+<td><strong>NuGet</strong></td>
+<td>Kho thư viện bên thứ ba (như <code>npm</code> của JavaScript). Sẽ dùng ở Chương 4.</td>
+</tr>
+</tbody>
+</table>
+<h2>Từ file <code>.cs</code> đến chương trình chạy được</h2>
+<pre class="mermaid">flowchart LR
+    A[&quot;Mã nguồn C#&lt;br/&gt;Program.cs&quot;] --&gt;|&quot;trình biên dịch&lt;br/&gt;(Roslyn)&quot;| B[&quot;IL + metadata&lt;br/&gt;App.dll&quot;]
+    B --&gt;|&quot;CLR nạp&quot;| C[&quot;JIT biên dịch&lt;br/&gt;sang mã máy&quot;]
+    C --&gt; D[&quot;Chạy trên CPU&quot;]
+</pre>
+<ol>
+<li>Trình biên dịch <strong>Roslyn</strong> dịch C# thành <strong>IL</strong> (Intermediate Language) lưu trong file <code>.dll</code>.
+IL không phụ thuộc hệ điều hành hay CPU.</li>
+<li>Khi chạy, <strong>CLR</strong> nạp file <code>.dll</code>, và bộ <strong>JIT</strong> (Just-In-Time) dịch IL sang mã máy của đúng
+máy đang chạy.</li>
+</ol>
+<p>Nhờ vậy cùng một chương trình <code>.dll</code> chạy được trên Windows, macOS và Linux — miễn là máy có
+.NET runtime tương ứng.</p>
+<h2>.NET hiện đại: một nền tảng duy nhất</h2>
+<p>Trước đây có nhiều &quot;nhánh&quot; .NET tách rời. Từ <strong>.NET 5</strong> trở đi, Microsoft hợp nhất thành một
+nền tảng duy nhất, gọi đơn giản là <strong>.NET</strong>, mã nguồn mở, đa nền tảng, phát hành mỗi năm một bản
+lớn vào tháng 11:</p>
+<ul>
+<li>Năm <strong>chẵn</strong>: bản <strong>LTS</strong> (Long-Term Support) — hỗ trợ dài hạn (3 năm), phù hợp học tập và sản
+xuất. Ví dụ .NET 8, <strong>.NET 10</strong>.</li>
+<li>Năm <strong>lẻ</strong>: bản STS — hỗ trợ ngắn hơn.</li>
+</ul>
+<p><strong>Sách này dùng .NET 10 (LTS)</strong> cho toàn bộ code mẫu, và chỉ dạy công nghệ hiện đại. Kiến thức
+C# bạn học vẫn đúng với các bản sau; tính năng chỉ có ở phiên bản mới sẽ được ghi chú rõ.</p>
+<blockquote>
+<p><strong>Ghi chú phiên bản</strong>: mỗi bản .NET đi kèm một phiên bản C# (.NET 10 ↔ C# 14). Bạn không cần nhớ
+số hiệu — dự án mặc định dùng phiên bản C# phù hợp với <code>TargetFramework</code>.</p>
+</blockquote>
+<h2>C# dùng để làm gì?</h2>
+<ul>
+<li><strong>Web &amp; API</strong> với <strong><a href="http://ASP.NET">ASP.NET</a> Core</strong> — trọng tâm Tập 2 và Tập 3 của bộ sách.</li>
+<li><strong>Dịch vụ nền, công cụ dòng lệnh</strong> (console app, worker service).</li>
+<li><strong>Ứng dụng đám mây</strong> (Azure, container), <strong>game</strong> (Unity), <strong>AI/ML</strong> với các thư viện .NET...</li>
+</ul>
+<h2>Lộ trình bộ sách</h2>
+<table>
+<thead>
+<tr>
+<th>Tập</th>
+<th>Nội dung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Tập 1</strong> (sách này)</td>
+<td>Ngôn ngữ C#, OOP, collection, LINQ, async, I/O, test — viết được ứng dụng console hoàn chỉnh</td>
+</tr>
+<tr>
+<td><strong>Tập 2</strong></td>
+<td><a href="http://ASP.NET">ASP.NET</a> Core: Web API, MVC, Razor Pages, Blazor, Entity Framework Core</td>
+</tr>
+<tr>
+<td><strong>Tập 3</strong></td>
+<td>Web nâng cao: kiến trúc phân lớp, design pattern, bảo mật, deploy</td>
+</tr>
+</tbody>
+</table>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><strong>Nhầm C# với .NET</strong>: khi tìm tài liệu, &quot;C# tutorial&quot; nói về ngôn ngữ, &quot;<a href="http://ASP.NET">ASP.NET</a> Core tutorial&quot; nói
+về framework web. Hai thứ bổ trợ nhau, không thay thế nhau.</li>
+<li><strong>Nhầm SDK với Runtime</strong>: lỗi &quot;You must install .NET to run this application&quot; nghĩa là máy thiếu
+runtime; lỗi &quot;No .NET SDKs were found&quot; nghĩa là thiếu SDK — nếu bạn muốn viết code, hãy cài SDK.</li>
+<li><strong>Đọc tài liệu cũ</strong>: nhiều bài viết cũ nói về .NET Framework với cách làm khác. Ưu tiên tài liệu
+từ <a href="https://learn.microsoft.com/dotnet/">learn.microsoft.com</a> và kiểm tra phiên bản.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Tự giải thích bằng lời của bạn: SDK khác runtime ở chỗ nào?</li>
+<li>Vẽ lại sơ đồ từ file <code>.cs</code> đến lúc chương trình chạy, không nhìn sách.</li>
+<li>Vào trang <a href="https://dotnet.microsoft.com/download">dotnet.microsoft.com/download</a>, tìm phiên bản LTS mới
+nhất và ngày hết hỗ trợ của nó.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><span></span><a class="nav-next" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

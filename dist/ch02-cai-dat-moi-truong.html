@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 2 — Cài đặt .NET SDK và IDE — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link active" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><span class="chapter-link pending">5. Biến, kiểu dữ liệu, ép kiểu</span></li><li><span class="chapter-link pending">6. Toán tử và biểu thức</span></li><li><span class="chapter-link pending">7. Cấu trúc điều khiển: if/else, switch</span></li><li><span class="chapter-link pending">8. Vòng lặp</span></li><li><span class="chapter-link pending">9. Mảng</span></li><li><span class="chapter-link pending">10. Phương thức</span></li><li><span class="chapter-link pending">11. Chuỗi (string)</span></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><span class="chapter-link pending">12. Vì sao cần OOP</span></li><li><span class="chapter-link pending">13. Class và Object</span></li><li><span class="chapter-link pending">14. Đóng gói và Property</span></li><li><span class="chapter-link pending">15. Namespace, using và tổ chức project</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">16. Kế thừa</span></li><li><span class="chapter-link pending">17. Đa hình</span></li><li><span class="chapter-link pending">18. Abstract class và Interface</span></li><li><span class="chapter-link pending">19. Static, partial, extension method, enum</span></li><li><span class="chapter-link pending">20. Lớp object, struct và record</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 2 — Cài đặt .NET SDK và IDE</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Cài được <strong>.NET 10 SDK</strong> và kiểm tra cài đặt thành công bằng <code>dotnet --version</code>.</li>
+<li>Chọn và cài một trình soạn thảo/IDE phù hợp: Visual Studio, VS Code hoặc JetBrains Rider.</li>
+<li>Biết vài lệnh <code>dotnet</code> nền tảng để dùng suốt cuốn sách.</li>
+</ul>
+<h2>Bước 1 — Cài .NET SDK</h2>
+<p>Tải SDK (không phải chỉ Runtime) tại <a href="https://dotnet.microsoft.com/download">dotnet.microsoft.com/download</a>
+— chọn <strong>.NET 10 (LTS)</strong>.</p>
+<ul>
+<li><strong>Windows</strong>: chạy file cài đặt <code>.exe</code>, hoặc dùng winget:<pre class="hljs"><code>winget install Microsoft.DotNet.SDK.10
+</code></pre>
+</li>
+<li><strong>macOS</strong>: dùng file <code>.pkg</code>, hoặc <code>brew install --cask dotnet-sdk</code>.</li>
+<li><strong>Linux</strong>: cài theo hướng dẫn của bản phân phối (Ubuntu: <code>sudo apt install dotnet-sdk-10.0</code>, tên gói
+có thể khác nhau tuỳ phiên bản hệ điều hành).</li>
+</ul>
+<p>Mở terminal <strong>mới</strong> (để nhận biến môi trường <code>PATH</code>) và kiểm tra:</p>
+<pre class="hljs"><code>dotnet --version
+</code></pre>
+<p>Kết quả sẽ là một số bắt đầu bằng <code>10.</code> (ví dụ <code>10.0.100</code>). Xem đầy đủ những gì đã cài:</p>
+<pre class="hljs"><code>dotnet --info
+dotnet --list-sdks
+</code></pre>
+<p>Nếu báo <code>No .NET SDKs were found</code> hoặc không nhận lệnh <code>dotnet</code>: đóng hẳn terminal rồi mở lại; nếu
+vẫn lỗi, cài lại SDK và kiểm tra <code>PATH</code> có chứa thư mục cài <code>dotnet</code>.</p>
+<h2>Bước 2 — Chọn công cụ soạn thảo</h2>
+<p>Bạn có thể viết C# bằng bất kỳ editor nào, nhưng IDE giúp gợi ý code, gỡ lỗi, refactor. Ba lựa chọn
+phổ biến:</p>
+<table>
+<thead>
+<tr>
+<th>Công cụ</th>
+<th>Nền tảng</th>
+<th>Đặc điểm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Visual Studio Community</strong></td>
+<td>Windows</td>
+<td>IDE đầy đủ nhất, miễn phí cho cá nhân/học tập. Khi cài chọn workload <strong>&quot;<a href="http://ASP.NET">ASP.NET</a> and web development&quot;</strong> (cần cho Tập 2).</td>
+</tr>
+<tr>
+<td><strong>VS Code + C# Dev Kit</strong></td>
+<td>Windows / macOS / Linux</td>
+<td>Nhẹ, đa nền tảng. Cài extension <strong>C# Dev Kit</strong> của Microsoft.</td>
+</tr>
+<tr>
+<td><strong>JetBrains Rider</strong></td>
+<td>Windows / macOS / Linux</td>
+<td>IDE mạnh, miễn phí cho mục đích phi thương mại.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Gợi ý cho người mới</strong>: Visual Studio nếu bạn dùng Windows; VS Code nếu dùng macOS/Linux hoặc muốn
+nhẹ. Sách này luôn kèm <strong>lệnh <code>dotnet</code> dòng lệnh</strong> tương đương, nên dùng công cụ nào cũng theo được.</p>
+<h2>Bước 3 — Vài lệnh <code>dotnet</code> cần biết</h2>
+<table>
+<thead>
+<tr>
+<th>Lệnh</th>
+<th>Tác dụng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dotnet new list</code></td>
+<td>Liệt kê template project có sẵn</td>
+</tr>
+<tr>
+<td><code>dotnet new console -n TenProject</code></td>
+<td>Tạo project console mới</td>
+</tr>
+<tr>
+<td><code>dotnet run</code></td>
+<td>Biên dịch và chạy project trong thư mục hiện tại</td>
+</tr>
+<tr>
+<td><code>dotnet build</code></td>
+<td>Chỉ biên dịch</td>
+</tr>
+<tr>
+<td><code>dotnet test</code></td>
+<td>Chạy unit test</td>
+</tr>
+<tr>
+<td><code>dotnet add package &lt;tên&gt;</code></td>
+<td>Thêm thư viện NuGet</td>
+</tr>
+</tbody>
+</table>
+<p>Ta sẽ dùng chúng ngay ở chương sau.</p>
+<h2>Thử nhanh cho chắc</h2>
+<pre class="hljs"><code>dotnet new console -n Thu
+cd Thu
+dotnet run
+</code></pre>
+<p>Nếu thấy <code>Hello, World!</code> in ra, môi trường của bạn đã sẵn sàng.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><strong>Lệnh <code>dotnet</code> không nhận</strong>: chưa mở terminal mới sau khi cài, hoặc <code>PATH</code> thiếu thư mục dotnet.</li>
+<li><strong>Cài nhiều SDK, chạy nhầm phiên bản</strong>: kiểm tra bằng <code>dotnet --list-sdks</code>. Có thể ghim phiên bản
+cho một thư mục bằng file <code>global.json</code> (tạo bằng <code>dotnet new globaljson --sdk-version 10.0.100</code>).</li>
+<li><strong>VS Code không gợi ý code C#</strong>: chưa cài <strong>C# Dev Kit</strong>, hoặc bạn mở <em>một file lẻ</em> thay vì mở
+<em>thư mục</em> project.</li>
+<li><strong>Visual Studio thiếu template web</strong>: chạy lại Visual Studio Installer, thêm workload <a href="http://ASP.NET">ASP.NET</a>.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Chạy <code>dotnet --info</code>, ghi lại phiên bản SDK và hệ điều hành mà nó báo.</li>
+<li>Chạy <code>dotnet new list</code>, đếm xem có bao nhiêu template và tìm ra template <code>webapi</code>, <code>mvc</code>, <code>classlib</code>.</li>
+<li>Tạo một project console tên <code>Thu2</code> và chạy nó bằng IDE bạn đã chọn (nút Run/Start).</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch01-gioi-thieu-csharp-dotnet.html">&larr; 1. Giới thiệu C# và .NET</a><a class="nav-next" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
