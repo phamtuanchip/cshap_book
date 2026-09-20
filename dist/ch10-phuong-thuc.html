@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 10 — Phương thức — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link active" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><span class="chapter-link pending">12. Vì sao cần OOP</span></li><li><span class="chapter-link pending">13. Class và Object</span></li><li><span class="chapter-link pending">14. Đóng gói và Property</span></li><li><span class="chapter-link pending">15. Namespace, using và tổ chức project</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">16. Kế thừa</span></li><li><span class="chapter-link pending">17. Đa hình</span></li><li><span class="chapter-link pending">18. Abstract class và Interface</span></li><li><span class="chapter-link pending">19. Static, partial, extension method, enum</span></li><li><span class="chapter-link pending">20. Lớp object, struct và record</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 10 — Phương thức</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Viết phương thức có tham số và giá trị trả về; hiểu vì sao cần chia code thành phương thức.</li>
+<li>Dùng <strong>overloading</strong>, tham số tuỳ chọn, tham số đặt tên, <code>params</code>.</li>
+<li>Phân biệt truyền theo <strong>giá trị</strong> và theo <strong>tham chiếu</strong> (<code>ref</code>, <code>out</code>, <code>in</code>).</li>
+<li>Trả về nhiều giá trị bằng <code>out</code> và <strong>tuple</strong>; viết đệ quy; hiểu phạm vi (scope) biến.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch10-phuong-thuc/"><code>code/ch10-phuong-thuc/</code></a>.</p>
+<h2>Vì sao cần phương thức?</h2>
+<p><strong>Phương thức</strong> (method) là một khối lệnh có tên, có thể gọi lại nhiều lần. Chia code thành phương thức
+giúp <strong>tái sử dụng</strong>, <strong>dễ đọc</strong> (mỗi phương thức làm một việc, tên nói lên việc đó) và <strong>dễ kiểm thử</strong>.</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> <span class="hljs-title">Binh</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> x</span>)</span> =&gt; x * x;   <span class="hljs-comment">// kiểu_trả_về Tên(tham_số) =&gt; biểu_thức;</span>
+</code></pre>
+<p>Dạng đầy đủ:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> <span class="hljs-title">Binh</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> x</span>)</span>
+{
+    <span class="hljs-keyword">return</span> x * x;
+}
+</code></pre>
+<ul>
+<li><code>int</code> (đứng trước tên): kiểu giá trị trả về. <code>void</code> nếu không trả về gì.</li>
+<li><code>x</code>: <strong>tham số</strong> (parameter) trong định nghĩa; giá trị bạn truyền lúc gọi là <strong>đối số</strong> (argument).</li>
+<li><code>return</code> trả giá trị và kết thúc phương thức.</li>
+<li><code>=&gt;</code> là cú pháp <strong>expression-bodied</strong> cho phương thức chỉ có một biểu thức.</li>
+</ul>
+<p>Trong sách này, phương thức dùng chung đặt trong một <code>static class</code> (<code>Ham</code>): ở top-level statements, hàm
+cục bộ không overload được. Từ Chương 13 ta sẽ đặt phương thức trong class đúng nghĩa OOP.</p>
+<h2>Overloading — cùng tên, khác tham số</h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> <span class="hljs-title">Cong</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> a, <span class="hljs-built_in">int</span> b</span>)</span> =&gt; a + b;
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">double</span> <span class="hljs-title">Cong</span>(<span class="hljs-params"><span class="hljs-built_in">double</span> a, <span class="hljs-built_in">double</span> b</span>)</span> =&gt; a + b;
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> <span class="hljs-title">Cong</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> a, <span class="hljs-built_in">int</span> b, <span class="hljs-built_in">int</span> c</span>)</span> =&gt; a + b + c;
+</code></pre>
+<p>Trình biên dịch chọn phiên bản theo <strong>số lượng và kiểu</strong> đối số (không tính kiểu trả về). Hai phương thức
+chỉ khác nhau kiểu trả về thì không hợp lệ.</p>
+<h2>Tham số tuỳ chọn, tham số đặt tên, <code>params</code></h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">string</span> <span class="hljs-title">ChaoHoi</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> ten, <span class="hljs-built_in">string</span> loiChao = <span class="hljs-string">&quot;Xin chao&quot;</span>, <span class="hljs-built_in">bool</span> viet = <span class="hljs-literal">false</span></span>)</span> { ... }
+
+ChaoHoi(<span class="hljs-string">&quot;Tuan&quot;</span>);                          <span class="hljs-comment">// dùng mặc định</span>
+ChaoHoi(<span class="hljs-string">&quot;Tuan&quot;</span>, viet: <span class="hljs-literal">true</span>);              <span class="hljs-comment">// bỏ qua tham số giữa, đặt tên tham số cuối</span>
+ChaoHoi(loiChao: <span class="hljs-string">&quot;Hi&quot;</span>, ten: <span class="hljs-string">&quot;An&quot;</span>);        <span class="hljs-comment">// đặt tên: thứ tự tuỳ ý</span>
+</code></pre>
+<p>Tham số tuỳ chọn phải đứng <strong>sau</strong> các tham số bắt buộc. Đặt tên giúp lời gọi tự giải thích, đặc biệt với
+tham số <code>bool</code>.</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> <span class="hljs-title">Tong</span>(<span class="hljs-params"><span class="hljs-keyword">params</span> <span class="hljs-built_in">int</span>[] so</span>)</span> { ... }
+Tong(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>);   <span class="hljs-comment">// số lượng đối số tuỳ ý</span>
+</code></pre>
+<h2>Giá trị hay tham chiếu?</h2>
+<p>Mặc định C# <strong>truyền theo giá trị</strong>: phương thức nhận một <strong>bản sao</strong>.</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">TangSai</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> x</span>)</span> =&gt; x++;    <span class="hljs-comment">// chỉ tăng bản sao</span>
+<span class="hljs-built_in">int</span> v = <span class="hljs-number">10</span>;
+TangSai(v);                            <span class="hljs-comment">// v vẫn là 10</span>
+</code></pre>
+<p>Muốn phương thức sửa trực tiếp biến của người gọi, dùng <code>ref</code>:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">TangDung</span>(<span class="hljs-params"><span class="hljs-keyword">ref</span> <span class="hljs-built_in">int</span> x</span>)</span> =&gt; x++;
+TangDung(<span class="hljs-keyword">ref</span> v);                       <span class="hljs-comment">// v = 11</span>
+<span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">HoanDoi</span>(<span class="hljs-params"><span class="hljs-keyword">ref</span> <span class="hljs-built_in">int</span> a, <span class="hljs-keyword">ref</span> <span class="hljs-built_in">int</span> b</span>)</span> =&gt; (a, b) = (b, a);
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Từ khoá</th>
+<th>Người gọi phải gán trước?</th>
+<th>Phương thức phải gán?</th>
+<th>Mục đích</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(không)</td>
+<td>có</td>
+<td>không</td>
+<td>truyền bản sao</td>
+</tr>
+<tr>
+<td><code>ref</code></td>
+<td><strong>có</strong></td>
+<td>không</td>
+<td>đọc và ghi biến gốc</td>
+</tr>
+<tr>
+<td><code>out</code></td>
+<td>không</td>
+<td><strong>có</strong></td>
+<td>trả về thêm giá trị</td>
+</tr>
+<tr>
+<td><code>in</code></td>
+<td>có</td>
+<td>không (chỉ đọc)</td>
+<td>tránh sao chép struct lớn</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Với <strong>kiểu tham chiếu</strong> (mảng, class), giá trị được truyền là <em>bản sao của tham chiếu</em>: phương thức sửa
+được <strong>nội dung</strong> đối tượng, nhưng gán tham số sang đối tượng khác không ảnh hưởng người gọi (trừ khi <code>ref</code>).</p>
+</blockquote>
+<h3><code>out</code> — mẫu <code>TryXxx</code></h3>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">ChiaCoDu</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> a, <span class="hljs-built_in">int</span> b, <span class="hljs-keyword">out</span> <span class="hljs-built_in">int</span> thuong, <span class="hljs-keyword">out</span> <span class="hljs-built_in">int</span> du</span>)</span>
+{
+    <span class="hljs-keyword">if</span> (b == <span class="hljs-number">0</span>) { thuong = <span class="hljs-number">0</span>; du = <span class="hljs-number">0</span>; <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>; }
+    thuong = a / b;
+    du = a % b;
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}
+
+<span class="hljs-keyword">if</span> (ChiaCoDu(<span class="hljs-number">17</span>, <span class="hljs-number">5</span>, <span class="hljs-keyword">out</span> <span class="hljs-built_in">int</span> th, <span class="hljs-keyword">out</span> <span class="hljs-built_in">int</span> du)) Console.WriteLine(<span class="hljs-string">$&quot;<span class="hljs-subst">{th}</span> dư <span class="hljs-subst">{du}</span>&quot;</span>);
+</code></pre>
+<p>Đây chính là mẫu của <code>int.TryParse</code>. Biến <code>out</code> có thể khai báo ngay tại chỗ gọi (<code>out int th</code>).</p>
+<h3>Tuple — trả về nhiều giá trị gọn hơn</h3>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> (<span class="hljs-params"><span class="hljs-built_in">int</span> Min, <span class="hljs-built_in">int</span> Max</span>) <span class="hljs-title">MinMax</span>(<span class="hljs-params"><span class="hljs-built_in">int</span>[] mang</span>)</span> =&gt; (mang.Min(), mang.Max());
+
+<span class="hljs-keyword">var</span> (min, max) = MinMax([<span class="hljs-number">4</span>, <span class="hljs-number">9</span>, <span class="hljs-number">1</span>, <span class="hljs-number">7</span>]);
+</code></pre>
+<h2>Đệ quy</h2>
+<p>Phương thức tự gọi lại chính nó, cần <strong>điều kiện dừng</strong>:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">long</span> <span class="hljs-title">GiaiThua</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> n</span>)</span> =&gt; n &lt;= <span class="hljs-number">1</span> ? <span class="hljs-number">1</span> : n * GiaiThua(n - <span class="hljs-number">1</span>);
+</code></pre>
+<p>Đệ quy rất hợp cho cấu trúc lồng nhau (cây, thư mục) nhưng mỗi lần gọi tốn bộ nhớ ngăn xếp: đệ quy quá
+sâu ném <code>StackOverflowException</code> (không bắt được, chương trình chết).</p>
+<h2>Phạm vi biến (scope)</h2>
+<p>Biến chỉ tồn tại trong khối <code>{ }</code> khai báo nó. Hàm cục bộ (local function) nhìn được biến của nơi bao quanh:</p>
+<pre class="hljs"><code><span class="hljs-built_in">int</span> dem = <span class="hljs-number">0</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Dem</span>()</span> =&gt; dem++;
+Dem(); Dem();      <span class="hljs-comment">// dem = 2</span>
+</code></pre>
+<p>Không được khai báo biến cùng tên với biến ở khối bao ngoài (<code>CS0136</code>). Ưu tiên biến có phạm vi hẹp nhất có thể.</p>
+<h2>Đặt tên &amp; thiết kế</h2>
+<ul>
+<li>Tên phương thức là <strong>động từ</strong>, <code>PascalCase</code>: <code>TinhTong</code>, <code>LayDanhSach</code>.</li>
+<li>Mỗi phương thức làm <strong>một việc</strong>; nếu phải dùng chữ &quot;và&quot; để mô tả, hãy tách ra.</li>
+<li>Ít tham số (≤ 3–4); nhiều hơn thì gom vào một đối tượng (Chương 13).</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>CS0165</code>/<code>CS0177</code>: dùng biến chưa gán, hoặc <code>out</code> chưa được gán trước khi return.</li>
+<li><code>CS0161: not all code paths return a value</code> — có nhánh không <code>return</code>.</li>
+<li>Quên <code>ref</code>/<code>out</code> ở <strong>lời gọi</strong> (<code>TangDung(v)</code> thay vì <code>TangDung(ref v)</code>).</li>
+<li>Đệ quy thiếu điều kiện dừng → <code>StackOverflowException</code>.</li>
+<li>Nhầm truyền theo giá trị với tham chiếu: tưởng sửa <code>x</code> trong phương thức là sửa biến gốc.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết <code>LaNguyenTo(int n)</code> trả <code>bool</code>, rồi in các số nguyên tố ≤ 100 bằng nó.</li>
+<li>Viết <code>TinhTB(params double[] so)</code>; thử gọi với 0 đối số và xử lý cho hợp lý.</li>
+<li>Viết <code>TryDocSo(string s, out int kq)</code> giống <code>int.TryParse</code> (không dùng <code>TryParse</code>).</li>
+<li>Viết <code>UCLN(a, b)</code> bằng đệ quy (thuật toán Euclid) và bằng vòng lặp.</li>
+<li>Viết phương thức trả về <code>(tong, trungBinh, lonNhat)</code> của một mảng bằng tuple.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch09-mang.html">&larr; 9. Mảng</a><a class="nav-next" href="ch11-chuoi.html">11. Chuỗi (string) &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

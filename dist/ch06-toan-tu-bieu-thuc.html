@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 6 — Toán tử và biểu thức — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link active" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><span class="chapter-link pending">12. Vì sao cần OOP</span></li><li><span class="chapter-link pending">13. Class và Object</span></li><li><span class="chapter-link pending">14. Đóng gói và Property</span></li><li><span class="chapter-link pending">15. Namespace, using và tổ chức project</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">16. Kế thừa</span></li><li><span class="chapter-link pending">17. Đa hình</span></li><li><span class="chapter-link pending">18. Abstract class và Interface</span></li><li><span class="chapter-link pending">19. Static, partial, extension method, enum</span></li><li><span class="chapter-link pending">20. Lớp object, struct và record</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 6 — Toán tử và biểu thức</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Dùng thành thạo toán tử số học, so sánh, logic, gán, tăng/giảm.</li>
+<li>Hiểu <strong>độ ưu tiên</strong> và <strong>ngắn mạch</strong> (short-circuit).</li>
+<li>Dùng các toán tử tiện lợi: <code>?:</code>, <code>??</code>, <code>??=</code>, <code>?.</code> và toán tử bit ở mức cơ bản.</li>
+<li>Tránh bẫy <strong>chia nguyên</strong> và <code>i++</code> vs <code>++i</code>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch06-toan-tu-bieu-thuc/"><code>code/ch06-toan-tu-bieu-thuc/</code></a>.</p>
+<p><strong>Biểu thức</strong> là thứ có giá trị (<code>2 + 3</code>, <code>tuoi &gt;= 18</code>); <strong>toán tử</strong> là ký hiệu tạo biểu thức từ các
+toán hạng.</p>
+<h2>Toán tử số học</h2>
+<table>
+<thead>
+<tr>
+<th>Toán tử</th>
+<th>Ý nghĩa</th>
+<th>Ví dụ (<code>a=17, b=5</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>+ - *</code></td>
+<td>cộng, trừ, nhân</td>
+<td><code>a + b</code> → 22</td>
+</tr>
+<tr>
+<td><code>/</code></td>
+<td>chia</td>
+<td><code>a / b</code> → <strong>3</strong> (chia nguyên)</td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td>chia lấy dư</td>
+<td><code>a % b</code> → 2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Bẫy chia nguyên</strong>: nếu cả hai toán hạng là số nguyên, kết quả là số nguyên (bỏ phần thập phân).
+Muốn chia thực, ép ít nhất một vế: <code>a / (double)b</code> → <code>3.4</code>. Chia số nguyên cho <code>0</code> ném
+<code>DivideByZeroException</code>; chia số thực cho <code>0</code> cho <code>Infinity</code>.</p>
+<p><code>%</code> rất hữu ích: <code>n % 2 == 0</code> kiểm tra số chẵn; <code>n % 10</code> lấy chữ số cuối.</p>
+<h2>Tăng, giảm và gán kết hợp</h2>
+<pre class="hljs"><code><span class="hljs-built_in">int</span> i = <span class="hljs-number">5</span>;
+<span class="hljs-built_in">int</span> x = i++;   <span class="hljs-comment">// x = 5, rồi i = 6  (hậu tố: dùng giá trị cũ trước)</span>
+<span class="hljs-built_in">int</span> y = ++i;   <span class="hljs-comment">// i = 7 rồi y = 7   (tiền tố: tăng trước rồi dùng)</span>
+</code></pre>
+<p>Nên tránh nhồi <code>i++</code> vào biểu thức phức tạp — khó đọc. Gán kết hợp: <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>%=</code>.</p>
+<h2>So sánh và logic</h2>
+<p><code>==  !=  &lt;  &gt;  &lt;=  &gt;=</code> cho kết quả <code>bool</code>. Toán tử logic:</p>
+<table>
+<thead>
+<tr>
+<th>Toán tử</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&amp;&amp;</code></td>
+<td>và (AND)</td>
+</tr>
+<tr>
+<td><code>||</code></td>
+<td>hoặc (OR)</td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td>phủ định (NOT)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ngắn mạch</strong>: <code>&amp;&amp;</code> dừng ngay nếu vế trái sai; <code>||</code> dừng ngay nếu vế trái đúng. Nhờ vậy viết được:</p>
+<pre class="hljs"><code><span class="hljs-built_in">bool</span> ok = mang.Length &gt; <span class="hljs-number">0</span> &amp;&amp; mang[<span class="hljs-number">0</span>] &gt; <span class="hljs-number">0</span>;   <span class="hljs-comment">// không lỗi dù mảng rỗng</span>
+</code></pre>
+<p>Đổi thứ tự hai vế sẽ gây lỗi khi mảng rỗng. Nhớ rằng <code>=</code> là <strong>gán</strong>, <code>==</code> là <strong>so sánh</strong>.</p>
+<h2>Độ ưu tiên</h2>
+<p>Từ cao đến thấp (rút gọn): <code>! ++ --</code> → <code>* / %</code> → <code>+ -</code> → <code>&lt; &gt; &lt;= &gt;=</code> → <code>== !=</code> → <code>&amp;&amp;</code> → <code>||</code> → <code>?:</code> →
+gán. Ví dụ <code>2 + 3 * 4</code> = 14. <strong>Khi nghi ngờ, dùng ngoặc</strong> <code>( )</code> — code rõ hơn là nhớ bảng ưu tiên.</p>
+<h2>Toán tử điều kiện và null</h2>
+<pre class="hljs"><code><span class="hljs-built_in">string</span> kq = tuoi &gt;= <span class="hljs-number">18</span> ? <span class="hljs-string">&quot;Người lớn&quot;</span> : <span class="hljs-string">&quot;Trẻ em&quot;</span>;   <span class="hljs-comment">// ?: chọn một trong hai</span>
+
+<span class="hljs-built_in">string</span>? ten = <span class="hljs-literal">null</span>;
+<span class="hljs-built_in">string</span> hienThi = ten ?? <span class="hljs-string">&quot;(không tên)&quot;</span>;   <span class="hljs-comment">// ?? dùng vế phải nếu vế trái là null</span>
+ten ??= <span class="hljs-string">&quot;Mặc định&quot;</span>;                      <span class="hljs-comment">// ??= gán nếu đang là null</span>
+<span class="hljs-built_in">int</span>? len = ten?.Length;                  <span class="hljs-comment">// ?. trả null thay vì ném lỗi nếu ten là null</span>
+</code></pre>
+<p><code>?.</code> và <code>??</code> là công cụ chính chống <code>NullReferenceException</code> — sẽ học sâu ở Chương 23.</p>
+<h2>Toán tử bit (giới thiệu)</h2>
+<p>Làm việc trên từng bit của số nguyên: <code>&amp;</code> (và), <code>|</code> (hoặc), <code>^</code> (xor), <code>~</code> (đảo), <code>&lt;&lt;</code>, <code>&gt;&gt;</code> (dịch bit).</p>
+<pre class="hljs"><code><span class="hljs-number">6</span> &amp; <span class="hljs-number">3</span>     <span class="hljs-comment">// 0b110 &amp; 0b011 = 0b010 = 2</span>
+<span class="hljs-number">1</span> &lt;&lt; <span class="hljs-number">4</span>    <span class="hljs-comment">// 16 (nhân 2 bốn lần)</span>
+</code></pre>
+<p>Thường gặp ở cờ (flags), quyền hạn, xử lý nhị phân (Chương 19 với <code>enum [Flags]</code>).</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>if (x = 5)</code> thay vì <code>x == 5</code> — C# chặn được ở hầu hết trường hợp (lỗi biên dịch), nhưng với <code>bool</code>
+thì <code>if (ok = true)</code> vẫn hợp lệ và gán luôn: hãy viết <code>if (ok)</code>.</li>
+<li><code>1 / 2</code> ra 0; <code>7 / 2 * 2.0</code> ra <code>6</code>, không phải <code>7</code>. Chuyển sang thực <strong>trước</strong> khi chia.</li>
+<li>Quên ngoặc: <code>a + b / 2</code> khác <code>(a + b) / 2</code>.</li>
+<li>So sánh số thực bằng <code>==</code> (Chương 5).</li>
+<li>Quên rằng <code>%</code> với số âm cho dư âm: <code>-7 % 3</code> bằng <code>-1</code>.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Đọc một số, in ra &quot;chẵn&quot; hay &quot;lẻ&quot; (dùng <code>%</code> và <code>?:</code>).</li>
+<li>Tính điểm trung bình 3 môn (nhập từ bàn phím) với 2 chữ số thập phân — chú ý chia nguyên.</li>
+<li>Cho <code>int a = 5; int b = a++ + ++a;</code> — dự đoán <code>a</code> và <code>b</code> rồi chạy kiểm tra.</li>
+<li>Viết biểu thức kiểm tra năm nhuận: chia hết cho 4 nhưng không chia hết cho 100, hoặc chia hết cho 400.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch05-bien-kieu-du-lieu.html">&larr; 5. Biến, kiểu dữ liệu, ép kiểu</a><a class="nav-next" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

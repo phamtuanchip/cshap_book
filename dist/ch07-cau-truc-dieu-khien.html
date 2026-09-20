@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 7 — Cấu trúc điều khiển: if/else và switch — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link active" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><span class="chapter-link pending">12. Vì sao cần OOP</span></li><li><span class="chapter-link pending">13. Class và Object</span></li><li><span class="chapter-link pending">14. Đóng gói và Property</span></li><li><span class="chapter-link pending">15. Namespace, using và tổ chức project</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">16. Kế thừa</span></li><li><span class="chapter-link pending">17. Đa hình</span></li><li><span class="chapter-link pending">18. Abstract class và Interface</span></li><li><span class="chapter-link pending">19. Static, partial, extension method, enum</span></li><li><span class="chapter-link pending">20. Lớp object, struct và record</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 7 — Cấu trúc điều khiển: if/else và switch</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Điều khiển luồng chương trình bằng <code>if / else if / else</code>.</li>
+<li>Dùng <code>switch</code> statement và <strong>switch expression</strong> hiện đại.</li>
+<li>Dùng <strong>pattern matching</strong> (<code>when</code>, <code>and</code>, <code>or</code>, so khớp theo kiểu, tuple) để thay chuỗi <code>if</code> dài.</li>
+<li>Biết khi nào chọn <code>if</code>, khi nào chọn <code>switch</code>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch07-cau-truc-dieu-khien/"><code>code/ch07-cau-truc-dieu-khien/</code></a>.</p>
+<h2><code>if / else if / else</code></h2>
+<pre class="hljs"><code><span class="hljs-built_in">int</span> diem = <span class="hljs-number">78</span>;
+<span class="hljs-keyword">if</span> (diem &gt;= <span class="hljs-number">90</span>) Console.WriteLine(<span class="hljs-string">&quot;Xuất sắc&quot;</span>);
+<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (diem &gt;= <span class="hljs-number">75</span>) Console.WriteLine(<span class="hljs-string">&quot;Giỏi&quot;</span>);
+<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (diem &gt;= <span class="hljs-number">50</span>) Console.WriteLine(<span class="hljs-string">&quot;Trung bình&quot;</span>);
+<span class="hljs-keyword">else</span> Console.WriteLine(<span class="hljs-string">&quot;Yếu&quot;</span>);
+</code></pre>
+<p>Các điều kiện được xét <strong>từ trên xuống</strong>, nhánh đầu tiên đúng sẽ chạy rồi thoát. Vì vậy phải xếp
+điều kiện từ <strong>hẹp đến rộng</strong> (kiểm <code>&gt;= 90</code> trước <code>&gt;= 75</code>). Điều kiện bắt buộc là <code>bool</code>
+(khác C/C++ — số <code>1</code> không tự thành <code>true</code>).</p>
+<p>Với khối lệnh nhiều dòng, dùng <code>{ }</code>. Ngay cả khi chỉ một dòng, nhiều đội vẫn bắt buộc ngoặc để tránh
+lỗi khi sửa sau này.</p>
+<h2><code>switch</code> statement</h2>
+<p>Khi so sánh <strong>một giá trị</strong> với nhiều hằng số:</p>
+<pre class="hljs"><code><span class="hljs-keyword">switch</span> (thu)
+{
+    <span class="hljs-keyword">case</span> <span class="hljs-number">2</span>: <span class="hljs-keyword">case</span> <span class="hljs-number">3</span>: <span class="hljs-keyword">case</span> <span class="hljs-number">4</span>: <span class="hljs-keyword">case</span> <span class="hljs-number">5</span>: <span class="hljs-keyword">case</span> <span class="hljs-number">6</span>:
+        Console.WriteLine(<span class="hljs-string">&quot;Ngày làm việc&quot;</span>);
+        <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">case</span> <span class="hljs-number">7</span>:
+        Console.WriteLine(<span class="hljs-string">&quot;Thứ bảy&quot;</span>);
+        <span class="hljs-keyword">break</span>;
+    <span class="hljs-literal">default</span>:
+        Console.WriteLine(<span class="hljs-string">&quot;Khác&quot;</span>);
+        <span class="hljs-keyword">break</span>;
+}
+</code></pre>
+<p>Khác C/C++: mỗi <code>case</code> <strong>bắt buộc kết thúc</strong> bằng <code>break</code> (hoặc <code>return</code>, <code>throw</code>...); C# không cho
+&quot;chạy tràn&quot; sang case kế. Nhiều nhãn <code>case</code> xếp liền nhau (không có lệnh giữa chúng) là được phép.</p>
+<h2>Switch expression — cách viết hiện đại</h2>
+<p>Khi mục đích là <strong>tính ra một giá trị</strong>, switch expression ngắn và an toàn hơn:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">TenThu</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> t</span>)</span> =&gt; t <span class="hljs-keyword">switch</span>
+{
+    <span class="hljs-number">2</span> =&gt; <span class="hljs-string">&quot;Thứ hai&quot;</span>,
+    <span class="hljs-number">3</span> =&gt; <span class="hljs-string">&quot;Thứ ba&quot;</span>,
+    &gt;= <span class="hljs-number">4</span> <span class="hljs-keyword">and</span> &lt;= <span class="hljs-number">6</span> =&gt; <span class="hljs-string">&quot;Giữa tuần&quot;</span>,
+    <span class="hljs-number">7</span> =&gt; <span class="hljs-string">&quot;Thứ bảy&quot;</span>,
+    <span class="hljs-number">8</span> =&gt; <span class="hljs-string">&quot;Chủ nhật&quot;</span>,
+    _ =&gt; <span class="hljs-string">&quot;Không hợp lệ&quot;</span>,      <span class="hljs-comment">// _ là &quot;mọi trường hợp còn lại&quot;</span>
+};
+</code></pre>
+<ul>
+<li>Mỗi nhánh dạng <code>mẫu =&gt; giá trị</code>. Không cần <code>break</code>.</li>
+<li>Trình biên dịch cảnh báo nếu bạn <strong>quên phủ hết</strong> các trường hợp; nếu chạy vào giá trị không khớp
+nhánh nào sẽ ném <code>SwitchExpressionException</code>.</li>
+</ul>
+<h2>Pattern matching</h2>
+<p>Mẫu (pattern) mạnh hơn so sánh <code>==</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Mẫu</th>
+<th>Ví dụ</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hằng</td>
+<td><code>7</code></td>
+<td>bằng 7</td>
+</tr>
+<tr>
+<td>Quan hệ</td>
+<td><code>&gt;= 4</code></td>
+<td>so sánh</td>
+</tr>
+<tr>
+<td>Kết hợp</td>
+<td><code>&gt;= 4 and &lt;= 6</code>, <code>2 or 3</code>, <code>not 0</code></td>
+<td><code>and</code> / <code>or</code> / <code>not</code></td>
+</tr>
+<tr>
+<td>Kiểu</td>
+<td><code>string s</code></td>
+<td>là <code>string</code>, gán vào <code>s</code></td>
+</tr>
+<tr>
+<td><code>null</code></td>
+<td><code>null</code></td>
+<td>là null</td>
+</tr>
+<tr>
+<td><code>when</code></td>
+<td><code>int n when n &gt; 40</code></td>
+<td>thêm điều kiện phụ</td>
+</tr>
+<tr>
+<td>Tuple</td>
+<td><code>(true, false)</code></td>
+<td>so khớp nhiều giá trị</td>
+</tr>
+</tbody>
+</table>
+<pre class="hljs"><code><span class="hljs-built_in">object</span>?[] doiTuong = [<span class="hljs-number">42</span>, <span class="hljs-number">7</span>, <span class="hljs-string">&quot;chao&quot;</span>, <span class="hljs-number">3.14</span>, <span class="hljs-literal">null</span>];
+<span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> o <span class="hljs-keyword">in</span> doiTuong)
+{
+    <span class="hljs-built_in">string</span> mota = o <span class="hljs-keyword">switch</span>
+    {
+        <span class="hljs-built_in">int</span> n <span class="hljs-keyword">when</span> n &gt; <span class="hljs-number">40</span> =&gt; <span class="hljs-string">$&quot;số nguyên lớn: <span class="hljs-subst">{n}</span>&quot;</span>,
+        <span class="hljs-built_in">int</span> n =&gt; <span class="hljs-string">$&quot;số nguyên: <span class="hljs-subst">{n}</span>&quot;</span>,
+        <span class="hljs-built_in">string</span> s =&gt; <span class="hljs-string">$&quot;chuỗi dài <span class="hljs-subst">{s.Length}</span>&quot;</span>,
+        <span class="hljs-literal">null</span> =&gt; <span class="hljs-string">&quot;null&quot;</span>,
+        _ =&gt; <span class="hljs-string">$&quot;kiểu khác: <span class="hljs-subst">{o.GetType().Name}</span>&quot;</span>,
+    };
+    Console.WriteLine(mota);
+}
+</code></pre>
+<p>Pattern cũng dùng được với <code>is</code>: <code>if (o is string s &amp;&amp; s.Length &gt; 3) { ... }</code>,
+<code>if (x is &gt;= 1 and &lt;= 9)</code>, <code>if (o is not null)</code>. Chương 17 sẽ đi sâu hơn khi học đa hình.</p>
+<h2>Chọn <code>if</code> hay <code>switch</code>?</h2>
+<ul>
+<li><strong><code>if</code></strong>: điều kiện phức tạp, dùng <code>&amp;&amp;</code>/<code>||</code>, so sánh nhiều biến khác nhau.</li>
+<li><strong><code>switch</code></strong>: một giá trị được phân loại thành nhiều nhánh; nhất là khi cần trả về một giá trị.</li>
+<li>Chuỗi <code>if / else if</code> quá dài và cùng so một biến → đổi sang switch expression.</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>CS8070: Control cannot fall out of switch</code> — thiếu <code>break</code> ở <code>case</code>.</li>
+<li>Sắp xếp sai thứ tự điều kiện (<code>&gt;= 50</code> trước <code>&gt;= 90</code> khiến nhánh sau không bao giờ chạy).</li>
+<li>Switch expression thiếu nhánh <code>_</code> → cảnh báo <code>CS8509</code>, có thể lỗi lúc chạy.</li>
+<li>Dùng <code>=</code> thay <code>==</code> trong điều kiện.</li>
+<li>Lồng <code>if</code> quá sâu: đảo điều kiện và thoát sớm (<code>if (!hopLe) return;</code>) cho code phẳng và dễ đọc.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Nhập điểm 0–10, in xếp loại bằng <code>if</code>, rồi viết lại bằng switch expression với <code>&gt;=</code>/<code>and</code>.</li>
+<li>Nhập số tháng 1–12, in số ngày của tháng (bỏ qua năm nhuận) bằng switch expression dùng <code>or</code>.</li>
+<li>Viết hàm nhận <code>object</code> và mô tả kiểu (số nguyên chẵn/lẻ, chuỗi rỗng/không rỗng, null...).</li>
+<li>Trò &quot;kéo–búa–bao&quot;: nhận hai lựa chọn, dùng switch trên tuple để quyết định người thắng.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch06-toan-tu-bieu-thuc.html">&larr; 6. Toán tử và biểu thức</a><a class="nav-next" href="ch08-vong-lap.html">8. Vòng lặp &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 11 — Chuỗi (string) — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link active" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><span class="chapter-link pending">12. Vì sao cần OOP</span></li><li><span class="chapter-link pending">13. Class và Object</span></li><li><span class="chapter-link pending">14. Đóng gói và Property</span></li><li><span class="chapter-link pending">15. Namespace, using và tổ chức project</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">16. Kế thừa</span></li><li><span class="chapter-link pending">17. Đa hình</span></li><li><span class="chapter-link pending">18. Abstract class và Interface</span></li><li><span class="chapter-link pending">19. Static, partial, extension method, enum</span></li><li><span class="chapter-link pending">20. Lớp object, struct và record</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 11 — Chuỗi (string)</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Thao tác chuỗi thành thạo: cắt, tìm, thay, tách, ghép, so sánh.</li>
+<li>Định dạng đầu ra bằng <strong>nội suy chuỗi</strong> (<code>$&quot;...&quot;</code>) và các định dạng số/ngày.</li>
+<li>Hiểu <code>string</code> <strong>bất biến</strong> và dùng <code>StringBuilder</code> khi ghép nhiều lần.</li>
+<li>Dùng chuỗi nguyên văn (<code>@&quot;&quot;</code>) và <strong>raw string</strong> (<code>&quot;&quot;&quot;</code>).</li>
+</ul>
+<p>Code mẫu: <a href="code/ch11-chuoi/"><code>code/ch11-chuoi/</code></a>.</p>
+<h2><code>string</code> là gì?</h2>
+<p><code>string</code> là chuỗi các ký tự Unicode (mỗi <code>char</code> là một đơn vị UTF-16). Là kiểu <strong>tham chiếu</strong> nhưng hoạt
+động như giá trị vì nó <strong>bất biến (immutable)</strong>: một khi tạo ra, nội dung không đổi được. Mọi phương thức
+&quot;sửa&quot; chuỗi thực chất trả về <strong>chuỗi mới</strong>.</p>
+<pre class="hljs"><code><span class="hljs-built_in">string</span> a = <span class="hljs-string">&quot;abc&quot;</span>;
+<span class="hljs-built_in">string</span> b = a.ToUpper();   <span class="hljs-comment">// &quot;ABC&quot; — chuỗi mới</span>
+Console.WriteLine(a);     <span class="hljs-comment">// &quot;abc&quot; — a không đổi</span>
+</code></pre>
+<p>Hệ quả thường gặp: viết <code>s.Trim();</code> mà không gán kết quả là <strong>vô tác dụng</strong>.</p>
+<h2>Thao tác thường dùng</h2>
+<pre class="hljs"><code><span class="hljs-built_in">string</span> s = <span class="hljs-string">&quot;  Xin chao, C# va .NET  &quot;</span>;
+s.Trim()                     <span class="hljs-comment">// bỏ khoảng trắng hai đầu (TrimStart/TrimEnd)</span>
+s.Length                     <span class="hljs-comment">// độ dài</span>
+s.ToUpper() / s.ToLower()
+s.Contains(<span class="hljs-string">&quot;C#&quot;</span>)             <span class="hljs-comment">// true</span>
+s.IndexOf(<span class="hljs-string">&quot;C#&quot;</span>)              <span class="hljs-comment">// vị trí đầu tiên, -1 nếu không có</span>
+s.Replace(<span class="hljs-string">&quot;chao&quot;</span>, <span class="hljs-string">&quot;tam biet&quot;</span>)
+s.Trim().Substring(<span class="hljs-number">4</span>, <span class="hljs-number">4</span>)     <span class="hljs-comment">// lấy 4 ký tự từ vị trí 4 → &quot;chao&quot;</span>
+s.StartsWith(<span class="hljs-string">&quot;Xin&quot;</span>) / s.EndsWith(<span class="hljs-string">&quot;NET&quot;</span>)
+s[<span class="hljs-number">0</span>]                         <span class="hljs-comment">// ký tự tại vị trí 0 (kiểu char)</span>
+</code></pre>
+<h3>Tách và ghép</h3>
+<pre class="hljs"><code><span class="hljs-built_in">string</span>[] ten = <span class="hljs-string">&quot;an,binh,chi&quot;</span>.Split(<span class="hljs-string">&#x27;,&#x27;</span>);      <span class="hljs-comment">// [&quot;an&quot;,&quot;binh&quot;,&quot;chi&quot;]</span>
+<span class="hljs-built_in">string</span> ghep = <span class="hljs-built_in">string</span>.Join(<span class="hljs-string">&quot; | &quot;</span>, ten);        <span class="hljs-comment">// &quot;an | binh | chi&quot;</span>
+</code></pre>
+<h3>Kiểm tra rỗng</h3>
+<pre class="hljs"><code><span class="hljs-built_in">string</span>.IsNullOrEmpty(s)        <span class="hljs-comment">// null hoặc &quot;&quot;</span>
+<span class="hljs-built_in">string</span>.IsNullOrWhiteSpace(s)   <span class="hljs-comment">// null, &quot;&quot; hoặc chỉ toàn khoảng trắng — thường dùng hơn</span>
+</code></pre>
+<h2>Nội suy chuỗi và định dạng</h2>
+<pre class="hljs"><code><span class="hljs-built_in">string</span> ten = <span class="hljs-string">&quot;Tuan&quot;</span>; <span class="hljs-built_in">int</span> tuoi = <span class="hljs-number">25</span>;
+Console.WriteLine(<span class="hljs-string">$&quot;<span class="hljs-subst">{ten}</span> <span class="hljs-subst">{tuoi}</span> tuổi&quot;</span>);
+</code></pre>
+<p>Trong <code>{ }</code> có thể viết biểu thức, kèm <strong>căn lề</strong> và <strong>định dạng</strong> sau dấu <code>,</code> và <code>:</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Cú pháp</th>
+<th>Ý nghĩa</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{x:N2}</code></td>
+<td>số có phân cách nghìn, 2 số lẻ</td>
+<td><code>1,234,567.89</code></td>
+</tr>
+<tr>
+<td><code>{x:F1}</code></td>
+<td>1 chữ số thập phân</td>
+<td><code>1234567.9</code></td>
+</tr>
+<tr>
+<td><code>{x:P1}</code></td>
+<td>phần trăm</td>
+<td><code>0.256</code> → <code>25.6%</code> (tuỳ culture)</td>
+</tr>
+<tr>
+<td><code>{ngay:dd/MM/yyyy}</code></td>
+<td>định dạng ngày</td>
+<td><code>09/03/2025</code></td>
+</tr>
+<tr>
+<td><code>{s,6}</code> / <code>{s,-6}</code></td>
+<td>căn phải / căn trái trong 6 ô</td>
+<td><code>[    ab]</code> / <code>[ab    ]</code></td>
+</tr>
+</tbody>
+</table>
+<p>Kết quả của <code>N2</code>, <code>P1</code>, ngày tháng phụ thuộc <strong>culture</strong> (vùng ngôn ngữ) của máy: dấu thập phân có thể là
+<code>.</code> hoặc <code>,</code>. Chương trình mẫu đặt <code>CultureInfo.InvariantCulture</code> để cho kết quả giống nhau trên mọi máy.
+Khi ghi/đọc dữ liệu để trao đổi giữa các hệ thống (file, API), luôn dùng culture bất biến.</p>
+<h2>So sánh chuỗi</h2>
+<pre class="hljs"><code><span class="hljs-string">&quot;abc&quot;</span> == <span class="hljs-string">&quot;abc&quot;</span>                                         <span class="hljs-comment">// true — so sánh nội dung</span>
+<span class="hljs-built_in">string</span>.Equals(<span class="hljs-string">&quot;ABC&quot;</span>, <span class="hljs-string">&quot;abc&quot;</span>, StringComparison.OrdinalIgnoreCase)   <span class="hljs-comment">// true: bỏ qua hoa/thường</span>
+</code></pre>
+<p>Với <code>string</code>, <code>==</code> so sánh <strong>nội dung</strong> (không phải tham chiếu). Khi cần chính xác về hoa/thường và culture,
+chỉ rõ <code>StringComparison</code> (<code>Ordinal</code> cho so sánh kỹ thuật, <code>OrdinalIgnoreCase</code> cho không phân biệt hoa/thường).
+Tránh tự <code>ToLower()</code> rồi so sánh — tạo chuỗi thừa và dễ sai với một số ngôn ngữ.</p>
+<h2><code>StringBuilder</code> — ghép chuỗi nhiều lần</h2>
+<p>Vì <code>string</code> bất biến, <code>s += x</code> trong vòng lặp tạo ra một chuỗi mới mỗi vòng → chậm và tốn bộ nhớ khi lặp
+hàng nghìn lần. Dùng <code>StringBuilder</code>, một bộ đệm có thể sửa:</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> sb = <span class="hljs-keyword">new</span> StringBuilder();
+<span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> i = <span class="hljs-number">1</span>; i &lt;= <span class="hljs-number">5</span>; i++) sb.Append(i).Append(<span class="hljs-string">&#x27;,&#x27;</span>);
+sb.Length--;                    <span class="hljs-comment">// bỏ dấu phẩy cuối</span>
+<span class="hljs-built_in">string</span> kq = sb.ToString();      <span class="hljs-comment">// &quot;1,2,3,4,5&quot;</span>
+</code></pre>
+<p>Quy tắc: vài phép nối cố định → dùng <code>$&quot;&quot;</code> hoặc <code>+</code>; <strong>lặp nhiều lần</strong> → <code>StringBuilder</code>.</p>
+<h2>Chuỗi nguyên văn và raw string</h2>
+<pre class="hljs"><code><span class="hljs-built_in">string</span> duongDan = <span class="hljs-string">@&quot;C:\Users\Tuan\file.txt&quot;</span>;   <span class="hljs-comment">// @: không cần escape dấu \</span>
+
+<span class="hljs-built_in">string</span> json = <span class="hljs-string">&quot;&quot;&quot;
+    { &quot;ten&quot;: &quot;Tuan&quot;, &quot;tuoi&quot;: 25 }
+    &quot;&quot;&quot;</span>;                                        <span class="hljs-comment">// raw string: nhiều dòng, dấu &quot; tự do</span>
+</code></pre>
+<p>Chuỗi thường phải escape: <code>&quot;\n&quot;</code> xuống dòng, <code>&quot;\t&quot;</code> tab, <code>&quot;\\&quot;</code>, <code>&quot;\&quot;&quot;</code>. Raw string (C# 11) rất hợp cho JSON, SQL,
+HTML nhúng; phần thụt lề trước dấu <code>&quot;&quot;&quot;</code> đóng được tự động cắt bỏ.</p>
+<h2>Duyệt ký tự</h2>
+<pre class="hljs"><code><span class="hljs-keyword">foreach</span> (<span class="hljs-built_in">char</span> c <span class="hljs-keyword">in</span> <span class="hljs-string">&quot;Lap trinh C#&quot;</span>)
+    <span class="hljs-keyword">if</span> (<span class="hljs-string">&quot;aeiouAEIOU&quot;</span>.Contains(c)) nguyenAm++;
+</code></pre>
+<p><code>char</code> có các hàm tiện ích: <code>char.IsDigit(c)</code>, <code>char.IsLetter(c)</code>, <code>char.ToUpper(c)</code>. Một số ký tự (emoji)
+chiếm hai <code>char</code> — khi xử lý văn bản đa ngôn ngữ chuyên sâu, cần dùng <code>System.Globalization.StringInfo</code>.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Quên gán kết quả: <code>s.Trim();</code> (không đổi <code>s</code>).</li>
+<li><code>ArgumentOutOfRangeException</code> từ <code>Substring</code> khi chỉ số/độ dài vượt quá.</li>
+<li><code>NullReferenceException</code> khi gọi <code>.Length</code> trên chuỗi <code>null</code> → kiểm tra bằng <code>IsNullOrEmpty</code> hoặc <code>?.</code>.</li>
+<li>Nối chuỗi bằng <code>+=</code> trong vòng lặp lớn.</li>
+<li>So sánh không phân biệt hoa/thường bằng <code>ToLower()</code> thay vì <code>StringComparison</code>.</li>
+<li>Số/ngày in ra sai dấu do khác culture.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Đếm số từ trong một câu (gợi ý: <code>Split(' ', StringSplitOptions.RemoveEmptyEntries)</code>).</li>
+<li>Kiểm tra chuỗi có phải <strong>palindrome</strong> (đọc xuôi ngược giống nhau), bỏ qua hoa/thường và khoảng trắng.</li>
+<li>Viết hàm viết hoa chữ cái đầu mỗi từ: <code>&quot;le van tuan&quot;</code> → <code>&quot;Le Van Tuan&quot;</code>.</li>
+<li>Đếm số lần xuất hiện của mỗi ký tự trong chuỗi, in theo thứ tự chữ cái.</li>
+<li>So sánh thời gian nối 100.000 số bằng <code>+=</code> và <code>StringBuilder</code> (dùng <code>System.Diagnostics.Stopwatch</code>).</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch10-phuong-thuc.html">&larr; 10. Phương thức</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 9 — Mảng — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link active" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><span class="chapter-link pending">12. Vì sao cần OOP</span></li><li><span class="chapter-link pending">13. Class và Object</span></li><li><span class="chapter-link pending">14. Đóng gói và Property</span></li><li><span class="chapter-link pending">15. Namespace, using và tổ chức project</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">16. Kế thừa</span></li><li><span class="chapter-link pending">17. Đa hình</span></li><li><span class="chapter-link pending">18. Abstract class và Interface</span></li><li><span class="chapter-link pending">19. Static, partial, extension method, enum</span></li><li><span class="chapter-link pending">20. Lớp object, struct và record</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 9 — Mảng</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Khai báo, khởi tạo, duyệt mảng một chiều; dùng chỉ số <code>^</code> và lát cắt <code>..</code>.</li>
+<li>Dùng các hàm tiện ích của <code>Array</code> (<code>Sort</code>, <code>Reverse</code>, <code>IndexOf</code>...).</li>
+<li>Làm việc với mảng nhiều chiều và <strong>jagged array</strong>.</li>
+<li>Hiểu mảng là <strong>kiểu tham chiếu</strong> và hệ quả khi gán/sao chép.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch09-mang/"><code>code/ch09-mang/</code></a>.</p>
+<h2>Mảng một chiều</h2>
+<p><strong>Mảng</strong> lưu một dãy phần tử <strong>cùng kiểu</strong>, kích thước <strong>cố định</strong> sau khi tạo, truy cập bằng chỉ số
+bắt đầu từ <strong>0</strong>.</p>
+<pre class="hljs"><code><span class="hljs-built_in">int</span>[] diem = [<span class="hljs-number">8</span>, <span class="hljs-number">6</span>, <span class="hljs-number">9</span>, <span class="hljs-number">7</span>, <span class="hljs-number">10</span>];        <span class="hljs-comment">// collection expression (C# 12)</span>
+<span class="hljs-built_in">int</span>[] rong = <span class="hljs-keyword">new</span> <span class="hljs-built_in">int</span>[<span class="hljs-number">3</span>];               <span class="hljs-comment">// 3 phần tử, mặc định 0</span>
+<span class="hljs-built_in">string</span>?[] ten = <span class="hljs-keyword">new</span> <span class="hljs-built_in">string</span>?[<span class="hljs-number">2</span>];        <span class="hljs-comment">// mặc định null</span>
+</code></pre>
+<p>Giá trị mặc định: số → <code>0</code>, <code>bool</code> → <code>false</code>, tham chiếu (<code>string</code>...) → <code>null</code>.</p>
+<pre class="hljs"><code>Console.WriteLine(diem[<span class="hljs-number">0</span>]);       <span class="hljs-comment">// 8 — phần tử đầu</span>
+Console.WriteLine(diem[^<span class="hljs-number">1</span>]);      <span class="hljs-comment">// 10 — phần tử cuối (chỉ số ngược)</span>
+Console.WriteLine(diem.Length);   <span class="hljs-comment">// 5</span>
+diem[<span class="hljs-number">1</span>] = <span class="hljs-number">7</span>;                      <span class="hljs-comment">// gán</span>
+</code></pre>
+<p>Truy cập chỉ số ngoài phạm vi ném <code>IndexOutOfRangeException</code>.</p>
+<h3>Duyệt mảng</h3>
+<pre class="hljs"><code><span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> i = <span class="hljs-number">0</span>; i &lt; diem.Length; i++) Console.Write(diem[i] + <span class="hljs-string">&quot; &quot;</span>);
+<span class="hljs-keyword">foreach</span> (<span class="hljs-built_in">int</span> d <span class="hljs-keyword">in</span> diem) Console.Write(d + <span class="hljs-string">&quot; &quot;</span>);
+</code></pre>
+<h3>Lát cắt (range)</h3>
+<pre class="hljs"><code><span class="hljs-built_in">int</span>[] ba = diem[.<span class="hljs-number">.3</span>];        <span class="hljs-comment">// 3 phần tử đầu</span>
+<span class="hljs-built_in">int</span>[] giua = diem[<span class="hljs-number">1.</span>.^<span class="hljs-number">1</span>];    <span class="hljs-comment">// bỏ phần tử đầu và cuối</span>
+</code></pre>
+<p><code>a..b</code> lấy từ chỉ số <code>a</code> đến <strong>trước</strong> <code>b</code>. Kết quả là <strong>mảng mới</strong> (bản sao).</p>
+<h2>Tiện ích của <code>Array</code></h2>
+<pre class="hljs"><code>Array.Sort(diem);                  <span class="hljs-comment">// sắp xếp tăng dần (thay đổi mảng gốc)</span>
+Array.Reverse(diem);               <span class="hljs-comment">// đảo ngược</span>
+<span class="hljs-built_in">int</span> vt = Array.IndexOf(diem, <span class="hljs-number">9</span>);   <span class="hljs-comment">// vị trí đầu tiên của 9, hoặc -1</span>
+Array.Copy(nguon, dich, soLuong);  <span class="hljs-comment">// sao chép</span>
+Array.Fill(rong, <span class="hljs-number">7</span>);               <span class="hljs-comment">// điền giá trị</span>
+</code></pre>
+<p><code>string.Join(&quot;, &quot;, diem)</code> ghép mảng thành chuỗi để in.</p>
+<h2>Mảng hai chiều (hình chữ nhật)</h2>
+<pre class="hljs"><code><span class="hljs-built_in">int</span>[,] luoi = { { <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span> }, { <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span> } };   <span class="hljs-comment">// 2 hàng x 3 cột</span>
+Console.WriteLine(luoi[<span class="hljs-number">1</span>, <span class="hljs-number">2</span>]);                 <span class="hljs-comment">// 6</span>
+luoi.GetLength(<span class="hljs-number">0</span>);   <span class="hljs-comment">// số hàng = 2</span>
+luoi.GetLength(<span class="hljs-number">1</span>);   <span class="hljs-comment">// số cột = 3</span>
+</code></pre>
+<p>Mọi hàng có cùng độ dài. Duyệt bằng hai vòng <code>for</code> lồng nhau.</p>
+<h2>Jagged array — mảng của các mảng</h2>
+<pre class="hljs"><code><span class="hljs-built_in">int</span>[][] tamGiac = <span class="hljs-keyword">new</span> <span class="hljs-built_in">int</span>[<span class="hljs-number">4</span>][];
+<span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> i = <span class="hljs-number">0</span>; i &lt; tamGiac.Length; i++)
+{
+    tamGiac[i] = <span class="hljs-keyword">new</span> <span class="hljs-built_in">int</span>[i + <span class="hljs-number">1</span>];              <span class="hljs-comment">// mỗi hàng dài khác nhau</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> j = <span class="hljs-number">0</span>; j &lt;= i; j++) tamGiac[i][j] = j + <span class="hljs-number">1</span>;
+}
+</code></pre>
+<p>Linh hoạt hơn khi các hàng dài ngắn khác nhau; truy cập bằng <code>a[i][j]</code>. Thường nhanh hơn mảng <code>[,]</code>.</p>
+<h2>Mảng là kiểu tham chiếu</h2>
+<pre class="hljs"><code><span class="hljs-built_in">int</span>[] a = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>];
+<span class="hljs-built_in">int</span>[] b = a;        <span class="hljs-comment">// b và a trỏ CÙNG một mảng</span>
+b[<span class="hljs-number">0</span>] = <span class="hljs-number">99</span>;
+Console.WriteLine(a[<span class="hljs-number">0</span>]);   <span class="hljs-comment">// 99 !</span>
+
+<span class="hljs-built_in">int</span>[] c = (<span class="hljs-built_in">int</span>[])a.Clone();   <span class="hljs-comment">// bản sao độc lập (nông)</span>
+c[<span class="hljs-number">0</span>] = <span class="hljs-number">1</span>;                      <span class="hljs-comment">// không ảnh hưởng a</span>
+</code></pre>
+<p>Gán mảng <strong>không</strong> sao chép dữ liệu, chỉ sao chép tham chiếu. Tương tự khi truyền mảng vào phương thức:
+phương thức sửa được nội dung mảng của người gọi (Chương 10). <code>Clone()</code> là sao chép <strong>nông</strong>: nếu phần
+tử là kiểu tham chiếu thì các đối tượng bên trong vẫn dùng chung.</p>
+<h2>Khi nào <strong>không</strong> dùng mảng?</h2>
+<p>Vì kích thước cố định, mảng bất tiện khi cần thêm/xoá phần tử. Khi đó dùng <code>List&lt;T&gt;</code> (Chương 24–25).
+Mảng vẫn hợp cho dữ liệu kích thước biết trước, tham số <code>params</code>, và cần hiệu năng cao.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>IndexOutOfRangeException</code>: dùng <code>&lt;=</code> thay vì <code>&lt;</code> khi duyệt, hoặc mảng rỗng.</li>
+<li><code>NullReferenceException</code>: mảng chuỗi <code>new string[3]</code> chứa <code>null</code>, gọi <code>.Length</code> trên phần tử sẽ lỗi.</li>
+<li>Tưởng <code>b = a</code> là sao chép mảng.</li>
+<li>Thay đổi mảng gốc ngoài ý muốn khi <code>Array.Sort</code> (hãy <code>Clone()</code> trước nếu cần giữ bản gốc).</li>
+<li>Nhầm <code>int[,]</code> với <code>int[][]</code>.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Tìm số lớn nhất, nhỏ nhất và vị trí của chúng trong một mảng (không dùng LINQ).</li>
+<li>Đảo ngược mảng tại chỗ bằng vòng lặp (không dùng <code>Array.Reverse</code>).</li>
+<li>Cộng hai ma trận <code>2×3</code> bằng <code>int[,]</code>.</li>
+<li>In tam giác Pascal 6 dòng bằng jagged array.</li>
+<li>Đếm tần suất từng chữ số 0–9 trong một chuỗi số nhập vào (mảng đếm 10 phần tử).</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch08-vong-lap.html">&larr; 8. Vòng lặp</a><a class="nav-next" href="ch10-phuong-thuc.html">10. Phương thức &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

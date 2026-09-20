@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 5 — Biến, kiểu dữ liệu, ép kiểu — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><span class="chapter-link pending">12. Vì sao cần OOP</span></li><li><span class="chapter-link pending">13. Class và Object</span></li><li><span class="chapter-link pending">14. Đóng gói và Property</span></li><li><span class="chapter-link pending">15. Namespace, using và tổ chức project</span></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><span class="chapter-link pending">16. Kế thừa</span></li><li><span class="chapter-link pending">17. Đa hình</span></li><li><span class="chapter-link pending">18. Abstract class và Interface</span></li><li><span class="chapter-link pending">19. Static, partial, extension method, enum</span></li><li><span class="chapter-link pending">20. Lớp object, struct và record</span></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><span class="chapter-link pending">21. Xử lý ngoại lệ</span></li><li><span class="chapter-link pending">22. Generics</span></li><li><span class="chapter-link pending">23. Nullable value type và nullable reference type</span></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><span class="chapter-link pending">24. Tổng quan collection</span></li><li><span class="chapter-link pending">25. List và LinkedList</span></li><li><span class="chapter-link pending">26. Dictionary, HashSet và họ hàng</span></li><li><span class="chapter-link pending">27. IEnumerable, yield và sắp xếp</span></li><li><span class="chapter-link pending">28. Thuật toán tìm kiếm</span></li><li><span class="chapter-link pending">29. Duyệt đồ thị/cây: BFS và DFS</span></li><li><span class="chapter-link pending">30. LINQ</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 5 — Biến, kiểu dữ liệu, ép kiểu</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Khai báo biến, hằng số và hiểu <strong>kiểu dữ liệu</strong> dùng để làm gì.</li>
+<li>Chọn đúng kiểu số (<code>int</code>, <code>long</code>, <code>double</code>, <code>decimal</code>), <code>bool</code>, <code>char</code>, <code>string</code>.</li>
+<li>Dùng <code>var</code> đúng lúc, ép kiểu ngầm định/tường minh, chuyển chuỗi thành số an toàn.</li>
+<li>Hiểu <strong>tràn số</strong> và <strong>sai số số thực</strong> — hai lỗi âm thầm rất hay gặp.</li>
+</ul>
+<p>Code mẫu đầy đủ: <a href="code/ch05-bien-kieu-du-lieu/"><code>code/ch05-bien-kieu-du-lieu/</code></a>.</p>
+<h2>Biến là gì?</h2>
+<p><strong>Biến</strong> là một ô nhớ có tên, dùng để lưu một giá trị. C# là ngôn ngữ <strong>kiểu tĩnh</strong>: mỗi biến có
+một kiểu cố định ngay lúc biên dịch, và trình biên dịch sẽ báo lỗi nếu bạn dùng sai kiểu.</p>
+<pre class="hljs"><code><span class="hljs-built_in">int</span> tuoi = <span class="hljs-number">25</span>;          <span class="hljs-comment">// kiểu tên_biến = giá_trị;</span>
+<span class="hljs-built_in">string</span> ten = <span class="hljs-string">&quot;Tuan&quot;</span>;
+tuoi = <span class="hljs-number">26</span>;              <span class="hljs-comment">// gán lại giá trị mới: OK</span>
+<span class="hljs-comment">// tuoi = &quot;hai muoi&quot;;   // LỖI biên dịch: không gán string cho int</span>
+</code></pre>
+<p>Quy ước đặt tên: dùng chữ, số, <code>_</code>; không bắt đầu bằng số; phân biệt hoa/thường. Biến cục bộ dùng
+<code>camelCase</code> (<code>soLuong</code>); tên kiểu, phương thức dùng <code>PascalCase</code> (<code>TinhTong</code>).</p>
+<h2>Các kiểu dữ liệu cơ bản</h2>
+<table>
+<thead>
+<tr>
+<th>Kiểu</th>
+<th>Kích thước</th>
+<th>Dùng cho</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>int</code></td>
+<td>32 bit</td>
+<td>số nguyên thông thường (≈ ±2,1 tỷ)</td>
+<td><code>int tuoi = 25;</code></td>
+</tr>
+<tr>
+<td><code>long</code></td>
+<td>64 bit</td>
+<td>số nguyên rất lớn</td>
+<td><code>long danSo = 8_000_000_000L;</code></td>
+</tr>
+<tr>
+<td><code>byte</code></td>
+<td>8 bit</td>
+<td>0..255 (dữ liệu nhị phân)</td>
+<td><code>byte b = 200;</code></td>
+</tr>
+<tr>
+<td><code>double</code></td>
+<td>64 bit</td>
+<td>số thực (khoa học, đo lường)</td>
+<td><code>double h = 1.75;</code></td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td>32 bit</td>
+<td>số thực ít chính xác hơn</td>
+<td><code>float f = 1.5f;</code></td>
+</tr>
+<tr>
+<td><code>decimal</code></td>
+<td>128 bit</td>
+<td>số thực <strong>chính xác thập phân</strong> — tiền tệ</td>
+<td><code>decimal gia = 19.99m;</code></td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td>1 bit logic</td>
+<td><code>true</code> / <code>false</code></td>
+<td><code>bool ok = true;</code></td>
+</tr>
+<tr>
+<td><code>char</code></td>
+<td>16 bit</td>
+<td>một ký tự Unicode</td>
+<td><code>char c = 'A';</code></td>
+</tr>
+<tr>
+<td><code>string</code></td>
+<td>—</td>
+<td>chuỗi ký tự</td>
+<td><code>string s = &quot;chao&quot;;</code></td>
+</tr>
+</tbody>
+</table>
+<p>Hậu tố quyết định kiểu của hằng số: <code>L</code> cho <code>long</code>, <code>f</code> cho <code>float</code>, <code>m</code> cho <code>decimal</code>. Dấu <code>_</code> chỉ
+để dễ đọc (<code>8_000_000_000</code>). Mỗi kiểu số có <code>MinValue</code>/<code>MaxValue</code>: <code>int.MaxValue</code> là 2147483647.</p>
+<p><strong>Chọn kiểu nào?</strong> Mặc định <code>int</code> cho số nguyên, <code>double</code> cho số thực, <code>decimal</code> cho <strong>tiền</strong>,
+<code>string</code> cho văn bản, <code>bool</code> cho điều kiện.</p>
+<blockquote>
+<p>Các kiểu trên (trừ <code>string</code>) là <strong>kiểu giá trị</strong> (value type): biến chứa trực tiếp giá trị.
+<code>string</code> và mảng là <strong>kiểu tham chiếu</strong>: biến chứa địa chỉ trỏ tới dữ liệu. Sự khác biệt này quan
+trọng, sẽ quay lại ở Chương 9 và 20.</p>
+</blockquote>
+<h2><code>var</code> — để trình biên dịch suy ra kiểu</h2>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> soLuong = <span class="hljs-number">3</span>;                <span class="hljs-comment">// int</span>
+<span class="hljs-keyword">var</span> thanhTien = soLuong * <span class="hljs-number">19.99m</span>; <span class="hljs-comment">// decimal</span>
+<span class="hljs-keyword">var</span> ten = <span class="hljs-string">&quot;Tuan&quot;</span>;               <span class="hljs-comment">// string</span>
+</code></pre>
+<p><code>var</code> <strong>không</strong> phải là kiểu động: kiểu vẫn cố định lúc biên dịch, chỉ là bạn không phải viết ra.
+Dùng <code>var</code> khi kiểu đã rõ ràng từ vế phải (<code>var list = new List&lt;int&gt;();</code>); nếu đọc code mà không thấy
+ngay kiểu là gì, hãy viết kiểu tường minh.</p>
+<h2>Hằng số</h2>
+<pre class="hljs"><code><span class="hljs-keyword">const</span> <span class="hljs-built_in">double</span> Pi = <span class="hljs-number">3.14159</span>;   <span class="hljs-comment">// giá trị cố định, phải gán ngay lúc khai báo</span>
+<span class="hljs-comment">// Pi = 3;                   // LỖI: không đổi được hằng</span>
+</code></pre>
+<h2>Ép kiểu</h2>
+<p><strong>Ngầm định</strong> (an toàn, không mất dữ liệu — tự động):</p>
+<pre class="hljs"><code><span class="hljs-built_in">int</span> a = <span class="hljs-number">10</span>;
+<span class="hljs-built_in">long</span> b = a;        <span class="hljs-comment">// int -&gt; long: OK</span>
+<span class="hljs-built_in">double</span> c = a;      <span class="hljs-comment">// int -&gt; double: OK</span>
+</code></pre>
+<p><strong>Tường minh</strong> (có thể mất dữ liệu — phải viết <code>(kiểu)</code>):</p>
+<pre class="hljs"><code><span class="hljs-built_in">double</span> d = <span class="hljs-number">9.99</span>;
+<span class="hljs-built_in">int</span> n = (<span class="hljs-built_in">int</span>)d;    <span class="hljs-comment">// 9 — cắt bỏ phần thập phân, KHÔNG làm tròn</span>
+<span class="hljs-built_in">int</span> m = (<span class="hljs-built_in">int</span>)Math.Round(d);   <span class="hljs-comment">// 10 — muốn làm tròn thì dùng Math.Round</span>
+</code></pre>
+<p><strong>Chuyển chuỗi thành số:</strong></p>
+<pre class="hljs"><code><span class="hljs-built_in">int</span> n1 = <span class="hljs-built_in">int</span>.Parse(<span class="hljs-string">&quot;123&quot;</span>);                 <span class="hljs-comment">// ném FormatException nếu chuỗi sai</span>
+<span class="hljs-keyword">if</span> (<span class="hljs-built_in">int</span>.TryParse(<span class="hljs-string">&quot;abc&quot;</span>, <span class="hljs-keyword">out</span> <span class="hljs-built_in">int</span> n2)) { }   <span class="hljs-comment">// trả false thay vì ném lỗi</span>
+</code></pre>
+<p>Với dữ liệu người dùng nhập, <strong>luôn dùng <code>TryParse</code></strong>, vì người dùng có thể gõ bất kỳ thứ gì.</p>
+<h2>Hai cái bẫy âm thầm</h2>
+<h3>1. Tràn số (overflow)</h3>
+<pre class="hljs"><code><span class="hljs-built_in">int</span> lon = <span class="hljs-built_in">int</span>.MaxValue;
+Console.WriteLine(lon + <span class="hljs-number">1</span>);   <span class="hljs-comment">// -2147483648 — không báo lỗi!</span>
+</code></pre>
+<p>Mặc định C# <strong>không</strong> báo lỗi khi tràn số mà &quot;quay vòng&quot;. Muốn phát hiện, bọc trong <code>checked</code>:</p>
+<pre class="hljs"><code>checked { <span class="hljs-built_in">int</span> x = lon + <span class="hljs-number">1</span>; }   <span class="hljs-comment">// ném OverflowException</span>
+</code></pre>
+<h3>2. Sai số số thực</h3>
+<pre class="hljs"><code>Console.WriteLine(<span class="hljs-number">0.1</span> + <span class="hljs-number">0.2</span> == <span class="hljs-number">0.3</span>);     <span class="hljs-comment">// False !</span>
+Console.WriteLine(<span class="hljs-number">0.1m</span> + <span class="hljs-number">0.2m</span> == <span class="hljs-number">0.3m</span>);  <span class="hljs-comment">// True</span>
+</code></pre>
+<p><code>double</code>/<code>float</code> lưu số dạng nhị phân nên không biểu diễn chính xác <code>0.1</code>. Với <strong>tiền tệ</strong> hoặc mọi thứ
+cần đúng thập phân, dùng <code>decimal</code>. Với <code>double</code>, không so sánh bằng <code>==</code> mà so sánh trong sai số:
+<code>Math.Abs(a - b) &lt; 1e-9</code>.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>CS0266: Cannot implicitly convert type 'double' to 'int'</code> — cần ép kiểu tường minh (và tự hỏi có
+chấp nhận mất phần thập phân không).</li>
+<li><code>CS0165: Use of unassigned local variable</code> — dùng biến chưa gán giá trị.</li>
+<li><code>FormatException</code> khi <code>int.Parse(&quot;12a&quot;)</code> — dùng <code>TryParse</code>.</li>
+<li>Chia số nguyên: <code>1 / 2</code> bằng <code>0</code>, không phải <code>0.5</code> (Chương 6).</li>
+<li>Dùng <code>double</code> cho tiền rồi ra kết quả lẻ <code>0.30000000000000004</code>.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Khai báo biến lưu tên, tuổi, chiều cao, đã kết hôn hay chưa — chọn kiểu phù hợp và in ra.</li>
+<li><code>int.MaxValue + 1</code> cho kết quả gì? Bọc <code>checked</code> để bắt lỗi.</li>
+<li>Viết chương trình đọc một số từ bàn phím bằng <code>Console.ReadLine()</code> và <code>int.TryParse</code>; báo lỗi
+thân thiện nếu nhập sai.</li>
+<li>Tính <code>100 * 1.1</code> bằng <code>double</code> và <code>decimal</code>, so sánh kết quả với <code>110</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch04-lam-quen-ide.html">&larr; 4. Làm quen IDE, solution và NuGet</a><a class="nav-next" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
