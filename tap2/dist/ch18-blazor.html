@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 18 — Blazor — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-sql-sqlite.html">11. SQL cơ bản và SQLite</a></li><li><a class="chapter-link" href="ch12-efcore-co-ban.html">12. Entity Framework Core cơ bản</a></li><li><a class="chapter-link" href="ch13-efcore-quan-he.html">13. Quan hệ, truy vấn nâng cao và hiệu năng</a></li><li><a class="chapter-link" href="ch14-api-voi-efcore.html">14. Web API hoàn chỉnh với EF Core</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><a class="chapter-link" href="ch15-mvc.html">15. ASP.NET Core MVC</a></li><li><a class="chapter-link" href="ch16-razor-pages.html">16. Razor Pages</a></li><li><a class="chapter-link" href="ch17-form-validation.html">17. Form, validation phía server và chống CSRF</a></li><li><a class="chapter-link active" href="ch18-blazor.html">18. Blazor</a></li><li><a class="chapter-link" href="ch19-httpclient.html">19. Gọi API ngoài với HttpClient</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 18 — Blazor</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>Blazor</strong> là gì và các <strong>chế độ render</strong> (Static SSR, Interactive Server, WebAssembly, Auto).</li>
+<li>Viết <strong>component Razor</strong>: <code>@code</code>, sự kiện <code>@onclick</code>, <strong>data binding</strong> <code>@bind</code>, tham số <code>[Parameter]</code>, <code>EventCallback</code>.</li>
+<li>Dùng <strong>vòng đời</strong> component, <code>@inject</code> dịch vụ, tải dữ liệu <strong>bất đồng bộ</strong>.</li>
+<li>Xây form với <code>EditForm</code> + validation (DataAnnotations), component con và danh sách với <code>@key</code>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch18-blazor/"><code>code/ch18-blazor/</code></a> — bộ đếm (sự kiện, binding, vòng đời) và trang quản lý sản phẩm.</p>
+<h2>Blazor là gì?</h2>
+<p>Với MVC/Razor Pages, mỗi thao tác (bấm nút, lọc) thường là <strong>một request</strong> tải lại trang; muốn giao diện mượt phải viết <strong>JavaScript</strong>. <strong>Blazor</strong> cho phép viết giao diện <strong>tương tác</strong> bằng <strong>C# + Razor</strong>: cùng ngôn ngữ, cùng kiểu dữ liệu, cùng thư viện (validation, DTO, dịch vụ) cho cả server và giao diện — không cần framework JavaScript riêng cho hầu hết nhu cầu.</p>
+<p>Đơn vị xây dựng là <strong>component</strong> — một file <code>.razor</code> gồm HTML/Razor và khối <code>@code</code> (C#). Component có thể lồng nhau, nhận tham số, phát sự kiện, dùng lại. Cả trang cũng là component (có <code>@page</code>).</p>
+<h2>Chế độ render</h2>
+<p>Blazor Web App (từ .NET 8) cho <strong>chọn từng trang/component</strong> chạy theo cách nào:</p>
+<table>
+<thead>
+<tr>
+<th>Chế độ</th>
+<th>Chạy ở đâu</th>
+<th>Tương tác?</th>
+<th>Đặc điểm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Static SSR</strong> (mặc định)</td>
+<td>server, sinh HTML một lần</td>
+<td>Không (như Razor Pages)</td>
+<td>nhanh, nhẹ, SEO tốt; form gửi bằng POST</td>
+</tr>
+<tr>
+<td><strong>Interactive Server</strong></td>
+<td><strong>server</strong>; sự kiện qua kết nối <strong>SignalR (WebSocket)</strong></td>
+<td>Có</td>
+<td>khởi động nhanh, code chạy trên server (truy cập CSDL trực tiếp); cần kết nối liên tục, mỗi người dùng tốn bộ nhớ server</td>
+</tr>
+<tr>
+<td><strong>Interactive WebAssembly</strong></td>
+<td><strong>trình duyệt</strong> (.NET chạy bằng WebAssembly)</td>
+<td>Có</td>
+<td>chạy offline, giảm tải server; tải lần đầu nặng hơn; gọi server qua API</td>
+</tr>
+<tr>
+<td><strong>Interactive Auto</strong></td>
+<td>server lúc đầu, chuyển sang WebAssembly khi đã tải xong</td>
+<td>Có</td>
+<td>cân bằng cả hai</td>
+</tr>
+</tbody>
+</table>
+<p>Chọn bằng attribute: <code>@rendermode InteractiveServer</code> (trên component/trang) hoặc <code>AddInteractiveServerRenderMode()</code> khi map. Sách dùng <strong>Interactive Server</strong> vì đơn giản nhất (không cần dự án API riêng, truy cập dịch vụ thẳng).</p>
+<pre class="hljs"><code>builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+...
+app.UseAntiforgery();
+app.MapRazorComponents&lt;App&gt;().AddInteractiveServerRenderMode();
+</code></pre>
+<p>Cấu trúc: <code>App.razor</code> (khung HTML, nạp <code>blazor.web.js</code>) → <code>Routes.razor</code> (bộ định tuyến) → <code>MainLayout.razor</code> (bố cục) → các trang trong <code>Components/Pages</code>. Trang tương tác được <strong>prerender</strong> (HTML dựng sẵn từ server, hiện ngay) rồi &quot;gắn&quot; kết nối để trở nên tương tác.</p>
+<blockquote>
+<p>Kết quả prerender kiểm chứng bằng <code>curl</code>: <code>GET /dem</code> trả HTML đã có <code>&lt;h1&gt;Bộ đếm&lt;/h1&gt;</code> và <code>Giá trị hiện tại: 0</code>. Tính tương tác cần trình duyệt chạy <code>blazor.web.js</code>.</p>
+</blockquote>
+<h2>Component đầu tiên: bộ đếm</h2>
+<pre class="hljs"><code>@page &quot;/dem&quot;
+@rendermode InteractiveServer
+
+&lt;p&gt;Giá trị hiện tại: &lt;strong&gt;@soDem&lt;/strong&gt;&lt;/p&gt;
+
+&lt;button class=&quot;btn&quot; @onclick=&quot;Tang&quot;&gt;Tăng&lt;/button&gt;
+&lt;button class=&quot;btn&quot; @onclick=&quot;() =&gt; soDem -= buoc&quot;&gt;Giảm&lt;/button&gt;
+&lt;button class=&quot;btn&quot; @onclick=&quot;Dat0&quot; disabled=&quot;@(soDem == 0)&quot;&gt;Về 0&lt;/button&gt;
+
+@code {
+    private int soDem;
+    private int buoc = 1;
+
+    private void Tang() =&gt; soDem += buoc;
+    private void Dat0() =&gt; soDem = 0;
+}
+</code></pre>
+<ul>
+<li><code>@page &quot;/dem&quot;</code> biến component thành trang có URL.</li>
+<li><code>@soDem</code> in giá trị biến/biểu thức; <code>@code { ... }</code> chứa trường, thuộc tính, phương thức C#.</li>
+<li><strong><code>@onclick=&quot;Tang&quot;</code></strong> gắn xử lý sự kiện (phương thức hoặc lambda). Sau khi xử lý, Blazor <strong>tự render lại</strong> component và chỉ gửi <strong>phần khác biệt</strong> của giao diện (diff) tới trình duyệt.</li>
+<li>Thuộc tính HTML điều kiện: <code>disabled=&quot;@(soDem == 0)&quot;</code> — <code>true</code> thì bật, <code>false</code> thì bỏ thuộc tính.</li>
+<li>Điều kiện/lặp trong Razor: <code>@if (...) { }</code>, <code>@foreach (...) { }</code>, <code>@switch</code>.</li>
+</ul>
+<p>Nếu thay đổi dữ liệu <strong>ngoài</strong> luồng sự kiện của Blazor (timer, callback từ dịch vụ), gọi <code>StateHasChanged()</code> (và <code>await InvokeAsync(StateHasChanged)</code> từ luồng khác) để yêu cầu vẽ lại.</p>
+<h2>Data binding: <code>@bind</code></h2>
+<p>Liên kết <strong>hai chiều</strong> giữa ô nhập và biến:</p>
+<pre class="hljs"><code>&lt;input type=&quot;number&quot; @bind=&quot;buoc&quot; min=&quot;1&quot; max=&quot;100&quot; /&gt;                          @* cập nhật khi rời ô (onchange) *@
+&lt;input @bind=&quot;chu&quot; @bind:event=&quot;oninput&quot; /&gt;                                     @* cập nhật NGAY khi gõ *@
+&lt;p&gt;Bạn đã gõ &lt;strong&gt;@chu.Length&lt;/strong&gt; ký tự: &lt;em&gt;@chu.ToUpperInvariant()&lt;/em&gt;&lt;/p&gt;
+
+&lt;input @bind=&quot;tuKhoa&quot; @bind:event=&quot;oninput&quot; @bind:after=&quot;TaiAsync&quot; /&gt;           @* chạy TaiAsync SAU khi giá trị đã gán *@
+</code></pre>
+<p>Kiểu dữ liệu tự chuyển đổi (<code>int</code>, <code>decimal</code>, <code>DateTime</code>, <code>bool</code>...). <code>@bind:after</code> (mới) gọn hơn viết <code>@bind-Value:set</code>; dùng cho &quot;gõ đến đâu tìm đến đó&quot;. Với tìm kiếm gọi CSDL nên thêm <strong>debounce</strong> (đợi người dùng ngừng gõ ~300 ms) để tránh gọi liên tục.</p>
+<h2>Vòng đời component</h2>
+<p>Chạy theo thứ tự (chỉ những hàm bạn <code>override</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Phương thức</th>
+<th>Khi nào</th>
+<th>Dùng để</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SetParametersAsync</code></td>
+<td>nhận tham số</td>
+<td>hiếm khi ghi đè</td>
+</tr>
+<tr>
+<td><strong><code>OnInitialized[Async]</code></strong></td>
+<td><strong>một lần</strong> lúc tạo</td>
+<td>khởi tạo, <strong>tải dữ liệu ban đầu</strong></td>
+</tr>
+<tr>
+<td><strong><code>OnParametersSet[Async]</code></strong></td>
+<td>mỗi khi tham số từ cha đổi</td>
+<td>phản ứng theo tham số mới</td>
+</tr>
+<tr>
+<td><code>OnAfterRender[Async](bool firstRender)</code></td>
+<td>sau mỗi lần vẽ</td>
+<td>gọi JavaScript, thao tác DOM (chỉ ở đây DOM đã tồn tại)</td>
+</tr>
+<tr>
+<td><code>Dispose</code> / <code>IAsyncDisposable</code></td>
+<td>khi bị gỡ</td>
+<td>huỷ đăng ký sự kiện, timer</td>
+</tr>
+</tbody>
+</table>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">OnInitializedAsync</span>()</span> =&gt; <span class="hljs-keyword">await</span> TaiAsync();     <span class="hljs-comment">// tải dữ liệu bất đồng bộ</span>
+</code></pre>
+<p>Lưu ý với <strong>prerender</strong>: <code>OnInitialized</code> chạy <strong>hai lần</strong> (một lần lúc prerender trên server, một lần khi kết nối tương tác) — tránh tác dụng phụ không lặp được (gửi email, trừ kho) trong đó.</p>
+<h2>Tải dữ liệu bất đồng bộ và trạng thái &quot;đang tải&quot;</h2>
+<pre class="hljs"><code>@inject SanPhamService DichVu
+
+@if (dangTai) { &lt;p&gt;&lt;em&gt;Đang tải…&lt;/em&gt;&lt;/p&gt; }
+else if (danhSach.Count == 0) { &lt;p&gt;&lt;em&gt;Không có sản phẩm nào.&lt;/em&gt;&lt;/p&gt; }
+else { ...bảng... }
+
+@code {
+    private bool dangTai = true;
+    private List&lt;SanPham&gt; danhSach = [];
+
+    private async Task TaiAsync()
+    {
+        dangTai = true;
+        danhSach = await DichVu.TimAsync(tuKhoa);       // trong lúc chờ, giao diện hiện &quot;Đang tải…&quot;
+        dangTai = false;
+    }
+}
+</code></pre>
+<p><strong><code>@inject Kiểu Tên</code></strong> lấy dịch vụ từ DI (Chương 5) — giống tiêm constructor. Dịch vụ Scoped trong Blazor Server có vòng đời là <strong>một mạch kết nối (circuit)</strong> = một tab trình duyệt, không phải một HTTP request. <code>DbContext</code> nên lấy qua <code>IDbContextFactory&lt;T&gt;</code> (tạo ngắn hạn cho mỗi thao tác) thay vì Scoped dài hạn.</p>
+<h2>Component con: <code>[Parameter]</code> và <code>EventCallback</code></h2>
+<p>Dữ liệu chảy <strong>xuống</strong> qua tham số, sự kiện chảy <strong>lên</strong> qua callback:</p>
+<pre class="hljs"><code>@* SanPhamRow.razor *@
+&lt;tr&gt;
+    &lt;td&gt;@SanPham.Ma&lt;/td&gt;&lt;td&gt;@SanPham.Ten&lt;/td&gt;
+    &lt;td&gt;&lt;button class=&quot;btn nguy-hiem&quot; @onclick=&quot;() =&gt; OnXoa.InvokeAsync(SanPham.Id)&quot;&gt;Xoá&lt;/button&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+@code {
+    [Parameter, EditorRequired] public SanPham SanPham { get; set; } = default!;
+    [Parameter] public EventCallback&lt;int&gt; OnXoa { get; set; }
+}
+</code></pre>
+<pre class="hljs"><code>@* trang cha *@
+@foreach (var sp in danhSach)
+{
+    &lt;SanPhamRow @key=&quot;sp.Id&quot; SanPham=&quot;sp&quot; OnXoa=&quot;XoaAsync&quot; /&gt;
+}
+</code></pre>
+<ul>
+<li><code>[Parameter]</code> phải là property <code>public</code>; <strong>đừng gán</strong> vào tham số bên trong component con (cha sẽ ghi đè khi vẽ lại).</li>
+<li><strong><code>EventCallback&lt;T&gt;</code></strong> là kiểu callback chuẩn: tự vẽ lại component cha sau khi gọi (khác <code>Action&lt;T&gt;</code>).</li>
+<li><strong><code>@key</code></strong> giúp Blazor nhận đúng dòng nào là dòng nào khi danh sách đổi thứ tự/xoá — tránh giữ nhầm trạng thái của dòng khác.</li>
+<li>Ngoài ra: <code>RenderFragment</code> (<code>ChildContent</code>) để nhận nội dung bên trong thẻ; <code>CascadingParameter</code> truyền dữ liệu xuống mọi con cháu (theme, người dùng); component <strong>generic</strong> (<code>@typeparam T</code>).</li>
+</ul>
+<h2>Form và validation: <code>EditForm</code></h2>
+<pre class="hljs"><code>&lt;EditForm Model=&quot;form&quot; OnValidSubmit=&quot;ThemAsync&quot; FormName=&quot;them-san-pham&quot;&gt;
+    &lt;DataAnnotationsValidator /&gt;
+    &lt;ValidationSummary /&gt;
+
+    &lt;label&gt;Mã &lt;InputText @bind-Value=&quot;form.Ma&quot; /&gt;&lt;/label&gt;
+    &lt;ValidationMessage For=&quot;() =&gt; form.Ma&quot; /&gt;
+
+    &lt;label&gt;Giá &lt;InputNumber @bind-Value=&quot;form.Gia&quot; /&gt;&lt;/label&gt;
+    &lt;ValidationMessage For=&quot;() =&gt; form.Gia&quot; /&gt;
+
+    &lt;button type=&quot;submit&quot;&gt;Thêm&lt;/button&gt;
+&lt;/EditForm&gt;
+</code></pre>
+<ul>
+<li><code>Model</code> là lớp có <strong>DataAnnotations</strong> — <strong>chính các attribute</strong> đã dùng ở Chương 8/17 (<code>[Required]</code>, <code>[Range]</code>, <code>[RegularExpression]</code>). Cùng một lớp validation dùng lại cho API, Razor Pages, Blazor.</li>
+<li><code>&lt;DataAnnotationsValidator /&gt;</code> chạy validation; <code>OnValidSubmit</code> chỉ gọi khi hợp lệ, <code>OnInvalidSubmit</code> khi không.</li>
+<li>Component <code>Input*</code>: <code>InputText</code>, <code>InputNumber</code>, <code>InputDate</code>, <code>InputCheckbox</code>, <code>InputSelect</code>, <code>InputTextArea</code>, <code>InputFile</code> (tải file). Chúng tự thêm CSS <code>valid</code>/<code>invalid</code>.</li>
+<li>Lỗi nghiệp vụ từ dịch vụ (mã trùng): bắt exception, hiện cạnh form (như <code>loi</code> trong mẫu) hoặc dùng <code>ValidationMessageStore</code> để gắn vào một trường.</li>
+<li>Với Static SSR, form cần <code>FormName</code> và <code>[SupplyParameterFromForm]</code>; với chế độ tương tác thì không.</li>
+</ul>
+<h2>Điều hướng và tham số route</h2>
+<pre class="hljs"><code>@page &quot;/san-pham/{Id:int}&quot;
+@inject NavigationManager Nav
+
+@code {
+    [Parameter] public int Id { get; set; }
+    void VeDanhSach() =&gt; Nav.NavigateTo(&quot;/san-pham&quot;);
+}
+</code></pre>
+<p>Dùng <code>&lt;NavLink href=&quot;...&quot;&gt;</code> cho menu (tự thêm class <code>active</code>), <code>Nav.NavigateTo(...)</code> để chuyển trang bằng code, <code>[SupplyParameterFromQuery]</code> để lấy tham số query.</p>
+<h2>Gọi JavaScript khi cần (JS interop)</h2>
+<p>Blazor không loại bỏ JavaScript hoàn toàn: cần API trình duyệt (clipboard, localStorage, thư viện biểu đồ) thì dùng <code>IJSRuntime</code>:</p>
+<pre class="hljs"><code>@inject IJSRuntime JS
+<span class="hljs-keyword">await</span> JS.InvokeVoidAsync(<span class="hljs-string">&quot;localStorage.setItem&quot;</span>, <span class="hljs-string">&quot;khoa&quot;</span>, <span class="hljs-string">&quot;gia_tri&quot;</span>);
+<span class="hljs-keyword">var</span> w = <span class="hljs-keyword">await</span> JS.InvokeAsync&lt;<span class="hljs-built_in">int</span>&gt;(<span class="hljs-string">&quot;eval&quot;</span>, <span class="hljs-string">&quot;window.innerWidth&quot;</span>);     <span class="hljs-comment">// ví dụ minh hoạ (tránh eval thật)</span>
+</code></pre>
+<p>Chỉ gọi JS sau khi component đã vẽ (<code>OnAfterRenderAsync</code>). Với Blazor Server, mỗi lệnh gọi là một vòng qua mạng.</p>
+<h2>Blazor Server hay WebAssembly? Blazor hay React/Angular?</h2>
+<ul>
+<li><strong>Server</strong>: ứng dụng nội bộ/quản trị, cần truy cập dữ liệu thẳng, muốn khởi động nhanh, ít cần scale hàng chục nghìn kết nối đồng thời (mỗi kết nối giữ trạng thái trên server).</li>
+<li><strong>WebAssembly</strong>: ứng dụng cần chạy offline, giảm tải server, đã có API; chấp nhận bản tải xuống lớn hơn ban đầu. Code chạy <strong>trên máy người dùng</strong> — không được nhét bí mật vào đó.</li>
+<li><strong>Auto</strong>: kết hợp.</li>
+<li>So với SPA JavaScript (React/Angular/Vue): Blazor hợp khi đội mạnh C#, muốn chia sẻ code, không muốn duy trì hai hệ sinh thái; hệ sinh thái thư viện giao diện của JS lớn hơn nhiều, vì vậy nhiều đội vẫn chọn JS cho giao diện phức tạp, dùng <a href="http://ASP.NET">ASP.NET</a> Core làm API (Phần 2–3).</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Component không tương tác: quên <code>@rendermode</code> (mặc định Static SSR) hoặc quên <code>AddInteractiveServerComponents/RenderMode</code>.</li>
+<li>Giao diện không cập nhật vì đổi dữ liệu ngoài luồng sự kiện mà không gọi <code>StateHasChanged</code>/<code>InvokeAsync</code>.</li>
+<li>Gọi JS trong <code>OnInitialized</code> (chưa có DOM) — dùng <code>OnAfterRenderAsync</code>.</li>
+<li>Tác dụng phụ trong <code>OnInitialized</code> bị chạy 2 lần do prerender.</li>
+<li>Gán vào <code>[Parameter]</code> bên trong component con.</li>
+<li>Quên <code>@key</code> cho danh sách động → trạng thái nhập lẫn dòng.</li>
+<li>Giữ dữ liệu người dùng trong dịch vụ <strong>Singleton</strong> (lẫn giữa mọi người dùng) — dùng Scoped (theo circuit).</li>
+<li><code>DbContext</code> Scoped sống suốt circuit → lỗi đồng thời/dữ liệu cũ; dùng <code>IDbContextFactory</code>.</li>
+<li>Mất kết nối: người dùng thấy giao diện &quot;đơ&quot; — cấu hình UI kết nối lại và chấp nhận nó là đặc tính của Blazor Server.</li>
+<li>Bỏ qua bảo mật: code chạy trên server vẫn phải kiểm tra quyền cho mọi thao tác (Chương 20).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm nút &quot;Sao chép mã&quot; dùng JS interop (<code>navigator.clipboard.writeText</code>) trong <code>SanPhamRow</code>.</li>
+<li>Thêm debounce 300 ms cho ô tìm kiếm bằng <code>System.Timers.Timer</code> hoặc <code>CancellationTokenSource</code>.</li>
+<li>Thêm trang <code>/san-pham/{id:int}</code> hiển thị chi tiết và nút quay lại bằng <code>NavigationManager</code>.</li>
+<li>Viết component <code>TheThongBao</code> nhận <code>ChildContent</code> và tham số <code>Loai</code> (&quot;thanh-cong&quot;/&quot;loi&quot;) để hiển thị thông báo.</li>
+<li>Thay <code>SanPhamService</code> bằng dịch vụ dùng EF Core + <code>IDbContextFactory&lt;T&gt;</code>; giải thích vì sao không dùng <code>DbContext</code> Scoped ở đây.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch17-form-validation.html">&larr; 17. Form, validation phía server và chống CSRF</a><a class="nav-next" href="ch19-httpclient.html">19. Gọi API ngoài với HttpClient &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

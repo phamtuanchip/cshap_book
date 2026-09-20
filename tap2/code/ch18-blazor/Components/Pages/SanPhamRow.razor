@@ -1,0 +1,13 @@
+@* Component con: nhan du lieu qua [Parameter], bao ve cha bang EventCallback *@
+<tr class="@(SanPham.Ton == 0 ? "het-hang" : null)">
+    <td>@SanPham.Ma</td>
+    <td>@SanPham.Ten</td>
+    <td class="so">@SanPham.Gia.ToString("N0")</td>
+    <td class="so">@SanPham.Ton</td>
+    <td><button class="btn nguy-hiem" @onclick="() => OnXoa.InvokeAsync(SanPham.Id)">Xoá</button></td>
+</tr>
+
+@code {
+    [Parameter, EditorRequired] public SanPham SanPham { get; set; } = default!;
+    [Parameter] public EventCallback<int> OnXoa { get; set; }
+}

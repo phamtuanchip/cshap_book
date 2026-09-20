@@ -1,0 +1,55 @@
+@page "/dem"
+@rendermode InteractiveServer
+
+<PageTitle>Bộ đếm</PageTitle>
+
+<h1>Bộ đếm</h1>
+
+<p role="status">Giá trị hiện tại: <strong>@soDem</strong> (bước @buoc)</p>
+
+<button class="btn" @onclick="Tang">Tăng</button>
+<button class="btn" @onclick="() => soDem -= buoc">Giảm</button>
+<button class="btn" @onclick="Dat0" disabled="@(soDem == 0)">Về 0</button>
+
+<div class="truong">
+    <label>Bước nhảy:
+        <input type="number" @bind="buoc" min="1" max="100" />
+    </label>
+</div>
+
+<div class="truong">
+    <label>Gõ gì đó (cập nhật ngay khi gõ):
+        <input @bind="chu" @bind:event="oninput" />
+    </label>
+    <p>Bạn đã gõ <strong>@chu.Length</strong> ký tự: <em>@chu.ToUpperInvariant()</em></p>
+</div>
+
+@if (soDem >= 10)
+{
+    <p class="flash">Đã đạt 10 trở lên! 🎉</p>
+}
+
+<h2>Nhật ký vòng đời</h2>
+<ul>
+    @foreach (var dong in nhatKy)
+    {
+        <li>@dong</li>
+    }
+</ul>
+
+@code {
+    private int soDem;
+    private int buoc = 1;
+    private string chu = "";
+    private readonly List<string> nhatKy = [];
+
+    private void Tang() => soDem += buoc;
+    private void Dat0() => soDem = 0;
+
+    // Vong doi component: OnInitialized -> OnParametersSet -> OnAfterRender -> ...
+    protected override void OnInitialized() => nhatKy.Add("OnInitialized: component vua duoc tao");
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender) nhatKy.Add("OnAfterRender(firstRender=true): da hien thi lan dau");
+    }
+}

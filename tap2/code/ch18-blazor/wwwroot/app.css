@@ -1,0 +1,14 @@
+body { font-family: system-ui, sans-serif; max-width: 52rem; margin: 0 auto; padding: 1rem; color: #222; }
+nav a { margin-right: 1rem; text-decoration: none; font-weight: 600; }
+nav a.active { border-bottom: 2px solid #0b57d0; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+th, td { padding: .4rem .6rem; border-bottom: 1px solid #ddd; text-align: left; }
+.so { text-align: right; }
+.het-hang td { color: #a00; }
+.flash { background: #e6f7e6; padding: .5rem 1rem; border-radius: 4px; }
+.loi, .validation-message, .validation-errors { color: #b00020; }
+.truong { margin: .6rem 0; }
+.btn { background: #0b57d0; color: #fff; padding: .35rem .9rem; border: 0; border-radius: 4px; cursor: pointer; margin-right: .3rem; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.nguy-hiem { background: #b00020; }
+.invalid { outline: 1px solid #b00020; }

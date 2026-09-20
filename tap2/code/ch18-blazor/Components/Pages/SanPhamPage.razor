@@ -1,0 +1,101 @@
+@page "/san-pham"
+@rendermode InteractiveServer
+@inject SanPhamService DichVu
+
+<PageTitle>Sản phẩm</PageTitle>
+
+<h1>Sản phẩm</h1>
+
+<input type="search" placeholder="Tìm…" @bind="tuKhoa" @bind:event="oninput" @bind:after="TaiAsync" />
+
+@if (dangTai)
+{
+    <p><em>Đang tải…</em></p>
+}
+else if (danhSach.Count == 0)
+{
+    <p><em>Không có sản phẩm nào.</em></p>
+}
+else
+{
+    <table>
+        <thead><tr><th>Mã</th><th>Tên</th><th class="so">Giá</th><th class="so">Tồn</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var sp in danhSach)
+            {
+                @* @key: giup Blazor nhan dung dong khi danh sach doi thu tu/xoa *@
+                <SanPhamRow @key="sp.Id" SanPham="sp" OnXoa="XoaAsync" />
+            }
+        </tbody>
+    </table>
+}
+
+<h2>Thêm sản phẩm</h2>
+
+@* EditForm + DataAnnotations: validation ngay tren client (qua SignalR) va ca khi Submit *@
+<EditForm Model="form" OnValidSubmit="ThemAsync" FormName="them-san-pham">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="truong">
+        <label>Mã <InputText @bind-Value="form.Ma" /></label>
+        <ValidationMessage For="() => form.Ma" />
+    </div>
+    <div class="truong">
+        <label>Tên <InputText @bind-Value="form.Ten" /></label>
+        <ValidationMessage For="() => form.Ten" />
+    </div>
+    <div class="truong">
+        <label>Giá <InputNumber @bind-Value="form.Gia" /></label>
+        <ValidationMessage For="() => form.Gia" />
+    </div>
+    <div class="truong">
+        <label>Tồn <InputNumber @bind-Value="form.Ton" /></label>
+        <ValidationMessage For="() => form.Ton" />
+    </div>
+
+    <button type="submit" class="btn">Thêm</button>
+    @if (loi is not null)
+    {
+        <span class="loi">@loi</span>
+    }
+</EditForm>
+
+@code {
+    private string? tuKhoa;
+    private bool dangTai = true;
+    private string? loi;
+    private List<SanPham> danhSach = [];
+    private SanPhamForm form = new();
+
+    // Chay MOT LAN khi component khoi tao; async: giao dien hien "Dang tai" truoc, roi cap nhat khi xong
+    protected override async Task OnInitializedAsync() => await TaiAsync();
+
+    private async Task TaiAsync()
+    {
+        dangTai = true;
+        danhSach = await DichVu.TimAsync(tuKhoa);
+        dangTai = false;
+    }
+
+    private async Task ThemAsync()
+    {
+        try
+        {
+            await DichVu.ThemAsync(form);
+            form = new SanPhamForm();          // dat lai form
+            loi = null;
+            await TaiAsync();
+        }
+        catch (InvalidOperationException e)
+        {
+            loi = e.Message;                    // loi nghiep vu -> hien canh form
+        }
+    }
+
+    private async Task XoaAsync(int id)
+    {
+        await DichVu.XoaAsync(id);
+        await TaiAsync();
+    }
+}

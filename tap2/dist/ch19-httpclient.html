@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 19 — Gọi API ngoài với HttpClient — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-sql-sqlite.html">11. SQL cơ bản và SQLite</a></li><li><a class="chapter-link" href="ch12-efcore-co-ban.html">12. Entity Framework Core cơ bản</a></li><li><a class="chapter-link" href="ch13-efcore-quan-he.html">13. Quan hệ, truy vấn nâng cao và hiệu năng</a></li><li><a class="chapter-link" href="ch14-api-voi-efcore.html">14. Web API hoàn chỉnh với EF Core</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><a class="chapter-link" href="ch15-mvc.html">15. ASP.NET Core MVC</a></li><li><a class="chapter-link" href="ch16-razor-pages.html">16. Razor Pages</a></li><li><a class="chapter-link" href="ch17-form-validation.html">17. Form, validation phía server và chống CSRF</a></li><li><a class="chapter-link" href="ch18-blazor.html">18. Blazor</a></li><li><a class="chapter-link active" href="ch19-httpclient.html">19. Gọi API ngoài với HttpClient</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><span class="chapter-link pending">20. Xác thực và phân quyền</span></li><li><span class="chapter-link pending">21. Bảo mật ứng dụng web</span></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">22. Dự án tổng hợp Tập 2: Web quản lý kho</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</span></li><li><span class="chapter-link pending">24. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">25. Phụ lục C — Cheat sheet ASP.NET Core</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 19 — Gọi API ngoài với HttpClient</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Gọi API bên ngoài đúng cách bằng <strong><code>IHttpClientFactory</code></strong> và <strong>typed client</strong> — tránh cạm bẫy cổ điển của <code>new HttpClient()</code>.</li>
+<li>Thêm hành vi xuyên suốt bằng <strong><code>DelegatingHandler</code></strong> (API key, log).</li>
+<li>Làm chương trình <strong>chịu lỗi</strong> với <strong>resilience</strong>: retry, timeout, circuit breaker.</li>
+<li>Xử lý <code>HttpRequestException</code>, timeout, huỷ (<code>CancellationToken</code>) và ánh xạ sang mã HTTP của bạn (<code>502</code>, <code>504</code>).</li>
+</ul>
+<p>Code mẫu: <a href="code/ch19-httpclient/"><code>code/ch19-httpclient/</code></a> — ứng dụng tự chứa một &quot;dịch vụ thời tiết bên ngoài&quot; hay lỗi để bạn thấy retry/timeout hoạt động.</p>
+<h2>Vì sao phải gọi API khác?</h2>
+<p>Ứng dụng thật hiếm khi đứng một mình: cổng thanh toán, gửi email/SMS, bản đồ, dịch vụ nội bộ khác (microservices). <strong>Mạng không đáng tin</strong>: chậm, mất gói, dịch vụ bên kia tạm sập, quá tải. Mã gọi ngoài phải giả định <strong>lỗi là chuyện bình thường</strong> (<em>&quot;fallacies of distributed computing&quot;</em>).</p>
+<h2>Cạm bẫy của <code>new HttpClient()</code></h2>
+<pre class="hljs"><code><span class="hljs-comment">// ✘ SAI khi làm trong mỗi request</span>
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> http = <span class="hljs-keyword">new</span> HttpClient();
+<span class="hljs-keyword">var</span> s = <span class="hljs-keyword">await</span> http.GetStringAsync(url);
+</code></pre>
+<ul>
+<li>Mỗi <code>HttpClient</code> mới mở <strong>socket mới</strong>; <code>Dispose</code> không trả socket ngay (giữ ở trạng thái <code>TIME_WAIT</code>) → dưới tải cao dẫn tới <strong>cạn kiệt cổng (socket exhaustion)</strong>.</li>
+<li>Ngược lại, giữ <strong>một <code>HttpClient</code> static mãi mãi</strong> thì <strong>không cập nhật DNS</strong> (khi dịch vụ đổi địa chỉ IP, ứng dụng vẫn nói chuyện với IP cũ).</li>
+</ul>
+<p><strong>Giải pháp chuẩn:</strong> <code>IHttpClientFactory</code> — quản lý vòng đời và <strong>gộp/luân phiên các kết nối</strong> (pool <code>HttpMessageHandler</code>, làm mới định kỳ), đồng thời cho phép cấu hình tập trung.</p>
+<h2>Ba cách dùng factory</h2>
+<h3>1. Typed client (khuyến nghị)</h3>
+<pre class="hljs"><code>builder.Services.AddHttpClient&lt;ThoiTietClient&gt;(c =&gt;
+{
+    c.BaseAddress = <span class="hljs-keyword">new</span> Uri(baseUrl);
+    c.Timeout = TimeSpan.FromSeconds(<span class="hljs-number">10</span>);
+    c.DefaultRequestHeaders.Add(<span class="hljs-string">&quot;User-Agent&quot;</span>, <span class="hljs-string">&quot;CuaHangApp/1.0&quot;</span>);
+});
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ThoiTietClient</span>(<span class="hljs-params">HttpClient http</span>)                     <span class="hljs-comment">// HttpClient được tiêm, đã cấu hình sẵn</span></span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;ThoiTiet?&gt; LayAsync(<span class="hljs-built_in">string</span> thanhPho, CancellationToken ct)
+    {
+        <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">await</span> http.GetAsync(<span class="hljs-string">$&quot;/ngoai/thoi-tiet/<span class="hljs-subst">{Uri.EscapeDataString(thanhPho)}</span>&quot;</span>, ct);
+        res.EnsureSuccessStatusCode();                           <span class="hljs-comment">// không phải 2xx → HttpRequestException</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> res.Content.ReadFromJsonAsync&lt;ThoiTiet&gt;(ct);
+    }
+}
+
+app.MapGet(<span class="hljs-string">&quot;/thoi-tiet/{tp}&quot;</span>, <span class="hljs-keyword">async</span> (<span class="hljs-built_in">string</span> tp, ThoiTietClient client, CancellationToken ct) =&gt; ...);
+</code></pre>
+<p>Gói toàn bộ chi tiết HTTP (URL, tên header, JSON) vào <strong>một lớp có tên nghiệp vụ</strong> (<code>ThoiTietClient</code>) — phần còn lại của ứng dụng chỉ thấy <code>LayAsync(...)</code>. Dễ test (mock lớp này), dễ đổi nhà cung cấp.</p>
+<h3>2. Named client</h3>
+<pre class="hljs"><code>builder.Services.AddHttpClient(<span class="hljs-string">&quot;tran&quot;</span>, c =&gt; c.BaseAddress = <span class="hljs-keyword">new</span> Uri(baseUrl));
+<span class="hljs-keyword">var</span> http = factory.CreateClient(<span class="hljs-string">&quot;tran&quot;</span>);           <span class="hljs-comment">// IHttpClientFactory</span>
+</code></pre>
+<h3>3. Basic: <code>factory.CreateClient()</code> không cấu hình</h3>
+<p>Dùng khi chỉ cần client mặc định. Tốt hơn <code>new HttpClient()</code>.</p>
+<h2>Gửi request và đọc kết quả</h2>
+<pre class="hljs"><code><span class="hljs-keyword">await</span> http.GetFromJsonAsync&lt;ThoiTiet&gt;(<span class="hljs-string">&quot;/ngoai/thoi-tiet/hanoi&quot;</span>, ct);            <span class="hljs-comment">// GET + đọc JSON (ném lỗi nếu != 2xx)</span>
+<span class="hljs-keyword">await</span> http.PostAsJsonAsync(<span class="hljs-string">&quot;/api/don-hang&quot;</span>, <span class="hljs-keyword">new</span> { khachHangId = <span class="hljs-number">1</span> }, ct);       <span class="hljs-comment">// POST JSON</span>
+<span class="hljs-keyword">await</span> http.PutAsJsonAsync(...);  <span class="hljs-keyword">await</span> http.DeleteAsync(...);
+
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> req = <span class="hljs-keyword">new</span> HttpRequestMessage(HttpMethod.Post, <span class="hljs-string">&quot;/x&quot;</span>) { Content = JsonContent.Create(dto) };
+req.Headers.Authorization = <span class="hljs-keyword">new</span>(<span class="hljs-string">&quot;Bearer&quot;</span>, token);                              <span class="hljs-comment">// header theo từng request</span>
+<span class="hljs-keyword">var</span> res = <span class="hljs-keyword">await</span> http.SendAsync(req, ct);
+
+res.StatusCode; res.IsSuccessStatusCode; res.Headers; res.Content.Headers
+<span class="hljs-keyword">await</span> res.Content.ReadAsStringAsync(ct);   <span class="hljs-keyword">await</span> res.Content.ReadFromJsonAsync&lt;T&gt;(ct);
+</code></pre>
+<p>Lưu ý:</p>
+<ul>
+<li><strong>Kiểm tra mã trạng thái</strong>: <code>HttpClient</code> <strong>không</strong> ném lỗi khi server trả <code>404/500</code> — chỉ ném khi không kết nối được. Dùng <code>EnsureSuccessStatusCode()</code> hoặc tự đọc <code>StatusCode</code>.</li>
+<li><strong>Mã hoá tham số</strong> đưa vào URL: <code>Uri.EscapeDataString(x)</code> (hoặc <code>QueryHelpers.AddQueryString</code>). Đừng nối chuỗi thô từ dữ liệu người dùng (chèn tham số, SSRF).</li>
+<li><strong>Giải phóng</strong> <code>HttpResponseMessage</code> bằng <code>using</code> khi bạn dùng <code>SendAsync</code> trực tiếp; các helper <code>GetFromJsonAsync</code> đã lo.</li>
+<li>Với body lớn dùng <code>HttpCompletionOption.ResponseHeadersRead</code> và đọc stream.</li>
+<li>Luôn truyền <strong><code>CancellationToken</code></strong> (từ request) — khi client huỷ, cuộc gọi ra ngoài cũng dừng.</li>
+</ul>
+<h2><code>DelegatingHandler</code> — &quot;middleware&quot; của HttpClient</h2>
+<p>Cũng như pipeline của <a href="http://ASP.NET">ASP.NET</a> Core (Chương 3), request đi ra qua chuỗi handler:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ApiKeyHandler</span>(<span class="hljs-params">IConfiguration cfg, ILogger&lt;ApiKeyHandler&gt; log</span>) : DelegatingHandler</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">async</span> Task&lt;HttpResponseMessage&gt; <span class="hljs-title">SendAsync</span>(<span class="hljs-params">HttpRequestMessage request, CancellationToken ct</span>)</span>
+    {
+        request.Headers.Add(<span class="hljs-string">&quot;X-Api-Key&quot;</span>, cfg[<span class="hljs-string">&quot;ThoiTiet:ApiKey&quot;</span>] ?? <span class="hljs-string">&quot;khoa-thu-nghiem&quot;</span>);
+        <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">await</span> <span class="hljs-keyword">base</span>.SendAsync(request, ct);                    <span class="hljs-comment">// chuyển tiếp xuống handler kế</span>
+        log.LogInformation(<span class="hljs-string">&quot;Goi {Method} {Uri} -&gt; {Status}&quot;</span>, request.Method, request.RequestUri?.PathAndQuery, (<span class="hljs-built_in">int</span>)res.StatusCode);
+        <span class="hljs-keyword">return</span> res;
+    }
+}
+
+builder.Services.AddTransient&lt;ApiKeyHandler&gt;();
+builder.Services.AddHttpClient&lt;ThoiTietClient&gt;().AddHttpMessageHandler&lt;ApiKeyHandler&gt;();
+</code></pre>
+<p>Dùng cho: gắn token xác thực, correlation id, log, đo thời gian, làm mới token khi <code>401</code>. Bí mật (API key) lấy từ cấu hình/kho bí mật (Chương 6), không viết cứng.</p>
+<h2>Resilience: sống chung với lỗi</h2>
+<p>Lỗi mạng chia hai loại:</p>
+<ul>
+<li><strong>Tạm thời (transient)</strong>: <code>503</code>, <code>429</code>, <code>408</code>, mất kết nối, timeout — <em>thử lại là có thể thành công</em>.</li>
+<li><strong>Vĩnh viễn</strong>: <code>400</code>, <code>401</code>, <code>404</code>, <code>500</code> do bug — thử lại vô ích.</li>
+</ul>
+<p>Gói <strong><code>Microsoft.Extensions.Http.Resilience</code></strong> (xây trên <strong>Polly</strong>) cung cấp bộ chiến lược dựng sẵn:</p>
+<pre class="hljs"><code>builder.Services.AddHttpClient&lt;ThoiTietClient&gt;(...)
+    .AddStandardResilienceHandler(o =&gt;
+    {
+        o.Retry.MaxRetryAttempts = <span class="hljs-number">3</span>;
+        o.Retry.Delay = TimeSpan.FromMilliseconds(<span class="hljs-number">100</span>);
+        o.AttemptTimeout.Timeout = TimeSpan.FromSeconds(<span class="hljs-number">1</span>);            <span class="hljs-comment">// mỗi LẦN THỬ tối đa 1 giây</span>
+        o.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(<span class="hljs-number">6</span>);       <span class="hljs-comment">// cả chuỗi thử lại tối đa 6 giây</span>
+        o.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(<span class="hljs-number">10</span>);  <span class="hljs-comment">// ≥ 2 × AttemptTimeout</span>
+    });
+</code></pre>
+<p><code>AddStandardResilienceHandler</code> xếp sẵn (từ ngoài vào trong): <strong>giới hạn đồng thời (rate limiter) → timeout tổng → retry → circuit breaker → timeout mỗi lần thử</strong>.</p>
+<ul>
+<li><strong>Retry</strong> (thử lại) với <strong>backoff luỹ thừa + jitter</strong> (giãn dần và ngẫu nhiên hoá để tránh mọi client thử lại cùng lúc — &quot;thundering herd&quot;).</li>
+<li><strong>Timeout</strong>: không bao giờ chờ vô hạn. Mặc định của <code>HttpClient</code> là 100 giây — quá dài với API người dùng đang chờ.</li>
+<li><strong>Circuit breaker</strong> (cầu dao): khi tỉ lệ lỗi cao vượt ngưỡng, <strong>ngắt mạch</strong> — các lệnh gọi sau <em>thất bại ngay</em> (<code>BrokenCircuitException</code>) trong một khoảng thời gian, cho dịch vụ kia hồi phục thay vì dồn thêm tải vào nó, và giúp ứng dụng của bạn <em>nhanh chóng báo lỗi</em> thay vì treo.</li>
+</ul>
+<p>Kết quả chạy code mẫu: dịch vụ giả trả <code>503</code> cho hai lần gọi đầu:</p>
+<pre class="hljs"><code>GET /thoi-tiet/hanoi          → 200 sau ~0.9 s   (log: OnRetry, OnRetry, rồi thành công ở lần 3)
+GET /thoi-tiet-tran/hanoi     → 503              (client không có resilience: lỗi ngay lần đầu)
+GET /cham (dịch vụ chậm 3 s)  → 504 sau ~4.6 s   (mỗi lần thử bị cắt ở 1 s; thử 4 lần; sau đó TimeoutRejectedException)
+</code></pre>
+<p><strong>Lưu ý quan trọng về retry:</strong></p>
+<ul>
+<li>Chỉ retry thao tác <strong>idempotent</strong> (<code>GET</code>, <code>PUT</code>, <code>DELETE</code>). Retry <code>POST</code> tạo đơn hàng/thanh toán có thể tạo <strong>hai lần</strong> — cần <strong>khoá idempotency</strong> (header <code>Idempotency-Key</code> do client sinh; server lưu và trả lại kết quả cũ cho khoá trùng — Tập 3). <code>AddStandardResilienceHandler</code> mặc định retry cả <code>POST</code>; với API không idempotent hãy tắt retry (<code>o.Retry.DisableForUnsafeHttpMethods()</code>) hoặc dùng <code>AddStandardHedgingHandler</code> cho <code>GET</code>.</li>
+<li>Retry nhân đôi tải lên dịch vụ đang lỗi — cần đi cùng circuit breaker và giới hạn số lần.</li>
+<li>Tổng thời gian chờ nhân lên (1 s × 4 lần + trễ giữa các lần ≈ 4,6 s): đặt <code>TotalRequestTimeout</code> để có trần cứng.</li>
+</ul>
+<h2>Chuyển lỗi ngoài thành lỗi của bạn</h2>
+<p>Client gọi API bên kia → bên kia lỗi → <strong>bạn</strong> là &quot;cổng&quot; (gateway). Chuẩn HTTP có mã riêng:</p>
+<table>
+<thead>
+<tr>
+<th>Tình huống</th>
+<th>Mã bạn trả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Không kết nối được / bên kia trả lỗi 5xx</td>
+<td><strong>502 Bad Gateway</strong></td>
+</tr>
+<tr>
+<td>Bên kia phản hồi quá chậm (timeout)</td>
+<td><strong>504 Gateway Timeout</strong></td>
+</tr>
+<tr>
+<td>Cầu dao đang mở / quá tải</td>
+<td><strong>503 Service Unavailable</strong> (kèm <code>Retry-After</code>)</td>
+</tr>
+</tbody>
+</table>
+<pre class="hljs"><code><span class="hljs-keyword">try</span> { <span class="hljs-keyword">return</span> Results.Ok(<span class="hljs-keyword">await</span> client.LayAsync(tp, ct)); }
+<span class="hljs-keyword">catch</span> (HttpRequestException e)
+{ <span class="hljs-keyword">return</span> Results.Problem(<span class="hljs-string">$&quot;Dich vu thoi tiet loi: <span class="hljs-subst">{e.StatusCode}</span>&quot;</span>, statusCode: <span class="hljs-number">502</span>); }
+<span class="hljs-keyword">catch</span> (OperationCanceledException) <span class="hljs-keyword">when</span> (!ct.IsCancellationRequested)          <span class="hljs-comment">// hết giờ, KHÔNG phải client huỷ</span>
+{ <span class="hljs-keyword">return</span> Results.Problem(<span class="hljs-string">&quot;Dich vu thoi tiet phan hoi qua cham&quot;</span>, statusCode: <span class="hljs-number">504</span>); }
+</code></pre>
+<p>Phân biệt <strong>hết giờ</strong> với <strong>client tự huỷ</strong> bằng <code>ct.IsCancellationRequested</code>. Không lộ chi tiết nội bộ (URL, khoá) trong thông báo; log đầy đủ ở server (Chương 9). Nên gom xử lý này vào <code>IExceptionHandler</code> chung thay vì lặp ở từng endpoint.</p>
+<h2>Phương án dự phòng (fallback) và bộ nhớ đệm</h2>
+<p>Khi dịch vụ ngoài lỗi, đôi khi trả <strong>dữ liệu cũ đã cache</strong> hoặc giá trị mặc định tốt hơn là báo lỗi (thời tiết cũ 10 phút vẫn hữu ích). <code>IMemoryCache</code>/<code>HybridCache</code> (Tập 3) + resilience <code>Fallback</code>. Quyết định theo nghiệp vụ: thanh toán không được &quot;đoán&quot;, còn hiển thị thời tiết thì được.</p>
+<h2>Kiểm thử code gọi HTTP</h2>
+<p>Đừng gọi dịch vụ thật trong test. Thay <code>HttpMessageHandler</code> bằng bản giả trả kết quả định sẵn:</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">HandlerGia</span>(<span class="hljs-title">HttpStatusCode</span> <span class="hljs-title">ma</span>, <span class="hljs-title">string</span> <span class="hljs-title">body</span>) : <span class="hljs-title">HttpMessageHandler</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> Task&lt;HttpResponseMessage&gt; <span class="hljs-title">SendAsync</span>(<span class="hljs-params">HttpRequestMessage r, CancellationToken ct</span>)</span>
+        =&gt; Task.FromResult(<span class="hljs-keyword">new</span> HttpResponseMessage(ma) { Content = <span class="hljs-keyword">new</span> StringContent(body, Encoding.UTF8, <span class="hljs-string">&quot;application/json&quot;</span>) });
+}
+<span class="hljs-keyword">var</span> client = <span class="hljs-keyword">new</span> ThoiTietClient(<span class="hljs-keyword">new</span> HttpClient(<span class="hljs-keyword">new</span> HandlerGia(HttpStatusCode.OK, <span class="hljs-string">&quot;{...}&quot;</span>)) { BaseAddress = <span class="hljs-keyword">new</span>(<span class="hljs-string">&quot;http://x&quot;</span>) });
+</code></pre>
+<p>Hoặc trong <code>WebApplicationFactory</code> (Chương 10) thay đăng ký typed client bằng <code>ConfigurePrimaryHttpMessageHandler</code>.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>new HttpClient()</code> trong mỗi request (cạn socket) hoặc static vĩnh viễn (DNS cũ).</li>
+<li>Quên <code>EnsureSuccessStatusCode()</code> → xử lý body lỗi như dữ liệu hợp lệ.</li>
+<li>Không đặt timeout/không dùng <code>CancellationToken</code> → yêu cầu treo, tích tụ luồng.</li>
+<li>Retry thao tác không idempotent (<code>POST</code> thanh toán) → thanh toán hai lần.</li>
+<li>Retry không giới hạn/không backoff → tự &quot;DDoS&quot; dịch vụ đang yếu.</li>
+<li>Nối chuỗi dữ liệu người dùng vào URL không mã hoá; cho người dùng nhập URL tuỳ ý để server gọi (<strong>SSRF</strong> — kẻ tấn công bắt server truy cập mạng nội bộ; dùng whitelist host).</li>
+<li>Log/ trả ra ngoài header xác thực, token.</li>
+<li>Cấu hình <code>AttemptTimeout</code>/<code>SamplingDuration</code> mâu thuẫn → ném lỗi validation khi khởi động.</li>
+<li>Quên đăng ký <code>DelegatingHandler</code> là <code>Transient</code>.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm <code>Task&lt;IReadOnlyList&lt;ThoiTiet&gt;&gt; LayNhieuAsync(IEnumerable&lt;string&gt; thanhPho, ...)</code> gọi song song bằng <code>Task.WhenAll</code> có giới hạn đồng thời (<code>SemaphoreSlim</code>).</li>
+<li>Đặt <code>Retry.DisableForUnsafeHttpMethods()</code> và thử với endpoint <code>POST</code> — giải thích lý do.</li>
+<li>Thêm <code>IMemoryCache</code> để nếu dịch vụ lỗi thì trả kết quả gần nhất (đánh dấu <code>&quot;cu&quot;: true</code>).</li>
+<li>Viết unit test cho <code>ThoiTietClient</code> bằng <code>HandlerGia</code>: trường hợp <code>200</code>, <code>404</code>, JSON sai.</li>
+<li>Gọi <code>/ngoai/loi-vinh-vien</code> nhiều lần liên tiếp và quan sát circuit breaker mở (<code>BrokenCircuitException</code>) — ghi lại số lần gọi tới khi mạch mở.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch18-blazor.html">&larr; 18. Blazor</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
