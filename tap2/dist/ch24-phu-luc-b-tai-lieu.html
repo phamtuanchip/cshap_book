@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phụ lục B — Tài liệu tham khảo (Tập 2) — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-sql-sqlite.html">11. SQL cơ bản và SQLite</a></li><li><a class="chapter-link" href="ch12-efcore-co-ban.html">12. Entity Framework Core cơ bản</a></li><li><a class="chapter-link" href="ch13-efcore-quan-he.html">13. Quan hệ, truy vấn nâng cao và hiệu năng</a></li><li><a class="chapter-link" href="ch14-api-voi-efcore.html">14. Web API hoàn chỉnh với EF Core</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><a class="chapter-link" href="ch15-mvc.html">15. ASP.NET Core MVC</a></li><li><a class="chapter-link" href="ch16-razor-pages.html">16. Razor Pages</a></li><li><a class="chapter-link" href="ch17-form-validation.html">17. Form, validation phía server và chống CSRF</a></li><li><a class="chapter-link" href="ch18-blazor.html">18. Blazor</a></li><li><a class="chapter-link" href="ch19-httpclient.html">19. Gọi API ngoài với HttpClient</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><a class="chapter-link" href="ch20-xac-thuc.html">20. Xác thực và phân quyền</a></li><li><a class="chapter-link" href="ch21-bao-mat-web.html">21. Bảo mật ứng dụng web</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch22-du-an-tong-hop.html">22. Dự án tổng hợp Tập 2: Web quản lý kho</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch23-phu-luc-a-loi-thuong-gap.html">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</a></li><li><a class="chapter-link active" href="ch24-phu-luc-b-tai-lieu.html">24. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch25-phu-luc-c-cheat-sheet.html">25. Phụ lục C — Cheat sheet ASP.NET Core</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Phụ lục B — Tài liệu tham khảo (Tập 2)</h1>
+<p>Ưu tiên nguồn chính thức, miễn phí, cập nhật thường xuyên. Địa chỉ có thể đổi — nếu không mở được, tìm theo tên.</p>
+<h2>B.1 Tài liệu chính thức</h2>
+<ul>
+<li><strong><a href="http://ASP.NET">ASP.NET</a> Core</strong>: <a href="https://learn.microsoft.com/aspnet/core/">https://learn.microsoft.com/aspnet/core/</a> — Fundamentals, Minimal APIs, MVC, Razor Pages, Blazor, Security, Performance.</li>
+<li><strong>Entity Framework Core</strong>: <a href="https://learn.microsoft.com/ef/core/">https://learn.microsoft.com/ef/core/</a> — quan hệ, migration, hiệu năng, provider.</li>
+<li><strong>Bảo mật <a href="http://ASP.NET">ASP.NET</a> Core</strong>: <a href="https://learn.microsoft.com/aspnet/core/security/">https://learn.microsoft.com/aspnet/core/security/</a> — Identity, JWT, Data Protection, CORS, rate limiting.</li>
+<li><strong>HttpClient &amp; resilience</strong>: <a href="https://learn.microsoft.com/dotnet/core/resilience/">https://learn.microsoft.com/dotnet/core/resilience/</a> — <code>Microsoft.Extensions.Http.Resilience</code>, Polly.</li>
+<li><strong>OpenAPI/Scalar</strong>: <a href="https://learn.microsoft.com/aspnet/core/fundamentals/openapi/">https://learn.microsoft.com/aspnet/core/fundamentals/openapi/</a>, <a href="https://github.com/scalar/scalar">https://github.com/scalar/scalar</a>.</li>
+<li><strong>Blazor</strong>: <a href="https://learn.microsoft.com/aspnet/core/blazor/">https://learn.microsoft.com/aspnet/core/blazor/</a>.</li>
+<li><strong>RFC 9110</strong> (HTTP semantics), <strong>RFC 9457</strong> (Problem Details), <strong>RFC 7519</strong> (JWT): tra cứu chuẩn.</li>
+<li><strong>OWASP</strong>: <a href="https://owasp.org/www-project-top-ten/">https://owasp.org/www-project-top-ten/</a>, <strong>Cheat Sheet Series</strong> <a href="https://cheatsheetseries.owasp.org/">https://cheatsheetseries.owasp.org/</a>.</li>
+<li><strong>Mã nguồn <a href="http://ASP.NET">ASP.NET</a> Core</strong>: <a href="https://github.com/dotnet/aspnetcore">https://github.com/dotnet/aspnetcore</a>; <strong>EF Core</strong>: <a href="https://github.com/dotnet/efcore">https://github.com/dotnet/efcore</a>.</li>
+</ul>
+<h2>B.2 Sách</h2>
+<table>
+<thead>
+<tr>
+<th>Sách</th>
+<th>Tác giả</th>
+<th>Nội dung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em><a href="http://ASP.NET">ASP.NET</a> Core in Action</em> (bản mới)</td>
+<td>Andrew Lock</td>
+<td>toàn diện, giải thích &quot;vì sao&quot;</td>
+</tr>
+<tr>
+<td><em>Pro <a href="http://ASP.NET">ASP.NET</a> Core</em></td>
+<td>Adam Freeman</td>
+<td>tham khảo rộng</td>
+</tr>
+<tr>
+<td><em>Entity Framework Core in Action</em></td>
+<td>Jon P Smith</td>
+<td>EF Core chuyên sâu</td>
+</tr>
+<tr>
+<td><em>Designing Web APIs</em></td>
+<td>Brenda Jin et al.</td>
+<td>thiết kế API</td>
+</tr>
+<tr>
+<td><em>RESTful Web API Patterns and Practices Cookbook</em></td>
+<td>Mike Amundsen</td>
+<td>mẫu thiết kế API</td>
+</tr>
+<tr>
+<td><em>Web Application Security</em></td>
+<td>Andrew Hoffman</td>
+<td>bảo mật ứng dụng web</td>
+</tr>
+<tr>
+<td><em>Release It!</em></td>
+<td>Michael Nygard</td>
+<td>chịu lỗi, retry/circuit breaker</td>
+</tr>
+<tr>
+<td><em>Designing Data-Intensive Applications</em></td>
+<td>Martin Kleppmann</td>
+<td>nền tảng hệ thống dữ liệu</td>
+</tr>
+<tr>
+<td><em>SQL Antipatterns</em></td>
+<td>Bill Karwin</td>
+<td>tránh lỗi thiết kế CSDL</td>
+</tr>
+</tbody>
+</table>
+<h2>B.3 Blog, video, cộng đồng</h2>
+<ul>
+<li><strong>Andrew Lock</strong> (<a href="http://andrewlock.net">andrewlock.net</a>), <strong>Khalid Abuhakmeh</strong>, <strong>Steve Gordon</strong> — <a href="http://ASP.NET">ASP.NET</a> Core chuyên sâu.</li>
+<li><strong>Milan Jovanović</strong>, <strong>Nick Chapsas</strong>, <strong>Tim Corey</strong>, <strong>Raw Coding</strong> — video thực hành.</li>
+<li><strong>.NET Blog</strong>, <strong><a href="http://ASP.NET">ASP.NET</a> Community Standup</strong>, <strong>.NET Conf</strong>.</li>
+<li><strong>Stack Overflow</strong> (<code>asp.net-core</code>, <code>entity-framework-core</code>), <strong>r/dotnet</strong>, <strong>Discord .NET</strong>.</li>
+</ul>
+<h2>B.4 Công cụ</h2>
+<table>
+<thead>
+<tr>
+<th>Nhu cầu</th>
+<th>Công cụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thử API</td>
+<td>file <code>.http</code> (VS/VS Code), Postman, Insomnia, <strong>Bruno</strong>, <code>curl</code>, <strong>Scalar/Swagger UI</strong></td>
+</tr>
+<tr>
+<td>CSDL</td>
+<td>DB Browser for SQLite, <strong>Azure Data Studio</strong>/SSMS, <strong>pgAdmin</strong>/DBeaver</td>
+</tr>
+<tr>
+<td>Xem SQL EF</td>
+<td><code>ToQueryString()</code>, log <code>Database.Command</code>, MiniProfiler</td>
+</tr>
+<tr>
+<td>Kiểm thử</td>
+<td>xUnit, <code>WebApplicationFactory</code>, <strong>Testcontainers</strong> (CSDL thật trong Docker), Respawn</td>
+</tr>
+<tr>
+<td>Tải/hiệu năng</td>
+<td><strong>k6</strong>, <strong>NBomber</strong>, <code>dotnet-counters</code>, BenchmarkDotNet</td>
+</tr>
+<tr>
+<td>Bảo mật</td>
+<td><code>dotnet list package --vulnerable</code>, Dependabot, OWASP ZAP, <a href="http://securityheaders.com">securityheaders.com</a></td>
+</tr>
+<tr>
+<td>Gỡ lỗi mạng</td>
+<td>DevTools, Fiddler, mitmproxy, Wireshark</td>
+</tr>
+</tbody>
+</table>
+<h2>B.5 Luyện tập</h2>
+<ol>
+<li>Mở rộng dự án Chương 22 theo danh sách bài tập lớn.</li>
+<li>Viết lại một API bạn từng dùng (thư viện sách, blog, đặt lịch) từ đầu đến khi có test, JWT, Docker.</li>
+<li>Đọc mã nguồn mẫu chính thức: <strong>eShop</strong> (<code>dotnet/eShop</code>), <strong>Contoso University</strong>.</li>
+<li>Thử thách bảo mật: <strong>OWASP Juice Shop</strong>, <strong>PortSwigger Web Security Academy</strong> (miễn phí).</li>
+<li>Đóng góp/đọc issue của một dự án mã nguồn mở .NET web.</li>
+</ol>
+<h2>B.6 Lộ trình tiếp theo</h2>
+<p><strong>Tập 3</strong> của bộ sách: kiến trúc sạch, CQRS, mẫu thiết kế nâng cao, quan sát, bảo mật nâng cao (OIDC), Docker, CI/CD, triển khai đám mây, microservices tổng quan.</p>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch23-phu-luc-a-loi-thuong-gap.html">&larr; 23. Phụ lục A — Lỗi thường gặp ASP.NET Core</a><a class="nav-next" href="ch25-phu-luc-c-cheat-sheet.html">25. Phụ lục C — Cheat sheet ASP.NET Core &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

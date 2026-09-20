@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 21 — Bảo mật ứng dụng web — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-sql-sqlite.html">11. SQL cơ bản và SQLite</a></li><li><a class="chapter-link" href="ch12-efcore-co-ban.html">12. Entity Framework Core cơ bản</a></li><li><a class="chapter-link" href="ch13-efcore-quan-he.html">13. Quan hệ, truy vấn nâng cao và hiệu năng</a></li><li><a class="chapter-link" href="ch14-api-voi-efcore.html">14. Web API hoàn chỉnh với EF Core</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><a class="chapter-link" href="ch15-mvc.html">15. ASP.NET Core MVC</a></li><li><a class="chapter-link" href="ch16-razor-pages.html">16. Razor Pages</a></li><li><a class="chapter-link" href="ch17-form-validation.html">17. Form, validation phía server và chống CSRF</a></li><li><a class="chapter-link" href="ch18-blazor.html">18. Blazor</a></li><li><a class="chapter-link" href="ch19-httpclient.html">19. Gọi API ngoài với HttpClient</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><a class="chapter-link" href="ch20-xac-thuc.html">20. Xác thực và phân quyền</a></li><li><a class="chapter-link active" href="ch21-bao-mat-web.html">21. Bảo mật ứng dụng web</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch22-du-an-tong-hop.html">22. Dự án tổng hợp Tập 2: Web quản lý kho</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch23-phu-luc-a-loi-thuong-gap.html">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</a></li><li><a class="chapter-link" href="ch24-phu-luc-b-tai-lieu.html">24. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch25-phu-luc-c-cheat-sheet.html">25. Phụ lục C — Cheat sheet ASP.NET Core</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 21 — Bảo mật ứng dụng web</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Nắm các lỗ hổng phổ biến nhất (<strong>OWASP Top 10</strong>) và cách <a href="http://ASP.NET">ASP.NET</a> Core giúp phòng: <strong>XSS, CSRF, SQL injection, IDOR, open redirect, SSRF</strong>.</li>
+<li>Cấu hình <strong>HTTPS/HSTS</strong>, <strong>header bảo mật</strong>, <strong>CSP</strong>, <strong>rate limiting</strong>.</li>
+<li>Dùng <strong>Data Protection</strong> để ký/mã hoá dữ liệu ngắn hạn; xử lý bí mật, log và lỗi an toàn.</li>
+<li>Có <strong>danh sách kiểm tra bảo mật</strong> trước khi triển khai.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch21-bao-mat-web/"><code>code/ch21-bao-mat-web/</code></a> — mỗi lỗ hổng có một endpoint &quot;sai&quot; và &quot;đúng&quot; để bạn thử.</p>
+<p>Bảo mật không phải một tính năng thêm vào cuối, mà là <strong>thói quen ở từng dòng code</strong>. Nguyên tắc nền: <em>đừng tin dữ liệu từ bên ngoài, giảm tối thiểu quyền, phòng thủ nhiều lớp, thất bại một cách an toàn.</em></p>
+<h2>OWASP Top 10 — bản đồ rủi ro</h2>
+<p><strong>OWASP</strong> là tổ chức công bố danh sách 10 rủi ro bảo mật web phổ biến nhất (cập nhật định kỳ). Ánh xạ với nội dung sách:</p>
+<table>
+<thead>
+<tr>
+<th>Rủi ro (rút gọn)</th>
+<th>Ví dụ</th>
+<th>Phòng ở đâu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Broken Access Control</strong> (IDOR, thiếu kiểm tra quyền)</td>
+<td>đổi <code>/don-hang/2</code> để xem đơn người khác</td>
+<td>Ch. 20, mục IDOR dưới đây</td>
+</tr>
+<tr>
+<td><strong>Cryptographic Failures</strong></td>
+<td>lưu mật khẩu thô, dùng HTTP, khoá yếu</td>
+<td>Ch. 17, 20; HTTPS/Data Protection</td>
+</tr>
+<tr>
+<td><strong>Injection</strong> (SQL, lệnh, XSS)</td>
+<td>nối chuỗi vào SQL/HTML</td>
+<td>Ch. 11, 13; XSS dưới đây</td>
+</tr>
+<tr>
+<td><strong>Insecure Design</strong></td>
+<td>thiếu giới hạn tốc độ, luồng nghiệp vụ hở</td>
+<td>rate limiting, thiết kế</td>
+</tr>
+<tr>
+<td><strong>Security Misconfiguration</strong></td>
+<td>trang lỗi lộ stack trace, header thiếu, CORS quá rộng</td>
+<td>Ch. 9; header</td>
+</tr>
+<tr>
+<td><strong>Vulnerable Components</strong></td>
+<td>thư viện NuGet có lỗ hổng</td>
+<td><code>dotnet list package --vulnerable</code></td>
+</tr>
+<tr>
+<td><strong>Authentication Failures</strong></td>
+<td>brute-force, phiên yếu</td>
+<td>Ch. 20; rate limit</td>
+</tr>
+<tr>
+<td><strong>Software &amp; Data Integrity</strong></td>
+<td>deserialize dữ liệu lạ, CI/CD không an toàn</td>
+<td>Tập 1 Ch. 37; Tập 3</td>
+</tr>
+<tr>
+<td><strong>Logging &amp; Monitoring Failures</strong></td>
+<td>không ghi/không theo dõi sự kiện bảo mật</td>
+<td>Ch. 6, Tập 3</td>
+</tr>
+<tr>
+<td><strong>SSRF</strong></td>
+<td>ép server gọi địa chỉ nội bộ</td>
+<td>Ch. 19, dưới đây</td>
+</tr>
+</tbody>
+</table>
+<h2>HTTPS và HSTS</h2>
+<p><strong>HTTPS</strong> mã hoá đường truyền (TLS): chặn nghe lén, sửa đổi giữa đường, xác thực máy chủ. <strong>Bắt buộc</strong> cho mọi ứng dụng có đăng nhập/dữ liệu người dùng (trình duyệt còn chặn nhiều tính năng nếu không có HTTPS).</p>
+<pre class="hljs"><code><span class="hljs-keyword">if</span> (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();                 <span class="hljs-comment">// Strict-Transport-Security: trình duyệt CHỈ dùng HTTPS với tên miền này (mặc định 30 ngày)</span>
+    app.UseHttpsRedirection();     <span class="hljs-comment">// 80 → 443</span>
+}
+</code></pre>
+<p>Chứng chỉ thật lấy từ CA (Let's Encrypt miễn phí) — thường cấu hình ở reverse proxy/load balancer (Tập 3). Đặt cookie <code>Secure</code>. Khi ứng dụng chạy <strong>sau proxy</strong> (Nginx, load balancer) hãy bật <code>UseForwardedHeaders</code> với <strong><code>KnownProxies</code>/<code>KnownNetworks</code></strong> rõ ràng, để biết IP thật/giao thức gốc — và <em>không</em> tin <code>X-Forwarded-For</code> từ nguồn lạ (ai cũng giả mạo được):</p>
+<pre class="hljs"><code>builder.Services.Configure&lt;ForwardedHeadersOptions&gt;(o =&gt;
+{
+    o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    o.KnownProxies.Add(IPAddress.Loopback);
+});
+app.UseForwardedHeaders();       <span class="hljs-comment">// đặt SỚM</span>
+</code></pre>
+<h2>Header bảo mật</h2>
+<pre class="hljs"><code>app.Use(<span class="hljs-keyword">async</span> (ctx, next) =&gt;
+{
+    <span class="hljs-keyword">var</span> h = ctx.Response.Headers;
+    h[<span class="hljs-string">&quot;X-Content-Type-Options&quot;</span>] = <span class="hljs-string">&quot;nosniff&quot;</span>;
+    h[<span class="hljs-string">&quot;X-Frame-Options&quot;</span>] = <span class="hljs-string">&quot;DENY&quot;</span>;
+    h[<span class="hljs-string">&quot;Referrer-Policy&quot;</span>] = <span class="hljs-string">&quot;strict-origin-when-cross-origin&quot;</span>;
+    h[<span class="hljs-string">&quot;Permissions-Policy&quot;</span>] = <span class="hljs-string">&quot;camera=(), microphone=(), geolocation=()&quot;</span>;
+    h[<span class="hljs-string">&quot;Content-Security-Policy&quot;</span>] = <span class="hljs-string">&quot;default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; style-src &#x27;self&#x27;; object-src &#x27;none&#x27;; frame-ancestors &#x27;none&#x27;&quot;</span>;
+    <span class="hljs-keyword">await</span> next();
+});
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Header</th>
+<th>Chống</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>X-Content-Type-Options: nosniff</code></td>
+<td>trình duyệt &quot;đoán&quot; MIME (file tải lên bị thực thi như script)</td>
+</tr>
+<tr>
+<td><code>X-Frame-Options: DENY</code> / CSP <code>frame-ancestors</code></td>
+<td><strong>clickjacking</strong> (trang khác nhúng trang bạn vào iframe ẩn để lừa bấm)</td>
+</tr>
+<tr>
+<td><code>Referrer-Policy</code></td>
+<td>rò rỉ URL nội bộ qua header <code>Referer</code></td>
+</tr>
+<tr>
+<td><code>Permissions-Policy</code></td>
+<td>tính năng trình duyệt không cần (camera, mic)</td>
+</tr>
+<tr>
+<td><strong><code>Content-Security-Policy</code></strong></td>
+<td><strong>XSS</strong>: chỉ cho phép tải script/style/ảnh từ nguồn liệt kê; script nội tuyến (<code>&lt;script&gt;alert(1)&lt;/script&gt;</code>) bị chặn dù kẻ tấn công chèn được vào HTML</td>
+</tr>
+<tr>
+<td><code>Strict-Transport-Security</code></td>
+<td>hạ cấp về HTTP</td>
+</tr>
+</tbody>
+</table>
+<p>CSP là lớp phòng thủ mạnh nhưng cần chỉnh cẩn thận với ứng dụng dùng script/CDN (dùng <code>nonce</code> cho script nội tuyến; Blazor cần nới tối thiểu). Công cụ đánh giá: <a href="http://securityheaders.com">securityheaders.com</a>, Mozilla Observatory. Trong thực tế đóng gói thành middleware/thư viện (như <code>NetEscapades.AspNetCore.SecurityHeaders</code>).</p>
+<h2>XSS — Cross-Site Scripting</h2>
+<p>Kẻ tấn công cài <code>&lt;script&gt;</code> vào nội dung (bình luận, tên, tham số URL) → trình duyệt nạn nhân chạy nó dưới danh nghĩa trang của bạn → đánh cắp phiên, thực hiện hành động thay người dùng.</p>
+<pre class="hljs"><code><span class="hljs-comment">// ✘ Nối chuỗi thẳng vào HTML</span>
+app.MapGet(<span class="hljs-string">&quot;/xss-sai&quot;</span>, (<span class="hljs-built_in">string</span> ten) =&gt; Results.Content(<span class="hljs-string">$&quot;&lt;h1&gt;Xin chao <span class="hljs-subst">{ten}</span>&lt;/h1&gt;&quot;</span>, <span class="hljs-string">&quot;text/html&quot;</span>));
+<span class="hljs-comment">// ?ten=&lt;script&gt;alert(1)&lt;/script&gt;  →  &lt;h1&gt;Xin chao &lt;script&gt;alert(1)&lt;/script&gt;&lt;/h1&gt;   ← SCRIPT CHẠY</span>
+
+<span class="hljs-comment">// ✔ Mã hoá đầu ra</span>
+app.MapGet(<span class="hljs-string">&quot;/xss-dung&quot;</span>, (<span class="hljs-built_in">string</span> ten) =&gt; Results.Content(<span class="hljs-string">$&quot;&lt;h1&gt;Xin chao <span class="hljs-subst">{HtmlEncoder.Default.Encode(ten)}</span>&lt;/h1&gt;&quot;</span>, <span class="hljs-string">&quot;text/html&quot;</span>));
+<span class="hljs-comment">//  →  &lt;h1&gt;Xin chao &amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;&lt;/h1&gt;                          ← chỉ là văn bản</span>
+</code></pre>
+<p>Cả hai kết quả trên lấy từ lần chạy thật. Nguyên tắc: <strong>mã hoá theo ngữ cảnh khi xuất</strong> (HTML, thuộc tính, JavaScript, URL). Razor <code>@giaTri</code>, Blazor và tag helper <strong>tự mã hoá HTML</strong>, nên XSS xảy ra khi bạn:</p>
+<ul>
+<li>Dùng <code>@Html.Raw(...)</code> / <code>MarkupString</code> với dữ liệu người dùng.</li>
+<li>Tự nối chuỗi HTML như trên (Minimal API trả <code>text/html</code>).</li>
+<li>Nhúng dữ liệu vào <code>&lt;script&gt;</code> hoặc thuộc tính <code>onclick</code>/<code>href=&quot;javascript:...&quot;</code>.</li>
+<li>Nhận HTML &quot;giàu định dạng&quot; (editor) — phải <strong>lọc bằng thư viện</strong> (HtmlSanitizer) theo whitelist thẻ.</li>
+</ul>
+<p>Kèm <strong>CSP</strong> và cookie <code>HttpOnly</code> làm lớp phòng thủ thứ hai.</p>
+<h2>CSRF</h2>
+<p>Đã học ở Chương 17: antiforgery token cho form/cookie, <code>SameSite</code>, <code>POST</code> cho thay đổi. API dùng Bearer token không cần antiforgery.</p>
+<h2>SQL injection</h2>
+<p>Chương 11 và 13: <strong>luôn tham số hoá</strong>; EF Core LINQ và <code>FromSqlInterpolated</code> an toàn; <strong>không</strong> <code>FromSqlRaw</code> với chuỗi nối; tên cột/bảng động → whitelist.</p>
+<h2>IDOR — Insecure Direct Object Reference</h2>
+<p>Nếu API nhận <code>id</code> từ URL và chỉ kiểm tra người dùng <em>đã đăng nhập</em>, ai cũng đổi <code>id</code> để xem dữ liệu người khác. Đây là lỗi <strong>số 1</strong> OWASP (Broken Access Control):</p>
+<pre class="hljs"><code>app.MapGet(<span class="hljs-string">&quot;/don-hang/{id:int}&quot;</span>, (<span class="hljs-built_in">int</span> id, HttpContext ctx, DonHangKho kho) =&gt;
+{
+    <span class="hljs-built_in">string</span> nguoiDung = ...;                        <span class="hljs-comment">// danh tính hiện tại</span>
+    <span class="hljs-keyword">var</span> don = kho.Lay(id);
+    <span class="hljs-keyword">if</span> (don <span class="hljs-keyword">is</span> <span class="hljs-literal">null</span>) <span class="hljs-keyword">return</span> Results.NotFound();
+    <span class="hljs-keyword">if</span> (don.Chu != nguoiDung) <span class="hljs-keyword">return</span> Results.NotFound();     <span class="hljs-comment">// KHÔNG PHẢI CHỦ → 404 (không phải 403)</span>
+    <span class="hljs-keyword">return</span> Results.Ok(don);
+});
+</code></pre>
+<ul>
+<li><strong>Luôn lọc theo chủ sở hữu ngay trong truy vấn</strong> (<code>Where(d =&gt; d.KhachHangId == userId)</code>) hoặc dùng resource-based authorization (Chương 20).</li>
+<li>Trả <strong><code>404</code></strong> thay vì <code>403</code> để không tiết lộ đối tượng có tồn tại.</li>
+<li>ID khó đoán (GUID) <strong>giảm</strong> nhưng <strong>không thay thế</strong> kiểm tra quyền.</li>
+</ul>
+<p>Thử: <code>An</code> xem <code>/don-hang/1</code> → 200; <code>An</code> xem <code>/don-hang/2</code> (của Bình) → 404.</p>
+<h2>Open redirect</h2>
+<p><code>/dang-nhap?returnUrl=https://evil.com</code> — sau đăng nhập, chuyển người dùng sang trang lừa đảo trông như xuất phát từ trang uy tín. Chỉ chuyển hướng tới <strong>đường dẫn nội bộ</strong>:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">LaUrlNoiBo</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> url</span>)</span>
+    =&gt; !<span class="hljs-built_in">string</span>.IsNullOrEmpty(url) &amp;&amp; url[<span class="hljs-number">0</span>] == <span class="hljs-string">&#x27;/&#x27;</span> &amp;&amp; (url.Length == <span class="hljs-number">1</span> || (url[<span class="hljs-number">1</span>] != <span class="hljs-string">&#x27;/&#x27;</span> &amp;&amp; url[<span class="hljs-number">1</span>] != <span class="hljs-string">&#x27;\\&#x27;</span>));
+
+Results.LocalRedirect(url);       <span class="hljs-comment">// framework cũng ném lỗi nếu không phải URL cục bộ; MVC/Razor Pages có Url.IsLocalUrl(url)</span>
+</code></pre>
+<p>Chú ý các biến thể <code>//evil.com</code> và <code>/\evil.com</code> (trình duyệt hiểu là tên miền khác). Kết quả thử: <code>/don-hang/1</code> → <code>302</code>; <code>https://evil.com</code>, <code>//evil.com</code>, <code>/\evil.com</code> → <code>400</code>.</p>
+<h2>SSRF — Server-Side Request Forgery</h2>
+<p>Nếu server nhận <strong>URL do người dùng cung cấp</strong> rồi tự gọi (xem trước liên kết, webhook, tải ảnh từ URL), kẻ tấn công trỏ tới <code>http://169.254.169.254/</code> (metadata đám mây → lấy khoá truy cập), <code>http://localhost:8080/admin</code>, mạng nội bộ. Phòng: <strong>whitelist host</strong> cho phép, chặn dải IP nội bộ/loopback/link-local sau khi phân giải DNS, không theo redirect tự do, đặt timeout/giới hạn kích thước, chạy ở mạng cách ly. Đừng tin kiểm tra chỉ trên chuỗi URL.</p>
+<h2>Rate limiting</h2>
+<p>Chống brute-force mật khẩu, cào dữ liệu, làm dụng API, DoS nhẹ. Từ .NET 7 có sẵn middleware:</p>
+<pre class="hljs"><code>builder.Services.AddRateLimiter(o =&gt;
+{
+    o.RejectionStatusCode = <span class="hljs-number">429</span>;
+    o.GlobalLimiter = PartitionedRateLimiter.Create&lt;HttpContext, <span class="hljs-built_in">string</span>&gt;(ctx =&gt;
+        RateLimitPartition.GetFixedWindowLimiter(ctx.Connection.RemoteIpAddress?.ToString() ?? <span class="hljs-string">&quot;khong-ro&quot;</span>,
+            _ =&gt; <span class="hljs-keyword">new</span> FixedWindowRateLimiterOptions { PermitLimit = <span class="hljs-number">20</span>, Window = TimeSpan.FromSeconds(<span class="hljs-number">10</span>) }));
+
+    o.AddPolicy(<span class="hljs-string">&quot;dang-nhap&quot;</span>, ctx =&gt; RateLimitPartition.GetFixedWindowLimiter(ip,
+        _ =&gt; <span class="hljs-keyword">new</span> FixedWindowRateLimiterOptions { PermitLimit = <span class="hljs-number">3</span>, Window = TimeSpan.FromSeconds(<span class="hljs-number">30</span>) }));
+});
+app.UseRateLimiter();
+app.MapPost(<span class="hljs-string">&quot;/dang-nhap&quot;</span>, ...).RequireRateLimiting(<span class="hljs-string">&quot;dang-nhap&quot;</span>);
+</code></pre>
+<p>Kết quả thử:</p>
+<pre class="hljs"><code>POST /dang-nhap ×5  →  401 401 401 429 429          (chính sách &quot;dang-nhap&quot;: 3 lần / 30 giây)
+GET /  ×25 liên tiếp →  200 ×20 rồi 429 ×5           (giới hạn chung 20 / 10 giây / IP)
+</code></pre>
+<p>Bốn thuật toán: <strong>Fixed window</strong>, <strong>Sliding window</strong>, <strong>Token bucket</strong> (cho phép bùng nổ ngắn), <strong>Concurrency</strong> (giới hạn đồng thời). Chia theo <strong>IP</strong>, <strong>người dùng</strong>, <strong>API key</strong>. Khi sau proxy phải có <code>UseForwardedHeaders</code> đúng, nếu không mọi request có cùng IP proxy. Với hệ thống nhiều instance dùng bộ đếm phân tán (Redis) hoặc rate limit ở API gateway/WAF. Phản hồi <code>429</code> kèm <code>Retry-After</code>.</p>
+<h2>Data Protection — ký và mã hoá dữ liệu ngắn hạn</h2>
+<p>API <code>IDataProtector</code> dùng để bảo vệ dữ liệu bạn cần gửi ra ngoài rồi nhận lại: token kích hoạt/đặt lại mật khẩu, tham số trong URL, nội dung cookie (chính cookie xác thực dùng nó):</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> bv = dp.CreateProtector(<span class="hljs-string">&quot;kich-hoat-tai-khoan&quot;</span>).ToTimeLimitedDataProtector();
+<span class="hljs-built_in">string</span> token = bv.Protect(<span class="hljs-string">&quot;user:42&quot;</span>, lifetime: TimeSpan.FromMinutes(<span class="hljs-number">10</span>));   <span class="hljs-comment">// mã hoá + ký + hạn dùng</span>
+<span class="hljs-built_in">string</span> goc = bv.Unprotect(token);                                            <span class="hljs-comment">// ném CryptographicException nếu sai/hết hạn/bị sửa</span>
+</code></pre>
+<p>Thử: token hợp lệ → <code>{&quot;noiDung&quot;:&quot;user:42&quot;}</code>; sửa thêm 1 ký tự → &quot;Token không hợp lệ hoặc hết hạn&quot;. Lưu ý: <strong>purpose string</strong> (&quot;kich-hoat-tai-khoan&quot;) tách biệt miền sử dụng (token kích hoạt không dùng được làm token đặt lại mật khẩu). <strong>Khoá</strong> lưu ở đâu: mặc định thư mục hồ sơ người dùng — với nhiều instance/container phải dùng kho chung (<code>PersistKeysToFileSystem</code>, Redis, Azure Blob + <code>ProtectKeysWithAzureKeyVault</code>), nếu không mỗi instance có khoá riêng và token của instance này không giải mã được ở instance kia.</p>
+<h2>Bí mật, cấu hình, log, lỗi</h2>
+<ul>
+<li><strong>Bí mật</strong> (mật khẩu CSDL, khoá API, khoá ký): kho bí mật/biến môi trường, <strong>không</strong> commit (Chương 6). Đổi ngay nếu lỡ lộ.</li>
+<li><strong>Trang lỗi</strong>: production không hiển thị stack trace (Chương 9); <code>UseDeveloperExceptionPage</code> chỉ ở Development.</li>
+<li><strong>Log</strong>: không ghi mật khẩu/token/số thẻ; dùng tham số đặt tên để <strong>chống log forging</strong> (<code>log.LogInformation(&quot;Nguoi dung {Ten}&quot;, ten)</code> — giá trị chứa <code>\n</code> không tạo ra dòng log giả).</li>
+<li><strong>Thông báo lỗi</strong> không lộ chi tiết nội bộ (tên bảng, đường dẫn).</li>
+<li><strong>Thư viện</strong>: <code>dotnet list package --vulnerable --include-transitive</code>; bật Dependabot/GitHub security alerts; cập nhật .NET (bản vá bảo mật hằng tháng).</li>
+<li><strong>CORS</strong>: liệt kê chính xác origin (Chương 9).</li>
+<li><strong>Giới hạn kích thước request</strong> (<code>MaxRequestBodySize</code>), số lượng, độ sâu JSON.</li>
+<li><strong>Chạy với quyền tối thiểu</strong>: tài khoản CSDL chỉ có quyền cần dùng; container không chạy <code>root</code>.</li>
+</ul>
+<h2>Danh sách kiểm tra trước khi triển khai</h2>
+<ul>
+<li>[ ] HTTPS + HSTS; cookie <code>Secure/HttpOnly/SameSite</code>.</li>
+<li>[ ] Xác thực đúng: mật khẩu băm (hoặc Identity/IdP), MFA nếu có thể; giới hạn tốc độ đăng nhập.</li>
+<li>[ ] Mọi endpoint nhạy cảm có <code>[Authorize]</code>/policy; <code>FallbackPolicy</code> chặn mặc định; kiểm tra <strong>quyền sở hữu</strong>.</li>
+<li>[ ] Validate mọi đầu vào ở server; tham số hoá SQL; mã hoá đầu ra; header bảo mật + CSP.</li>
+<li>[ ] Antiforgery cho form/cookie; CORS tối thiểu.</li>
+<li>[ ] Không có bí mật trong Git; kho bí mật ở production.</li>
+<li>[ ] Trang lỗi an toàn; log không chứa dữ liệu nhạy cảm; theo dõi cảnh báo.</li>
+<li>[ ] Thư viện được quét lỗ hổng; đã cập nhật .NET.</li>
+<li>[ ] Sao lưu dữ liệu, kế hoạch phản ứng sự cố.</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Tin tưởng kiểm tra ở client; ẩn nút thay cho kiểm tra quyền.</li>
+<li><code>@Html.Raw</code>/<code>MarkupString</code>/nối HTML với dữ liệu người dùng.</li>
+<li>Kiểm tra &quot;đã đăng nhập&quot; nhưng bỏ sót quyền sở hữu (IDOR).</li>
+<li>Open redirect qua <code>returnUrl</code> không kiểm tra; SSRF qua URL người dùng.</li>
+<li><code>AllowAnyOrigin</code> + <code>AllowCredentials</code>; CORS coi như cơ chế bảo mật API.</li>
+<li>Cấu hình rate limit trước proxy mà không <code>UseForwardedHeaders</code> → giới hạn theo IP proxy.</li>
+<li>Khoá Data Protection không dùng chung giữa các instance → lỗi giải mã lạ sau khi scale/redeploy.</li>
+<li>Không cập nhật thư viện/.NET; lộ header <code>Server</code>/phiên bản.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Dùng <code>curl</code> gửi <code>?ten=&lt;img src=x onerror=alert(1)&gt;</code> tới <code>/xss-sai</code> và <code>/xss-dung</code>; giải thích khác biệt và thử CSP chặn script nội tuyến trong trình duyệt.</li>
+<li>Thêm <code>GET /don-hang</code> chỉ trả đơn của <strong>người dùng hiện tại</strong> (lọc trong truy vấn, không lọc trong bộ nhớ).</li>
+<li>Đổi chính sách &quot;dang-nhap&quot; sang <strong>sliding window</strong> và <strong>token bucket</strong>; đo hành vi khác nhau bằng vòng lặp <code>curl</code>.</li>
+<li>Viết token đặt lại mật khẩu hết hạn sau 15 phút dùng Data Protection và chỉ dùng được <strong>một lần</strong> (lưu <code>jti</code> đã dùng).</li>
+<li>Chạy <code>dotnet list package --vulnerable --include-transitive</code> cho một dự án của chương này và ghi nhận kết quả.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch20-xac-thuc.html">&larr; 20. Xác thực và phân quyền</a><a class="nav-next" href="ch22-du-an-tong-hop.html">22. Dự án tổng hợp Tập 2: Web quản lý kho &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

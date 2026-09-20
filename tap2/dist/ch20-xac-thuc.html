@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 20 — Xác thực và phân quyền — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-sql-sqlite.html">11. SQL cơ bản và SQLite</a></li><li><a class="chapter-link" href="ch12-efcore-co-ban.html">12. Entity Framework Core cơ bản</a></li><li><a class="chapter-link" href="ch13-efcore-quan-he.html">13. Quan hệ, truy vấn nâng cao và hiệu năng</a></li><li><a class="chapter-link" href="ch14-api-voi-efcore.html">14. Web API hoàn chỉnh với EF Core</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><a class="chapter-link" href="ch15-mvc.html">15. ASP.NET Core MVC</a></li><li><a class="chapter-link" href="ch16-razor-pages.html">16. Razor Pages</a></li><li><a class="chapter-link" href="ch17-form-validation.html">17. Form, validation phía server và chống CSRF</a></li><li><a class="chapter-link" href="ch18-blazor.html">18. Blazor</a></li><li><a class="chapter-link" href="ch19-httpclient.html">19. Gọi API ngoài với HttpClient</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch20-xac-thuc.html">20. Xác thực và phân quyền</a></li><li><a class="chapter-link" href="ch21-bao-mat-web.html">21. Bảo mật ứng dụng web</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch22-du-an-tong-hop.html">22. Dự án tổng hợp Tập 2: Web quản lý kho</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch23-phu-luc-a-loi-thuong-gap.html">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</a></li><li><a class="chapter-link" href="ch24-phu-luc-b-tai-lieu.html">24. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch25-phu-luc-c-cheat-sheet.html">25. Phụ lục C — Cheat sheet ASP.NET Core</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 20 — Xác thực và phân quyền</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Phân biệt <strong>xác thực (authentication)</strong> và <strong>phân quyền (authorization)</strong>, và <strong>401 vs 403</strong>.</li>
+<li>Cài xác thực bằng <strong>cookie</strong> (ứng dụng web) và <strong>JWT Bearer</strong> (API/mobile/SPA).</li>
+<li>Dùng <strong>claims, roles, policy</strong>, và <strong>resource-based authorization</strong>.</li>
+<li>Lưu mật khẩu đúng cách; biết vai trò của <strong><a href="http://ASP.NET">ASP.NET</a> Core Identity</strong> và <strong>OpenID Connect</strong>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch20-xac-thuc/"><code>code/ch20-xac-thuc/</code></a> — một ứng dụng chạy cả hai cơ chế, đã kiểm tra bằng <code>curl</code> (mọi kết quả trong chương lấy từ lần chạy thật).</p>
+<h2>Hai câu hỏi khác nhau</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Xác thực (<strong>Authentication</strong>)</th>
+<th>Phân quyền (<strong>Authorization</strong>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Câu hỏi</td>
+<td><strong>Bạn là ai?</strong></td>
+<td><strong>Bạn được làm gì?</strong></td>
+</tr>
+<tr>
+<td>Kết quả</td>
+<td>danh tính (<code>ClaimsPrincipal</code>)</td>
+<td>cho phép / từ chối</td>
+</tr>
+<tr>
+<td>Thất bại →</td>
+<td><strong><code>401 Unauthorized</code></strong> (chưa biết bạn là ai)</td>
+<td><strong><code>403 Forbidden</code></strong> (biết rồi nhưng không đủ quyền)</td>
+</tr>
+<tr>
+<td>Middleware</td>
+<td><code>UseAuthentication()</code></td>
+<td><code>UseAuthorization()</code></td>
+</tr>
+</tbody>
+</table>
+<pre class="hljs"><code>app.UseAuthentication();     <span class="hljs-comment">// 1) xác định danh tính → HttpContext.User</span>
+app.UseAuthorization();      <span class="hljs-comment">// 2) kiểm tra quyền theo policy của endpoint     (thứ tự QUAN TRỌNG — Chương 3)</span>
+</code></pre>
+<h2>Danh tính, claim, role</h2>
+<p>Danh tính trong .NET là <strong><code>ClaimsPrincipal</code></strong> chứa một hay nhiều <strong><code>ClaimsIdentity</code></strong>, mỗi identity là tập <strong>claim</strong> (khẳng định về người dùng: &quot;tên là an&quot;, &quot;vai trò là Admin&quot;, &quot;tuổi là 20&quot;, &quot;email…&quot;).</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> claims = <span class="hljs-keyword">new</span> List&lt;Claim&gt;
+{
+    <span class="hljs-keyword">new</span>(ClaimTypes.NameIdentifier, <span class="hljs-string">&quot;2&quot;</span>),
+    <span class="hljs-keyword">new</span>(ClaimTypes.Name, <span class="hljs-string">&quot;an&quot;</span>),
+    <span class="hljs-keyword">new</span>(ClaimTypes.Role, <span class="hljs-string">&quot;User&quot;</span>),
+    <span class="hljs-keyword">new</span>(<span class="hljs-string">&quot;tuoi&quot;</span>, <span class="hljs-string">&quot;20&quot;</span>),
+};
+<span class="hljs-keyword">var</span> identity = <span class="hljs-keyword">new</span> ClaimsIdentity(claims, authenticationType: <span class="hljs-string">&quot;Cookies&quot;</span>, ClaimTypes.Name, ClaimTypes.Role);
+</code></pre>
+<p>Trong endpoint: <code>ClaimsPrincipal user</code> (tham số handler) → <code>user.Identity.Name</code>, <code>user.IsInRole(&quot;Admin&quot;)</code>, <code>user.FindFirstValue(&quot;tuoi&quot;)</code>. <strong>Role</strong> chỉ là một loại claim đặc biệt (<code>ClaimTypes.Role</code>).</p>
+<h2>Mật khẩu</h2>
+<p>Không lưu mật khẩu gốc; dùng băm chậm có muối (Chương 17):</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> bam = <span class="hljs-keyword">new</span> PasswordHasher&lt;<span class="hljs-built_in">object</span>&gt;();
+<span class="hljs-built_in">string</span> luu = bam.HashPassword(<span class="hljs-keyword">new</span> <span class="hljs-built_in">object</span>(), <span class="hljs-string">&quot;Admin@123&quot;</span>);
+bam.VerifyHashedPassword(<span class="hljs-keyword">new</span> <span class="hljs-built_in">object</span>(), luu, matKhauNhap) != PasswordVerificationResult.Failed;
+</code></pre>
+<p>Hai chi tiết bảo mật đã có trong <code>TaiKhoanStore.XacThuc</code>:</p>
+<ul>
+<li><strong>Thông báo lỗi chung</strong> &quot;Tên đăng nhập hoặc mật khẩu không đúng&quot; cho cả hai trường hợp (không tiết lộ tài khoản nào tồn tại).</li>
+<li>Khi tên đăng nhập <strong>không tồn tại</strong>, vẫn thực hiện một phép băm giả để <strong>thời gian phản hồi giống nhau</strong> (chống dò tài khoản qua <em>timing attack</em>).</li>
+</ul>
+<h2>Xác thực bằng cookie (ứng dụng web có trình duyệt)</h2>
+<pre class="hljs"><code>builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(o =&gt;
+    {
+        o.Cookie.HttpOnly = <span class="hljs-literal">true</span>;                        <span class="hljs-comment">// JavaScript không đọc được → XSS khó đánh cắp phiên</span>
+        o.Cookie.SameSite = SameSiteMode.Lax;            <span class="hljs-comment">// giảm CSRF</span>
+        o.Cookie.SecurePolicy = CookieSecurePolicy.Always;   <span class="hljs-comment">// production: chỉ gửi qua HTTPS</span>
+        o.ExpireTimeSpan = TimeSpan.FromMinutes(<span class="hljs-number">30</span>);
+        o.SlidingExpiration = <span class="hljs-literal">true</span>;                      <span class="hljs-comment">// hoạt động thì gia hạn</span>
+        o.Events.OnRedirectToLogin = ctx =&gt; { ctx.Response.StatusCode = <span class="hljs-number">401</span>; <span class="hljs-keyword">return</span> Task.CompletedTask; };   <span class="hljs-comment">// API: 401 thay vì redirect</span>
+    });
+
+<span class="hljs-comment">// Đăng nhập</span>
+<span class="hljs-keyword">await</span> ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, <span class="hljs-keyword">new</span> ClaimsPrincipal(identity));
+<span class="hljs-comment">// Đăng xuất</span>
+<span class="hljs-keyword">await</span> ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+</code></pre>
+<p>Cách hoạt động: sau khi xác thực thành công, server <strong>mã hoá và ký</strong> danh tính vào một <strong>cookie</strong>; mỗi request sau trình duyệt tự gửi cookie, middleware giải mã dựng lại <code>User</code>. Không có &quot;session id tra cứu trên server&quot; (stateless, chỉ cần khoá bảo vệ dữ liệu — Data Protection, Chương 21).</p>
+<p>Kết quả thử thực tế:</p>
+<pre class="hljs"><code>GET /toi (chưa đăng nhập)          → 401
+POST /dang-nhap (sai mật khẩu)      → 401
+POST /dang-nhap (an)                → 200, Set-Cookie
+GET /toi                             → {&quot;ten&quot;:&quot;an&quot;,&quot;vaiTro&quot;:[&quot;User&quot;],&quot;tuoi&quot;:&quot;20&quot;,...}
+GET /quan-tri (an, role User)        → 403
+POST /dang-xuat rồi GET /toi         → 401
+</code></pre>
+<p>Với cookie, form đăng nhập phải có <strong>chống CSRF</strong> (Chương 17) — mẫu tắt bằng <code>.DisableAntiforgery()</code> chỉ để thử bằng <code>curl</code>.</p>
+<h2>Xác thực bằng JWT (API, mobile, SPA)</h2>
+<p>Khi client không phải trình duyệt dùng cookie (app di động, SPA gọi API khác miền, dịch vụ gọi dịch vụ), dùng <strong>token</strong> gửi trong header:</p>
+<pre class="hljs"><code>Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+</code></pre>
+<p><strong>JWT</strong> (JSON Web Token) là chuỗi 3 phần <code>header.payload.signature</code> (mỗi phần Base64URL): payload chứa claim (<code>sub</code>, <code>name</code>, <code>role</code>, <code>exp</code>...), chữ ký chứng minh <strong>không bị sửa</strong>. Server không lưu phiên: chỉ cần kiểm tra chữ ký và hạn.</p>
+<pre class="hljs"><code>builder.Services.AddAuthentication()
+    .AddJwtBearer(o =&gt; o.TokenValidationParameters = <span class="hljs-keyword">new</span> TokenValidationParameters
+    {
+        ValidateIssuer = <span class="hljs-literal">true</span>,  ValidIssuer = <span class="hljs-string">&quot;cuahang-api&quot;</span>,
+        ValidateAudience = <span class="hljs-literal">true</span>, ValidAudience = <span class="hljs-string">&quot;cuahang-client&quot;</span>,
+        ValidateLifetime = <span class="hljs-literal">true</span>, ClockSkew = TimeSpan.FromSeconds(<span class="hljs-number">30</span>),
+        ValidateIssuerSigningKey = <span class="hljs-literal">true</span>, IssuerSigningKey = khoaKy,
+    });
+
+<span class="hljs-comment">// Cấp token sau khi xác thực thông tin đăng nhập</span>
+<span class="hljs-keyword">var</span> token = <span class="hljs-keyword">new</span> JwtSecurityToken(issuer: <span class="hljs-string">&quot;cuahang-api&quot;</span>, audience: <span class="hljs-string">&quot;cuahang-client&quot;</span>, claims: claims,
+    expires: DateTime.UtcNow.AddMinutes(<span class="hljs-number">15</span>),                               <span class="hljs-comment">// NGẮN hạn</span>
+    signingCredentials: <span class="hljs-keyword">new</span> SigningCredentials(khoaKy, SecurityAlgorithms.HmacSha256));
+<span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> { accessToken = <span class="hljs-keyword">new</span> JwtSecurityTokenHandler().WriteToken(token) };
+</code></pre>
+<pre class="hljs"><code>GET /api/toi (không token)          → 401
+GET /api/toi (token bị sửa 1 ký tự) → 401
+GET /api/toi (token hợp lệ)          → {&quot;ten&quot;:&quot;an&quot;,&quot;vaiTro&quot;:[&quot;User&quot;]}
+GET /api/admin/bao-cao (token an)    → 403
+GET /api/admin/bao-cao (token admin) → 200
+</code></pre>
+<p>Payload giải mã (Base64) của token thật:</p>
+<pre class="hljs"><code><span class="hljs-punctuation">{</span><span class="hljs-attr">&quot;…/nameidentifier&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;2&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;…/name&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;an&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;tuoi&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;20&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;…/role&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;User&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;nbf&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-number">1789895649</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;exp&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-number">1789896549</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;iss&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;cuahang-api&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;aud&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;cuahang-client&quot;</span><span class="hljs-punctuation">}</span>
+</code></pre>
+<blockquote>
+<p><strong>Payload không được mã hoá, chỉ được ký</strong> — ai cũng đọc được. Không đặt thông tin bí mật vào JWT.</p>
+</blockquote>
+<p>Nguyên tắc JWT an toàn:</p>
+<ol>
+<li><strong>Khoá ký</strong> ≥ 256 bit, ngẫu nhiên, <strong>lưu trong kho bí mật/biến môi trường</strong> (Chương 6), không commit; đổi định kỳ. Với hệ thống nhiều dịch vụ dùng <strong>chữ ký bất đối xứng</strong> (RS256/ES256: dịch vụ cấp token giữ khoá riêng, các dịch vụ khác chỉ cần khoá công khai).</li>
+<li><strong>Access token ngắn hạn</strong> (5–15 phút) + <strong>refresh token</strong> dài hạn, lưu phía server (có thể thu hồi), xoay vòng mỗi lần dùng; hoặc dùng nhà cung cấp danh tính (bên dưới).</li>
+<li>Luôn <strong>kiểm tra <code>iss</code>, <code>aud</code>, <code>exp</code></strong>, ký hiệu thuật toán cố định (chống tấn công <code>alg: none</code>).</li>
+<li>Nơi lưu token phía trình duyệt: <code>localStorage</code> dễ bị XSS đánh cắp; cookie <code>HttpOnly</code> an toàn hơn cho trình duyệt. Với web app thuần, <strong>cookie thường là lựa chọn tốt hơn JWT</strong>.</li>
+<li>Token đã phát <strong>không thu hồi được</strong> trước khi hết hạn nếu chỉ dựa vào chữ ký — nên hạn ngắn, hoặc có danh sách thu hồi/<code>jti</code>.</li>
+</ol>
+<h2>Cookie hay JWT?</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Cookie</th>
+<th>JWT Bearer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Client</td>
+<td>trình duyệt (tự động gửi)</td>
+<td>bất kỳ (JS/mobile/dịch vụ) gắn header</td>
+</tr>
+<tr>
+<td>Rủi ro chính</td>
+<td>CSRF (đã có antiforgery/SameSite)</td>
+<td>XSS đánh cắp token nếu lưu ở JS</td>
+</tr>
+<tr>
+<td>Thu hồi</td>
+<td>dễ (xoá phiên/đổi khoá)</td>
+<td>khó (chờ hết hạn/danh sách đen)</td>
+</tr>
+<tr>
+<td>Cross-domain</td>
+<td>khó hơn</td>
+<td>dễ</td>
+</tr>
+<tr>
+<td>Hợp với</td>
+<td>ứng dụng web server-render, Blazor</td>
+<td>API công khai, mobile, microservice</td>
+</tr>
+</tbody>
+</table>
+<p>Có thể <strong>dùng cả hai</strong> trong một ứng dụng, mỗi endpoint chọn scheme: <code>RequireAuthorization(new AuthorizeAttribute { AuthenticationSchemes = &quot;Bearer&quot; })</code> (nhóm <code>/api</code> trong mẫu).</p>
+<h2>Phân quyền</h2>
+<p><code>[Authorize]</code> / <code>.RequireAuthorization(...)</code> yêu cầu đăng nhập; thêm điều kiện:</p>
+<pre class="hljs"><code>app.MapGet(<span class="hljs-string">&quot;/toi&quot;</span>, ...).RequireAuthorization();                      <span class="hljs-comment">// chỉ cần đăng nhập</span>
+app.MapGet(<span class="hljs-string">&quot;/quan-tri&quot;</span>, ...).RequireAuthorization(<span class="hljs-string">&quot;QuanTri&quot;</span>);        <span class="hljs-comment">// theo policy</span>
+[<span class="hljs-meta">Authorize(Roles = <span class="hljs-string">&quot;Admin,Manager&quot;</span>)</span>]                                 <span class="hljs-comment">// controller/Razor Pages: cách viết attribute</span>
+[<span class="hljs-meta">AllowAnonymous</span>]                                                     <span class="hljs-comment">// ngoại lệ, cho phép ẩn danh</span>
+</code></pre>
+<h3>Policy — quy tắc có tên</h3>
+<pre class="hljs"><code>builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(<span class="hljs-string">&quot;QuanTri&quot;</span>, p =&gt; p.RequireRole(<span class="hljs-string">&quot;Admin&quot;</span>))
+    .AddPolicy(<span class="hljs-string">&quot;TuoiTu18&quot;</span>, p =&gt; p.RequireAssertion(ctx =&gt;
+        <span class="hljs-built_in">int</span>.TryParse(ctx.User.FindFirstValue(<span class="hljs-string">&quot;tuoi&quot;</span>), <span class="hljs-keyword">out</span> <span class="hljs-built_in">int</span> tuoi) &amp;&amp; tuoi &gt;= <span class="hljs-number">18</span>))
+    .AddPolicy(<span class="hljs-string">&quot;BearerAdmin&quot;</span>, p =&gt; p.AddAuthenticationSchemes(<span class="hljs-string">&quot;Bearer&quot;</span>).RequireRole(<span class="hljs-string">&quot;Admin&quot;</span>));
+</code></pre>
+<p>Policy dựa trên <strong>role</strong>, <strong>claim</strong> (<code>RequireClaim(&quot;department&quot;, &quot;kho&quot;)</code>), điều kiện tuỳ ý (<code>RequireAssertion</code>) hoặc <strong>requirement + handler</strong> (bên dưới). Ưu tiên <strong>policy có tên nghiệp vụ</strong> thay vì rải <code>Roles = &quot;Admin&quot;</code> khắp nơi: đổi quy tắc một chỗ. Có thể đặt <strong>chính sách dự phòng</strong> cho mọi endpoint: <code>o.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();</code> — mặc định <em>chặn hết</em>, phải <code>AllowAnonymous</code> tường minh (an toàn theo mặc định).</p>
+<h3>Resource-based authorization — quyền phụ thuộc đối tượng</h3>
+<p>&quot;Ai được xoá bài viết này?&quot; — tuỳ <strong>bài viết cụ thể</strong> (tác giả hoặc admin), <code>[Authorize]</code> tĩnh không diễn tả được:</p>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">CungTacGiaRequirement</span> : <span class="hljs-title">IAuthorizationRequirement</span>;
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">CungTacGiaHandler</span> : <span class="hljs-title">AuthorizationHandler</span>&lt;<span class="hljs-title">CungTacGiaRequirement</span>, <span class="hljs-title">BaiViet</span>&gt;
+{
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> Task <span class="hljs-title">HandleRequirementAsync</span>(<span class="hljs-params">AuthorizationHandlerContext ctx, CungTacGiaRequirement req, BaiViet bv</span>)</span>
+    {
+        <span class="hljs-built_in">bool</span> laTacGia = ctx.User.FindFirstValue(ClaimTypes.NameIdentifier) == bv.TacGiaId;
+        <span class="hljs-keyword">if</span> (laTacGia || ctx.User.IsInRole(<span class="hljs-string">&quot;Admin&quot;</span>)) ctx.Succeed(req);
+        <span class="hljs-keyword">return</span> Task.CompletedTask;
+    }
+}
+
+<span class="hljs-comment">// Trong endpoint: tải tài nguyên rồi hỏi</span>
+<span class="hljs-keyword">var</span> kq = <span class="hljs-keyword">await</span> auth.AuthorizeAsync(user, bv, <span class="hljs-keyword">new</span> CungTacGiaRequirement());
+<span class="hljs-keyword">if</span> (!kq.Succeeded) <span class="hljs-keyword">return</span> Results.Forbid();
+</code></pre>
+<p>Thử: An xoá bài của Admin → <code>403</code>; An xoá bài của An → <code>204</code>; Admin xoá bài của Admin → <code>204</code>. Đây là phòng thủ chính chống <strong>IDOR</strong> (Chương 21): <em>đừng chỉ kiểm tra &quot;đã đăng nhập&quot;, phải kiểm tra &quot;được truy cập đúng đối tượng này&quot;.</em></p>
+<h2><a href="http://ASP.NET">ASP.NET</a> Core Identity</h2>
+<p>Tự viết đăng ký/đăng nhập như mẫu giúp hiểu cơ chế; <strong>sản phẩm thật nên dùng <a href="http://ASP.NET">ASP.NET</a> Core Identity</strong> — hệ thống thành viên đầy đủ:</p>
+<ul>
+<li>Lưu người dùng, vai trò, claim trong CSDL (qua EF Core): bảng <code>AspNetUsers</code>, <code>AspNetRoles</code>…</li>
+<li>Băm mật khẩu, chính sách mật khẩu, <strong>khoá tài khoản</strong> sau nhiều lần sai, xác nhận email, đổi/đặt lại mật khẩu, <strong>xác thực hai yếu tố (2FA/TOTP)</strong>, đăng nhập mạng xã hội (Google, Microsoft, GitHub).</li>
+<li>Giao diện có sẵn (scaffold) cho Razor Pages/MVC/Blazor; API endpoint có sẵn (<code>AddIdentityApiEndpoints&lt;TUser&gt;()</code>, <code>MapIdentityApi&lt;TUser&gt;()</code>) cho token/cookie.</li>
+</ul>
+<pre class="hljs"><code>builder.Services.AddDbContext&lt;AppDbContext&gt;(...);
+builder.Services.AddIdentityApiEndpoints&lt;IdentityUser&gt;().AddEntityFrameworkStores&lt;AppDbContext&gt;();
+app.MapIdentityApi&lt;IdentityUser&gt;();       <span class="hljs-comment">// /register, /login, /refresh, /manage/2fa, ...</span>
+</code></pre>
+<h2>Dịch vụ danh tính bên ngoài: OpenID Connect / OAuth 2.0</h2>
+<p>Quản lý mật khẩu, MFA, khoá tài khoản, tuân thủ... là bài toán khó. Nhiều tổ chức giao cho <strong>nhà cung cấp danh tính (IdP)</strong> và dùng chuẩn <strong>OpenID Connect</strong> (lớp danh tính trên <strong>OAuth 2.0</strong>): <strong>Microsoft Entra ID</strong>, <strong>Auth0</strong>, <strong>Keycloak</strong>, <strong>Duende IdentityServer</strong>, Google… Ứng dụng của bạn chuyển hướng người dùng tới IdP, nhận <strong>ID token/access token</strong> về, chỉ cần <code>AddOpenIdConnect(...)</code> hoặc <code>AddJwtBearer(o =&gt; o.Authority = &quot;https://idp...&quot;)</code>. Tập 3 trình bày chi tiết (flow Authorization Code + PKCE, refresh, scopes).</p>
+<h2>Bảo vệ nhiều lớp</h2>
+<ul>
+<li><strong>HTTPS</strong> cho mọi thứ (Chương 21).</li>
+<li>Giới hạn tốc độ đăng nhập (Chương 21).</li>
+<li>Ghi log sự kiện bảo mật (đăng nhập thất bại, đổi quyền) — không ghi mật khẩu/token.</li>
+<li>Nguyên tắc <strong>đặc quyền tối thiểu</strong>; mặc định từ chối (fallback policy).</li>
+<li>Kiểm tra quyền ở <strong>server</strong> cho <em>mọi</em> thao tác (ẩn nút &quot;Xoá&quot; trên giao diện không phải là bảo mật).</li>
+<li>Blazor Server: <code>AuthorizeView</code>, <code>[Authorize]</code> trên component, nhưng vẫn kiểm tra ở tầng dịch vụ.</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Đặt <code>UseAuthorization</code> trước <code>UseAuthentication</code> → luôn 401/403 (Chương 3).</li>
+<li>Quên <code>UseAuthentication()</code> → <code>User</code> luôn ẩn danh.</li>
+<li>Nhầm <code>401</code> với <code>403</code>; redirect trang đăng nhập thay vì <code>401</code> cho API (cookie mặc định redirect).</li>
+<li>Khoá ký JWT yếu/viết cứng trong code/commit lên Git.</li>
+<li>Token sống quá lâu; không kiểm tra <code>aud/iss</code>.</li>
+<li>Đặt dữ liệu nhạy cảm vào JWT (không mã hoá).</li>
+<li>Chỉ kiểm tra &quot;đã đăng nhập&quot; mà không kiểm tra quyền sở hữu (IDOR).</li>
+<li>Lưu JWT ở <code>localStorage</code> trong ứng dụng có nguy cơ XSS.</li>
+<li>Thông báo đăng nhập tiết lộ &quot;user không tồn tại&quot;.</li>
+<li>Tự viết mật mã/quản lý mật khẩu thay vì Identity/IdP.</li>
+<li>Cookie không <code>Secure</code>/<code>HttpOnly</code>/<code>SameSite</code> ở production.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm role <code>Manager</code> và policy <code>&quot;QuanLyHoacAdmin&quot;</code> (<code>RequireRole(&quot;Admin&quot;,&quot;Manager&quot;)</code>); gán cho một tài khoản mới và thử.</li>
+<li>Đặt <code>FallbackPolicy</code> bắt buộc đăng nhập; thêm <code>.AllowAnonymous()</code> cho <code>/</code> và các endpoint đăng nhập.</li>
+<li>Viết endpoint <code>POST /api/token/lam-moi</code> với refresh token lưu trong bộ nhớ (xoay vòng: mỗi refresh token dùng một lần).</li>
+<li>Viết requirement <code>TuoiToiThieuRequirement(int tuoi)</code> + handler tái sử dụng cho nhiều policy.</li>
+<li>Thêm <code>AddIdentityApiEndpoints</code> vào một dự án mới với EF Core SQLite và thử <code>/register</code>, <code>/login</code> bằng <code>curl</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch19-httpclient.html">&larr; 19. Gọi API ngoài với HttpClient</a><a class="nav-next" href="ch21-bao-mat-web.html">21. Bảo mật ứng dụng web &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

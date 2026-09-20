@@ -7,7 +7,7 @@ và các ứng dụng web nâng cao áp dụng design pattern / kiến trúc bes
 
 > **Trạng thái: Tập 1 đã viết xong — 43 chương + 3 phụ lục (46 mục), có bản HTML và PDF.**
 > Đọc `dist/index.html` (HTML) hoặc `dist/csharp-tu-co-ban-den-nang-cao-tap1.pdf` (bản in); chạy `npm run build:all` để
-> build lại từ nguồn Markdown. Còn lại: EPUB, **Tập 2** (ASP.NET Core) và **Tập 3** (web nâng cao). Cấu trúc và pipeline tham khảo
+> build lại từ nguồn Markdown. **Tập 2 (ASP.NET Core) cũng đã viết xong** — 22 chương + 3 phụ lục, nằm trong thư mục `tap2/` (cùng cấu trúc `book/`, `code/`, `dist/`; build bằng `npm run build:tap2` và `npm run build:pdf:tap2`). Còn lại: **Tập 3** (web nâng cao) và EPUB. Cấu trúc và pipeline tham khảo
 > repo `java_book`.
 >
 > **Kiểm chứng:** toàn bộ code mẫu Tập 1 đã được biên dịch và chạy thử bằng .NET SDK 10.0 — 0 lỗi biên dịch,
@@ -172,7 +172,7 @@ không dùng mdBook/Pandoc.
 6. ✅ Phần 6–7 (delegate, C# hiện đại, async, đa luồng, I/O, JSON/CSV, reflection).
 7. ✅ Phần 8–9 (test/tooling, pattern, SOLID, dự án tổng hợp) + phụ lục → **hoàn thành nội dung Tập 1**.
 8. ✅ Build HTML + PDF Tập 1 (đã rà soát: 0 link code hỏng, đủ 46 mục). ✅ Đã chạy thử toàn bộ code mẫu bằng .NET SDK 10. ⬜ Còn: đọc soát PDF, publish.
-9. ⬜ Tập 2: Dữ liệu → Web API → MVC/Razor Pages/Blazor.
+9. ✅ Tập 2 (`tap2/`): nền tảng web, cốt lõi ASP.NET Core, Web API, EF Core, MVC/Razor Pages/Blazor, HttpClient, xác thực, bảo mật, dự án tổng hợp — code đã build và chạy thử bằng .NET SDK 10 (test tích hợp đều đạt).
 10. ⬜ Tập 3: Kiến trúc → Sản xuất → Dự án tổng hợp.
 11. ⬜ Xuất bản EPUB cho cả 3 tập.
 

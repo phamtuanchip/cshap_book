@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 22 — Dự án tổng hợp Tập 2: Web quản lý kho — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-sql-sqlite.html">11. SQL cơ bản và SQLite</a></li><li><a class="chapter-link" href="ch12-efcore-co-ban.html">12. Entity Framework Core cơ bản</a></li><li><a class="chapter-link" href="ch13-efcore-quan-he.html">13. Quan hệ, truy vấn nâng cao và hiệu năng</a></li><li><a class="chapter-link" href="ch14-api-voi-efcore.html">14. Web API hoàn chỉnh với EF Core</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><a class="chapter-link" href="ch15-mvc.html">15. ASP.NET Core MVC</a></li><li><a class="chapter-link" href="ch16-razor-pages.html">16. Razor Pages</a></li><li><a class="chapter-link" href="ch17-form-validation.html">17. Form, validation phía server và chống CSRF</a></li><li><a class="chapter-link" href="ch18-blazor.html">18. Blazor</a></li><li><a class="chapter-link" href="ch19-httpclient.html">19. Gọi API ngoài với HttpClient</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><a class="chapter-link" href="ch20-xac-thuc.html">20. Xác thực và phân quyền</a></li><li><a class="chapter-link" href="ch21-bao-mat-web.html">21. Bảo mật ứng dụng web</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch22-du-an-tong-hop.html">22. Dự án tổng hợp Tập 2: Web quản lý kho</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch23-phu-luc-a-loi-thuong-gap.html">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</a></li><li><a class="chapter-link" href="ch24-phu-luc-b-tai-lieu.html">24. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch25-phu-luc-c-cheat-sheet.html">25. Phụ lục C — Cheat sheet ASP.NET Core</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 22 — Dự án tổng hợp Tập 2: Web quản lý kho</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Ghép mọi kiến thức Tập 2 thành <strong>một hệ thống web hoàn chỉnh</strong>: API + CSDL + xác thực + giao diện + kiểm thử.</li>
+<li>Thấy cách <strong>đưa quy tắc nghiệp vụ của Tập 1 lên web</strong> và xử lý đúng bài toán <strong>đồng thời</strong>.</li>
+<li>Có bộ khung dự án để mở rộng và tái cấu trúc sang <strong>kiến trúc sạch</strong> ở Tập 3.</li>
+</ul>
+<p>Code đầy đủ: <a href="code/ch22-du-an-tong-hop/"><code>code/ch22-du-an-tong-hop/</code></a> — <code>QuanLyKhoWeb</code> (ứng dụng) + <code>QuanLyKhoWeb.Tests</code> (<strong>14 test tích hợp đều đạt</strong>).</p>
+<h2>Bài toán</h2>
+<p>Web hoá ứng dụng console <em>Quản lý kho</em> của Tập 1 (Chương 43) — nhiều nhân viên cùng thao tác:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Yêu cầu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Đăng nhập; vai trò <strong>Admin</strong> (thêm sản phẩm) và <strong>NhanVien</strong> (nhập/xuất kho)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Xem/tìm kiếm/phân trang sản phẩm; báo cáo theo nhóm; danh sách <strong>sắp hết hàng</strong>; lịch sử giao dịch</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Nhập kho</strong> và <strong>xuất kho</strong> — tồn kho <strong>không bao giờ âm</strong> kể cả khi nhiều người xuất cùng lúc</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Ghi lại <strong>ai</strong> thực hiện giao dịch nào, khi nào</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Lỗi trả đúng chuẩn (ProblemDetails); tài liệu OpenAPI; health check; giới hạn tốc độ đăng nhập</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Một trang web đơn giản gọi API</td>
+</tr>
+</tbody>
+</table>
+<h2>Kiến trúc</h2>
+<pre class="mermaid">flowchart LR
+    B[&quot;Trình duyệt&lt;br/&gt;index.html + JS&quot;] --&gt;|&quot;JWT Bearer&quot;| A[&quot;ASP.NET Core Minimal API&quot;]
+    T[&quot;Test xUnit&lt;br/&gt;WebApplicationFactory&quot;] --&gt; A
+    A --&gt; F[&quot;Pipeline: lỗi → static → rate limit → auth&quot;]
+    F --&gt; E[&quot;Endpoints&lt;br/&gt;(mỏng + validation filter)&quot;]
+    E --&gt; S[&quot;KhoService&lt;br/&gt;(nghiệp vụ)&quot;]
+    S --&gt; D[&quot;KhoDb (EF Core)&quot;]
+    D --&gt; Q[(&quot;SQLite&quot;)]
+</pre>
+<pre class="hljs"><code>QuanLyKhoWeb/
+├── Program.cs                 # cấu hình: options, EF, JWT, policy, rate limit, lỗi, OpenAPI
+├── Data/KhoDb.cs              # entity SanPham, GiaoDich + DbContext + ràng buộc CHECK/UNIQUE
+├── Services/
+│   ├── KhoService.cs          # nghiệp vụ + DTO + lỗi nghiệp vụ
+│   └── XacThuc.cs             # tài khoản, phát hành JWT
+├── Endpoints/KhoEndpoints.cs  # route + phân quyền + validation
+├── Migrations/                # từ `dotnet ef migrations add`
+└── wwwroot/index.html         # giao diện đơn giản
+</code></pre>
+<p>Kiến thức của các chương được dùng ở đâu:</p>
+<table>
+<thead>
+<tr>
+<th>Chương</th>
+<th>Nơi dùng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3 Middleware</td>
+<td>thứ tự <code>UseExceptionHandler → UseStaticFiles → UseRateLimiter → UseAuthentication → UseAuthorization</code></td>
+</tr>
+<tr>
+<td>4 Minimal API</td>
+<td><code>MapGroup(&quot;/api&quot;)</code>, <code>Results&lt;...&gt;</code>, endpoint filter</td>
+</tr>
+<tr>
+<td>5 DI</td>
+<td><code>KhoService</code> Scoped, <code>TaiKhoanService</code>/<code>PhatHanhToken</code> Singleton, <code>TimeProvider</code></td>
+</tr>
+<tr>
+<td>6 Cấu hình</td>
+<td><code>JwtOptions</code> + <code>ValidateOnStart</code>; <code>MigrateOnStartup</code>; bí mật ngoài Git</td>
+</tr>
+<tr>
+<td>8, 9</td>
+<td>DTO, validation, <code>IExceptionHandler</code>, ProblemDetails, OpenAPI</td>
+</tr>
+<tr>
+<td>10, 14</td>
+<td><code>WebApplicationFactory</code>, CSDL thật trong test</td>
+</tr>
+<tr>
+<td>11–14 EF Core</td>
+<td>ràng buộc, <code>ExecuteUpdate</code>, projection, transaction, migration</td>
+</tr>
+<tr>
+<td>20, 21</td>
+<td>JWT, policy theo vai trò, <code>FallbackPolicy</code>, rate limiting, mã hoá đầu ra</td>
+</tr>
+<tr>
+<td>Tập 1</td>
+<td>record, LINQ, async, exception nghiệp vụ, <code>TimeProvider</code>, SOLID</td>
+</tr>
+</tbody>
+</table>
+<h2>Những quyết định thiết kế đáng chú ý</h2>
+<h3>1. An toàn theo mặc định</h3>
+<pre class="hljs"><code>builder.Services.AddAuthorizationBuilder()
+    .SetFallbackPolicy(<span class="hljs-keyword">new</span> AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build())    <span class="hljs-comment">// MẶC ĐỊNH: phải đăng nhập</span>
+    .AddPolicy(<span class="hljs-string">&quot;GhiKho&quot;</span>, p =&gt; p.RequireRole(VaiTro.NhanVien, VaiTro.Admin))
+    .AddPolicy(<span class="hljs-string">&quot;QuanTri&quot;</span>, p =&gt; p.RequireRole(VaiTro.Admin));
+</code></pre>
+<p>Mọi endpoint <strong>mới</strong> tự động bị bảo vệ; muốn công khai phải <code>AllowAnonymous()</code> tường minh (đăng nhập, health, OpenAPI). Quên gắn <code>[Authorize]</code> không còn là lỗ hổng. Test <code>KhongDangNhap_MoiEndpointTra401</code> khoá hành vi này.</p>
+<h3>2. Cấu hình phải hợp lệ mới cho chạy</h3>
+<p><code>Jwt:Khoa</code> ngắn hơn 32 ký tự → ứng dụng <strong>từ chối khởi động</strong> (<code>ValidateOnStart</code>). Khoá phát triển chỉ được điền tự động ở <code>Development</code>; production phải cấp bằng biến môi trường <code>Jwt__Khoa</code>. Tránh triển khai nhầm khoá mặc định.</p>
+<h3>3. Bài toán đồng thời — điểm quan trọng nhất</h3>
+<p>Ở Tập 1, <code>KhoService</code> giữ dữ liệu trong bộ nhớ của <strong>một</strong> tiến trình, một luồng. Trên web: nhiều request song song, có thể nhiều instance. Kiểu &quot;đọc <code>TonKho</code> → kiểm tra đủ → trừ → ghi lại&quot; có <strong>race condition</strong> (hai người cùng đọc <code>5</code>, cùng trừ <code>4</code> → âm kho). Giải pháp của dự án: đưa điều kiện <strong>vào chính câu lệnh cập nhật</strong>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> tx = <span class="hljs-keyword">await</span> db.Database.BeginTransactionAsync(ct);
+<span class="hljs-built_in">int</span> n = <span class="hljs-keyword">await</span> db.SanPhams.Where(s =&gt; s.Id == id &amp;&amp; s.TonKho &gt;= soLuong)               <span class="hljs-comment">// điều kiện đủ hàng NẰM TRONG câu UPDATE</span>
+    .ExecuteUpdateAsync(s =&gt; s.SetProperty(x =&gt; x.TonKho, x =&gt; x.TonKho - soLuong), ct);
+
+<span class="hljs-keyword">if</span> (n == <span class="hljs-number">0</span>)                                                                            <span class="hljs-comment">// không dòng nào được cập nhật → giải thích vì sao</span>
+{
+    <span class="hljs-keyword">var</span> sp = <span class="hljs-keyword">await</span> db.SanPhams.AsNoTracking().FirstOrDefaultAsync(s =&gt; s.Id == id, ct)
+        ?? <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> KhongTimThayException(...);
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> KhongDuHangException(sp.Ma, soLuong, sp.TonKho);
+}
+db.GiaoDichs.Add(<span class="hljs-keyword">new</span> GiaoDich { ... });                                                <span class="hljs-comment">// ghi lịch sử cùng giao dịch</span>
+<span class="hljs-keyword">await</span> db.SaveChangesAsync(ct);
+<span class="hljs-keyword">await</span> tx.CommitAsync(ct);
+</code></pre>
+<p><code>UPDATE san_pham SET TonKho = TonKho - @n WHERE Id = @id AND TonKho &gt;= @n</code> là <strong>nguyên tử</strong> ở CSDL: không cần khoá ứng dụng, không cần token đồng thời, đúng ngay cả khi có nhiều instance. Ràng buộc <code>CHECK (TonKho &gt;= 0)</code> là lưới an toàn thứ hai. Thử bằng test:</p>
+<pre class="hljs"><code><span class="hljs-comment">// 20 yêu cầu xuất 1 đơn vị đồng thời cho sản phẩm chỉ còn 5</span>
+<span class="hljs-keyword">var</span> ketQua = <span class="hljs-keyword">await</span> Task.WhenAll(Enumerable.Range(<span class="hljs-number">0</span>, <span class="hljs-number">20</span>).Select(_ =&gt; admin.PostAsJsonAsync(<span class="hljs-string">$&quot;/api/san-pham/<span class="hljs-subst">{id}</span>/xuat&quot;</span>, <span class="hljs-keyword">new</span> { soLuong = <span class="hljs-number">1</span> })));
+Assert.Equal(<span class="hljs-number">5</span>, ketQua.Count(r =&gt; r.StatusCode == HttpStatusCode.OK));         <span class="hljs-comment">// đúng 5 lần thành công</span>
+Assert.Equal(<span class="hljs-number">15</span>, ketQua.Count(r =&gt; r.StatusCode == HttpStatusCode.Conflict));  <span class="hljs-comment">// 15 lần 409</span>
+<span class="hljs-comment">// tồn cuối = 0, không bao giờ âm</span>
+</code></pre>
+<h3>4. Bài học từ khi viết test (những lỗi thật đã gặp)</h3>
+<ul>
+<li><strong>SQLite in-memory dùng chung một kết nối</strong> (như Chương 14) không phản ánh đúng tình huống đồng thời: các transaction của nhiều request dẫm lên nhau trên cùng một kết nối và test cho kết quả sai (chỉ 3 thay vì 5 lần thành công). Với test đồng thời hãy dùng <strong>file SQLite tạm</strong> (mỗi request một kết nối như production) và <code>Default Timeout</code> để chờ khoá ghi thay vì lỗi &quot;database is locked&quot;. Nguyên tắc: <em>môi trường test phải giữ đúng tính chất mà bạn đang kiểm thử</em>.</li>
+<li><strong>SQLite không <code>SUM</code> được biểu thức <code>decimal</code></strong> (<code>TonKho * DonGia</code>): endpoint báo cáo trả <code>500</code> cho đến khi tính bằng <code>double</code> trong SQL rồi đổi về <code>decimal</code>. Trên SQL Server/PostgreSQL viết thẳng. Lỗi này <strong>chỉ lộ nhờ test tích hợp</strong>, không phải unit test nghiệp vụ — minh hoạ giá trị của chương 10/14.</li>
+</ul>
+<h3>5. Ghi nhận người thực hiện</h3>
+<p>Tên người dùng lấy từ <strong>claim của token</strong> (<code>user.Identity.Name</code>) — <em>không</em> nhận từ body request (client có thể giả mạo). Lịch sử giao dịch (<code>GiaoDich.NguoiThucHien</code>) nhờ vậy đáng tin cậy để kiểm toán.</p>
+<h3>6. Giao diện đơn giản</h3>
+<p><code>wwwroot/index.html</code> (HTML + JS thuần) đăng nhập, lấy JWT, gọi API bằng <code>fetch</code>, hiển thị danh sách, nhập/xuất kho. Cùng origin nên không cần CORS. Lưu ý ba điểm: dữ liệu chèn vào HTML đi qua hàm <code>esc()</code> (mã hoá, Chương 21); token giữ trong bộ nhớ trang (mất khi tải lại — đơn giản cho demo); ứng dụng thật dùng cookie <code>HttpOnly</code> hoặc OpenID Connect. Bạn hoàn toàn có thể thay bằng Blazor/Razor Pages/React gọi cùng API — đó là lợi thế của việc tách <strong>API</strong> khỏi <strong>giao diện</strong>.</p>
+<h2>Chạy và thử</h2>
+<pre class="hljs"><code>cd QuanLyKhoWeb
+dotnet run                          # tự migrate + nạp dữ liệu mẫu; mở http://localhost:&lt;cổng&gt;/ và /scalar/v1
+</code></pre>
+<p>Tài khoản mẫu: <code>admin / Admin@123</code> (Admin), <code>nhanvien / NhanVien@123</code> (NhanVien). Thử bằng <code>curl</code>:</p>
+<pre class="hljs"><code>TOKEN=$(curl -s -X POST http://localhost:5000/api/dang-nhap -H &quot;Content-Type: application/json&quot; \
+        -d '{&quot;tenDangNhap&quot;:&quot;nhanvien&quot;,&quot;matKhau&quot;:&quot;NhanVien@123&quot;}' | sed 's/.*&quot;accessToken&quot;:&quot;//;s/&quot;.*//')
+curl -H &quot;Authorization: Bearer $TOKEN&quot; &quot;http://localhost:5000/api/san-pham?tim=laptop&quot;
+curl -X POST -H &quot;Authorization: Bearer $TOKEN&quot; -H &quot;Content-Type: application/json&quot; \
+     -d '{&quot;soLuong&quot;:99}' http://localhost:5000/api/san-pham/1/xuat            # 409: không đủ hàng
+dotnet test ../QuanLyKhoWeb.Tests
+</code></pre>
+<h2>Mở rộng (bài tập lớn)</h2>
+<ol>
+<li><strong>Xoá mềm</strong> sản phẩm (Chương 13) và khôi phục; chỉ Admin.</li>
+<li><strong>Nhiều kho</strong> (<code>MaKho</code>): tồn kho theo từng kho, chuyển kho (một giao dịch trừ ở kho A, cộng ở kho B).</li>
+<li><strong>Phiếu xuất/nhập nhiều dòng</strong> (một phiếu gồm nhiều sản phẩm) — dùng transaction và xử lý thứ tự khoá tránh deadlock.</li>
+<li><strong>Xuất báo cáo CSV/Excel</strong> endpoint <code>GET /api/bao-cao/nhom.csv</code> (Tập 1, Chương 36).</li>
+<li>Thay <code>TaiKhoanService</code> bằng <strong><a href="http://ASP.NET">ASP.NET</a> Core Identity</strong> (+ refresh token) hoặc <strong>OpenID Connect</strong> (Chương 20).</li>
+<li>Chuyển giao diện sang <strong>Blazor</strong> hoặc <strong>Razor Pages</strong>, giữ nguyên API (hoặc gọi thẳng dịch vụ).</li>
+<li><strong>Phân trang keyset</strong> cho lịch sử giao dịch; index <code>(SanPhamId, ThoiGian)</code> đã có sẵn.</li>
+<li>Đổi provider sang <strong>PostgreSQL</strong> và ghi lại mọi thay đổi bạn phải làm (decimal, <code>Like</code>, migration).</li>
+<li><strong>Idempotency-Key</strong> cho <code>POST xuat</code> để gửi lại không trừ hai lần (Chương 19; Tập 3).</li>
+</ol>
+<h2>Hướng tới Tập 3</h2>
+<p>Dự án này là <strong>kiến trúc &quot;một khối&quot; đơn giản</strong>: endpoint gọi thẳng <code>KhoService</code>, <code>KhoService</code> dùng thẳng <code>DbContext</code>. Với hệ thống lớn, Tập 3 sẽ <strong>tái cấu trúc</strong> theo <strong>Clean Architecture</strong> (Domain / Application / Infrastructure / Web), tách <strong>CQRS</strong> (lệnh và truy vấn), dùng <strong>Result pattern</strong>, sự kiện miền, hàng đợi/nền, cache, quan sát (OpenTelemetry), <strong>Docker</strong>, <strong>CI/CD</strong> và triển khai lên đám mây — trên chính bài toán này.</p>
+<p><strong>Chúc mừng bạn đã hoàn thành Tập 2!</strong> Bạn đã xây được ứng dụng web thực thụ với <a href="http://ASP.NET">ASP.NET</a> Core; sẵn sàng cho các vấn đề của hệ thống lớn ở Tập 3.</p>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch21-bao-mat-web.html">&larr; 21. Bảo mật ứng dụng web</a><a class="nav-next" href="ch23-phu-luc-a-loi-thuong-gap.html">23. Phụ lục A — Lỗi thường gặp ASP.NET Core &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

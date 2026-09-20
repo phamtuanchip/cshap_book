@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phụ lục C — Cheat sheet ASP.NET Core — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-sql-sqlite.html">11. SQL cơ bản và SQLite</a></li><li><a class="chapter-link" href="ch12-efcore-co-ban.html">12. Entity Framework Core cơ bản</a></li><li><a class="chapter-link" href="ch13-efcore-quan-he.html">13. Quan hệ, truy vấn nâng cao và hiệu năng</a></li><li><a class="chapter-link" href="ch14-api-voi-efcore.html">14. Web API hoàn chỉnh với EF Core</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><a class="chapter-link" href="ch15-mvc.html">15. ASP.NET Core MVC</a></li><li><a class="chapter-link" href="ch16-razor-pages.html">16. Razor Pages</a></li><li><a class="chapter-link" href="ch17-form-validation.html">17. Form, validation phía server và chống CSRF</a></li><li><a class="chapter-link" href="ch18-blazor.html">18. Blazor</a></li><li><a class="chapter-link" href="ch19-httpclient.html">19. Gọi API ngoài với HttpClient</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><a class="chapter-link" href="ch20-xac-thuc.html">20. Xác thực và phân quyền</a></li><li><a class="chapter-link" href="ch21-bao-mat-web.html">21. Bảo mật ứng dụng web</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch22-du-an-tong-hop.html">22. Dự án tổng hợp Tập 2: Web quản lý kho</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch23-phu-luc-a-loi-thuong-gap.html">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</a></li><li><a class="chapter-link" href="ch24-phu-luc-b-tai-lieu.html">24. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link active" href="ch25-phu-luc-c-cheat-sheet.html">25. Phụ lục C — Cheat sheet ASP.NET Core</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Phụ lục C — Cheat sheet <a href="http://ASP.NET">ASP.NET</a> Core</h1>
+<h2>C.1 Lệnh</h2>
+<pre class="hljs"><code>dotnet new web -n App      dotnet new webapi     dotnet new mvc     dotnet new razor     dotnet new blazor
+dotnet run [--urls http://localhost:5000]    dotnet watch run     dotnet publish -c Release
+dotnet dev-certs https --trust
+dotnet user-secrets set &quot;K&quot; &quot;V&quot;
+dotnet ef migrations add Ten      dotnet ef database update      dotnet ef migrations script      dotnet ef migrations remove
+dotnet list package --vulnerable --include-transitive      dotnet list package --outdated
+</code></pre>
+<h2>C.2 <code>Program.cs</code> khung</h2>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> builder = WebApplication.CreateBuilder(<span class="hljs-keyword">args</span>);
+
+builder.Services.AddControllers();               <span class="hljs-comment">// hoặc AddControllersWithViews / AddRazorPages / AddRazorComponents</span>
+builder.Services.AddDbContext&lt;AppDb&gt;(o =&gt; o.UseSqlite(builder.Configuration.GetConnectionString(<span class="hljs-string">&quot;Db&quot;</span>)));
+builder.Services.AddScoped&lt;IDichVu, DichVu&gt;();
+builder.Services.AddOpenApi();  builder.Services.AddProblemDetails();  builder.Services.AddExceptionHandler&lt;MyHandler&gt;();
+builder.Services.AddAuthentication().AddJwtBearer();  builder.Services.AddAuthorization();
+builder.Services.AddRateLimiter(...);  builder.Services.AddCors(...);  builder.Services.AddHealthChecks();
+
+<span class="hljs-keyword">var</span> app = builder.Build();
+
+app.UseExceptionHandler();  app.UseHsts(); app.UseHttpsRedirection();
+app.UseStaticFiles();  app.UseRouting();  app.UseRateLimiter();  app.UseCors();
+app.UseAuthentication();  app.UseAuthorization();  app.UseAntiforgery();
+
+app.MapGet(<span class="hljs-string">&quot;/&quot;</span>, () =&gt; <span class="hljs-string">&quot;ok&quot;</span>);  app.MapControllers();  app.MapRazorPages();  app.MapHealthChecks(<span class="hljs-string">&quot;/health&quot;</span>);
+app.Run();
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">partial</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Program</span>;
+</code></pre>
+<h2>C.3 Minimal API</h2>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> g = app.MapGroup(<span class="hljs-string">&quot;/api/todos&quot;</span>).WithTags(<span class="hljs-string">&quot;Todos&quot;</span>).RequireAuthorization();
+g.MapGet(<span class="hljs-string">&quot;/&quot;</span>, (AppDb db, <span class="hljs-built_in">string</span>? tim, <span class="hljs-built_in">int</span> trang = <span class="hljs-number">1</span>) =&gt; ...);
+g.MapGet(<span class="hljs-string">&quot;/{id:int}&quot;</span>, Results&lt;Ok&lt;Todo&gt;, NotFound&gt; (<span class="hljs-built_in">int</span> id, AppDb db) =&gt; ...);
+g.MapPost(<span class="hljs-string">&quot;/&quot;</span>, (TaoTodo req, AppDb db) =&gt; TypedResults.Created(<span class="hljs-string">$&quot;/api/todos/<span class="hljs-subst">{id}</span>&quot;</span>, todo));
+g.MapPut(<span class="hljs-string">&quot;/{id:int}&quot;</span>, ...);  g.MapDelete(<span class="hljs-string">&quot;/{id:int}&quot;</span>, ...);
+.AddEndpointFilter&lt;MyFilter&gt;()   .RequireAuthorization(<span class="hljs-string">&quot;Policy&quot;</span>)   .AllowAnonymous()   .WithName(<span class="hljs-string">&quot;X&quot;</span>)   .DisableAntiforgery()
+</code></pre>
+<p>Binding: route <code>{id}</code>, query (kiểu đơn giản), body (kiểu phức tạp), <code>[FromHeader]</code>, <code>[FromForm]</code>, <code>[FromServices]</code>, <code>[AsParameters]</code>, <code>CancellationToken</code>, <code>HttpContext</code>, <code>ClaimsPrincipal</code>.
+Kết quả: <code>TypedResults.Ok / Created / NoContent / NotFound / BadRequest / Conflict / ValidationProblem / Problem / File / Redirect</code>.</p>
+<h2>C.4 Controller</h2>
+<pre class="hljs"><code>[<span class="hljs-meta">ApiController</span>] [Route(<span class="hljs-string">&quot;api/[controller]&quot;</span>)]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">XController</span>(<span class="hljs-params">IDichVu dv</span>) : ControllerBase</span>
+{
+    [<span class="hljs-meta">HttpGet(<span class="hljs-string">&quot;{id:int}&quot;</span>)</span>] <span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;ActionResult&lt;Dto&gt;&gt; Get(<span class="hljs-built_in">int</span> id, CancellationToken ct) =&gt; ...;
+    [<span class="hljs-meta">HttpPost</span>] <span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;ActionResult&lt;Dto&gt;&gt; Post(TaoDto req) =&gt; CreatedAtAction(<span class="hljs-keyword">nameof</span>(Get), <span class="hljs-keyword">new</span> { id }, dto);
+}
+</code></pre>
+<h2>C.5 Razor Pages / MVC / Blazor</h2>
+<pre class="hljs"><code>@page &quot;{id:int}&quot;                       @model XModel        @* Razor Page *@
+&lt;form method=&quot;post&quot;&gt; &lt;input asp-for=&quot;Input.Ten&quot; /&gt; &lt;span asp-validation-for=&quot;Input.Ten&quot;&gt;&lt;/span&gt; &lt;/form&gt;
+&lt;a asp-page=&quot;Details&quot; asp-route-id=&quot;@x.Id&quot;&gt;…&lt;/a&gt;       &lt;a asp-controller=&quot;X&quot; asp-action=&quot;Y&quot;&gt;…&lt;/a&gt;
+</code></pre>
+<pre class="hljs"><code>[<span class="hljs-meta">BindProperty</span>] <span class="hljs-keyword">public</span> Input Input { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;IActionResult&gt; <span class="hljs-title">OnPostAsync</span>()</span> { <span class="hljs-keyword">if</span> (!ModelState.IsValid) <span class="hljs-keyword">return</span> Page(); ...; <span class="hljs-keyword">return</span> RedirectToPage(<span class="hljs-string">&quot;X&quot;</span>); }
+</code></pre>
+<pre class="hljs"><code>@page &quot;/x&quot;  @rendermode InteractiveServer  @inject IDichVu Dv
+&lt;button @onclick=&quot;Tang&quot;&gt;@so&lt;/button&gt;  &lt;input @bind=&quot;ten&quot; @bind:event=&quot;oninput&quot; /&gt;
+&lt;EditForm Model=&quot;m&quot; OnValidSubmit=&quot;Luu&quot;&gt;&lt;DataAnnotationsValidator /&gt;&lt;InputText @bind-Value=&quot;m.Ten&quot; /&gt;&lt;/EditForm&gt;
+@code { int so; void Tang() =&gt; so++; [Parameter] public int Id { get; set; } [Parameter] public EventCallback&lt;int&gt; OnX { get; set; } }
+</code></pre>
+<h2>C.6 DI</h2>
+<pre class="hljs"><code>AddTransient&lt;I, C&gt;()   AddScoped&lt;I, C&gt;()   AddSingleton&lt;I, C&gt;()   AddKeyedScoped&lt;I, C&gt;(<span class="hljs-string">&quot;khoa&quot;</span>)   AddHttpClient&lt;TClient&gt;()
+AddOptions&lt;T&gt;().Bind(cfg.GetSection(<span class="hljs-string">&quot;X&quot;</span>)).ValidateDataAnnotations().ValidateOnStart()
+IOptions&lt;T&gt; (cố định) · IOptionsSnapshot&lt;T&gt; (mỗi request) · IOptionsMonitor&lt;T&gt; (theo dõi thay đổi)
+</code></pre>
+<p>Quy tắc: dịch vụ sống lâu <strong>không</strong> phụ thuộc dịch vụ sống ngắn (Singleton ↛ Scoped). <code>DbContext</code> luôn Scoped.</p>
+<h2>C.7 EF Core</h2>
+<pre class="hljs"><code>db.Set.Add(x); <span class="hljs-keyword">await</span> db.SaveChangesAsync();                 db.Set.Remove(x);
+<span class="hljs-keyword">await</span> db.Set.AsNoTracking().Where(...).OrderBy(...).Select(x =&gt; <span class="hljs-keyword">new</span> Dto(...)).ToListAsync(ct);
+<span class="hljs-keyword">await</span> db.Set.Where(...).ExecuteUpdateAsync(s =&gt; s.SetProperty(x =&gt; x.Ton, x =&gt; x.Ton - n), ct);   <span class="hljs-keyword">await</span> ...ExecuteDeleteAsync();
+.Include(x =&gt; x.Con).ThenInclude(...)   .AsSplitQuery()   .IgnoreQueryFilters()   EF.Functions.Like(x.Ten, <span class="hljs-string">$&quot;%<span class="hljs-subst">{s}</span>%&quot;</span>)
+<span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> tx = <span class="hljs-keyword">await</span> db.Database.BeginTransactionAsync(); ... <span class="hljs-keyword">await</span> tx.CommitAsync();
+e.HasIndex(x =&gt; x.Ma).IsUnique();  e.HasOne(x =&gt; x.A).WithMany(a =&gt; a.Bs).HasForeignKey(x =&gt; x.AId);  e.HasQueryFilter(x =&gt; !x.DaXoa);  e.Property(x =&gt; x.V).IsConcurrencyToken();
+</code></pre>
+<h2>C.8 Xác thực / phân quyền</h2>
+<pre class="hljs"><code>app.UseAuthentication(); app.UseAuthorization();                <span class="hljs-comment">// đúng thứ tự</span>
+AddAuthorizationBuilder().SetFallbackPolicy(...RequireAuthenticatedUser()).AddPolicy(<span class="hljs-string">&quot;P&quot;</span>, p =&gt; p.RequireRole(<span class="hljs-string">&quot;Admin&quot;</span>));
+.RequireAuthorization(<span class="hljs-string">&quot;P&quot;</span>)   [Authorize(Roles=<span class="hljs-string">&quot;A,B&quot;</span>)]   [AllowAnonymous]
+<span class="hljs-keyword">await</span> auth.AuthorizeAsync(user, resource, <span class="hljs-keyword">new</span> MyRequirement());  <span class="hljs-comment">// resource-based</span>
+ctx.SignInAsync(scheme, principal)   ctx.SignOutAsync(scheme)
+</code></pre>
+<h2>C.9 Mã trạng thái nên dùng</h2>
+<table>
+<thead>
+<tr>
+<th>Tình huống</th>
+<th>Mã</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Đọc thành công</td>
+<td><code>200</code></td>
+</tr>
+<tr>
+<td>Tạo mới</td>
+<td><code>201</code> + <code>Location</code></td>
+</tr>
+<tr>
+<td>Thành công không body</td>
+<td><code>204</code></td>
+</tr>
+<tr>
+<td>Dữ liệu gửi sai</td>
+<td><code>400</code> (ValidationProblem)</td>
+</tr>
+<tr>
+<td>Chưa xác thực / token sai</td>
+<td><code>401</code></td>
+</tr>
+<tr>
+<td>Không đủ quyền</td>
+<td><code>403</code></td>
+</tr>
+<tr>
+<td>Không tồn tại (hoặc không được biết là tồn tại)</td>
+<td><code>404</code></td>
+</tr>
+<tr>
+<td>Xung đột (trùng mã, hết hàng, phiên bản)</td>
+<td><code>409</code></td>
+</tr>
+<tr>
+<td>Dữ liệu hợp lệ về cú pháp nhưng sai nghiệp vụ</td>
+<td><code>422</code></td>
+</tr>
+<tr>
+<td>Quá giới hạn tốc độ</td>
+<td><code>429</code> + <code>Retry-After</code></td>
+</tr>
+<tr>
+<td>Lỗi máy chủ</td>
+<td><code>500</code></td>
+</tr>
+<tr>
+<td>Dịch vụ ngoài lỗi / chậm</td>
+<td><code>502</code> / <code>504</code></td>
+</tr>
+<tr>
+<td>Quá tải/bảo trì</td>
+<td><code>503</code></td>
+</tr>
+</tbody>
+</table>
+<h2>C.10 Danh sách kiểm tra nhanh</h2>
+<ul>
+<li>[ ] Pipeline đúng thứ tự (lỗi → HTTPS → static → routing → CORS → auth → endpoint).</li>
+<li>[ ] DTO vào ≠ ra ≠ entity; validation ở server; PRG với form; antiforgery.</li>
+<li>[ ] SQL luôn tham số hoá; không N+1; có phân trang và giới hạn kích thước.</li>
+<li>[ ] Fallback policy bắt đăng nhập; kiểm tra quyền sở hữu; rate limit đăng nhập.</li>
+<li>[ ] Bí mật ngoài Git; HTTPS; header bảo mật; log không lộ dữ liệu nhạy cảm.</li>
+<li>[ ] Test tích hợp cho luồng chính và nhánh lỗi; <code>dotnet list package --vulnerable</code>.</li>
+</ul>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch24-phu-luc-b-tai-lieu.html">&larr; 24. Phụ lục B — Tài liệu tham khảo</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

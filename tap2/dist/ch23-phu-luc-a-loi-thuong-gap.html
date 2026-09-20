@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phụ lục A — Lỗi thường gặp ASP.NET Core — C# và ASP.NET Core — Tập 2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và ASP.NET Core — Tập 2</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng web và môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-http-co-ban.html">1. Web hoạt động thế nào: HTTP và REST</a></li><li><a class="chapter-link" href="ch02-du-an-dau-tien.html">2. Dự án ASP.NET Core đầu tiên</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Cốt lõi ASP.NET Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch03-middleware.html">3. Middleware và request pipeline</a></li><li><a class="chapter-link" href="ch04-minimal-api.html">4. Routing và Minimal API</a></li><li><a class="chapter-link" href="ch05-dependency-injection.html">5. Dependency Injection</a></li><li><a class="chapter-link" href="ch06-cau-hinh-logging.html">6. Cấu hình, Options và Logging</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Web API</div><ul class="chapter-list"><li><a class="chapter-link" href="ch07-controller-api.html">7. Web API với Controller</a></li><li><a class="chapter-link" href="ch08-dto-validation.html">8. DTO và Validation</a></li><li><a class="chapter-link" href="ch09-loi-openapi.html">9. Xử lý lỗi, versioning và OpenAPI</a></li><li><a class="chapter-link" href="ch10-kiem-thu-api.html">10. Kiểm thử API</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dữ liệu với EF Core</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-sql-sqlite.html">11. SQL cơ bản và SQLite</a></li><li><a class="chapter-link" href="ch12-efcore-co-ban.html">12. Entity Framework Core cơ bản</a></li><li><a class="chapter-link" href="ch13-efcore-quan-he.html">13. Quan hệ, truy vấn nâng cao và hiệu năng</a></li><li><a class="chapter-link" href="ch14-api-voi-efcore.html">14. Web API hoàn chỉnh với EF Core</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Giao diện web</div><ul class="chapter-list"><li><a class="chapter-link" href="ch15-mvc.html">15. ASP.NET Core MVC</a></li><li><a class="chapter-link" href="ch16-razor-pages.html">16. Razor Pages</a></li><li><a class="chapter-link" href="ch17-form-validation.html">17. Form, validation phía server và chống CSRF</a></li><li><a class="chapter-link" href="ch18-blazor.html">18. Blazor</a></li><li><a class="chapter-link" href="ch19-httpclient.html">19. Gọi API ngoài với HttpClient</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Bảo mật cơ bản</div><ul class="chapter-list"><li><a class="chapter-link" href="ch20-xac-thuc.html">20. Xác thực và phân quyền</a></li><li><a class="chapter-link" href="ch21-bao-mat-web.html">21. Bảo mật ứng dụng web</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch22-du-an-tong-hop.html">22. Dự án tổng hợp Tập 2: Web quản lý kho</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch23-phu-luc-a-loi-thuong-gap.html">23. Phụ lục A — Lỗi thường gặp ASP.NET Core</a></li><li><a class="chapter-link" href="ch24-phu-luc-b-tai-lieu.html">24. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch25-phu-luc-c-cheat-sheet.html">25. Phụ lục C — Cheat sheet ASP.NET Core</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Phụ lục A — Lỗi thường gặp <a href="http://ASP.NET">ASP.NET</a> Core</h1>
+<p>Tra cứu theo <strong>triệu chứng</strong>. Cột &quot;Chương&quot; trỏ tới nội dung giải thích.</p>
+<h2>A.1 Khởi động và cấu hình</h2>
+<table>
+<thead>
+<tr>
+<th>Triệu chứng / thông báo</th>
+<th>Nguyên nhân</th>
+<th>Cách xử lý</th>
+<th>Ch.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Address already in use</code></td>
+<td>cổng đang bị dùng</td>
+<td><code>--urls http://localhost:5xxx</code>; tắt tiến trình cũ</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Trình duyệt báo chứng chỉ không tin cậy</td>
+<td>chưa tin dev certificate</td>
+<td><code>dotnet dev-certs https --trust</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>Cannot modify ServiceCollection after application started</code></td>
+<td>gọi <code>builder.Services.Add...</code> sau <code>Build()</code></td>
+<td>đăng ký trước <code>Build()</code></td>
+<td>2, 5</td>
+</tr>
+<tr>
+<td><code>OptionsValidationException</code> khi khởi động</td>
+<td>cấu hình sai (<code>ValidateOnStart</code>)</td>
+<td>sửa giá trị theo thông báo</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Cấu hình đọc ra <code>null</code>/mặc định</td>
+<td>sai khoá, sai cấp, sai môi trường</td>
+<td>dùng Options + validate; kiểm tra <code>ASPNETCORE_ENVIRONMENT</code></td>
+<td>6</td>
+</tr>
+<tr>
+<td><code>FileNotFoundException: appsettings.json</code></td>
+<td>không copy ra thư mục output</td>
+<td><code>CopyToOutputDirectory</code> (SDK Web đã làm sẵn)</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Biến môi trường không ghi đè</td>
+<td>dùng <code>:</code> thay <code>__</code></td>
+<td><code>CuaHang__Ten</code></td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<h2>A.2 Pipeline, routing, DI</h2>
+<table>
+<thead>
+<tr>
+<th>Triệu chứng</th>
+<th>Nguyên nhân</th>
+<th>Cách xử lý</th>
+<th>Ch.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mọi URL rơi vào cùng một handler, endpoint không chạy</td>
+<td><code>app.Run(...)</code> terminal đặt trước endpoint</td>
+<td>dùng <code>MapFallback</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td>Luôn 401/403 dù đã đăng nhập</td>
+<td><code>UseAuthorization</code> trước <code>UseAuthentication</code>, hoặc thiếu <code>UseAuthentication</code></td>
+<td>đúng thứ tự</td>
+<td>3, 20</td>
+</tr>
+<tr>
+<td><code>Headers are read-only, response has already started</code></td>
+<td>sửa header sau khi body bắt đầu gửi</td>
+<td><code>Response.OnStarting</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td>Request treo</td>
+<td>quên <code>await next(ctx)</code> / <code>.Result</code></td>
+<td><code>await</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>404</code> cho endpoint tồn tại</td>
+<td>thiếu <code>MapControllers</code>/<code>MapRazorPages</code>, sai constraint (<code>{id:int}</code> với <code>abc</code>)</td>
+<td>kiểm tra map và route</td>
+<td>4, 7</td>
+</tr>
+<tr>
+<td><code>AmbiguousMatchException</code></td>
+<td>hai endpoint cùng route</td>
+<td>đổi route / thêm constraint</td>
+<td>4, 7</td>
+</tr>
+<tr>
+<td><code>Body was inferred but the method does not allow inferred body parameters</code></td>
+<td>tham số lớp không đăng ký DI bị hiểu là body</td>
+<td>đăng ký dịch vụ, hoặc <code>[FromServices]</code>/<code>[FromBody]</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>Unable to resolve service for type 'X'</code></td>
+<td>quên đăng ký DI</td>
+<td><code>AddScoped&lt;...&gt;</code></td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>Cannot consume scoped service from singleton</code></td>
+<td>captive dependency</td>
+<td>hạ vòng đời / <code>IServiceScopeFactory</code></td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>A circular dependency was detected</code></td>
+<td>A cần B, B cần A</td>
+<td>thiết kế lại</td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>415 Unsupported Media Type</code></td>
+<td>thiếu <code>Content-Type: application/json</code></td>
+<td>thêm header</td>
+<td>7</td>
+</tr>
+<tr>
+<td><code>400</code> bind lỗi kiểu</td>
+<td>chuỗi vào số, JSON sai</td>
+<td>xem <code>errors</code> trong ProblemDetails</td>
+<td>4, 8</td>
+</tr>
+</tbody>
+</table>
+<h2>A.3 EF Core và dữ liệu</h2>
+<table>
+<thead>
+<tr>
+<th>Triệu chứng</th>
+<th>Nguyên nhân</th>
+<th>Cách xử lý</th>
+<th>Ch.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dữ liệu không được lưu</td>
+<td>quên <code>SaveChanges</code></td>
+<td>gọi (và <code>await</code>)</td>
+<td>12</td>
+</tr>
+<tr>
+<td><code>A second operation was started on this context</code></td>
+<td><code>DbContext</code> dùng chung nhiều luồng/quên <code>await</code></td>
+<td>mỗi request một context; <code>await</code> mọi lời gọi</td>
+<td>12</td>
+</tr>
+<tr>
+<td><code>no such table</code></td>
+<td>chưa migrate/tạo DB</td>
+<td><code>Migrate()</code>/<code>dotnet ef database update</code></td>
+<td>12</td>
+</tr>
+<tr>
+<td>Truy vấn chậm, hàng trăm câu SQL/request</td>
+<td><strong>N+1</strong></td>
+<td><code>Include</code>/projection; đếm câu SQL</td>
+<td>13</td>
+</tr>
+<tr>
+<td><code>NullReferenceException</code> trên navigation</td>
+<td>quên <code>Include</code></td>
+<td><code>Include</code> hoặc projection</td>
+<td>13</td>
+</tr>
+<tr>
+<td><code>JsonException: possible object cycle</code></td>
+<td>serialize entity có vòng tham chiếu</td>
+<td>trả DTO</td>
+<td>8, 13</td>
+</tr>
+<tr>
+<td><code>DbUpdateException</code> UNIQUE/FK/CHECK</td>
+<td>vi phạm ràng buộc CSDL</td>
+<td>dịch sang <code>409</code>/<code>400</code></td>
+<td>12, 14</td>
+</tr>
+<tr>
+<td><code>DbUpdateConcurrencyException</code></td>
+<td>hai người sửa cùng dòng</td>
+<td>tải lại, thử lại hoặc <code>409</code>; hoặc <code>UPDATE</code> có điều kiện</td>
+<td>13, 22</td>
+</tr>
+<tr>
+<td><code>The LINQ expression could not be translated</code></td>
+<td>dùng hàm C# EF không dịch được</td>
+<td>viết lại, tách phần chạy trong bộ nhớ có chủ ý</td>
+<td>12</td>
+</tr>
+<tr>
+<td><code>SQLite does not support expressions of type 'decimal'</code></td>
+<td><code>SUM/ORDER BY</code> trên decimal ở SQLite</td>
+<td>converter <code>double</code>; hoặc dùng CSDL khác</td>
+<td>12, 22</td>
+</tr>
+<tr>
+<td>Tìm kiếm phân biệt hoa/thường bất ngờ</td>
+<td><code>Contains</code> → <code>instr</code> trên SQLite</td>
+<td><code>EF.Functions.Like</code></td>
+<td>14</td>
+</tr>
+<tr>
+<td><code>database is locked</code></td>
+<td>nhiều writer SQLite</td>
+<td><code>Default Timeout</code>, WAL, hoặc CSDL server</td>
+<td>22</td>
+</tr>
+<tr>
+<td>Migration lệch schema</td>
+<td>sửa migration đã áp dụng / trộn <code>EnsureCreated</code></td>
+<td>thêm migration mới</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<h2>A.4 API, validation, lỗi</h2>
+<table>
+<thead>
+<tr>
+<th>Triệu chứng</th>
+<th>Nguyên nhân</th>
+<th>Cách xử lý</th>
+<th>Ch.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trả <code>200</code> kèm nội dung lỗi</td>
+<td>không dùng mã HTTP đúng</td>
+<td><code>404/400/409</code>; ProblemDetails</td>
+<td>1, 9</td>
+</tr>
+<tr>
+<td>Lộ stack trace ra client</td>
+<td>trang lỗi dev ở production</td>
+<td><code>UseExceptionHandler</code></td>
+<td>9</td>
+</tr>
+<tr>
+<td><code>[Required]</code> không bắt được số vắng</td>
+<td>kiểu giá trị mặc định <code>0</code></td>
+<td><code>decimal?</code> hoặc <code>required</code></td>
+<td>8</td>
+</tr>
+<tr>
+<td><code>IValidatableObject</code> không chạy</td>
+<td>còn lỗi validation thuộc tính</td>
+<td>sửa lỗi thuộc tính trước (chủ ý)</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Lỗi CORS chỉ trong trình duyệt</td>
+<td>thiếu origin trong policy / sai thứ tự <code>UseCors</code></td>
+<td>liệt kê origin; <code>UseCors</code> trước auth</td>
+<td>9</td>
+</tr>
+<tr>
+<td>Test báo <code>The type 'Program' is inaccessible</code></td>
+<td>thiếu <code>public partial class Program;</code></td>
+<td>thêm</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Test &quot;xanh&quot; nhưng không kiểm tra gì</td>
+<td>quên <code>await</code></td>
+<td><code>await</code></td>
+<td>10</td>
+</tr>
+<tr>
+<td>Test lúc đạt lúc hỏng</td>
+<td>trạng thái chung/thứ tự</td>
+<td>dữ liệu riêng mỗi test</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<h2>A.5 Giao diện web</h2>
+<table>
+<thead>
+<tr>
+<th>Triệu chứng</th>
+<th>Nguyên nhân</th>
+<th>Cách xử lý</th>
+<th>Ch.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>The view 'X' was not found</code></td>
+<td>sai tên/thư mục view</td>
+<td><code>Views/&lt;Controller&gt;/X.cshtml</code></td>
+<td>15</td>
+</tr>
+<tr>
+<td>Model type mismatch (<code>ViewDataDictionary</code>)</td>
+<td>truyền sai kiểu model</td>
+<td>khớp <code>@model</code></td>
+<td>15</td>
+</tr>
+<tr>
+<td>POST form trả <code>400</code></td>
+<td>thiếu antiforgery token</td>
+<td>dùng tag helper form / gửi header</td>
+<td>17</td>
+</tr>
+<tr>
+<td>F5 gửi lại form</td>
+<td>không PRG</td>
+<td>redirect sau POST thành công</td>
+<td>17</td>
+</tr>
+<tr>
+<td>Razor Page <code>404</code></td>
+<td>thiếu <code>@page</code></td>
+<td>thêm <code>@page</code></td>
+<td>16</td>
+</tr>
+<tr>
+<td><code>[BindProperty]</code> rỗng khi GET</td>
+<td>mặc định chỉ POST</td>
+<td><code>SupportsGet = true</code></td>
+<td>16</td>
+</tr>
+<tr>
+<td>Lỗi validation không hiện cạnh ô</td>
+<td>tên trường sai tiền tố (<code>Input.Ma</code>)</td>
+<td><code>AddModelError(&quot;Input.Ma&quot;, ...)</code></td>
+<td>16</td>
+</tr>
+<tr>
+<td>Dropdown trống sau lỗi</td>
+<td>quên nạp lại <code>SelectList</code></td>
+<td>nạp lại trước <code>return Page()</code></td>
+<td>16</td>
+</tr>
+<tr>
+<td>Blazor: không tương tác</td>
+<td>thiếu <code>@rendermode</code></td>
+<td><code>@rendermode InteractiveServer</code></td>
+<td>18</td>
+</tr>
+<tr>
+<td>Blazor: UI không cập nhật</td>
+<td>đổi dữ liệu ngoài luồng sự kiện</td>
+<td><code>InvokeAsync(StateHasChanged)</code></td>
+<td>18</td>
+</tr>
+<tr>
+<td>Tiếng Việt thành <code>&amp;#x1ED9;</code> trong HTML</td>
+<td>mã hoá mặc định</td>
+<td><code>WebEncoderOptions</code> với <code>UnicodeRanges.All</code></td>
+<td>15</td>
+</tr>
+</tbody>
+</table>
+<h2>A.6 HttpClient và bảo mật</h2>
+<table>
+<thead>
+<tr>
+<th>Triệu chứng</th>
+<th>Nguyên nhân</th>
+<th>Cách xử lý</th>
+<th>Ch.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cạn socket / <code>SocketException</code></td>
+<td><code>new HttpClient()</code> mỗi request</td>
+<td><code>IHttpClientFactory</code></td>
+<td>19</td>
+</tr>
+<tr>
+<td>Xử lý body lỗi như dữ liệu</td>
+<td>quên <code>EnsureSuccessStatusCode</code></td>
+<td>kiểm tra mã</td>
+<td>19</td>
+</tr>
+<tr>
+<td>Timeout lâu, treo</td>
+<td>không đặt timeout/<code>CancellationToken</code></td>
+<td>resilience + token</td>
+<td>19</td>
+</tr>
+<tr>
+<td>Thanh toán bị trừ hai lần</td>
+<td>retry <code>POST</code> không idempotent</td>
+<td>idempotency key; tắt retry cho <code>POST</code></td>
+<td>19</td>
+</tr>
+<tr>
+<td>Token JWT bị <code>401</code> dù đúng</td>
+<td>sai <code>iss/aud</code>, hết hạn, sai khoá</td>
+<td>kiểm tra <code>TokenValidationParameters</code>, đồng hồ</td>
+<td>20</td>
+</tr>
+<tr>
+<td>Token giải mã không được ở instance khác</td>
+<td>Data Protection khoá không dùng chung</td>
+<td>lưu khoá dùng chung</td>
+<td>21</td>
+</tr>
+<tr>
+<td>Rate limit chặn cả nhóm người dùng</td>
+<td>giới hạn theo IP proxy</td>
+<td><code>UseForwardedHeaders</code> đúng</td>
+<td>21</td>
+</tr>
+<tr>
+<td><code>429</code> khi test</td>
+<td>rate limit bật</td>
+<td>nới trong cấu hình test</td>
+<td>21, 22</td>
+</tr>
+</tbody>
+</table>
+<h2>A.7 Cách tìm lỗi trong <a href="http://ASP.NET">ASP.NET</a> Core</h2>
+<ol>
+<li>Đọc <strong>log</strong> (mức <code>Information</code>/<code>Debug</code>): dòng <code>Request starting</code>/<code>Executing endpoint</code> cho biết request đã tới đâu.</li>
+<li>Ở <code>Development</code> trang lỗi hiển thị stack trace; production dùng <code>traceId</code> trong ProblemDetails để tra log.</li>
+<li>Bật log SQL: <code>Microsoft.EntityFrameworkCore.Database.Command = Information</code>.</li>
+<li>Gọi bằng <code>curl -i</code>/<code>.http</code> để thấy header và body thật; DevTools → Network với trình duyệt.</li>
+<li>Tái hiện bằng <strong>integration test</strong> rồi sửa — test ở lại làm hàng rào.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch22-du-an-tong-hop.html">&larr; 22. Dự án tổng hợp Tập 2: Web quản lý kho</a><a class="nav-next" href="ch24-phu-luc-b-tai-lieu.html">24. Phụ lục B — Tài liệu tham khảo &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
