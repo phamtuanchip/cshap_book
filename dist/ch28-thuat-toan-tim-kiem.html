@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 28 — Thuật toán tìm kiếm — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link active" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 28 — Thuật toán tìm kiếm</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Cài đặt và so sánh bốn thuật toán tìm kiếm: <strong>Linear</strong>, <strong>Binary</strong>, <strong>Jump</strong>, <strong>Interpolation</strong>.</li>
+<li>Đọc hiểu độ phức tạp thời gian của mỗi thuật toán và điều kiện áp dụng.</li>
+<li>Biết dùng lại hàm có sẵn của .NET (<code>Array.BinarySearch</code>, <code>List.BinarySearch</code>, <code>Contains</code>, <code>HashSet</code>).</li>
+<li>Chọn thuật toán/cấu trúc phù hợp với dữ liệu và nhu cầu.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch28-thuat-toan-tim-kiem/"><code>code/ch28-thuat-toan-tim-kiem/</code></a>.</p>
+<h2>Bài toán</h2>
+<p>Cho một tập giá trị, tìm vị trí của giá trị <code>x</code> (hoặc <code>-1</code> nếu không có). Câu hỏi thực tế: <strong>nhanh đến đâu, và dữ liệu
+cần đáp ứng điều kiện gì?</strong> Code mẫu đếm số &quot;bước&quot; (số lần so sánh) mỗi thuật toán dùng để bạn thấy sự khác biệt.</p>
+<h2>1. Tìm tuần tự (Linear Search) — O(n)</h2>
+<p>Duyệt từ đầu, so từng phần tử:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> <span class="hljs-title">Tim</span>(<span class="hljs-params"><span class="hljs-built_in">int</span>[] a, <span class="hljs-built_in">int</span> x</span>)</span>
+{
+    <span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> i = <span class="hljs-number">0</span>; i &lt; a.Length; i++)
+        <span class="hljs-keyword">if</span> (a[i] == x) <span class="hljs-keyword">return</span> i;
+    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;
+}
+</code></pre>
+<ul>
+<li><strong>Không yêu cầu sắp xếp.</strong> Đơn giản, đúng với mọi loại dữ liệu.</li>
+<li>Trường hợp xấu nhất: <code>n</code> phép so sánh (không thấy hoặc ở cuối).</li>
+<li>Tốt cho dữ liệu nhỏ, chỉ tìm vài lần, hoặc chưa sắp xếp.</li>
+</ul>
+<h2>2. Tìm nhị phân (Binary Search) — O(log n)</h2>
+<p>Điều kiện: mảng <strong>đã sắp xếp</strong>. Mỗi bước so với phần tử <strong>giữa</strong>, loại bỏ một nửa:</p>
+<pre class="hljs"><code><span class="hljs-built_in">int</span> lo = <span class="hljs-number">0</span>, hi = a.Length - <span class="hljs-number">1</span>;
+<span class="hljs-keyword">while</span> (lo &lt;= hi)
+{
+    <span class="hljs-built_in">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;   <span class="hljs-comment">// không dùng (lo + hi) / 2 vì có thể tràn số</span>
+    <span class="hljs-keyword">if</span> (a[mid] == x) <span class="hljs-keyword">return</span> mid;
+    <span class="hljs-keyword">if</span> (a[mid] &lt; x) lo = mid + <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">else</span> hi = mid - <span class="hljs-number">1</span>;
+}
+<span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;
+</code></pre>
+<pre class="mermaid">flowchart LR
+    A[&quot;[2 5 8 12 16 23 38 56 72 91]&lt;br/&gt;tìm 23&quot;] --&gt; B[&quot;giữa = 16 &lt; 23&lt;br/&gt;bỏ nửa trái&quot;]
+    B --&gt; C[&quot;[23 38 56 72 91]&lt;br/&gt;giữa = 56 &gt; 23&quot;]
+    C --&gt; D[&quot;[23 38]&lt;br/&gt;giữa = 23 ✔&quot;]
+</pre>
+<p>Với 1.000.000 phần tử chỉ cần khoảng <strong>20</strong> phép so sánh. Đây là thuật toán quan trọng nhất của chương. Trong .NET có sẵn:
+<code>Array.BinarySearch(a, x)</code>, <code>list.BinarySearch(x)</code> (trả số âm — phần bù của vị trí chèn — nếu không thấy).</p>
+<p><strong>Lỗi kinh điển:</strong> <code>(lo + hi) / 2</code> có thể tràn <code>int</code> khi mảng rất lớn; <code>lo + (hi - lo) / 2</code> an toàn.</p>
+<h2>3. Tìm nhảy (Jump Search) — O(√n)</h2>
+<p>Điều kiện: mảng đã sắp xếp. <strong>Nhảy</strong> từng khối kích thước <code>√n</code> cho tới khi vượt quá <code>x</code>, rồi tìm <strong>tuần tự</strong> trong khối đó:</p>
+<pre class="hljs"><code><span class="hljs-built_in">int</span> buocNhay = (<span class="hljs-built_in">int</span>)Math.Sqrt(n);
+<span class="hljs-built_in">int</span> truoc = <span class="hljs-number">0</span>, cur = buocNhay;
+<span class="hljs-keyword">while</span> (cur &lt; n &amp;&amp; a[cur - <span class="hljs-number">1</span>] &lt; x) { truoc = cur; cur += buocNhay; }
+<span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> i = truoc; i &lt; Math.Min(cur, n); i++)
+{
+    <span class="hljs-keyword">if</span> (a[i] == x) <span class="hljs-keyword">return</span> i;
+    <span class="hljs-keyword">if</span> (a[i] &gt; x) <span class="hljs-keyword">break</span>;
+}
+<span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;
+</code></pre>
+<p>Chậm hơn nhị phân nhưng chỉ <strong>duyệt tiến</strong> (không nhảy lùi) — hợp với dữ liệu mà &quot;quay lại&quot; tốn kém (băng từ, luồng
+đọc tuần tự). Trong thực tế ít dùng hơn nhị phân, nhưng đáng biết như một giải pháp trung gian.</p>
+<h2>4. Tìm nội suy (Interpolation Search) — trung bình O(log log n)</h2>
+<p>Điều kiện: đã sắp xếp và giá trị <strong>phân bố khá đều</strong>. Thay vì luôn chọn giữa, <strong>ước lượng</strong> vị trí theo tỷ lệ giá trị
+(giống tìm tên trong danh bạ: tìm &quot;Zoe&quot; mở gần cuối):</p>
+<pre class="hljs"><code><span class="hljs-built_in">int</span> pos = lo + (<span class="hljs-built_in">int</span>)((<span class="hljs-built_in">long</span>)(x - a[lo]) * (hi - lo) / (a[hi] - a[lo]));
+</code></pre>
+<p>Với dữ liệu phân bố đều, nhảy gần như thẳng tới đích: cực nhanh (<code>0, 3, 6, 9, ...</code>). Nhưng với dữ liệu lệch nhiều
+(ví dụ <code>1, 2, 4, 8, 16, ... 2^30</code>) có thể suy biến thành <strong>O(n)</strong>. Luôn kiểm tra <code>a[hi] == a[lo]</code> để tránh chia cho 0
+và giữ <code>x</code> trong khoảng <code>[a[lo], a[hi]]</code>.</p>
+<h2>So sánh tổng hợp</h2>
+<table>
+<thead>
+<tr>
+<th>Thuật toán</th>
+<th>Yêu cầu sắp xếp</th>
+<th>Thời gian (tệ nhất)</th>
+<th>Trung bình / ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linear</td>
+<td>Không</td>
+<td>O(n)</td>
+<td>đơn giản, mọi kiểu dữ liệu</td>
+</tr>
+<tr>
+<td>Binary</td>
+<td><strong>Có</strong></td>
+<td>O(log n)</td>
+<td>mặc định cho mảng đã sắp xếp</td>
+</tr>
+<tr>
+<td>Jump</td>
+<td><strong>Có</strong></td>
+<td>O(√n)</td>
+<td>chỉ duyệt tiến</td>
+</tr>
+<tr>
+<td>Interpolation</td>
+<td><strong>Có</strong> + phân bố đều</td>
+<td>O(n)</td>
+<td>O(log log n) khi dữ liệu đều</td>
+</tr>
+</tbody>
+</table>
+<p>Chạy chương trình mẫu (mảng <code>0, 3, 6, ..., 2997</code>, tìm <code>2001</code>): tuyến tính cần ~668 bước, nhị phân chỉ ~10, nhảy ~40,
+nội suy chỉ 1 bước. Con số chính xác in ra khi bạn chạy.</p>
+<h2>Đừng quên: cấu trúc dữ liệu cũng là &quot;thuật toán tìm kiếm&quot;</h2>
+<p>Nếu tìm kiếm là thao tác thường xuyên, thường <strong>chọn đúng cấu trúc</strong> tốt hơn tối ưu thuật toán trên mảng:</p>
+<table>
+<thead>
+<tr>
+<th>Tình huống</th>
+<th>Chọn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tìm theo khoá, dữ liệu đổi liên tục</td>
+<td><code>Dictionary&lt;K,V&gt;</code> / <code>HashSet&lt;T&gt;</code> — O(1)</td>
+</tr>
+<tr>
+<td>Cần thứ tự + tìm theo khoảng</td>
+<td><code>SortedSet&lt;T&gt;</code> / <code>SortedDictionary</code> — O(log n)</td>
+</tr>
+<tr>
+<td>Mảng tĩnh đã sắp xếp, tìm nhiều lần</td>
+<td><code>Array.BinarySearch</code></td>
+</tr>
+<tr>
+<td>Dữ liệu ít, tìm vài lần</td>
+<td><code>Contains</code> / <code>Array.IndexOf</code> (tuần tự)</td>
+</tr>
+<tr>
+<td>Dữ liệu chưa sắp xếp, tìm <strong>một lần</strong></td>
+<td>tuần tự (sắp xếp O(n log n) sẽ không đáng)</td>
+</tr>
+</tbody>
+</table>
+<p>Sắp xếp một lần rồi tìm nhiều lần thì đáng; sắp xếp để tìm đúng một lần thì lãng phí.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Tìm nhị phân/nhảy/nội suy trên mảng <strong>chưa sắp xếp</strong> — kết quả sai mà không báo lỗi.</li>
+<li>Lệch một ở biên: <code>hi = a.Length</code> thay vì <code>a.Length - 1</code>; <code>while (lo &lt; hi)</code> thay vì <code>&lt;=</code>.</li>
+<li>Tràn số khi tính <code>mid</code> bằng <code>(lo + hi) / 2</code>.</li>
+<li>Nội suy chia cho 0 khi <code>a[hi] == a[lo]</code>; quên kiểm tra <code>x</code> nằm trong khoảng.</li>
+<li>Quên rằng <code>BinarySearch</code> trả <strong>số âm</strong> khi không thấy (dùng <code>~kq</code> để lấy vị trí chèn).</li>
+<li>Nhầm <code>Array.BinarySearch</code> với dữ liệu trùng: không đảm bảo trả về vị trí đầu tiên.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Sửa <code>TimNhiPhan</code> để trả về vị trí <strong>đầu tiên</strong> của <code>x</code> khi có nhiều giá trị trùng.</li>
+<li>Cài <code>TimNhiPhan</code> <strong>đệ quy</strong> và so sánh với bản lặp.</li>
+<li>Tạo mảng phân bố lệch (<code>1, 2, 4, 8, ...</code>) và đếm số bước của nội suy so với nhị phân.</li>
+<li>Dùng <code>Array.BinarySearch</code> để chèn một phần tử vào <code>List&lt;int&gt;</code> đã sắp xếp mà vẫn giữ thứ tự (dùng <code>~kq</code>).</li>
+<li>Đo (<code>Stopwatch</code>) tìm 1000 giá trị ngẫu nhiên trong 1.000.000 phần tử: <code>Contains</code> trên <code>List</code>, <code>BinarySearch</code>, <code>HashSet</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch27-ienumerable-yield.html">&larr; 27. IEnumerable, yield và sắp xếp</a><a class="nav-next" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

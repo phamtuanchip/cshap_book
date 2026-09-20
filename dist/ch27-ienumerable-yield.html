@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 27 — `IEnumerable`, `yield` và sắp xếp — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link active" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 27 — <code>IEnumerable</code>, <code>yield</code> và sắp xếp</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <code>foreach</code> hoạt động dựa trên <code>IEnumerable&lt;T&gt;</code>/<code>IEnumerator&lt;T&gt;</code>.</li>
+<li>Viết bộ sinh dữ liệu bằng <strong><code>yield return</code></strong> và hiểu <strong>thực thi trì hoãn</strong> (deferred execution).</li>
+<li>Tự cài đặt <code>IEnumerable&lt;T&gt;</code> cho lớp của mình.</li>
+<li>Sắp xếp bằng <code>Sort</code>, <code>OrderBy/ThenBy</code>, <code>IComparer</code>/<code>Comparer.Create</code>, biết sự khác nhau.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch27-ienumerable-yield/"><code>code/ch27-ienumerable-yield/</code></a>.</p>
+<h2><code>foreach</code> thực sự làm gì?</h2>
+<pre class="hljs"><code><span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> x <span class="hljs-keyword">in</span> ds) { ... }
+</code></pre>
+<p>được trình biên dịch biến thành:</p>
+<pre class="hljs"><code><span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> it = ds.GetEnumerator();
+<span class="hljs-keyword">while</span> (it.MoveNext())
+{
+    <span class="hljs-keyword">var</span> x = it.Current;
+    ...
+}
+</code></pre>
+<p>Tức là <strong>bất kỳ kiểu nào có <code>GetEnumerator()</code></strong> (thường là cài <code>IEnumerable&lt;T&gt;</code>) đều dùng được với <code>foreach</code>.</p>
+<pre class="hljs"><code><span class="hljs-keyword">interface</span> <span class="hljs-title">IEnumerable</span>&lt;<span class="hljs-title">T</span>&gt; { <span class="hljs-function">IEnumerator&lt;T&gt; <span class="hljs-title">GetEnumerator</span>()</span>; }
+<span class="hljs-keyword">interface</span> <span class="hljs-title">IEnumerator</span>&lt;<span class="hljs-title">T</span>&gt; { <span class="hljs-function"><span class="hljs-built_in">bool</span> <span class="hljs-title">MoveNext</span>()</span>; T Current { <span class="hljs-keyword">get</span>; } <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Reset</span>()</span>; }
+</code></pre>
+<p><code>IEnumerable&lt;T&gt;</code> là interface &quot;gốc&quot; của mọi collection và là kiểu nền của <strong>LINQ</strong> (Chương 30): nó chỉ nói &quot;tôi có thể
+đưa bạn từng phần tử một&quot;, <strong>không</strong> nói có bao nhiêu hay cho truy cập theo chỉ số.</p>
+<h2><code>yield return</code> — sinh dữ liệu theo yêu cầu</h2>
+<p>Viết bộ liệt kê bằng tay khá dài. <code>yield return</code> để trình biên dịch tự sinh:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">static</span> IEnumerable&lt;<span class="hljs-built_in">long</span>&gt; <span class="hljs-title">Fibonacci</span>()</span>
+{
+    <span class="hljs-built_in">long</span> a = <span class="hljs-number">0</span>, b = <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>)              <span class="hljs-comment">// vô hạn, nhưng an toàn!</span>
+    {
+        <span class="hljs-keyword">yield</span> <span class="hljs-keyword">return</span> a;       <span class="hljs-comment">// &quot;trả&quot; một giá trị và tạm dừng tại đây</span>
+        (a, b) = (b, a + b);
+    }
+}
+
+<span class="hljs-keyword">foreach</span> (<span class="hljs-function"><span class="hljs-keyword">var</span> f <span class="hljs-keyword">in</span> <span class="hljs-title">Fibonacci</span>().<span class="hljs-title">Take</span>(<span class="hljs-params"><span class="hljs-number">10</span></span>)) Console.<span class="hljs-title">Write</span>(<span class="hljs-params"><span class="hljs-string">$&quot;<span class="hljs-subst">{f}</span> &quot;</span></span>)</span>;
+</code></pre>
+<p>Mỗi lần <code>MoveNext()</code>, phương thức chạy tiếp từ chỗ dừng cho tới <code>yield return</code> kế tiếp. Nhờ vậy:</p>
+<ul>
+<li><strong>Tiết kiệm bộ nhớ</strong>: không dựng toàn bộ danh sách, kể cả dãy vô hạn hay rất lớn (đọc từng dòng file khổng lồ).</li>
+<li><strong>Lười (lazy)</strong>: chỉ tính khi được yêu cầu. <code>Take(10)</code> chỉ chạy 10 vòng.</li>
+<li><code>yield break;</code> kết thúc dãy sớm.</li>
+</ul>
+<h2>Thực thi trì hoãn (deferred execution)</h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">static</span> IEnumerable&lt;<span class="hljs-built_in">int</span>&gt; <span class="hljs-title">DemSo</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> n</span>)</span>
+{
+    <span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> i = <span class="hljs-number">1</span>; i &lt;= n; i++) { Console.WriteLine(<span class="hljs-string">$&quot;  sinh <span class="hljs-subst">{i}</span>&quot;</span>); <span class="hljs-keyword">yield</span> <span class="hljs-keyword">return</span> i; }
+}
+
+<span class="hljs-keyword">var</span> seq = DemSo(<span class="hljs-number">3</span>);                    <span class="hljs-comment">// CHƯA chạy dòng nào của DemSo</span>
+Console.WriteLine(<span class="hljs-string">&quot;Da tao seq&quot;</span>);
+<span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> x <span class="hljs-keyword">in</span> seq) Console.WriteLine(<span class="hljs-string">$&quot;nhan <span class="hljs-subst">{x}</span>&quot;</span>);   <span class="hljs-comment">// giờ mới chạy: sinh 1, nhan 1, sinh 2, ...</span>
+</code></pre>
+<p>Kết quả xen kẽ &quot;sinh&quot; và &quot;nhận&quot; — chứng tỏ giá trị được sinh <strong>từng cái một</strong> theo nhịp <code>foreach</code>. Hệ quả cần nhớ:</p>
+<ol>
+<li>Phương thức <code>yield</code> <strong>không chạy</strong> cho tới khi bắt đầu duyệt — cả kiểm tra tham số cũng bị hoãn (nếu cần kiểm tra ngay,
+tách thành phương thức bọc bên ngoài rồi gọi phương thức <code>yield</code> bên trong).</li>
+<li>Duyệt <strong>hai lần</strong> thì chạy lại từ đầu hai lần; nếu tốn kém, hãy <code>.ToList()</code> để &quot;chốt&quot; kết quả.</li>
+<li>Dữ liệu nguồn thay đổi giữa lúc tạo và lúc duyệt sẽ ảnh hưởng kết quả (Chương 30).</li>
+</ol>
+<h2>Tự cài <code>IEnumerable&lt;T&gt;</code></h2>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">DanhSachTen</span>(<span class="hljs-title">string</span>[] <span class="hljs-title">ten</span>) : <span class="hljs-title">IEnumerable</span>&lt;<span class="hljs-title">string</span>&gt;
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerator&lt;<span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetEnumerator</span>()</span>
+    {
+        <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> t <span class="hljs-keyword">in</span> ten) <span class="hljs-keyword">yield</span> <span class="hljs-keyword">return</span> t;
+    }
+
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() =&gt; GetEnumerator();
+}
+
+<span class="hljs-keyword">foreach</span> (<span class="hljs-function"><span class="hljs-keyword">var</span> t <span class="hljs-keyword">in</span> <span class="hljs-keyword">new</span> <span class="hljs-title">DanhSachTen</span>(<span class="hljs-params">[<span class="hljs-string">&quot;An&quot;</span>, <span class="hljs-string">&quot;Binh&quot;</span>]</span>)) ...
+</span></code></pre>
+<p>Cài đặt interface không generic <code>IEnumerable</code> (dòng cuối) chỉ là thủ tục kế thừa; chuyển thẳng tới bản generic.
+Sau khi cài đặt, lớp của bạn dùng được với <code>foreach</code> <strong>và mọi phương thức LINQ</strong> (<code>Where</code>, <code>Select</code>...).</p>
+<h2>Sắp xếp</h2>
+<h3><code>List&lt;T&gt;.Sort</code> — tại chỗ</h3>
+<pre class="hljs"><code>sv.Sort((x, y) =&gt; y.Diem.CompareTo(x.Diem));   <span class="hljs-comment">// giảm dần theo điểm</span>
+</code></pre>
+<ul>
+<li>Thay đổi <strong>danh sách gốc</strong>, trả về <code>void</code>.</li>
+<li><strong>Không ổn định</strong>: hai phần tử &quot;bằng nhau&quot; có thể đổi thứ tự tương đối. Dùng <code>IComparable&lt;T&gt;</code>/<code>IComparer&lt;T&gt;</code>/lambda (Chương 20).</li>
+</ul>
+<h3><code>OrderBy</code> / <code>ThenBy</code> (LINQ) — tạo dãy mới</h3>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> xep = sv.OrderByDescending(s =&gt; s.Diem).ThenBy(s =&gt; s.Ten);
+</code></pre>
+<ul>
+<li><strong>Ổn định</strong> (giữ thứ tự gốc của các phần tử bằng nhau), <strong>không</strong> sửa nguồn, trả về <code>IOrderedEnumerable&lt;T&gt;</code>, thực thi trì hoãn.</li>
+<li><code>ThenBy</code>/<code>ThenByDescending</code> thêm khoá phụ. Rất dễ đọc — chọn cách này cho hầu hết trường hợp.</li>
+</ul>
+<h3><code>Comparer&lt;T&gt;.Create</code> và <code>IComparer&lt;T&gt;</code></h3>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> theoTen = Comparer&lt;SinhVien&gt;.Create((x, y) =&gt; <span class="hljs-built_in">string</span>.Compare(x.Ten, y.Ten, StringComparison.Ordinal));
+sv.Sort(theoTen);
+</code></pre>
+<p>Dùng khi cần truyền một bộ so sánh có thể tái sử dụng (cho <code>Sort</code>, <code>SortedSet</code>, <code>SortedDictionary</code>, <code>Array.Sort</code>, <code>OrderBy(x =&gt; x, comparer)</code>).</p>
+<h3>Sắp xếp chuỗi</h3>
+<p>Luôn chỉ rõ <code>StringComparison</code>/<code>StringComparer</code> — sắp xếp theo culture khác nhau cho kết quả khác nhau và chậm hơn
+<code>Ordinal</code>.</p>
+<h2>Khi nào trả <code>IEnumerable&lt;T&gt;</code>?</h2>
+<ul>
+<li>Bạn muốn trả một dãy chỉ-đọc, có thể lười, và người dùng chỉ cần duyệt.</li>
+<li>Nhưng đừng để lộ nguồn thay đổi được, và nếu người gọi sẽ duyệt nhiều lần hoặc cần <code>Count</code>, hãy trả <code>IReadOnlyList&lt;T&gt;</code>.</li>
+<li>Cảnh giác <strong>duyệt nhiều lần</strong>: mỗi lần lại chạy lại toàn bộ truy vấn/truy cập CSDL phía sau.</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Tưởng phương thức <code>yield</code> chạy ngay khi gọi.</li>
+<li>Duyệt cùng <code>IEnumerable</code> nhiều lần ngầm gây tính lại tốn kém (hoặc gọi CSDL nhiều lần).</li>
+<li><code>yield return</code> trong <code>try/catch</code> (không được phép với <code>catch</code>) hoặc trong phương thức có tham số <code>ref</code>/<code>out</code>.</li>
+<li>Dùng <code>Sort</code> khi cần sắp xếp <strong>ổn định</strong>.</li>
+<li><code>NullReferenceException</code> do so sánh giá trị <code>null</code> trong bộ so sánh tự viết.</li>
+<li>Dùng <code>Count()</code> (LINQ) trên <code>IEnumerable</code> khổng lồ chỉ để hỏi &quot;có phần tử nào không?&quot; — dùng <code>Any()</code>.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết <code>IEnumerable&lt;int&gt; SoChan(int toiDa)</code> bằng <code>yield return</code>; in ra và dùng LINQ <code>Take(5)</code>.</li>
+<li>Viết <code>IEnumerable&lt;string&gt; DocDong(string path)</code> đọc file theo từng dòng bằng <code>yield</code> (hoặc gọi <code>File.ReadLines</code>).</li>
+<li>Tự cài <code>PhamVi</code> (<code>IEnumerable&lt;int&gt;</code>) để <code>foreach (var i in new PhamVi(1, 5))</code> chạy được.</li>
+<li>So sánh <code>Sort</code> và <code>OrderBy</code> trên danh sách có nhiều phần tử điểm bằng nhau — thứ tự có khác không? Vì sao?</li>
+<li>Sắp xếp danh sách tên tiếng Việt theo <code>StringComparer.Create(new CultureInfo(&quot;vi-VN&quot;), true)</code> và so với <code>Ordinal</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch26-dictionary-hashset.html">&larr; 26. Dictionary, HashSet và họ hàng</a><a class="nav-next" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

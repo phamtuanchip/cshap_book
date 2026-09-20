@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 26 — `Dictionary`, `HashSet` và họ hàng — C# từ Cơ bản đến Nâng cao — Tập 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# từ Cơ bản đến Nâng cao — Tập 1</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Chuẩn bị môi trường</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-gioi-thieu-csharp-dotnet.html">1. Giới thiệu C# và .NET</a></li><li><a class="chapter-link" href="ch02-cai-dat-moi-truong.html">2. Cài đặt .NET SDK và IDE</a></li><li><a class="chapter-link" href="ch03-chuong-trinh-dau-tien.html">3. Chương trình C# đầu tiên</a></li><li><a class="chapter-link" href="ch04-lam-quen-ide.html">4. Làm quen IDE, solution và NuGet</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Nền tảng lập trình</div><ul class="chapter-list"><li><a class="chapter-link" href="ch05-bien-kieu-du-lieu.html">5. Biến, kiểu dữ liệu, ép kiểu</a></li><li><a class="chapter-link" href="ch06-toan-tu-bieu-thuc.html">6. Toán tử và biểu thức</a></li><li><a class="chapter-link" href="ch07-cau-truc-dieu-khien.html">7. Cấu trúc điều khiển: if/else, switch</a></li><li><a class="chapter-link" href="ch08-vong-lap.html">8. Vòng lặp</a></li><li><a class="chapter-link" href="ch09-mang.html">9. Mảng</a></li><li><a class="chapter-link" href="ch10-phuong-thuc.html">10. Phương thức</a></li><li><a class="chapter-link" href="ch11-chuoi.html">11. Chuỗi (string)</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Nhập môn OOP</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-vi-sao-can-oop.html">12. Vì sao cần OOP</a></li><li><a class="chapter-link" href="ch13-class-object.html">13. Class và Object</a></li><li><a class="chapter-link" href="ch14-encapsulation-property.html">14. Đóng gói và Property</a></li><li><a class="chapter-link" href="ch15-namespace-using.html">15. Namespace, using và tổ chức project</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — OOP nâng cao</div><ul class="chapter-list"><li><a class="chapter-link" href="ch16-ke-thua.html">16. Kế thừa</a></li><li><a class="chapter-link" href="ch17-da-hinh.html">17. Đa hình</a></li><li><a class="chapter-link" href="ch18-abstract-interface.html">18. Abstract class và Interface</a></li><li><a class="chapter-link" href="ch19-static-extension-enum.html">19. Static, partial, extension method, enum</a></li><li><a class="chapter-link" href="ch20-object-struct-record.html">20. Lớp object, struct và record</a></li></ul></li><li class="part"><div class="part-title">Phần 4 — Xử lý lỗi và Generics</div><ul class="chapter-list"><li><a class="chapter-link" href="ch21-exception.html">21. Xử lý ngoại lệ</a></li><li><a class="chapter-link" href="ch22-generics.html">22. Generics</a></li><li><a class="chapter-link" href="ch23-nullable.html">23. Nullable value type và nullable reference type</a></li></ul></li><li class="part"><div class="part-title">Phần 5 — Collection và LINQ</div><ul class="chapter-list"><li><a class="chapter-link" href="ch24-tong-quan-collection.html">24. Tổng quan collection</a></li><li><a class="chapter-link" href="ch25-list-linkedlist.html">25. List và LinkedList</a></li><li><a class="chapter-link active" href="ch26-dictionary-hashset.html">26. Dictionary, HashSet và họ hàng</a></li><li><a class="chapter-link" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp</a></li><li><a class="chapter-link" href="ch28-thuat-toan-tim-kiem.html">28. Thuật toán tìm kiếm</a></li><li><a class="chapter-link" href="ch29-bfs-dfs.html">29. Duyệt đồ thị/cây: BFS và DFS</a></li><li><a class="chapter-link" href="ch30-linq.html">30. LINQ</a></li></ul></li><li class="part"><div class="part-title">Phần 6 — C# hiện đại và bất đồng bộ</div><ul class="chapter-list"><li><span class="chapter-link pending">31. Delegate, event và lambda</span></li><li><span class="chapter-link pending">32. Record, pattern matching và cú pháp mới</span></li><li><span class="chapter-link pending">33. Lập trình bất đồng bộ async/await</span></li><li><span class="chapter-link pending">34. Đa luồng và đồng bộ hoá</span></li></ul></li><li class="part"><div class="part-title">Phần 7 — Nhập/Xuất và xử lý dữ liệu</div><ul class="chapter-list"><li><span class="chapter-link pending">35. File I/O</span></li><li><span class="chapter-link pending">36. JSON và CSV</span></li><li><span class="chapter-link pending">37. Reflection, Attribute và Serialization</span></li></ul></li><li class="part"><div class="part-title">Phần 8 — Công cụ, kiểm thử, quản lý dự án</div><ul class="chapter-list"><li><span class="chapter-link pending">38. Unit test với xUnit</span></li><li><span class="chapter-link pending">39. Debug và logging</span></li><li><span class="chapter-link pending">40. Git, NuGet và cấu hình</span></li></ul></li><li class="part"><div class="part-title">Phần 9 — Kiến trúc cơ bản và dự án tổng hợp</div><ul class="chapter-list"><li><span class="chapter-link pending">41. Design pattern cơ bản</span></li><li><span class="chapter-link pending">42. Nguyên lý SOLID</span></li><li><span class="chapter-link pending">43. Dự án tổng hợp Tập 1</span></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><span class="chapter-link pending">44. Phụ lục A — Lỗi thường gặp</span></li><li><span class="chapter-link pending">45. Phụ lục B — Tài liệu tham khảo</span></li><li><span class="chapter-link pending">46. Phụ lục C — Cheat sheet C#</span></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 26 — <code>Dictionary</code>, <code>HashSet</code> và họ hàng</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>bảng băm</strong> (hash table) hoạt động thế nào và vì sao tra cứu O(1).</li>
+<li>Dùng <code>Dictionary&lt;K,V&gt;</code> và <code>HashSet&lt;T&gt;</code> đúng cách (<code>TryGetValue</code>, phép toán tập hợp).</li>
+<li>Hiểu vai trò then chốt của <code>Equals</code>/<code>GetHashCode</code> với khoá.</li>
+<li>Biết khi nào dùng <code>SortedDictionary</code>, <code>SortedSet</code>.</li>
+</ul>
+<p>Code mẫu: <a href="code/ch26-dictionary-hashset/"><code>code/ch26-dictionary-hashset/</code></a>.</p>
+<h2>Bảng băm hoạt động ra sao?</h2>
+<p><code>Dictionary&lt;TKey, TValue&gt;</code> và <code>HashSet&lt;T&gt;</code> dùng <strong>bảng băm</strong>. Ý tưởng:</p>
+<ol>
+<li>Từ khoá <code>k</code>, gọi <code>k.GetHashCode()</code> được một số nguyên (<strong>mã băm</strong>).</li>
+<li>Lấy mã băm chia dư cho số &quot;ngăn&quot; (bucket) → biết cần nhìn vào ngăn nào.</li>
+<li>Trong ngăn chỉ có vài phần tử; so sánh bằng <code>Equals</code> để tìm đúng khoá.</li>
+</ol>
+<pre class="mermaid">flowchart LR
+    K[&quot;khoá 'An'&quot;] --&gt;|&quot;GetHashCode() % số ngăn&quot;| B[&quot;ngăn 3&quot;]
+    B --&gt; E[&quot;so sánh bằng Equals&lt;br/&gt;trong ngăn&quot;]
+    E --&gt; V[&quot;giá trị&quot;]
+</pre>
+<p>Không phải duyệt cả tập, nên tra cứu/thêm/xoá là <strong>O(1) trung bình</strong> — bất kể có 10 hay 10 triệu phần tử. Đổi lại:
+thứ tự duyệt <strong>không được đảm bảo</strong>, và tốn bộ nhớ hơn <code>List</code>.</p>
+<h2><code>Dictionary&lt;TKey, TValue&gt;</code></h2>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> diem = <span class="hljs-keyword">new</span> Dictionary&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">double</span>&gt; { [<span class="hljs-string">&quot;An&quot;</span>] = <span class="hljs-number">8.5</span>, [<span class="hljs-string">&quot;Binh&quot;</span>] = <span class="hljs-number">7.0</span> };
+diem[<span class="hljs-string">&quot;Chi&quot;</span>] = <span class="hljs-number">9.0</span>;            <span class="hljs-comment">// thêm, hoặc ghi đè nếu đã có</span>
+diem.Add(<span class="hljs-string">&quot;Dung&quot;</span>, <span class="hljs-number">6.5</span>);        <span class="hljs-comment">// thêm, NÉM lỗi nếu khoá đã tồn tại</span>
+diem.TryAdd(<span class="hljs-string">&quot;An&quot;</span>, <span class="hljs-number">1.0</span>);       <span class="hljs-comment">// thêm nếu chưa có, trả bool</span>
+
+<span class="hljs-built_in">double</span> d = diem[<span class="hljs-string">&quot;An&quot;</span>];        <span class="hljs-comment">// NÉM KeyNotFoundException nếu không có</span>
+<span class="hljs-keyword">if</span> (diem.TryGetValue(<span class="hljs-string">&quot;Zzz&quot;</span>, <span class="hljs-keyword">out</span> <span class="hljs-keyword">var</span> v)) { ... }   <span class="hljs-comment">// an toàn</span>
+diem.GetValueOrDefault(<span class="hljs-string">&quot;Zzz&quot;</span>, <span class="hljs-number">-1</span>);                 <span class="hljs-comment">// giá trị mặc định nếu không có</span>
+
+diem.ContainsKey(<span class="hljs-string">&quot;An&quot;</span>); diem.Remove(<span class="hljs-string">&quot;An&quot;</span>); diem.Count;
+<span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> (ten, d2) <span class="hljs-keyword">in</span> diem) { ... }            <span class="hljs-comment">// duyệt cặp key/value</span>
+diem.Keys; diem.Values;
+</code></pre>
+<p><strong>Mẫu đếm tần suất</strong> (rất hay gặp):</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> tanSuat = <span class="hljs-keyword">new</span> Dictionary&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">int</span>&gt;();
+<span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> t <span class="hljs-keyword">in</span> tu)
+    tanSuat[t] = tanSuat.GetValueOrDefault(t) + <span class="hljs-number">1</span>;
+</code></pre>
+<p><strong>Quy tắc:</strong> khoá là duy nhất và không được <code>null</code>; giá trị thì tuỳ. Luôn ưu tiên <code>TryGetValue</code> khi không chắc khoá có mặt.</p>
+<h2><code>HashSet&lt;T&gt;</code></h2>
+<p>Tập hợp <strong>không trùng lặp</strong>, kiểm tra &quot;có chưa?&quot; O(1):</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> so = <span class="hljs-keyword">new</span> HashSet&lt;<span class="hljs-built_in">int</span>&gt; { <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">3</span>, <span class="hljs-number">3</span> };   <span class="hljs-comment">// {1, 2, 3}</span>
+so.Add(<span class="hljs-number">2</span>);        <span class="hljs-comment">// false: đã có</span>
+so.Contains(<span class="hljs-number">2</span>);   <span class="hljs-comment">// true, O(1)</span>
+</code></pre>
+<p>Có sẵn các phép toán tập hợp (thay đổi tập gọi phương thức):</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> hop = <span class="hljs-keyword">new</span> HashSet&lt;<span class="hljs-built_in">int</span>&gt;(a); hop.UnionWith(b);        <span class="hljs-comment">// hợp</span>
+<span class="hljs-keyword">var</span> giao = <span class="hljs-keyword">new</span> HashSet&lt;<span class="hljs-built_in">int</span>&gt;(a); giao.IntersectWith(b);  <span class="hljs-comment">// giao</span>
+<span class="hljs-keyword">var</span> hieu = <span class="hljs-keyword">new</span> HashSet&lt;<span class="hljs-built_in">int</span>&gt;(a); hieu.ExceptWith(b);     <span class="hljs-comment">// hiệu (a \ b)</span>
+a.IsSubsetOf(b); a.Overlaps(b);
+</code></pre>
+<p>Mẹo: loại trùng nhanh — <code>var duyNhat = new HashSet&lt;int&gt;(danhSach);</code> hoặc <code>danhSach.Distinct()</code> (LINQ).</p>
+<h2>Vai trò của <code>Equals</code> và <code>GetHashCode</code></h2>
+<p>Bảng băm chỉ hoạt động đúng nếu <strong>khoá đồng nhất có cùng mã băm và <code>Equals</code> đúng</strong> (Chương 20). Ví dụ:</p>
+<pre class="hljs"><code><span class="hljs-keyword">class</span> <span class="hljs-title">DiemSai</span>(<span class="hljs-title">int</span> <span class="hljs-title">x</span>, <span class="hljs-title">int</span> <span class="hljs-title">y</span>) { <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> X { <span class="hljs-keyword">get</span>; } = x; <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> Y { <span class="hljs-keyword">get</span>; } = y; }   <span class="hljs-comment">// không override</span>
+
+<span class="hljs-keyword">var</span> sai = <span class="hljs-keyword">new</span> HashSet&lt;DiemSai&gt; { <span class="hljs-keyword">new</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>) };
+sai.Contains(<span class="hljs-keyword">new</span> DiemSai(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>));   <span class="hljs-comment">// FALSE! mặc định so sánh tham chiếu, mã băm khác nhau</span>
+
+<span class="hljs-keyword">record</span> <span class="hljs-title">DiemDung</span>(<span class="hljs-title">int</span> <span class="hljs-title">X</span>, <span class="hljs-title">int</span> <span class="hljs-title">Y</span>);      <span class="hljs-comment">// record tự sinh Equals/GetHashCode theo giá trị</span>
+<span class="hljs-keyword">new</span> HashSet&lt;DiemDung&gt; { <span class="hljs-keyword">new</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>) }.Contains(<span class="hljs-keyword">new</span> DiemDung(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>));   <span class="hljs-comment">// TRUE</span>
+</code></pre>
+<p>Vì vậy dùng làm khoá: ưu tiên <code>string</code>, số, <code>Guid</code>, <code>enum</code>, <code>record</code>, hoặc tự viết đúng cả hai phương thức. Khoá phải
+<strong>bất biến</strong>: nếu đổi giá trị khoá sau khi đã bỏ vào tập, mã băm đổi và phần tử &quot;lạc&quot; mất.</p>
+<p>Tuỳ chỉnh cách so sánh khoá bằng <code>IEqualityComparer&lt;T&gt;</code>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> d = <span class="hljs-keyword">new</span> Dictionary&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">int</span>&gt;(StringComparer.OrdinalIgnoreCase) { [<span class="hljs-string">&quot;Abc&quot;</span>] = <span class="hljs-number">1</span> };
+d.ContainsKey(<span class="hljs-string">&quot;ABC&quot;</span>);   <span class="hljs-comment">// true</span>
+</code></pre>
+<h2>Họ &quot;sorted&quot;: <code>SortedDictionary</code>, <code>SortedSet</code>, <code>SortedList</code></h2>
+<p>Giữ phần tử <strong>luôn theo thứ tự khoá</strong>, cài bằng cây cân bằng nên các thao tác đều <strong>O(log n)</strong>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> sd = <span class="hljs-keyword">new</span> SortedDictionary&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">int</span>&gt; { [<span class="hljs-string">&quot;chuoi&quot;</span>] = <span class="hljs-number">3</span>, [<span class="hljs-string">&quot;tao&quot;</span>] = <span class="hljs-number">1</span>, [<span class="hljs-string">&quot;cam&quot;</span>] = <span class="hljs-number">2</span> };
+<span class="hljs-comment">// duyệt ra: cam, chuoi, tao</span>
+<span class="hljs-keyword">var</span> ss = <span class="hljs-keyword">new</span> SortedSet&lt;<span class="hljs-built_in">int</span>&gt; { <span class="hljs-number">5</span>, <span class="hljs-number">1</span>, <span class="hljs-number">3</span> };   <span class="hljs-comment">// Min = 1, Max = 5; GetViewBetween(2, 4)</span>
+</code></pre>
+<p>Dùng khi cần <strong>duyệt theo thứ tự</strong> hoặc truy vấn khoảng (nhỏ nhất/lớn nhất, &quot;các khoá giữa a và b&quot;). Nếu chỉ tra cứu
+theo khoá thì <code>Dictionary</code> nhanh hơn.</p>
+<h2>Sửa dictionary khi đang duyệt</h2>
+<p>Thêm/xoá khoá trong lúc <code>foreach</code> gây <code>InvalidOperationException</code>. Sao chép danh sách khoá trước:</p>
+<pre class="hljs"><code><span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> k <span class="hljs-keyword">in</span> diem.Keys.ToList())   <span class="hljs-comment">// ToList() cho phép sửa an toàn</span>
+    diem[k + <span class="hljs-string">&quot;_moi&quot;</span>] = <span class="hljs-number">0</span>;
+</code></pre>
+<h2>Chọn gì?</h2>
+<table>
+<thead>
+<tr>
+<th>Bài toán</th>
+<th>Dùng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tra cứu theo mã/khoá</td>
+<td><code>Dictionary</code></td>
+</tr>
+<tr>
+<td>Đếm/nhóm theo khoá</td>
+<td><code>Dictionary&lt;K,int&gt;</code> hoặc <code>GroupBy</code> (Chương 30)</td>
+</tr>
+<tr>
+<td>Loại trùng, kiểm tra tồn tại</td>
+<td><code>HashSet</code></td>
+</tr>
+<tr>
+<td>Cần thứ tự khoá</td>
+<td><code>SortedDictionary</code>/<code>SortedSet</code></td>
+</tr>
+<tr>
+<td>Tra cứu theo hai chiều</td>
+<td>hai <code>Dictionary</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>KeyNotFoundException</code> — dùng <code>dict[key]</code> thay vì <code>TryGetValue</code>.</li>
+<li><code>ArgumentException: An item with the same key has already been added</code> — <code>Add</code> khoá trùng (dùng <code>dict[key] = v</code>).</li>
+<li>Dùng class <strong>không override</strong> <code>Equals/GetHashCode</code> làm khoá.</li>
+<li>Khoá thay đổi sau khi đã thêm.</li>
+<li>Khoá <code>null</code> → <code>ArgumentNullException</code>.</li>
+<li>Giả định thứ tự duyệt của <code>Dictionary</code> (không đảm bảo).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Đếm số lần xuất hiện của từng từ trong một đoạn văn; in 3 từ nhiều nhất (<code>OrderByDescending</code>).</li>
+<li>Tìm hai số trong mảng có tổng bằng <code>k</code> trong O(n) bằng <code>HashSet</code>/<code>Dictionary</code>.</li>
+<li>Cho hai danh sách email, tìm email chỉ có ở danh sách thứ nhất, và email có ở cả hai (phép toán tập hợp).</li>
+<li>Sửa <code>DiemSai</code> cho đúng (override <code>Equals</code> và <code>GetHashCode</code>) và kiểm tra <code>Contains</code>.</li>
+<li>Dựng từ điển Anh–Việt không phân biệt hoa/thường bằng <code>StringComparer.OrdinalIgnoreCase</code>.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch25-list-linkedlist.html">&larr; 25. List và LinkedList</a><a class="nav-next" href="ch27-ienumerable-yield.html">27. IEnumerable, yield và sắp xếp &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
