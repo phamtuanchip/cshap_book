@@ -16,7 +16,7 @@ Code: [`code/ch09-danh-gia-kiem-thu/`](../../code/ch09-danh-gia-kiem-thu/) — 1
 
 ## Vì sao kiểm thử LLM khác kiểm thử thường
 
-Kiểm thử truyền thống (Tập 2, Chương 14 và Tập 3, Chương 9) dựa trên tiền đề: **cùng đầu vào, cùng đầu ra**. `Assert.Equal(7, TinhTong(3, 4))` đúng mãi mãi. Với một LLM thật, **cùng một câu hỏi có thể ra hai câu trả lời khác nhau về câu chữ nhưng cùng đúng về nghĩa** — và đôi khi ra một câu **sai** dù trông rất tự tin. `Assert.Equal` cho văn bản LLM gần như luôn sai cách.
+Kiểm thử truyền thống (Tập 2, Chương 10 và Tập 3, Chương 9) dựa trên tiền đề: **cùng đầu vào, cùng đầu ra**. `Assert.Equal(7, TinhTong(3, 4))` đúng mãi mãi. Với một LLM thật, **cùng một câu hỏi có thể ra hai câu trả lời khác nhau về câu chữ nhưng cùng đúng về nghĩa** — và đôi khi ra một câu **sai** dù trông rất tự tin. `Assert.Equal` cho văn bản LLM gần như luôn sai cách.
 
 Điều quan trọng: **không phải mọi thứ trong một ứng dụng LLM đều không xác định**. Tách bạch:
 

@@ -26,7 +26,7 @@
 <p><strong>Trung thực về một phát hiện thật khi viết chương này:</strong> bộ so khớp &quot;tương tự theo từ vựng&quot; viết ban đầu <strong>đã thất bại thật</strong> trong lúc soạn ví dụ — nó cho một câu trả lời <strong>bịa sai số liệu</strong> (nói đơn hàng tối đa &quot;50 dòng&quot; thay vì &quot;20 dòng&quot; đúng) điểm tương tự <strong>đủ cao để coi là đạt</strong>, chỉ vì hai câu chia sẻ nhiều từ chung (&quot;đơn hàng&quot;, &quot;tối đa&quot;). Phần &quot;Bài học thực tế&quot; dưới đây thuật lại đúng phát hiện đó và cách sửa — đây không phải ví dụ dàn dựng, mà là điều thực sự xảy ra khi mã hoá chương này.</p>
 </blockquote>
 <h2>Vì sao kiểm thử LLM khác kiểm thử thường</h2>
-<p>Kiểm thử truyền thống (Tập 2, Chương 14 và Tập 3, Chương 9) dựa trên tiền đề: <strong>cùng đầu vào, cùng đầu ra</strong>. <code>Assert.Equal(7, TinhTong(3, 4))</code> đúng mãi mãi. Với một LLM thật, <strong>cùng một câu hỏi có thể ra hai câu trả lời khác nhau về câu chữ nhưng cùng đúng về nghĩa</strong> — và đôi khi ra một câu <strong>sai</strong> dù trông rất tự tin. <code>Assert.Equal</code> cho văn bản LLM gần như luôn sai cách.</p>
+<p>Kiểm thử truyền thống (Tập 2, Chương 10 và Tập 3, Chương 9) dựa trên tiền đề: <strong>cùng đầu vào, cùng đầu ra</strong>. <code>Assert.Equal(7, TinhTong(3, 4))</code> đúng mãi mãi. Với một LLM thật, <strong>cùng một câu hỏi có thể ra hai câu trả lời khác nhau về câu chữ nhưng cùng đúng về nghĩa</strong> — và đôi khi ra một câu <strong>sai</strong> dù trông rất tự tin. <code>Assert.Equal</code> cho văn bản LLM gần như luôn sai cách.</p>
 <p>Điều quan trọng: <strong>không phải mọi thứ trong một ứng dụng LLM đều không xác định</strong>. Tách bạch:</p>
 <table>
 <thead>

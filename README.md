@@ -5,13 +5,21 @@ Sách lập trình C# bằng tiếng Việt, dành cho người **chưa biết g
 và các ứng dụng web nâng cao áp dụng design pattern / kiến trúc best practice của .NET — kèm code mẫu
 đầy đủ, chạy được cho từng chương.
 
-> **Trạng thái: Tập 1 đã viết xong — 43 chương + 3 phụ lục (46 mục), có bản HTML và PDF.**
-> Đọc `dist/index.html` (HTML) hoặc `dist/csharp-tu-co-ban-den-nang-cao-tap1.pdf` (bản in); chạy `npm run build:all` để
-> build lại từ nguồn Markdown. **Tập 2 (ASP.NET Core) cũng đã viết xong** — 22 chương + 3 phụ lục, nằm trong thư mục `tap2/` (cùng cấu trúc `book/`, `code/`, `dist/`; build bằng `npm run build:tap2` và `npm run build:pdf:tap2`). **Tập 3 (kiến trúc và vận hành) đã viết xong** — 18 chương + 3 phụ lục, trong `tap3/` (`npm run build:tap3`, `npm run build:pdf:tap3`). **Tập 4 (AI trong ứng dụng .NET) đã viết xong** — 11 chương + 3 phụ lục trong `tap4/` (`npm run build:tap4`, `npm run build:pdf:tap4`); mọi ví dụ dùng mô hình giả, chưa gọi LLM thật. Còn lại: EPUB. Lưu ý trung thực về Tập 3: Docker/CI/cloud/OIDC-với-IdP-thật chưa chạy được ở máy tác giả (đã ghi rõ trong từng chương); mô-đun Đơn hàng (Chương 18) chưa chạy được test tích hợp do chính sách Application Control của Windows chặn nạp DLL. Cấu trúc và pipeline tham khảo
-> repo `java_book`.
+> **Trạng thái: cả 4 tập đã viết xong** (chưa làm EPUB). Mỗi tập có `book/` (Markdown), `code/` (mã mẫu) và `dist/` (HTML + PDF):
 >
-> **Kiểm chứng:** toàn bộ code mẫu Tập 1 đã được biên dịch và chạy thử bằng .NET SDK 10.0 — 0 lỗi biên dịch,
-> 25 unit test (ch38, ch43) đạt, các chương trình in đúng kết quả như trong sách.
+> | Tập | Thư mục | Quy mô | Build |
+> |-----|---------|--------|-------|
+> | 1 — C# từ cơ bản đến nâng cao | `book/`, `code/`, `dist/` | 43 chương + 3 phụ lục | `npm run build`, `npm run build:pdf` |
+> | 2 — ASP.NET Core | `tap2/` | 22 chương + 3 phụ lục | `npm run build:tap2`, `npm run build:pdf:tap2` |
+> | 3 — Kiến trúc và vận hành | `tap3/` | 18 chương + 3 phụ lục | `npm run build:tap3`, `npm run build:pdf:tap3` |
+> | 4 — AI trong ứng dụng .NET | `tap4/` | 11 chương + 3 phụ lục | `npm run build:tap4`, `npm run build:pdf:tap4` |
+>
+> `npm run build:all` build lại toàn bộ. Cấu trúc và pipeline tham khảo repo `java_book`.
+>
+> **Kiểm chứng (đọc kỹ):** code được biên dịch và chạy bằng .NET SDK 10. Những phần **chưa** chạy được ở máy tác giả, và đã ghi rõ trong từng chương:
+> - Đã chạy đạt: Tập 1 — 25 unit test; Tập 2 — 9 + 10 + 14 test (ch10, ch14, ch22); Tập 3 — 45 test `kho-clean` (trước khi thêm mô-đun Đơn hàng), 3 test domain Đơn hàng; Tập 4 — 11 test (Chương 9) + 6 test (Chương 11).
+> - Tập 3: Docker/docker-compose, GitHub Actions, OIDC với IdP thật, Kubernetes/YARP/MassTransit (chỉ là mẫu theo tài liệu); test tích hợp mô-đun Đơn hàng (Chương 18) bị chính sách Application Control của Windows chặn nạp DLL.
+> - Tập 4: mọi ví dụ dùng **mô hình/embedding giả**; chưa gọi LLM thật, nên không có số liệu về chất lượng mô hình thật.
 
 ## 1. Mục tiêu
 
@@ -25,7 +33,7 @@ và các ứng dụng web nâng cao áp dụng design pattern / kiến trúc bes
 
 - Người mới hoàn toàn, hoặc biết chút ít nhưng chưa hiểu OOP.
 - Chưa biết .NET, SDK, CLR là gì — cần hướng dẫn cài đặt từ đầu.
-- Tập 2, 3 giả định đã nắm nội dung tập trước.
+- Tập 2, 3, 4 giả định đã nắm nội dung tập trước.
 
 ## 3. Chia tập
 
@@ -33,7 +41,8 @@ và các ứng dụng web nâng cao áp dụng design pattern / kiến trúc bes
 |-----|----------|---------------------|
 | **Tập 1** — C# cơ bản đến nâng cao | Môi trường, cú pháp, OOP, generics, collection, LINQ, async, I/O, test | Viết được ứng dụng console hoàn chỉnh |
 | **Tập 2** — ASP.NET Core | Dữ liệu (EF Core), Minimal API/Web API, MVC, Razor Pages, Blazor | Viết được web app/API CRUD có CSDL |
-| **Tập 3** — Web nâng cao & Design Pattern | Kiến trúc phân lớp, DI, pattern, CQRS, bảo mật, hiệu năng, deploy | Xây dựng web app theo kiến trúc chuẩn .NET |
+| **Tập 3** — Kiến trúc và vận hành | Clean Architecture, DDD, CQRS, outbox, kiểm thử, cache, quan sát, OIDC, Docker, CI/CD, cloud | Xây dựng và vận hành hệ thống web theo kiến trúc chuẩn .NET |
+| **Tập 4** — AI trong ứng dụng .NET | LLM, Microsoft.Extensions.AI, tool calling, RAG, agent, đánh giá, an toàn | Tích hợp tính năng AI an toàn, kiểm thử được vào ứng dụng .NET |
 
 ## 4. Cấu trúc thư mục 
 
@@ -174,7 +183,9 @@ không dùng mdBook/Pandoc.
 8. ✅ Build HTML + PDF Tập 1 (đã rà soát: 0 link code hỏng, đủ 46 mục). ✅ Đã chạy thử toàn bộ code mẫu bằng .NET SDK 10. ⬜ Còn: đọc soát PDF, publish.
 9. ✅ Tập 2 (`tap2/`): nền tảng web, cốt lõi ASP.NET Core, Web API, EF Core, MVC/Razor Pages/Blazor, HttpClient, xác thực, bảo mật, dự án tổng hợp — code đã build và chạy thử bằng .NET SDK 10 (test tích hợp đều đạt).
 10. ✅ Tập 3: Kiến trúc → Sản xuất → Dự án tổng hợp (một số phần chưa kiểm chứng chạy thật — xem ghi chú đầu file).
-11. ⬜ Xuất bản EPUB cho cả 3 tập.
+11. ✅ Tập 4: AI trong ứng dụng .NET (mô hình giả; xem ghi chú đầu file).
+12. ✅ Rà soát toàn bộ sách (link, build code, số liệu) và build lại HTML/PDF cả 4 tập.
+13. ⬜ Xuất bản EPUB cho cả 4 tập (chưa làm theo yêu cầu).
 
 ## 9. Các quyết định cần chốt / đã chốt
 
