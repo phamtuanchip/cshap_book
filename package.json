@@ -10,7 +10,9 @@
     "build:pdf:tap2": "node tools/build-pdf.js tap2",
     "build:tap3": "node tools/build.js tap3",
     "build:pdf:tap3": "node tools/build-pdf.js tap3",
-    "build:all": "npm run build && npm run build:pdf"
+    "build:all": "npm run build && npm run build:pdf && npm run build:tap2 && npm run build:pdf:tap2 && npm run build:tap3 && npm run build:pdf:tap3 && npm run build:tap4 && npm run build:pdf:tap4",
+    "build:tap4": "node tools/build.js tap4",
+    "build:pdf:tap4": "node tools/build-pdf.js tap4"
   },
   "devDependencies": {
     "highlight.js": "^11.9.0",

@@ -1,0 +1,112 @@
+{
+  "title": "C# và .NET — Tập 4",
+  "subtitle": "AI trong ứng dụng .NET: LLM, Microsoft.Extensions.AI, tool calling, RAG, agent, đánh giá và an toàn — giả định đã nắm Tập 1–3",
+  "pdfName": "csharp-ai-dotnet-tap4.pdf",
+  "parts": [
+    {
+      "id": "part0-nen-tang",
+      "title": "Phần 0 — Nền tảng",
+      "dir": "part0-nen-tang",
+      "chapters": [
+        {
+          "num": 1,
+          "slug": "llm-co-ban",
+          "title": "Mô hình ngôn ngữ lớn cho lập trình viên .NET"
+        },
+        {
+          "num": 2,
+          "slug": "goi-api-truc-tiep",
+          "title": "Gọi API LLM bằng HttpClient"
+        },
+        {
+          "num": 3,
+          "slug": "extensions-ai",
+          "title": "Microsoft.Extensions.AI: IChatClient và middleware"
+        }
+      ]
+    },
+    {
+      "id": "part1-ky-thuat",
+      "title": "Phần 1 — Kỹ thuật cốt lõi",
+      "dir": "part1-ky-thuat",
+      "chapters": [
+        {
+          "num": 4,
+          "slug": "structured-output",
+          "title": "Đầu ra có cấu trúc"
+        },
+        {
+          "num": 5,
+          "slug": "tool-calling",
+          "title": "Tool calling (function calling)"
+        },
+        {
+          "num": 6,
+          "slug": "embeddings-vector",
+          "title": "Embeddings và tìm kiếm vector"
+        },
+        {
+          "num": 7,
+          "slug": "rag",
+          "title": "RAG: truy xuất rồi sinh"
+        }
+      ]
+    },
+    {
+      "id": "part2-san-xuat",
+      "title": "Phần 2 — Đưa vào sản xuất",
+      "dir": "part2-san-xuat",
+      "chapters": [
+        {
+          "num": 8,
+          "slug": "agent",
+          "title": "Agent: vòng lặp suy luận và hành động"
+        },
+        {
+          "num": 9,
+          "slug": "danh-gia-kiem-thu",
+          "title": "Đánh giá và kiểm thử ứng dụng LLM"
+        },
+        {
+          "num": 10,
+          "slug": "an-toan-chi-phi",
+          "title": "An toàn, chi phí và quan sát"
+        }
+      ]
+    },
+    {
+      "id": "part3-du-an",
+      "title": "Phần 3 — Dự án tổng hợp",
+      "dir": "part3-du-an",
+      "chapters": [
+        {
+          "num": 11,
+          "slug": "du-an-tro-ly-kho",
+          "title": "Dự án: Trợ lý kho hàng"
+        }
+      ]
+    },
+    {
+      "id": "part4-phu-luc",
+      "title": "Phụ lục",
+      "dir": "part4-phu-luc",
+      "chapters": [
+        {
+          "num": 12,
+          "slug": "phu-luc-a-loi-thuong-gap",
+          "title": "Phụ lục A — Lỗi và bẫy thường gặp"
+        },
+        {
+          "num": 13,
+          "slug": "phu-luc-b-tai-lieu",
+          "title": "Phụ lục B — Tài liệu tham khảo"
+        },
+        {
+          "num": 14,
+          "slug": "phu-luc-c-cheat-sheet",
+          "title": "Phụ lục C — Cheat sheet"
+        }
+      ]
+    }
+  ]
+}
