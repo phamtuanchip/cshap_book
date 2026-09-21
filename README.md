@@ -5,6 +5,8 @@ Sách lập trình C# bằng tiếng Việt, dành cho người **chưa biết g
 và các ứng dụng web nâng cao áp dụng design pattern / kiến trúc best practice của .NET — kèm code mẫu
 đầy đủ, chạy được cho từng chương.
 
+> **Đọc online:** https://phamtuanchip.github.io/cshap_book/ (HTML + PDF cả 4 tập, tự động xuất bản bằng GitHub Pages khi thư mục `dist/` đổi).
+>
 > **Trạng thái: cả 4 tập đã viết xong** (chưa làm EPUB). Mỗi tập có `book/` (Markdown), `code/` (mã mẫu) và `dist/` (HTML + PDF):
 >
 > | Tập | Thư mục | Quy mô | Build |
