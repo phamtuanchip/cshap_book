@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C# từ cơ bản đến nâng cao</title>
+<style>
+  :root { --bg:#fff; --fg:#1f2328; --muted:#59636e; --card:#f6f8fa; --line:#d1d9e0; --accent:#0969da; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --card:#151b23; --line:#3d444d; --accent:#4493f8; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 48px 16px; }
+  h1 { font-size: 2rem; margin: 0 0 8px; }
+  p.lead { color: var(--muted); margin: 0 0 32px; }
+  .grid { display:grid; gap:16px; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); }
+  @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px; }
+  .card h2 { font-size:1.15rem; margin:0 0 6px; }
+  .card p { margin:0 0 12px; color:var(--muted); font-size:.95rem; }
+  .links a { display:inline-block; margin-right:14px; color:var(--accent); text-decoration:none; font-weight:600; }
+  .links a:hover { text-decoration:underline; }
+  footer { margin-top:40px; color:var(--muted); font-size:.9rem; }
+  footer a { color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>C# từ cơ bản đến nâng cao</h1>
+  <p class="lead">Bộ sách lập trình C# và .NET hiện đại bằng tiếng Việt, gồm 4 tập. Mọi tập có bản đọc trực tuyến (HTML) và bản PDF; mã mẫu nằm trong kho GitHub.</p>
+  <div class="grid">
+    <section class="card">
+      <h2>Tập 1 — C# từ cơ bản đến nâng cao</h2>
+      <p>Môi trường, cú pháp, OOP từ số 0, generics, collection, LINQ, async, I/O, kiểm thử. 43 chương + 3 phụ lục.</p>
+      <div class="links"><a href="tap1/index.html">Đọc online</a><a href="tap1/csharp-tu-co-ban-den-nang-cao-tap1.pdf">PDF</a></div>
+    </section>
+    <section class="card">
+      <h2>Tập 2 — ASP.NET Core</h2>
+      <p>HTTP, Minimal API, MVC, Razor Pages, Blazor, EF Core, xác thực và bảo mật. 22 chương + 3 phụ lục.</p>
+      <div class="links"><a href="tap2/index.html">Đọc online</a><a href="tap2/csharp-aspnet-core-tap2.pdf">PDF</a></div>
+    </section>
+    <section class="card">
+      <h2>Tập 3 — Kiến trúc và vận hành</h2>
+      <p>Clean Architecture, DDD, CQRS, outbox, cache, quan sát, OIDC, Docker, CI/CD, cloud, microservices. 18 chương + 3 phụ lục.</p>
+      <div class="links"><a href="tap3/index.html">Đọc online</a><a href="tap3/csharp-web-nang-cao-tap3.pdf">PDF</a></div>
+    </section>
+    <section class="card">
+      <h2>Tập 4 — AI trong ứng dụng .NET</h2>
+      <p>LLM, Microsoft.Extensions.AI, tool calling, RAG, agent, đánh giá, an toàn và chi phí. 11 chương + 3 phụ lục.</p>
+      <div class="links"><a href="tap4/index.html">Đọc online</a><a href="tap4/csharp-ai-dotnet-tap4.pdf">PDF</a></div>
+    </section>
+  </div>
+  <footer>
+    Mã nguồn và mã mẫu: <a href="https://github.com/phamtuanchip/cshap_book">github.com/phamtuanchip/cshap_book</a>.
+    Một số phần chưa kiểm chứng chạy thật (Docker, CI/CD, IdP thật, mô hình AI thật) — xem ghi chú trong README và từng chương.
+  </footer>
+</main>
+</body>
+</html>
