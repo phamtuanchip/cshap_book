@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 3 — Microsoft.Extensions.AI: IChatClient và middleware — C# và .NET — Tập 4</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và .NET — Tập 4</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-llm-co-ban.html">1. Mô hình ngôn ngữ lớn cho lập trình viên .NET</a></li><li><a class="chapter-link" href="ch02-goi-api-truc-tiep.html">2. Gọi API LLM bằng HttpClient</a></li><li><a class="chapter-link active" href="ch03-extensions-ai.html">3. Microsoft.Extensions.AI: IChatClient và middleware</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Kỹ thuật cốt lõi</div><ul class="chapter-list"><li><a class="chapter-link" href="ch04-structured-output.html">4. Đầu ra có cấu trúc</a></li><li><a class="chapter-link" href="ch05-tool-calling.html">5. Tool calling (function calling)</a></li><li><a class="chapter-link" href="ch06-embeddings-vector.html">6. Embeddings và tìm kiếm vector</a></li><li><a class="chapter-link" href="ch07-rag.html">7. RAG: truy xuất rồi sinh</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Đưa vào sản xuất</div><ul class="chapter-list"><li><a class="chapter-link" href="ch08-agent.html">8. Agent: vòng lặp suy luận và hành động</a></li><li><a class="chapter-link" href="ch09-danh-gia-kiem-thu.html">9. Đánh giá và kiểm thử ứng dụng LLM</a></li><li><a class="chapter-link" href="ch10-an-toan-chi-phi.html">10. An toàn, chi phí và quan sát</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-du-an-tro-ly-kho.html">11. Dự án: Trợ lý kho hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-phu-luc-a-loi-thuong-gap.html">12. Phụ lục A — Lỗi và bẫy thường gặp</a></li><li><a class="chapter-link" href="ch13-phu-luc-b-tai-lieu.html">13. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch14-phu-luc-c-cheat-sheet.html">14. Phụ lục C — Cheat sheet</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 3 — <a href="http://Microsoft.Extensions.AI">Microsoft.Extensions.AI</a>: IChatClient và middleware</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Dùng <strong><code>IChatClient</code></strong> — abstraction chuẩn của .NET cho LLM — để viết mã <strong>không phụ thuộc nhà cung cấp</strong>.</li>
+<li>Xây <strong>pipeline middleware</strong> (<code>ChatClientBuilder</code>, <code>DelegatingChatClient</code>): logging, cache, đếm token... giống middleware <a href="http://ASP.NET">ASP.NET</a> Core.</li>
+<li>Tạo <strong>nhà cung cấp giả</strong> để <strong>kiểm thử</strong> mà không gọi mạng, không tốn tiền.</li>
+<li>Đăng ký vào <strong>DI</strong> và chuyển đổi nhà cung cấp bằng cấu hình.</li>
+</ul>
+<p>Code: <a href="code/ch03-extensions-ai/"><code>code/ch03-extensions-ai/</code></a> — gói <code>Microsoft.Extensions.AI</code> 10.10.0.</p>
+<h2>Vấn đề: mỗi nhà cung cấp một SDK</h2>
+<p>OpenAI, Anthropic, Azure OpenAI, Google, Ollama (chạy cục bộ)... mỗi nơi có SDK và kiểu dữ liệu riêng. Mã ứng dụng gắn chặt với một SDK sẽ khó đổi nhà cung cấp, khó kiểm thử, và khó gắn các mối quan tâm xuyên suốt (log, cache, giới hạn, telemetry).</p>
+<p><strong><code>Microsoft.Extensions.AI</code></strong> giải quyết giống như <code>ILogger</code>/<code>IDistributedCache</code> đã làm: một <strong>giao diện chung</strong> (<code>Microsoft.Extensions.AI.Abstractions</code>) + <strong>middleware dùng chung</strong> (<code>Microsoft.Extensions.AI</code>); mỗi nhà cung cấp cung cấp một <strong>cài đặt</strong> <code>IChatClient</code>. Mã của bạn phụ thuộc vào giao diện; nhà cung cấp được chọn ở <strong>composition root</strong> (Tập 3, Chương 2).</p>
+<h2><code>IChatClient</code></h2>
+<pre class="hljs"><code><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IChatClient</span> : <span class="hljs-title">IDisposable</span>
+{
+    <span class="hljs-function">Task&lt;ChatResponse&gt; <span class="hljs-title">GetResponseAsync</span>(<span class="hljs-params">IEnumerable&lt;ChatMessage&gt; messages, ChatOptions? options = <span class="hljs-literal">null</span>, CancellationToken ct = <span class="hljs-literal">default</span></span>)</span>;
+    <span class="hljs-function">IAsyncEnumerable&lt;ChatResponseUpdate&gt; <span class="hljs-title">GetStreamingResponseAsync</span>(<span class="hljs-params">IEnumerable&lt;ChatMessage&gt; messages, ChatOptions? options = <span class="hljs-literal">null</span>, CancellationToken ct = <span class="hljs-literal">default</span></span>)</span>;
+    <span class="hljs-built_in">object</span>? GetService(Type serviceType, <span class="hljs-built_in">object</span>? serviceKey = <span class="hljs-literal">null</span>);
+}
+</code></pre>
+<p>Kiểu dữ liệu chính:</p>
+<table>
+<thead>
+<tr>
+<th>Kiểu</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ChatMessage(ChatRole, text)</code></td>
+<td>một tin nhắn; <code>ChatRole.System/User/Assistant/Tool</code></td>
+</tr>
+<tr>
+<td><code>ChatOptions</code></td>
+<td><code>Temperature</code>, <code>MaxOutputTokens</code>, <code>ModelId</code>, <code>Tools</code>, <code>ResponseFormat</code>... (chung cho mọi nhà cung cấp)</td>
+</tr>
+<tr>
+<td><code>ChatResponse</code></td>
+<td>phản hồi: <code>Messages</code>, <code>.Text</code> (ghép văn bản), <code>Usage</code> (token vào/ra)</td>
+</tr>
+<tr>
+<td><code>ChatResponseUpdate</code></td>
+<td>một mảnh của luồng streaming (<code>.Text</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Dùng:</p>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> lichSu = <span class="hljs-keyword">new</span> List&lt;ChatMessage&gt;
+{
+    <span class="hljs-keyword">new</span>(ChatRole.System, <span class="hljs-string">&quot;Ban la tro ly kho hang, tra loi ngan.&quot;</span>),
+    <span class="hljs-keyword">new</span>(ChatRole.User, <span class="hljs-string">&quot;LT001 con bao nhieu?&quot;</span>),
+};
+<span class="hljs-keyword">var</span> r = <span class="hljs-keyword">await</span> client.GetResponseAsync(lichSu, <span class="hljs-keyword">new</span> ChatOptions { Temperature = <span class="hljs-number">0</span>, MaxOutputTokens = <span class="hljs-number">200</span> });
+Console.WriteLine(r.Text);
+
+<span class="hljs-keyword">await</span> <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> manh <span class="hljs-keyword">in</span> client.GetStreamingResponseAsync(lichSu)) Console.Write(manh.Text);
+</code></pre>
+<p>Đổi nhà cung cấp chỉ là đổi cách tạo <code>IChatClient</code>, ví dụ (theo tài liệu từng gói; <strong>chưa chạy trong sách này</strong>):</p>
+<pre class="hljs"><code><span class="hljs-comment">// OpenAI / Azure OpenAI:  new OpenAI.Chat.ChatClient(model, key).AsIChatClient()</span>
+<span class="hljs-comment">// Ollama (cục bộ):        new OllamaChatClient(new Uri(&quot;http://localhost:11434&quot;), &quot;llama3.2&quot;)</span>
+<span class="hljs-comment">// Anthropic:              dùng SDK chính thức của Anthropic cho .NET (có bộ chuyển thành IChatClient) — xem tài liệu SDK hiện hành</span>
+</code></pre>
+<p>Tên gói/phương thức chuyển đổi thay đổi theo phiên bản SDK; hãy tra tài liệu của nhà cung cấp bạn dùng.</p>
+<h2>Pipeline middleware</h2>
+<p><code>ChatClientBuilder</code> xếp các <strong><code>DelegatingChatClient</code></strong> thành chuỗi, y hệt middleware của <a href="http://ASP.NET">ASP.NET</a> Core: mỗi lớp bọc <code>inner</code>, có thể xử lý trước/sau hoặc chặn hẳn.</p>
+<pre class="hljs"><code>IChatClient client = <span class="hljs-keyword">new</span> ChatClientBuilder(nhaCungCap)
+    .UseLogging(loggerFactory)                  <span class="hljs-comment">// có sẵn: log request/response</span>
+    .Use(inner =&gt; <span class="hljs-keyword">new</span> CacheClient(inner))       <span class="hljs-comment">// tự viết</span>
+    .Use(inner =&gt; <span class="hljs-keyword">new</span> DemTokenClient(inner))    <span class="hljs-comment">// tự viết</span>
+    .Build();
+</code></pre>
+<p>Có sẵn trong gói: <code>UseLogging</code>, <code>UseOpenTelemetry</code> (span/metric theo chuẩn GenAI), <code>UseDistributedCache</code>, <code>UseFunctionInvocation</code> (tự chạy tool — Chương 5), <code>ConfigureOptions</code> (đặt mặc định cho <code>ChatOptions</code>), <code>UseRateLimiting</code>... (tuỳ phiên bản).</p>
+<p><strong>Thứ tự quan trọng: cái thêm đầu tiên là ngoài cùng.</strong> Ví dụ chạy được (nhà cung cấp giả, hai lần hỏi cùng câu):</p>
+<pre class="hljs"><code>--- Lan 1 ---  → log, cache trượt, đếm token, gọi (giả)
+--- Lan 2 ---  [cache] trung   → dừng ở lớp cache, KHÔNG xuống đếm token/nhà cung cấp
+Tong token da dung: 30 vao / 12 ra; so lan goi that: 1
+</code></pre>
+<p>Nếu đặt <code>DemTokenClient</code> <strong>ngoài</strong> <code>CacheClient</code>, lần cache trúng vẫn bị cộng token (60/24 với chỉ 1 lần gọi thật) — sai số liệu chi phí. Đây là một lỗi thật đã xảy ra khi viết mã mẫu: <strong>luôn hỏi &quot;lớp này muốn thấy mọi lời gọi hay chỉ lời gọi thật?&quot;</strong> rồi đặt đúng chỗ.</p>
+<h3>Viết middleware</h3>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">DemTokenClient</span>(<span class="hljs-params">IChatClient inner</span>) : <span class="hljs-title">DelegatingChatClient</span>(<span class="hljs-params">inner</span>)</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> TongVao, TongRa;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">async</span> Task&lt;ChatResponse&gt; <span class="hljs-title">GetResponseAsync</span>(<span class="hljs-params">IEnumerable&lt;ChatMessage&gt; messages, ChatOptions? options = <span class="hljs-literal">null</span>, CancellationToken ct = <span class="hljs-literal">default</span></span>)</span>
+    {
+        <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">await</span> <span class="hljs-keyword">base</span>.GetResponseAsync(messages, options, ct);          <span class="hljs-comment">// gọi lớp bên trong</span>
+        TongVao += (<span class="hljs-built_in">int</span>)(res.Usage?.InputTokenCount ?? <span class="hljs-number">0</span>);
+        TongRa  += (<span class="hljs-built_in">int</span>)(res.Usage?.OutputTokenCount ?? <span class="hljs-number">0</span>);
+        <span class="hljs-keyword">return</span> res;
+    }
+}
+</code></pre>
+<p><code>DelegatingChatClient</code> mặc định chuyển tiếp mọi thứ; bạn chỉ override cái cần (<code>GetResponseAsync</code>, và <strong><code>GetStreamingResponseAsync</code> nếu muốn áp dụng cho streaming</strong> — ví dụ trên chỉ đếm lời gọi không-streaming; với streaming, token nằm ở cập nhật cuối, cần xử lý riêng).</p>
+<p>Bài học cache (đã cài trong <code>CacheClient</code>): <strong>chỉ cache khi kết quả ổn định</strong> (<code>Temperature = 0</code>), khoá phải gồm <strong>toàn bộ hội thoại + mọi tham số ảnh hưởng</strong> (model, max tokens, công cụ...), và <strong>cẩn trọng dữ liệu theo người dùng</strong> (không chia sẻ cache giữa người dùng nếu prompt chứa dữ liệu riêng — Tập 3, Chương 10). Trong sản phẩm dùng <code>UseDistributedCache</code> có sẵn thay vì tự viết.</p>
+<h2>Nhà cung cấp giả để kiểm thử</h2>
+<p><code>IChatClient</code> là giao diện nhỏ ⇒ tự cài một bản giả rất dễ:</p>
+<pre class="hljs"><code><span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TroLyGia</span> : <span class="hljs-title">IChatClient</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Task&lt;ChatResponse&gt; <span class="hljs-title">GetResponseAsync</span>(<span class="hljs-params">IEnumerable&lt;ChatMessage&gt; messages, ChatOptions? options = <span class="hljs-literal">null</span>, CancellationToken ct = <span class="hljs-literal">default</span></span>)</span>
+    {
+        <span class="hljs-built_in">string</span> hoi = messages.Last(m =&gt; m.Role == ChatRole.User).Text;
+        <span class="hljs-keyword">return</span> Task.FromResult(<span class="hljs-keyword">new</span> ChatResponse(<span class="hljs-keyword">new</span> ChatMessage(ChatRole.Assistant, <span class="hljs-string">$&quot;(gia lap) Ban hoi: \&quot;<span class="hljs-subst">{hoi}</span>\&quot;. LT001 con 7 chiec.&quot;</span>))
+        {
+            Usage = <span class="hljs-keyword">new</span> UsageDetails { InputTokenCount = <span class="hljs-number">30</span>, OutputTokenCount = <span class="hljs-number">12</span>, TotalTokenCount = <span class="hljs-number">42</span> },
+        });
+    }
+    <span class="hljs-comment">// GetStreamingResponseAsync: yield từng mảnh; GetService: trả this nếu đúng kiểu; Dispose: rỗng</span>
+}
+</code></pre>
+<p>Ứng dụng nhận <code>IChatClient</code> qua DI ⇒ trong test, bạn truyền bản giả có <strong>kịch bản</strong> (trả đúng câu bạn muốn, hoặc ném lỗi 429 để kiểm thử xử lý lỗi, hoặc trả yêu cầu gọi tool). Nhờ vậy <strong>toàn bộ logic quanh LLM</strong> (dựng prompt, phân tích đầu ra, xử lý lỗi, giới hạn) được <strong>kiểm thử tất định, nhanh, miễn phí</strong>. Việc kiểm tra <em>chất lượng</em> câu trả lời của mô hình thật là chuyện khác (Chương 9).</p>
+<h2>Đăng ký vào DI (<a href="http://ASP.NET">ASP.NET</a> Core)</h2>
+<pre class="hljs"><code>builder.Services.AddChatClient(sp =&gt;
+        <span class="hljs-keyword">new</span> ChatClientBuilder(TaoNhaCungCap(sp.GetRequiredService&lt;IConfiguration&gt;()))
+            .UseLogging(sp.GetRequiredService&lt;ILoggerFactory&gt;())
+            .UseOpenTelemetry()
+            .Build(sp))
+    .UseFunctionInvocation();
+
+<span class="hljs-comment">// dùng ở bất kỳ đâu:</span>
+app.MapPost(<span class="hljs-string">&quot;/hoi&quot;</span>, <span class="hljs-keyword">async</span> (HoiRequest r, IChatClient chat, CancellationToken ct)
+    =&gt; (<span class="hljs-keyword">await</span> chat.GetResponseAsync(r.CauHoi, cancellationToken: ct)).Text);
+</code></pre>
+<p><code>AddChatClient</code> đăng ký <code>IChatClient</code> (mặc định singleton) và trả một builder để nối thêm middleware. Chọn nhà cung cấp theo <strong>cấu hình</strong> (<code>AI:Provider = fake|openai|ollama</code>), giữ khoá trong secret (Tập 3, Chương 13). Có <code>AddKeyedChatClient</code> nếu cần nhiều mô hình cùng lúc (mô hình rẻ cho tác vụ dễ, mô hình mạnh cho tác vụ khó).</p>
+<blockquote>
+<p>Chữ ký chính xác của <code>AddChatClient</code>/<code>Build(sp)</code> đã thay đổi giữa các bản xem trước; đoạn mã trên theo tài liệu phiên bản 9–10 và <strong>chưa được biên dịch trong sách này</strong> (mã chạy được của chương là ví dụ pipeline ở trên). Nếu trình biên dịch báo khác, hãy theo IntelliSense và ghi chú phát hành gói.</p>
+</blockquote>
+<h2>Các lợi ích khác của abstraction</h2>
+<ul>
+<li><strong>Telemetry chuẩn</strong>: <code>UseOpenTelemetry()</code> phát span/metric theo <strong>GenAI semantic conventions</strong> (số token, mô hình, độ trễ) — nối thẳng vào Tập 3, Chương 11.</li>
+<li><strong>Nhúng (embeddings)</strong>: <code>IEmbeddingGenerator&lt;string, Embedding&lt;float&gt;&gt;</code> cùng họ abstraction (Chương 6).</li>
+<li><strong>Tool calling</strong> bằng <code>AIFunction</code>/<code>AIFunctionFactory</code> (Chương 5) — dùng chung cho mọi nhà cung cấp hỗ trợ.</li>
+<li>Cộng đồng/hệ sinh thái: <strong>Semantic Kernel</strong>, <strong>Microsoft Agent Framework</strong> xây trên các abstraction này (Chương 8).</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Dùng thẳng SDK của một nhà cung cấp rải khắp mã → khó đổi và khó test.</li>
+<li>Sai thứ tự middleware (cache trong/ngoài đếm token, log trong/ngoài retry).</li>
+<li>Cache kết quả có <code>Temperature &gt; 0</code> hoặc khoá thiếu tham số → trả nhầm câu trả lời.</li>
+<li>Chỉ override <code>GetResponseAsync</code>, quên <code>GetStreamingResponseAsync</code> → streaming bỏ qua middleware.</li>
+<li>Đăng ký <code>IChatClient</code> scoped/transient tạo lại kết nối liên tục (thường dùng singleton).</li>
+<li>Log toàn bộ nội dung (mức Trace) ở production → rò rỉ dữ liệu.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Viết <code>GioiHanDoDaiClient</code> từ chối (ném <code>InvalidOperationException</code>) khi tổng ký tự hội thoại vượt ngưỡng; test bằng nhà cung cấp giả.</li>
+<li>Viết <code>TuThuLaiClient</code> thử lại khi client bên trong ném lỗi tạm thời (giả 2 lần lỗi rồi thành công); test số lần gọi.</li>
+<li>Bổ sung <code>GetStreamingResponseAsync</code> cho <code>DemTokenClient</code> (cộng token ở cập nhật cuối có <code>UsageContent</code>).</li>
+<li>Viết <code>TroLyGiaCoKichBan</code> nhận danh sách phản hồi định sẵn (theo thứ tự) và dùng nó để test một lớp <code>TroLyKho</code> (dựng prompt + gọi + xử lý <code>stop_reason</code> bị cắt).</li>
+<li>Thay <code>CacheClient</code> bằng <code>UseDistributedCache</code> với <code>MemoryDistributedCache</code> và so sánh hành vi (khoá cache, hết hạn).</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch02-goi-api-truc-tiep.html">&larr; 2. Gọi API LLM bằng HttpClient</a><a class="nav-next" href="ch04-structured-output.html">4. Đầu ra có cấu trúc &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 2 — Gọi API LLM bằng HttpClient — C# và .NET — Tập 4</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và .NET — Tập 4</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-llm-co-ban.html">1. Mô hình ngôn ngữ lớn cho lập trình viên .NET</a></li><li><a class="chapter-link active" href="ch02-goi-api-truc-tiep.html">2. Gọi API LLM bằng HttpClient</a></li><li><a class="chapter-link" href="ch03-extensions-ai.html">3. Microsoft.Extensions.AI: IChatClient và middleware</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Kỹ thuật cốt lõi</div><ul class="chapter-list"><li><a class="chapter-link" href="ch04-structured-output.html">4. Đầu ra có cấu trúc</a></li><li><a class="chapter-link" href="ch05-tool-calling.html">5. Tool calling (function calling)</a></li><li><a class="chapter-link" href="ch06-embeddings-vector.html">6. Embeddings và tìm kiếm vector</a></li><li><a class="chapter-link" href="ch07-rag.html">7. RAG: truy xuất rồi sinh</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Đưa vào sản xuất</div><ul class="chapter-list"><li><a class="chapter-link" href="ch08-agent.html">8. Agent: vòng lặp suy luận và hành động</a></li><li><a class="chapter-link" href="ch09-danh-gia-kiem-thu.html">9. Đánh giá và kiểm thử ứng dụng LLM</a></li><li><a class="chapter-link" href="ch10-an-toan-chi-phi.html">10. An toàn, chi phí và quan sát</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-du-an-tro-ly-kho.html">11. Dự án: Trợ lý kho hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-phu-luc-a-loi-thuong-gap.html">12. Phụ lục A — Lỗi và bẫy thường gặp</a></li><li><a class="chapter-link" href="ch13-phu-luc-b-tai-lieu.html">13. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch14-phu-luc-c-cheat-sheet.html">14. Phụ lục C — Cheat sheet</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 2 — Gọi API LLM bằng HttpClient</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>cấu trúc request/response</strong> của một API chat LLM (lấy Messages API của Anthropic làm ví dụ) và tự gọi được bằng <code>HttpClient</code>.</li>
+<li>Xử lý <strong>streaming</strong> bằng <strong>Server-Sent Events (SSE)</strong> với <code>IAsyncEnumerable&lt;string&gt;</code>.</li>
+<li>Cài <strong>thử lại có lùi (backoff + jitter)</strong>, tôn trọng <code>Retry-After</code>, và phân biệt lỗi nên/không nên thử lại.</li>
+<li>Biết vì sao thực tế nên dùng <strong>SDK/abstraction</strong> (Chương 3) — nhưng hiểu bản chất giúp bạn gỡ lỗi.</li>
+</ul>
+<p>Code: <a href="code/ch02-goi-api-truc-tiep/"><code>code/ch02-goi-api-truc-tiep/</code></a> — chạy mặc định với <strong>máy chủ giả</strong> (không khoá API, không tốn tiền); đặt <code>ANTHROPIC_API_KEY</code> để gọi thật.</p>
+<blockquote>
+<p><strong>Trung thực về kiểm chứng:</strong> mọi kết quả dưới đây là từ <strong>máy chủ giả</strong> do chính code mẫu dựng theo định dạng tài liệu Messages API. Việc gọi <code>api.anthropic.com</code> thật <strong>chưa được chạy</strong> khi viết sách (không có khoá API). Định dạng có thể thay đổi; luôn đối chiếu tài liệu hiện hành (đặc biệt tên mô hình, phiên bản API, trường mới).</p>
+</blockquote>
+<h2>Request</h2>
+<p>Mọi dịch vụ LLM hiện nay đều là <strong>HTTP + JSON</strong>. Với Messages API:</p>
+<pre class="hljs"><code>POST https://api.anthropic.com/v1/messages
+<span class="hljs-attribute">x-api-key</span><span class="hljs-punctuation">: </span>&lt;khoá&gt;
+<span class="hljs-attribute">anthropic-version</span><span class="hljs-punctuation">: </span>2023-06-01
+<span class="hljs-attribute">content-type</span><span class="hljs-punctuation">: </span>application/json
+
+{
+  &quot;model&quot;: &quot;claude-sonnet-5&quot;,
+  &quot;max_tokens&quot;: 512,
+  &quot;system&quot;: &quot;Ban la tro ly kho hang. Tra loi ngan gon bang tieng Viet.&quot;,
+  &quot;messages&quot;: [
+    { &quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;San pham LT001 con bao nhieu?&quot; }
+  ]
+}
+</code></pre>
+<p>Điểm cần nhớ:</p>
+<ul>
+<li><strong>Xác thực bằng header</strong> (<code>x-api-key</code>) — khoá là <strong>bí mật</strong>: đọc từ biến môi trường/Key Vault (Tập 3, Chương 13), <strong>không</strong> commit, không log, không gửi xuống trình duyệt. Ứng dụng web/mobile gọi <strong>qua backend của bạn</strong>, không gọi thẳng từ client.</li>
+<li><strong><code>max_tokens</code> bắt buộc</strong>: trần số token sinh ra.</li>
+<li><strong><code>system</code></strong> là tham số riêng; <code>messages</code> xen kẽ <code>user</code>/<code>assistant</code>.</li>
+<li><strong><code>model</code></strong> là chuỗi định danh mô hình; đặt trong cấu hình, không hard-code rải rác (mô hình ra mới/ngừng hỗ trợ theo thời gian).</li>
+<li>Không có &quot;phiên&quot;: mỗi request phải mang <strong>toàn bộ hội thoại</strong> (Chương 1).</li>
+</ul>
+<h2>Response</h2>
+<pre class="hljs"><code><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;msg_01...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;message&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;assistant&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;text&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;LT001 con 7 chiec.&quot;</span> <span class="hljs-punctuation">}</span> <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;stop_reason&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;end_turn&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;usage&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;input_tokens&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">32</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;output_tokens&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">14</span> <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<ul>
+<li><strong><code>content</code> là mảng các khối</strong> (<code>text</code>, <code>tool_use</code>, ...) — không phải một chuỗi. Lấy chữ bằng cách ghép các khối <code>text</code>. (Khối <code>tool_use</code> là nền tảng của Chương 5.)</li>
+<li><strong><code>stop_reason</code></strong>: <code>end_turn</code> (xong), <code>max_tokens</code> (bị cắt do trần — câu trả lời <strong>dở dang</strong>, phải xử lý!), <code>tool_use</code> (mô hình muốn gọi công cụ), <code>stop_sequence</code>...</li>
+<li><strong><code>usage</code></strong>: số token thực tế — nguồn duy nhất để tính chi phí chính xác (Chương 10).</li>
+</ul>
+<h2>Client tối thiểu</h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ClaudeClient</span>(<span class="hljs-params">HttpClient http, <span class="hljs-built_in">string</span> model, <span class="hljs-built_in">int</span> toiDaThuLai = <span class="hljs-number">3</span></span>)</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;KetQua&gt; <span class="hljs-title">HoiAsync</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> heThong, <span class="hljs-built_in">string</span> nguoiDung, <span class="hljs-built_in">int</span> toiDaToken = <span class="hljs-number">512</span>, CancellationToken ct = <span class="hljs-literal">default</span></span>)</span>
+    {
+        <span class="hljs-keyword">var</span> body = <span class="hljs-keyword">new</span> JsonObject
+        {
+            [<span class="hljs-string">&quot;model&quot;</span>] = model,
+            [<span class="hljs-string">&quot;max_tokens&quot;</span>] = toiDaToken,
+            [<span class="hljs-string">&quot;system&quot;</span>] = heThong,
+            [<span class="hljs-string">&quot;messages&quot;</span>] = <span class="hljs-keyword">new</span> JsonArray(<span class="hljs-keyword">new</span> JsonObject { [<span class="hljs-string">&quot;role&quot;</span>] = <span class="hljs-string">&quot;user&quot;</span>, [<span class="hljs-string">&quot;content&quot;</span>] = nguoiDung }),
+        };
+
+        <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">await</span> GuiCoThuLaiAsync(body, ct);
+        <span class="hljs-keyword">var</span> json = <span class="hljs-keyword">await</span> res.Content.ReadFromJsonAsync&lt;JsonNode&gt;(ct) ?? <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> InvalidOperationException(<span class="hljs-string">&quot;Phan hoi rong&quot;</span>);
+        <span class="hljs-built_in">string</span> van = <span class="hljs-built_in">string</span>.Concat(json[<span class="hljs-string">&quot;content&quot;</span>]!.AsArray()
+            .Where(k =&gt; k![<span class="hljs-string">&quot;type&quot;</span>]!.GetValue&lt;<span class="hljs-built_in">string</span>&gt;() == <span class="hljs-string">&quot;text&quot;</span>).Select(k =&gt; k![<span class="hljs-string">&quot;text&quot;</span>]!.GetValue&lt;<span class="hljs-built_in">string</span>&gt;()));
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span>(van, json[<span class="hljs-string">&quot;stop_reason&quot;</span>]!.GetValue&lt;<span class="hljs-built_in">string</span>&gt;(), json[<span class="hljs-string">&quot;usage&quot;</span>]![<span class="hljs-string">&quot;input_tokens&quot;</span>]!.GetValue&lt;<span class="hljs-built_in">int</span>&gt;(), json[<span class="hljs-string">&quot;usage&quot;</span>]![<span class="hljs-string">&quot;output_tokens&quot;</span>]!.GetValue&lt;<span class="hljs-built_in">int</span>&gt;());
+    }
+}
+</code></pre>
+<p>Dùng <code>JsonNode</code> cho mã minh hoạ để thấy rõ cấu trúc; sản phẩm thật dùng <strong>record + <code>System.Text.Json</code></strong> (Tập 2) hoặc SDK. <code>HttpClient</code> <strong>đăng ký bằng <code>IHttpClientFactory</code></strong> (Tập 2, Chương 19), đặt <code>BaseAddress</code>, header và timeout — đừng <code>new HttpClient()</code> cho mỗi lời gọi.</p>
+<p>Chạy (máy chủ giả):</p>
+<pre class="hljs"><code>[1] Hoi mot lan
+   LT001 con 7 chiec (gia lap).
+   dung: end_turn, token vao/ra: 32/14
+</code></pre>
+<h2>Streaming (SSE)</h2>
+<p>Câu trả lời dài có thể mất hàng chục giây. Với <code>&quot;stream&quot;: true</code>, server trả <strong>Server-Sent Events</strong>: dòng <code>event:</code> và <code>data:</code> cách nhau bằng dòng trống, mỗi sự kiện một mẩu:</p>
+<pre class="hljs"><code>event: content_block_delta
+data: {&quot;type&quot;:&quot;content_block_delta&quot;,&quot;index&quot;:0,&quot;delta&quot;:{&quot;type&quot;:&quot;text_delta&quot;,&quot;text&quot;:&quot;Xin &quot;}}
+
+event: message_stop
+data: {&quot;type&quot;:&quot;message_stop&quot;}
+</code></pre>
+<pre class="hljs"><code><span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">await</span> http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, ct);   <span class="hljs-comment">// KHÔNG đợi hết body</span>
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> reader = <span class="hljs-keyword">new</span> StreamReader(<span class="hljs-keyword">await</span> res.Content.ReadAsStreamAsync(ct));
+<span class="hljs-keyword">while</span> ((dong = <span class="hljs-keyword">await</span> reader.ReadLineAsync(ct)) <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span>)
+{
+    <span class="hljs-keyword">if</span> (!dong.StartsWith(<span class="hljs-string">&quot;data: &quot;</span>)) <span class="hljs-keyword">continue</span>;
+    <span class="hljs-keyword">var</span> sk = JsonNode.Parse(dong[<span class="hljs-number">6.</span>.])!;
+    ...
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;content_block_delta&quot;</span> <span class="hljs-keyword">when</span> loaiDelta == <span class="hljs-string">&quot;text_delta&quot;</span>: <span class="hljs-keyword">yield</span> <span class="hljs-keyword">return</span> sk[<span class="hljs-string">&quot;delta&quot;</span>]![<span class="hljs-string">&quot;text&quot;</span>]!.GetValue&lt;<span class="hljs-built_in">string</span>&gt;(); <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;message_stop&quot;</span>: <span class="hljs-keyword">yield</span> <span class="hljs-keyword">break</span>;
+}
+</code></pre>
+<p>Ba điểm mấu chốt:</p>
+<ol>
+<li><strong><code>HttpCompletionOption.ResponseHeadersRead</code></strong> — mặc định <code>HttpClient</code> chờ đọc <strong>toàn bộ</strong> body rồi mới trả; với streaming bạn cần nhận ngay khi có header.</li>
+<li>Phương thức là <strong><code>IAsyncEnumerable&lt;string&gt;</code></strong> (Tập 1, bất đồng bộ) — người gọi dùng <code>await foreach</code>, in/đẩy tới trình duyệt ngay từng mảnh.</li>
+<li><strong>Lỗi có thể đến giữa luồng</strong> (sự kiện <code>error</code>), khi đã trả 200. Phải xử lý, không chỉ kiểm tra mã trạng thái ban đầu. Truyền <code>CancellationToken</code> để người dùng đóng tab thì <strong>huỷ</strong> lời gọi (khỏi tốn token).</li>
+</ol>
+<p>Trong <a href="http://ASP.NET">ASP.NET</a> Core, có thể chuyển tiếp tới trình duyệt bằng <code>Results.ServerSentEvents(stream)</code> (.NET 10) hoặc <code>IAsyncEnumerable</code> trả trực tiếp từ endpoint (Tập 2).</p>
+<p>Kết quả (máy chủ giả): <code>Xin chao! Toi co the giup gi?</code> in dần từng mảnh.</p>
+<h2>Lỗi và thử lại</h2>
+<table>
+<thead>
+<tr>
+<th>Mã</th>
+<th>Nghĩa</th>
+<th>Thử lại?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td>request sai (thiếu <code>max_tokens</code>, JSON hỏng, vượt ngữ cảnh)</td>
+<td><strong>Không</strong> — sửa mã</td>
+</tr>
+<tr>
+<td>401/403</td>
+<td>sai khoá / không có quyền</td>
+<td><strong>Không</strong></td>
+</tr>
+<tr>
+<td>404</td>
+<td>sai mô hình/đường dẫn</td>
+<td><strong>Không</strong></td>
+</tr>
+<tr>
+<td>413/422</td>
+<td>quá lớn / không xử lý được</td>
+<td><strong>Không</strong></td>
+</tr>
+<tr>
+<td><strong>429</strong></td>
+<td>vượt giới hạn tốc độ</td>
+<td><strong>Có</strong>, theo <code>Retry-After</code></td>
+</tr>
+<tr>
+<td><strong>5xx</strong>, 529 (quá tải)</td>
+<td>lỗi tạm thời phía dịch vụ</td>
+<td><strong>Có</strong></td>
+</tr>
+<tr>
+<td>timeout / mất mạng</td>
+<td>không rõ đã xử lý chưa</td>
+<td><strong>Có</strong>, cẩn trọng (LLM chỉ sinh văn bản nên thử lại an toàn; nhưng với tool có tác dụng phụ xem Chương 5)</td>
+</tr>
+</tbody>
+</table>
+<pre class="hljs"><code><span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> lan = <span class="hljs-number">0</span>; ; lan++)
+{
+    <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">await</span> http.SendAsync(TaoRequest(body), ct);
+    <span class="hljs-keyword">if</span> (res.IsSuccessStatusCode) <span class="hljs-keyword">return</span> res;
+
+    <span class="hljs-built_in">bool</span> thuLaiDuoc = res.StatusCode == HttpStatusCode.TooManyRequests || (<span class="hljs-built_in">int</span>)res.StatusCode <span class="hljs-keyword">is</span> <span class="hljs-number">500</span> <span class="hljs-keyword">or</span> <span class="hljs-number">502</span> <span class="hljs-keyword">or</span> <span class="hljs-number">503</span> <span class="hljs-keyword">or</span> <span class="hljs-number">529</span>;
+    <span class="hljs-keyword">if</span> (!thuLaiDuoc || lan &gt;= toiDaThuLai) { <span class="hljs-comment">/* nem loi kem noi dung phan hoi */</span> }
+
+    <span class="hljs-keyword">var</span> cho = res.Headers.RetryAfter?.Delta ?? TimeSpan.FromMilliseconds(<span class="hljs-number">200</span> * Math.Pow(<span class="hljs-number">2</span>, lan) + Random.Shared.Next(<span class="hljs-number">0</span>, <span class="hljs-number">100</span>));   <span class="hljs-comment">// lũy thừa + jitter</span>
+    <span class="hljs-keyword">await</span> Task.Delay(cho, ct);
+}
+</code></pre>
+<ul>
+<li><strong>Lùi lũy thừa + jitter</strong>: nhiều client cùng bị 429 mà cùng thử lại một lúc sẽ lại đụng nhau; jitter ngẫu nhiên phân tán.</li>
+<li><strong>Tôn trọng <code>Retry-After</code></strong> khi server chỉ định.</li>
+<li><strong>Giới hạn số lần</strong> và <strong>tổng thời gian</strong>; ném lỗi rõ ràng kèm thân phản hồi (chứa lý do).</li>
+<li>Trong sản phẩm, dùng <strong><code>Microsoft.Extensions.Http.Resilience</code></strong> (Tập 2, Chương 19: retry, circuit breaker, timeout) thay vì tự viết vòng lặp như trên.</li>
+</ul>
+<p>Kết quả (máy chủ giả): hai lần 429 → hai lần chờ 100 ms → thành công; còn 401 → <strong>ném lỗi ngay, không thử lại</strong>.</p>
+<h2>Giới hạn tốc độ và đồng thời</h2>
+<p>Dịch vụ giới hạn theo <strong>yêu cầu/phút</strong> và <strong>token/phút</strong>. Nếu ứng dụng gọi song song nhiều lời gọi (ví dụ xử lý hàng loạt tài liệu), hãy <strong>giới hạn độ song song</strong> (<code>SemaphoreSlim</code>, <code>Parallel.ForEachAsync(..., new ParallelOptions { MaxDegreeOfParallelism = 4 })</code>) hoặc dùng <code>System.Threading.RateLimiting</code> (Tập 2). Với xử lý hàng loạt không cần kết quả tức thì, nhiều nhà cung cấp có <strong>Batch API</strong> rẻ hơn.</p>
+<h2>Bảo mật khi gọi API</h2>
+<ul>
+<li>Khoá ở <strong>backend</strong>, đọc từ cấu hình bí mật; xoay vòng; mỗi môi trường một khoá; đặt hạn mức chi tiêu tại nhà cung cấp.</li>
+<li><strong>Đừng log</strong> khoá hay toàn bộ prompt nếu chứa dữ liệu nhạy cảm (Chương 10).</li>
+<li>Kiểm soát dữ liệu gửi đi: <strong>tối thiểu hoá</strong> và che thông tin cá nhân khi không cần.</li>
+<li>Đặt <strong>timeout</strong> rõ ràng (LLM chậm hơn API thường: 30–120 giây tuỳ tác vụ; streaming dùng timeout theo khoảng lặng).</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Không đặt <code>max_tokens</code> (API từ chối) hoặc đặt quá thấp → <code>stop_reason = &quot;max_tokens&quot;</code> bị bỏ qua, trả câu cụt lủn cho người dùng.</li>
+<li>Coi <code>content</code> là chuỗi; nhận <code>tool_use</code> mà không xử lý.</li>
+<li>Streaming mà không <code>ResponseHeadersRead</code> → người dùng chờ hết cả câu.</li>
+<li>Thử lại cả lỗi 4xx (lãng phí và có thể tốn tiền), hoặc thử lại không lùi/jitter → &quot;bão thử lại&quot;.</li>
+<li>Quên <code>CancellationToken</code> → tiếp tục sinh (và trả tiền) khi người dùng đã bỏ đi.</li>
+<li>Tạo <code>new HttpClient()</code> mỗi lần (cạn socket); hard-code tên mô hình và khoá.</li>
+<li>Đưa khoá API vào ứng dụng phía client.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm phương thức nhận <strong>danh sách tin nhắn</strong> (<code>user</code>/<code>assistant</code> xen kẽ) và test với máy chủ giả rằng toàn bộ lịch sử được gửi đi.</li>
+<li>Xử lý <code>stop_reason = &quot;max_tokens&quot;</code>: ném ngoại lệ hoặc trả cờ <code>BiCat</code> cho người gọi; viết test bằng máy chủ giả.</li>
+<li>Đăng ký <code>ClaudeClient</code> bằng <code>IHttpClientFactory</code> + <code>AddStandardResilienceHandler()</code> và bỏ vòng thử lại tự viết; so sánh hành vi với 429.</li>
+<li>Viết endpoint <a href="http://ASP.NET">ASP.NET</a> Core <code>GET /hoi?q=...</code> phát streaming về trình duyệt bằng SSE và thử bằng <code>curl -N</code>; khi client ngắt, xác nhận <code>CancellationToken</code> được kích hoạt.</li>
+<li>(Cần khoá API) Đặt <code>ANTHROPIC_API_KEY</code>, chạy chế độ thật, và ghi lại số token vào/ra cho một câu hỏi tiếng Việt và bản dịch tiếng Anh của nó; nhận xét chênh lệch.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch01-llm-co-ban.html">&larr; 1. Mô hình ngôn ngữ lớn cho lập trình viên .NET</a><a class="nav-next" href="ch03-extensions-ai.html">3. Microsoft.Extensions.AI: IChatClient và middleware &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

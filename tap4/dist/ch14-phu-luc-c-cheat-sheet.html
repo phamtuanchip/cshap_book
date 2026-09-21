@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phụ lục C — Cheat sheet — C# và .NET — Tập 4</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và .NET — Tập 4</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-llm-co-ban.html">1. Mô hình ngôn ngữ lớn cho lập trình viên .NET</a></li><li><a class="chapter-link" href="ch02-goi-api-truc-tiep.html">2. Gọi API LLM bằng HttpClient</a></li><li><a class="chapter-link" href="ch03-extensions-ai.html">3. Microsoft.Extensions.AI: IChatClient và middleware</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Kỹ thuật cốt lõi</div><ul class="chapter-list"><li><a class="chapter-link" href="ch04-structured-output.html">4. Đầu ra có cấu trúc</a></li><li><a class="chapter-link" href="ch05-tool-calling.html">5. Tool calling (function calling)</a></li><li><a class="chapter-link" href="ch06-embeddings-vector.html">6. Embeddings và tìm kiếm vector</a></li><li><a class="chapter-link" href="ch07-rag.html">7. RAG: truy xuất rồi sinh</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Đưa vào sản xuất</div><ul class="chapter-list"><li><a class="chapter-link" href="ch08-agent.html">8. Agent: vòng lặp suy luận và hành động</a></li><li><a class="chapter-link" href="ch09-danh-gia-kiem-thu.html">9. Đánh giá và kiểm thử ứng dụng LLM</a></li><li><a class="chapter-link" href="ch10-an-toan-chi-phi.html">10. An toàn, chi phí và quan sát</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-du-an-tro-ly-kho.html">11. Dự án: Trợ lý kho hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-phu-luc-a-loi-thuong-gap.html">12. Phụ lục A — Lỗi và bẫy thường gặp</a></li><li><a class="chapter-link" href="ch13-phu-luc-b-tai-lieu.html">13. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link active" href="ch14-phu-luc-c-cheat-sheet.html">14. Phụ lục C — Cheat sheet</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Phụ lục C — Cheat sheet</h1>
+<h2>Bản đồ nhanh: cần gì thì dùng gì</h2>
+<table>
+<thead>
+<tr>
+<th>Bạn cần...</th>
+<th>Dùng</th>
+<th>Chương</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gọi LLM, không phụ thuộc nhà cung cấp</td>
+<td><code>IChatClient</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td>Log/cache/đếm token/ngân sách xuyên suốt</td>
+<td><code>ChatClientBuilder</code> + <code>DelegatingChatClient</code></td>
+<td>3, 10</td>
+</tr>
+<tr>
+<td>Test không gọi mạng</td>
+<td><code>IChatClient</code> giả có kịch bản</td>
+<td>3, 9</td>
+</tr>
+<tr>
+<td>Đối tượng C# từ văn bản</td>
+<td><code>GetResponseAsync&lt;T&gt;</code> + kiểm chứng + sửa lỗi có giới hạn</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cho mô hình gọi hàm</td>
+<td><code>AIFunctionFactory</code> + <code>UseFunctionInvocation</code></td>
+<td>5</td>
+</tr>
+<tr>
+<td>Tìm theo nghĩa</td>
+<td>embeddings + cosine + ngưỡng + lọc siêu dữ liệu</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Trả lời trên dữ liệu riêng</td>
+<td>RAG: truy xuất → prompt → sinh + trích nguồn</td>
+<td>7</td>
+</tr>
+<tr>
+<td>Nhiều bước, chưa biết trước</td>
+<td>vòng lặp agent + giới hạn bước</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Đo chất lượng</td>
+<td>golden set + ngưỡng tỉ lệ đạt + giám khảo + người</td>
+<td>9</td>
+</tr>
+<tr>
+<td>Chống lạm dụng/chi phí</td>
+<td>lọc, che PII, ngân sách, giới hạn tốc độ</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<h2>Khung gọi API thô (Messages API)</h2>
+<pre class="hljs"><code>POST /v1/messages
+<span class="hljs-attribute">x-api-key</span><span class="hljs-punctuation">: </span>&lt;khoá từ biến môi trường&gt;
+<span class="hljs-attribute">anthropic-version</span><span class="hljs-punctuation">: </span>2023-06-01
+
+{ &quot;model&quot;: &quot;...&quot;, &quot;max_tokens&quot;: 512, &quot;system&quot;: &quot;...&quot;,
+  &quot;messages&quot;: [ { &quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;...&quot; } ] }
+</code></pre>
+<ul>
+<li>Phản hồi: <code>content[]</code> (khối <code>text</code>/<code>tool_use</code>), <code>stop_reason</code> (<code>end_turn</code>, <code>max_tokens</code>, <code>tool_use</code>), <code>usage</code>.</li>
+<li>Streaming: <code>&quot;stream&quot;: true</code>, đọc SSE, <code>HttpCompletionOption.ResponseHeadersRead</code>.</li>
+<li>Lỗi: thử lại <strong>429/5xx</strong> (backoff + jitter + <code>Retry-After</code>); <strong>4xx còn lại không thử lại</strong>.</li>
+</ul>
+<h2>Mẫu mã</h2>
+<pre class="hljs"><code><span class="hljs-comment">// Pipeline (đầu tiên = ngoài cùng)</span>
+IChatClient client = <span class="hljs-keyword">new</span> ChatClientBuilder(nhaCungCap)
+    .UseLogging(loggerFactory)
+    .Use(inner =&gt; <span class="hljs-keyword">new</span> CacheClient(inner))          <span class="hljs-comment">// trước đếm token: cache trúng thì không đếm</span>
+    .Use(inner =&gt; <span class="hljs-keyword">new</span> DemTokenClient(inner))
+    .UseFunctionInvocation(c =&gt; c.MaximumIterationsPerRequest = <span class="hljs-number">5</span>)
+    .Build();
+
+<span class="hljs-comment">// Công cụ</span>
+AIFunctionFactory.Create(kho.TraTon, <span class="hljs-string">&quot;tra_ton_kho&quot;</span>);        <span class="hljs-comment">// [Description] trên phương thức và tham số</span>
+
+<span class="hljs-comment">// Có cấu trúc</span>
+<span class="hljs-keyword">var</span> r = <span class="hljs-keyword">await</span> client.GetResponseAsync&lt;PhieuNhap&gt;(tinNhan);   <span class="hljs-comment">// r.Result</span>
+
+<span class="hljs-comment">// Embedding</span>
+<span class="hljs-keyword">var</span> v = (<span class="hljs-keyword">await</span> gen.GenerateAsync([van]))[<span class="hljs-number">0</span>].Vector.ToArray();
+<span class="hljs-built_in">float</span> diem = TensorPrimitives.CosineSimilarity(a, b);
+</code></pre>
+<h2>Quy tắc thiết kế</h2>
+<ol>
+<li><strong>LLM đề xuất, ứng dụng quyết định.</strong> Mọi hành động đi qua mã của bạn với quyền của người dùng.</li>
+<li><strong>Công cụ ghi = đề xuất + người duyệt</strong>; công cụ đọc mới được tự chạy.</li>
+<li><strong>Tham số của mô hình = đầu vào không tin cậy</strong>; kiểm chứng trong công cụ bằng quy tắc miền.</li>
+<li><strong>Dữ liệu ngoài (tài liệu, kết quả công cụ, đánh giá người dùng) không phải chỉ dẫn</strong>; bọc, dò, giới hạn quyền.</li>
+<li><strong>Giới hạn mọi thứ</strong>: <code>max_tokens</code>, số vòng công cụ, số bước agent, thời gian, ngân sách, tốc độ.</li>
+<li><strong>Không tin đầu ra</strong>: parse → kiểm chứng nghiệp vụ → thất bại có kiểm soát.</li>
+<li><strong>Ngưỡng liên quan</strong> trong truy xuất; &quot;không biết&quot; là câu trả lời hợp lệ.</li>
+<li><strong>Lọc quyền truy cập ở tầng truy vấn</strong>, không dựa vào điểm số.</li>
+<li><strong>Test phần tất định 100%; phần mô hình đo bằng tỉ lệ đạt</strong>; kiểm số liệu/sự kiện riêng, đừng chỉ dựa độ tương tự văn bản.</li>
+<li><strong>Prompt là mã</strong>: lưu kho, đặt phiên bản, kiểm thử hồi quy, đổi thì chạy lại đánh giá.</li>
+<li><strong>Đo chi phí từ <code>Usage</code> thực tế</strong>; ngân sách theo người dùng; log có cấu trúc, che PII.</li>
+<li><strong>Có cách tắt nhanh</strong> (feature flag) và vết đầy đủ để điều tra.</li>
+</ol>
+<h2>Danh sách kiểm tra trước khi phát hành tính năng AI</h2>
+<ul>
+<li>[ ] Khoá API trong secret; gọi qua backend; hạn mức chi tiêu ở nhà cung cấp.</li>
+<li>[ ] <code>max_tokens</code>, timeout, <code>CancellationToken</code>, retry đúng loại lỗi.</li>
+<li>[ ] Công cụ: phân loại rủi ro; ghi = đề xuất; kiểm chứng đầu vào; quyền người dùng; giới hạn vòng lặp.</li>
+<li>[ ] Đầu ra có cấu trúc được kiểm chứng; thất bại được xử lý.</li>
+<li>[ ] RAG: ngưỡng, trích nguồn, lọc quyền, cập nhật khi nguồn đổi.</li>
+<li>[ ] Golden set + ngưỡng tỉ lệ đạt; đã chạy trên <strong>mô hình thật</strong>.</li>
+<li>[ ] Prompt injection: dữ liệu ngoài bị bọc/dò; quyền tối thiểu.</li>
+<li>[ ] PII được che ở log; dữ liệu gửi đi được phép.</li>
+<li>[ ] Ngân sách/giới hạn tốc độ; cảnh báo chi phí, tỉ lệ từ chối, độ trễ.</li>
+<li>[ ] Trace/log/metric; feature flag; runbook khi mô hình lỗi hoặc chất lượng giảm.</li>
+</ul>
+<h2>Lệnh thường dùng</h2>
+<pre class="hljs"><code>dotnet add package Microsoft.Extensions.AI
+dotnet add package System.Numerics.Tensors
+dotnet <span class="hljs-built_in">test</span>                                <span class="hljs-comment"># phần tất định + đánh giá bằng bộ giả</span>
+ANTHROPIC_API_KEY=... dotnet run           <span class="hljs-comment"># chế độ thật (có phí)</span>
+</code></pre>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch13-phu-luc-b-tai-lieu.html">&larr; 13. Phụ lục B — Tài liệu tham khảo</a><span></span></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

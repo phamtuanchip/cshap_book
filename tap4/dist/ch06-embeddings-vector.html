@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 6 — Embeddings và tìm kiếm vector — C# và .NET — Tập 4</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và .NET — Tập 4</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-llm-co-ban.html">1. Mô hình ngôn ngữ lớn cho lập trình viên .NET</a></li><li><a class="chapter-link" href="ch02-goi-api-truc-tiep.html">2. Gọi API LLM bằng HttpClient</a></li><li><a class="chapter-link" href="ch03-extensions-ai.html">3. Microsoft.Extensions.AI: IChatClient và middleware</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Kỹ thuật cốt lõi</div><ul class="chapter-list"><li><a class="chapter-link" href="ch04-structured-output.html">4. Đầu ra có cấu trúc</a></li><li><a class="chapter-link" href="ch05-tool-calling.html">5. Tool calling (function calling)</a></li><li><a class="chapter-link active" href="ch06-embeddings-vector.html">6. Embeddings và tìm kiếm vector</a></li><li><a class="chapter-link" href="ch07-rag.html">7. RAG: truy xuất rồi sinh</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Đưa vào sản xuất</div><ul class="chapter-list"><li><a class="chapter-link" href="ch08-agent.html">8. Agent: vòng lặp suy luận và hành động</a></li><li><a class="chapter-link" href="ch09-danh-gia-kiem-thu.html">9. Đánh giá và kiểm thử ứng dụng LLM</a></li><li><a class="chapter-link" href="ch10-an-toan-chi-phi.html">10. An toàn, chi phí và quan sát</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-du-an-tro-ly-kho.html">11. Dự án: Trợ lý kho hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-phu-luc-a-loi-thuong-gap.html">12. Phụ lục A — Lỗi và bẫy thường gặp</a></li><li><a class="chapter-link" href="ch13-phu-luc-b-tai-lieu.html">13. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch14-phu-luc-c-cheat-sheet.html">14. Phụ lục C — Cheat sheet</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 6 — Embeddings và tìm kiếm vector</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>embedding</strong> là gì: một đoạn văn bản → một <strong>vector số</strong> sao cho văn bản <em>giống nghĩa</em> thì vector <em>gần nhau</em>.</li>
+<li>Đo độ giống bằng <strong>cosine similarity</strong>; hiểu vì sao cần <strong>ngưỡng điểm</strong>, không chỉ lấy top-k.</li>
+<li>Xây một <strong>kho vector trong bộ nhớ</strong> và tìm kiếm bằng <code>System.Numerics.Tensors</code>.</li>
+<li>Biết khi nào cần <strong>CSDL vector thật</strong> (pgvector, Azure AI Search, Qdrant...) và lọc theo <strong>siêu dữ liệu</strong> (metadata) cho quyền truy cập.</li>
+</ul>
+<p>Code: <a href="code/ch06-embeddings/"><code>code/ch06-embeddings/</code></a> — bộ sinh embedding <strong>giả</strong> (băm từ, không cần khoá API) để chạy và hiểu cơ chế.</p>
+<blockquote>
+<p><strong>Trung thực về kiểm chứng — đọc kỹ mục này.</strong> Bộ sinh embedding trong code mẫu là <strong>tự chế</strong>: nó băm từng từ (sau khi bỏ dấu, bỏ từ dừng) vào một vector 512 chiều kiểu &quot;túi từ&quot; (bag-of-words). Nó <strong>giống văn bản thật ở việc từ trùng nhau → vector gần nhau</strong>, nhưng <strong>không hiểu ngữ nghĩa</strong>: &quot;laptop&quot; và &quot;máy tính xách tay&quot; (đồng nghĩa) sẽ <strong>không</strong> được nhận là gần nhau nếu không chia sẻ từ. Kết quả chạy dưới đây minh hoạ đúng hạn chế này — đó là mục đích của ví dụ. Embedding thật (<code>text-embedding-3-*</code> của OpenAI, embedding của Voyage/Cohere, mô hình mở như <code>all-MiniLM</code>...) được huấn luyện để nắm ngữ nghĩa và <strong>chưa được đo trong sách này</strong> vì cần khoá API/tải mô hình.</p>
+</blockquote>
+<h2>Embedding là gì</h2>
+<p>Một <strong>mô hình embedding</strong> ánh xạ văn bản → vector số thực có số chiều cố định (ví dụ 1536). Mô hình được huấn luyện sao cho <strong>khoảng cách hình học</strong> giữa hai vector phản ánh <strong>độ giống nghĩa</strong> giữa hai văn bản gốc. Khác với LLM sinh văn bản (Chương 1–5), embedding <strong>không sinh gì cả</strong> — nó chỉ &quot;định vị&quot; văn bản trong một không gian số.</p>
+<pre class="hljs"><code>IEmbeddingGenerator&lt;<span class="hljs-built_in">string</span>, Embedding&lt;<span class="hljs-built_in">float</span>&gt;&gt; gen = ...;                 <span class="hljs-comment">// giao diện chuẩn của Microsoft.Extensions.AI</span>
+<span class="hljs-keyword">var</span> kq = <span class="hljs-keyword">await</span> gen.GenerateAsync([<span class="hljs-string">&quot;Laptop Dell XPS 13, man hinh 13 inch&quot;</span>]);
+<span class="hljs-built_in">float</span>[] vector = kq[<span class="hljs-number">0</span>].Vector.ToArray();                                  <span class="hljs-comment">// ví dụ chạy: 512 chiều, độ dài chuẩn hoá = 1.00</span>
+</code></pre>
+<p>Ứng dụng chính: <strong>tìm kiếm ngữ nghĩa</strong> (tìm tài liệu <em>liên quan</em>, không chỉ <em>trùng từ khoá</em>), <strong>phân cụm</strong>, <strong>phát hiện trùng lặp</strong>, và làm nền cho <strong>RAG</strong> (Chương 7).</p>
+<h2>Đo độ giống: cosine similarity</h2>
+<p>Với vector đã <strong>chuẩn hoá độ dài về 1</strong>, độ giống cosine chính là <strong>tích vô hướng</strong>, nằm trong khoảng <strong>[-1, 1]</strong> (thường [0, 1] với embedding văn bản): 1 là giống hệt hướng, 0 là không liên quan, âm là ngược nghĩa (hiếm với embedding văn bản thông thường).</p>
+<pre class="hljs"><code><span class="hljs-built_in">float</span> diem = TensorPrimitives.CosineSimilarity(vectorA, vectorB);        <span class="hljs-comment">// System.Numerics.Tensors</span>
+</code></pre>
+<p>Chạy với bộ sinh giả, so câu <code>&quot;Laptop Dell XPS 13 man hinh 13 inch&quot;</code> với bốn câu khác:</p>
+<pre class="hljs"><code>0.671  Laptop Dell XPS 13 nhe va mong
+0.183  Chuot khong day Logitech
+0.000  Ban phim co Keychron K2
+0.258  May tinh xach tay Dell XPS
+</code></pre>
+<p>Câu cuối <strong>đồng nghĩa</strong> (&quot;máy tính xách tay&quot; = &quot;laptop&quot;) nhưng chỉ đạt 0,258 — thấp hơn nhiều so với câu chỉ trùng từ (&quot;Dell XPS 13&quot;). Đây chính là giới hạn của embedding &quot;túi từ&quot;: nó đo <strong>trùng từ</strong>, không đo <strong>nghĩa</strong>. Embedding thật (dựa trên mạng nơ-ron học từ dữ liệu khổng lồ) nắm được &quot;laptop&quot; ≈ &quot;máy tính xách tay&quot; tốt hơn nhiều — nhưng con số cụ thể phải đo trên mô hình thật, không suy ra từ ví dụ này.</p>
+<h2>Kho vector và tìm kiếm</h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">record</span> <span class="hljs-title">Muc</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> Id, <span class="hljs-built_in">string</span> VanBan, <span class="hljs-built_in">float</span>[] Vector, IReadOnlyDictionary&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt; SieuDuLieu</span>)</span>;
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">KhoVector</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> List&lt;Muc&gt; _muc = [];
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Them</span>(<span class="hljs-params">Muc muc</span>)</span> =&gt; _muc.Add(muc);
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> IReadOnlyList&lt;KetQuaTim&gt; <span class="hljs-title">Tim</span>(<span class="hljs-params"><span class="hljs-built_in">float</span>[] truyVan, <span class="hljs-built_in">int</span> k, <span class="hljs-built_in">float</span> diemToiThieu = <span class="hljs-number">0f</span>, Func&lt;Muc, <span class="hljs-built_in">bool</span>&gt;? loc = <span class="hljs-literal">null</span></span>)</span>
+        =&gt; _muc.Where(m =&gt; loc?.Invoke(m) ?? <span class="hljs-literal">true</span>)                        <span class="hljs-comment">// LỌC THEO SIÊU DỮ LIỆU trước</span>
+               .Select(m =&gt; <span class="hljs-keyword">new</span> KetQuaTim(m, TensorPrimitives.CosineSimilarity(truyVan, m.Vector)))
+               .Where(r =&gt; r.Diem &gt;= diemToiThieu)                        <span class="hljs-comment">// NGƯỠNG: không trả kết quả không liên quan</span>
+               .OrderByDescending(r =&gt; r.Diem).Take(k).ToList();
+}
+</code></pre>
+<p>Đây là <strong>brute force</strong> (<code>O(n·d)</code>, so với mọi mục) — chính xác tuyệt đối, phù hợp tới hàng chục nghìn mục. Kết quả chạy mẫu trên 5 sản phẩm:</p>
+<pre class="hljs"><code>Cau hoi: laptop man hinh 13 inch pin lau
+   0.683  LT001  Laptop Dell XPS 13 - man hinh 13 inch, RAM 16GB, pin 12 gio
+   0.390  LT002  Laptop Asus Vivobook 15 - man hinh 15.6 inch, RAM 8GB, gia re
+</code></pre>
+<h3>Ngưỡng điểm: đừng luôn trả top-k</h3>
+<pre class="hljs"><code>Cau hoi: cong thuc nau pho bo   [nguong=0]
+   0.141  MH001  Man hinh Dell U2720Q 27 inch 4K - cong USB-C
+Cau hoi: cong thuc nau pho bo   [nguong=0.2]
+   (khong co ket qua vuot nguong)
+</code></pre>
+<p>Nếu chỉ lấy &quot;top-k gần nhất&quot;, hệ thống <strong>luôn trả về gì đó</strong> — kể cả khi câu hỏi hoàn toàn không liên quan đến kho dữ liệu (&quot;công thức nấu phở bò&quot; so với kho sản phẩm). Với RAG (Chương 7), đưa những đoạn &quot;gần nhất nhưng không liên quan&quot; này vào ngữ cảnh sẽ khiến mô hình <strong>bịa hoặc trả lời lạc đề với vẻ tự tin</strong>. Luôn đặt <strong>ngưỡng điểm tối thiểu</strong> và xử lý rõ ràng trường hợp &quot;không tìm thấy gì liên quan&quot; — ngưỡng cụ thể phải hiệu chỉnh theo mô hình embedding và dữ liệu thật của bạn, không có con số vạn năng.</p>
+<h3>Lọc theo siêu dữ liệu</h3>
+<pre class="hljs"><code>Cau hoi: Dell 13 inch   [k=3]
+   0.596  LT001 ...
+   0.365  MH001 ...
+   0.204  CH001 ...
+Cau hoi: Dell 13 inch   [k=3, nhom=man-hinh]
+   0.365  MH001 ...
+</code></pre>
+<p>Tìm kiếm vector <strong>không thay thế</strong> việc lọc theo điều kiện chính xác (nhóm, ngày, <strong>quyền truy cập</strong>). Luôn lọc bằng siêu dữ liệu (giống <code>WHERE</code> trong SQL) <strong>trước hoặc cùng lúc</strong> với so khớp vector. Đây là chỗ dễ bị bỏ sót nhất về bảo mật: nếu tài liệu của người dùng A và B nằm chung một kho vector, <strong>phải lọc theo quyền sở hữu/tenant ở tầng truy vấn</strong>, không dựa vào &quot;may mắn&quot; điểm số thấp để loại tài liệu không được phép xem (Chương 10).</p>
+<h2>Khi nào cần CSDL vector thật</h2>
+<table>
+<thead>
+<tr>
+<th>Quy mô / nhu cầu</th>
+<th>Giải pháp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vài nghìn–vài chục nghìn mục, một tiến trình</td>
+<td>kho trong bộ nhớ (như trên) hoặc SQLite + tính tay</td>
+</tr>
+<tr>
+<td>CSDL quan hệ đã có, muốn thêm tìm kiếm ngữ nghĩa</td>
+<td><strong>pgvector</strong> (PostgreSQL), SQL Server có vector search</td>
+</tr>
+<tr>
+<td>Quy mô lớn, cần chỉ mục gần đúng (ANN) tốc độ cao</td>
+<td><strong>Qdrant, Weaviate, Milvus, Pinecone, Azure AI Search</strong></td>
+</tr>
+<tr>
+<td>Đã dùng Elasticsearch/OpenSearch</td>
+<td>tính năng vector tích hợp sẵn</td>
+</tr>
+</tbody>
+</table>
+<p>CSDL vector thật dùng <strong>chỉ mục gần đúng</strong> (HNSW, IVF...) đánh đổi một chút độ chính xác lấy tốc độ ở quy mô triệu mục, hỗ trợ <strong>lọc kết hợp</strong> (vector + điều kiện) hiệu quả, và <strong>cập nhật/xoá</strong> mục mà không phải xây lại toàn bộ. <code>Microsoft.Extensions.VectorData</code> cung cấp abstraction (<code>VectorStore</code>, <code>VectorStoreCollection</code>) tương tự <code>IChatClient</code>, để đổi CSDL vector mà không viết lại logic ứng dụng.</p>
+<h2>Chuẩn bị dữ liệu: chia nhỏ (chunking)</h2>
+<p>Tài liệu dài phải <strong>chia thành đoạn (chunk)</strong> trước khi tạo embedding — một embedding cho <em>cả một cuốn sách</em> sẽ quá loãng để tìm chính xác. Nguyên tắc:</p>
+<ul>
+<li>Chia theo <strong>ranh giới có nghĩa</strong> (đoạn văn, mục, cặp hỏi-đáp) hơn là cắt cứng theo số ký tự.</li>
+<li>Kích thước đoạn: đủ để <strong>có ngữ cảnh</strong> (không cụt câu) nhưng đủ nhỏ để <strong>liên quan chính xác</strong>; cần thử nghiệm theo dữ liệu (thường vài trăm token).</li>
+<li><strong>Chồng lấn (overlap)</strong> nhẹ giữa các đoạn để không cắt đứt ý ở ranh giới.</li>
+<li>Giữ <strong>siêu dữ liệu nguồn</strong> (tài liệu gốc, mục, ngày cập nhật, quyền truy cập) theo từng đoạn để trích dẫn và lọc.</li>
+<li>Khi tài liệu nguồn <strong>đổi</strong>, phải <strong>cập nhật lại embedding</strong> của đoạn liên quan — thiết kế cơ chế đồng bộ (tương tự cache invalidation, Tập 3 Chương 10).</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>So sánh embedding từ <strong>hai mô hình khác nhau</strong> — không gian vector khác nhau, kết quả vô nghĩa.</li>
+<li>Quên <strong>chuẩn hoá</strong> trước khi dùng tích vô hướng làm cosine (một số API trả vector chưa chuẩn hoá).</li>
+<li>Không đặt <strong>ngưỡng điểm</strong> → trả kết quả không liên quan với vẻ tự tin.</li>
+<li>Không lọc <strong>quyền truy cập</strong> theo siêu dữ liệu → rò rỉ dữ liệu giữa người dùng/tenant.</li>
+<li>Chia đoạn quá lớn (loãng nghĩa) hoặc quá nhỏ (mất ngữ cảnh).</li>
+<li>Không cập nhật embedding khi tài liệu nguồn thay đổi → tìm kiếm dựa trên dữ liệu cũ.</li>
+<li>Dùng brute force ở quy mô triệu mục (chậm) hoặc dùng CSDL vector phức tạp cho vài trăm mục (thừa).</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm phương thức <code>KhoVector.Xoa(id)</code> và <code>CapNhat(muc)</code>; viết test rằng tìm kiếm không còn trả về mục đã xoá.</li>
+<li>Đo cosine similarity giữa <code>&quot;laptop&quot;</code>, <code>&quot;labtop&quot;</code> (sai chính tả) và <code>&quot;điện thoại&quot;</code> bằng bộ sinh giả; giải thích tại sao kết quả không phản ánh đúng &quot;sai chính tả nên vẫn gần nghĩa&quot; — đây là hạn chế của embedding từ-vựng so với embedding học sâu.</li>
+<li>Viết một chỉ mục đảo (inverted index) đơn giản và so sánh tốc độ tìm kiếm từ khoá thuần tuý với tìm kiếm vector trên cùng bộ dữ liệu; nêu trường hợp mỗi cách phù hợp hơn.</li>
+<li>Thiết kế (trên giấy) lược đồ siêu dữ liệu cho một kho tài liệu nội bộ nhiều phòng ban, đảm bảo nhân viên phòng A không tìm thấy tài liệu chỉ dành cho phòng B dù embedding có thể &quot;gần&quot; về mặt nội dung.</li>
+<li>(Cần khoá API hoặc mô hình cục bộ) Thay <code>HashEmbeddingGenerator</code> bằng một bộ sinh embedding thật (<code>Microsoft.Extensions.AI</code> có cài đặt cho OpenAI/Ollama), lặp lại thí nghiệm mục 2 và so sánh kết quả.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch05-tool-calling.html">&larr; 5. Tool calling (function calling)</a><a class="nav-next" href="ch07-rag.html">7. RAG: truy xuất rồi sinh &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

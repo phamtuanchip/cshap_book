@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.AI" Version="10.10.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.12" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Cung mot solution kho-clean thuc (Tap 3): tai su dung nghiep vu that, khong viet lai -->
+    <ProjectReference Include="..\..\..\tap3\code\kho-clean\Kho.Domain\Kho.Domain.csproj" />
+    <ProjectReference Include="..\..\..\tap3\code\kho-clean\Kho.Application\Kho.Application.csproj" />
+    <ProjectReference Include="..\..\..\tap3\code\kho-clean\Kho.Infrastructure\Kho.Infrastructure.csproj" />
+    <Compile Include="..\ch11-tro-ly-kho\CongCuKho.cs" />
+  </ItemGroup>
+
+</Project>

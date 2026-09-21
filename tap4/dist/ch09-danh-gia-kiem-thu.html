@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 9 — Đánh giá và kiểm thử ứng dụng LLM — C# và .NET — Tập 4</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và .NET — Tập 4</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-llm-co-ban.html">1. Mô hình ngôn ngữ lớn cho lập trình viên .NET</a></li><li><a class="chapter-link" href="ch02-goi-api-truc-tiep.html">2. Gọi API LLM bằng HttpClient</a></li><li><a class="chapter-link" href="ch03-extensions-ai.html">3. Microsoft.Extensions.AI: IChatClient và middleware</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Kỹ thuật cốt lõi</div><ul class="chapter-list"><li><a class="chapter-link" href="ch04-structured-output.html">4. Đầu ra có cấu trúc</a></li><li><a class="chapter-link" href="ch05-tool-calling.html">5. Tool calling (function calling)</a></li><li><a class="chapter-link" href="ch06-embeddings-vector.html">6. Embeddings và tìm kiếm vector</a></li><li><a class="chapter-link" href="ch07-rag.html">7. RAG: truy xuất rồi sinh</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Đưa vào sản xuất</div><ul class="chapter-list"><li><a class="chapter-link" href="ch08-agent.html">8. Agent: vòng lặp suy luận và hành động</a></li><li><a class="chapter-link active" href="ch09-danh-gia-kiem-thu.html">9. Đánh giá và kiểm thử ứng dụng LLM</a></li><li><a class="chapter-link" href="ch10-an-toan-chi-phi.html">10. An toàn, chi phí và quan sát</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-du-an-tro-ly-kho.html">11. Dự án: Trợ lý kho hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-phu-luc-a-loi-thuong-gap.html">12. Phụ lục A — Lỗi và bẫy thường gặp</a></li><li><a class="chapter-link" href="ch13-phu-luc-b-tai-lieu.html">13. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch14-phu-luc-c-cheat-sheet.html">14. Phụ lục C — Cheat sheet</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 9 — Đánh giá và kiểm thử ứng dụng LLM</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Phân biệt rõ <strong>hai thứ khác nhau bị gộp chung là &quot;kiểm thử LLM&quot;</strong>: kiểm thử <strong>mã xung quanh</strong> mô hình (tất định, <code>Assert.Equal</code> vẫn dùng được) và đánh giá <strong>chất lượng đầu ra</strong> của mô hình (không tất định, cần phương pháp khác).</li>
+<li>Xây một <strong>bộ dữ liệu vàng (golden set)</strong> và đo <strong>tỉ lệ đạt theo ngưỡng</strong>, không phải khớp chuỗi tuyệt đối.</li>
+<li>Viết <strong>kiểm thử thống kê</strong> cho hệ thống không xác định (lấy mẫu nhiều lần, xét trên tổng thể).</li>
+<li>Dùng <strong>LLM làm giám khảo (LLM-as-judge)</strong> khi so khớp từ vựng không đủ tinh — và thấy rõ <strong>giới hạn</strong> của cả hai cách.</li>
+<li>Coi <strong>prompt là mã nguồn</strong> cần kiểm thử hồi quy.</li>
+</ul>
+<p>Code: <a href="code/ch09-danh-gia-kiem-thu/"><code>code/ch09-danh-gia-kiem-thu/</code></a> — 11 test, <code>dotnet test</code> chạy được ngay, không cần khoá API.</p>
+<blockquote>
+<p><strong>Trung thực về một phát hiện thật khi viết chương này:</strong> bộ so khớp &quot;tương tự theo từ vựng&quot; viết ban đầu <strong>đã thất bại thật</strong> trong lúc soạn ví dụ — nó cho một câu trả lời <strong>bịa sai số liệu</strong> (nói đơn hàng tối đa &quot;50 dòng&quot; thay vì &quot;20 dòng&quot; đúng) điểm tương tự <strong>đủ cao để coi là đạt</strong>, chỉ vì hai câu chia sẻ nhiều từ chung (&quot;đơn hàng&quot;, &quot;tối đa&quot;). Phần &quot;Bài học thực tế&quot; dưới đây thuật lại đúng phát hiện đó và cách sửa — đây không phải ví dụ dàn dựng, mà là điều thực sự xảy ra khi mã hoá chương này.</p>
+</blockquote>
+<h2>Vì sao kiểm thử LLM khác kiểm thử thường</h2>
+<p>Kiểm thử truyền thống (Tập 2, Chương 14 và Tập 3, Chương 9) dựa trên tiền đề: <strong>cùng đầu vào, cùng đầu ra</strong>. <code>Assert.Equal(7, TinhTong(3, 4))</code> đúng mãi mãi. Với một LLM thật, <strong>cùng một câu hỏi có thể ra hai câu trả lời khác nhau về câu chữ nhưng cùng đúng về nghĩa</strong> — và đôi khi ra một câu <strong>sai</strong> dù trông rất tự tin. <code>Assert.Equal</code> cho văn bản LLM gần như luôn sai cách.</p>
+<p>Điều quan trọng: <strong>không phải mọi thứ trong một ứng dụng LLM đều không xác định</strong>. Tách bạch:</p>
+<table>
+<thead>
+<tr>
+<th>Phần</th>
+<th>Xác định?</th>
+<th>Cách kiểm thử</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dựng prompt, gọi API, xử lý lỗi/retry (Chương 2)</td>
+<td><strong>Có</strong></td>
+<td><code>Assert.Equal</code> bình thường, với <code>IChatClient</code> giả (Chương 3)</td>
+</tr>
+<tr>
+<td>Parse/kiểm chứng đầu ra có cấu trúc (Chương 4)</td>
+<td><strong>Có</strong> (với đầu vào giả cố định)</td>
+<td><code>Assert.Equal</code>/<code>Assert.True</code> trên logic kiểm chứng</td>
+</tr>
+<tr>
+<td>Công cụ (hàm C# được gọi) (Chương 5)</td>
+<td><strong>Có</strong></td>
+<td>test như hàm bình thường</td>
+</tr>
+<tr>
+<td><strong>Nội dung câu trả lời của chính mô hình</strong></td>
+<td><strong>Không</strong></td>
+<td>đánh giá theo ngưỡng, thống kê, giám khảo (chương này)</td>
+</tr>
+</tbody>
+</table>
+<p>Phần lớn lỗi trong ứng dụng LLM thực tế nằm ở <strong>phần tất định</strong> (dựng prompt sai, parse sai, quên xử lý lỗi) — và phần đó <strong>kiểm thử được đầy đủ, nhanh, miễn phí</strong> như mọi test khác, minh chứng bởi <code>LogicXungQuanhMoHinh_LaTatDinh</code> trong code mẫu: dùng <code>TroLyOnDinh</code> (một <code>IChatClient</code> giả trả lời cố định), <code>Assert.Equal</code> hoàn toàn hợp lệ vì <strong>chính bản giả đó là tất định theo thiết kế</strong> — ta đang kiểm thử cách ứng dụng gọi và xử lý, không kiểm thử &quot;trí tuệ&quot; của mô hình.</p>
+<h2>Bộ dữ liệu vàng và ngưỡng tỉ lệ đạt</h2>
+<p>Với <strong>chất lượng câu trả lời</strong>, đơn vị kiểm thử không còn là &quot;một ca&quot; mà là <strong>một tập ca</strong> (golden set) và <strong>tỉ lệ đạt</strong>:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">record</span> <span class="hljs-title">CaVang</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> Id, <span class="hljs-built_in">string</span> CauHoi, <span class="hljs-built_in">string</span> DapAnMongDoi, <span class="hljs-built_in">float</span> NguongDiem = <span class="hljs-number">0.5f</span></span>)</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">async</span> Task&lt;BaoCaoDanhGia&gt; <span class="hljs-title">ChayAsync</span>(<span class="hljs-params">IChatClient client, IEnumerable&lt;CaVang&gt; caVang, CancellationToken ct = <span class="hljs-literal">default</span></span>)</span>
+{
+    <span class="hljs-keyword">var</span> ketQua = <span class="hljs-keyword">new</span> List&lt;KetQuaCa&gt;();
+    <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> ca <span class="hljs-keyword">in</span> caVang)
+    {
+        <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">await</span> client.GetResponseAsync(ca.CauHoi, cancellationToken: ct);
+        <span class="hljs-built_in">float</span> diem = DoTuongTu.Diem(res.Text, ca.DapAnMongDoi);
+        ketQua.Add(<span class="hljs-keyword">new</span>(ca.Id, diem &gt;= ca.NguongDiem, diem, res.Text));
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span>(ketQua, tiLeDat: ..., diemTrungBinh: ...);
+}
+</code></pre>
+<pre class="hljs"><code>[<span class="hljs-meta">Fact</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">TroLyThucTe_PhaiDatItNhat80PhanTram_KhongBatBuoc100Phantram</span>()</span>
+{
+    <span class="hljs-keyword">var</span> baoCao = <span class="hljs-keyword">await</span> BoDanhGia.ChayAsync(<span class="hljs-keyword">new</span> TroLyThucTe(), BoCauHoiVang.Ca);
+    Assert.True(baoCao.TiLeDat &gt;= <span class="hljs-number">0.8f</span>, <span class="hljs-string">$&quot;Ti le dat <span class="hljs-subst">{baoCao.TiLeDat:P0}</span> duoi nguong. Chi tiet: <span class="hljs-subst">{baoCao}</span>&quot;</span>);
+}
+</code></pre>
+<p>Đây là khác biệt cốt lõi so với test thường: <strong>assert trên tổng thể</strong> (tỉ lệ, trung bình), <strong>không</strong> đòi hỏi từng ca đều hoàn hảo. Ngưỡng &quot;80%&quot; (hay bất kỳ số nào) là <strong>quyết định sản phẩm</strong>, không phải hằng số kỹ thuật — chọn dựa trên mức rủi ro chấp nhận được của tính năng, và <strong>phải được người có trách nhiệm nghiệp vụ đồng ý</strong>, giống hạn mức SLO (Tập 3, Chương 11).</p>
+<h2>Bài học thực tế: đo &quot;tương tự&quot; không đơn giản</h2>
+<p>Bộ dữ liệu vàng ở trên có ca <code>Q4</code>: hỏi &quot;Đơn hàng tối đa bao nhiêu dòng?&quot;, đáp án đúng &quot;Đơn hàng tối đa 20 dòng.&quot; Bản mô hình <code>TroLyThucTe</code> (đại diện một hệ thống thật, thỉnh thoảng bịa) trả lời sai: <strong>&quot;Đơn hàng có thể có tối đa 50 dòng tuỳ cấu hình hệ thống.&quot;</strong></p>
+<p>Bộ so khớp <strong>tương tự theo từ vựng</strong> (đếm từ chung, cosine trên vector tần suất từ — kỹ thuật ở Chương 6) ban đầu cho cặp này <strong>điểm đủ cao để &quot;đạt&quot;</strong>: hai câu chia sẻ nhiều từ (&quot;đơn hàng&quot;, &quot;tối đa&quot;, &quot;hệ thống&quot;...), nên cosine tính theo từ vẫn cao dù <strong>con số cốt lõi sai hoàn toàn</strong> (50 so với 20). Chạy <code>dotnet test</code> với logic ban đầu, test khẳng định &quot;câu bịa phải bị phát hiện&quot; <strong>thất bại thật</strong>.</p>
+<p>Sửa bằng cách thêm <strong>kiểm tra số liệu riêng biệt</strong>:</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">float</span> <span class="hljs-title">Diem</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> a, <span class="hljs-built_in">string</span> b</span>)</span>
+{
+    <span class="hljs-built_in">double</span> diemTu = DiemTheoTu(a, b);
+    <span class="hljs-keyword">var</span> soTrongB = SoTrongCau(b);                              <span class="hljs-comment">// &quot;b&quot; la dap an mau: so trong do la SU KIEN can khop dung</span>
+    <span class="hljs-keyword">if</span> (soTrongB.Count &gt; <span class="hljs-number">0</span> &amp;&amp; !soTrongB.All(SoTrongCau(a).Contains))
+        diemTu *= <span class="hljs-number">0.3</span>;                                         <span class="hljs-comment">// phat nang: sai so lieu la loi nghiem trong hon la khac tu vung</span>
+    <span class="hljs-keyword">return</span> (<span class="hljs-built_in">float</span>)diemTu;
+}
+</code></pre>
+<p>Bài học tổng quát, không chỉ riêng ví dụ này: <strong>độ tương tự văn bản chung chung (từ vựng hay cả embedding ngữ nghĩa) không đủ để bắt lỗi sai sự kiện/số liệu cụ thể.</strong> Với câu trả lời chứa <strong>sự kiện kiểm chứng được</strong> (số lượng, ngày tháng, tên riêng, mã sản phẩm), hãy <strong>trích xuất và so khớp riêng</strong> các yếu tố đó, tách khỏi điểm &quot;giống nhau nói chung&quot;. Đây chính xác là lý do các bộ đánh giá LLM nghiêm túc trong thực tế dùng <strong>nhiều chỉ số kết hợp</strong> (tương tự ngữ nghĩa + kiểm tra sự kiện + giám khảo) thay vì một con số duy nhất.</p>
+<h2>Kiểm thử thống kê cho hệ thống không xác định</h2>
+<p>Khi một thành phần <strong>thật sự</strong> không xác định (mô hình thật với <code>Temperature &gt; 0</code>, hoặc mô phỏng bằng <code>TroLyKhongOnDinh</code> trong code mẫu), kiểm thử <strong>một lần chạy</strong> vô nghĩa — có thể trúng hoặc trượt ngẫu nhiên. Cách đúng: <strong>lấy mẫu nhiều lần, assert trên phân phối</strong>:</p>
+<pre class="hljs"><code>[<span class="hljs-meta">Fact</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">ChayNhieuLan_TiLeDungXapXiThamSoDaCauHinh_TrongSaiSoChapNhanDuoc</span>()</span>
+{
+    <span class="hljs-keyword">const</span> <span class="hljs-built_in">int</span> soLan = <span class="hljs-number">200</span>;
+    <span class="hljs-keyword">const</span> <span class="hljs-built_in">int</span> tiLeKyVong = <span class="hljs-number">75</span>;
+    <span class="hljs-keyword">var</span> client = <span class="hljs-keyword">new</span> TroLyKhongOnDinh(tiLeKyVong, seed: <span class="hljs-number">42</span>);      <span class="hljs-comment">// seed CỐ ĐỊNH -&gt; bài test này TẤT ĐỊNH khi chạy lại</span>
+
+    <span class="hljs-built_in">int</span> soDung = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> i = <span class="hljs-number">0</span>; i &lt; soLan; i++) <span class="hljs-keyword">if</span> ((<span class="hljs-keyword">await</span> client.GetResponseAsync(<span class="hljs-string">&quot;...&quot;</span>)).Text.Contains(<span class="hljs-string">&quot;7 chiec&quot;</span>)) soDung++;
+
+    Assert.InRange(<span class="hljs-number">100.0</span> * soDung / soLan, tiLeKyVong - <span class="hljs-number">10</span>, tiLeKyVong + <span class="hljs-number">10</span>);
+}
+</code></pre>
+<p>Hai điểm dễ nhầm:</p>
+<ul>
+<li><strong>Bản thân bài test phải tất định</strong> dù hệ thống được kiểm thử không tất định — dùng <code>Random</code> có <strong>seed cố định</strong> trong bản giả để <code>dotnet test</code> luôn ra cùng kết quả. Với mô hình LLM <strong>thật</strong>, bạn không kiểm soát được seed nội bộ của nó — nên loại test &quot;chạy N lần, xét phân phối&quot; với mô hình thật thường chạy <strong>thủ công/định kỳ</strong> (không phải mỗi lần CI) vì tốn tiền và thời gian; CI hằng ngày dựa vào bộ giả + số liệu tỉ lệ đạt được ghi nhận định kỳ từ mô hình thật.</li>
+<li><strong>Biên sai số</strong> (<code>± 10</code> ở trên) phải đủ rộng để không báo động giả do nhiễu lấy mẫu, nhưng đủ hẹp để bắt được suy giảm chất lượng thật. Đây là đánh đổi thống kê, không có công thức vạn năng — với ứng dụng quan trọng, dùng khoảng tin cậy chặt chẽ hơn (nhị thức Wilson...) thay vì biên cố định.</li>
+</ul>
+<h2>LLM làm giám khảo (LLM-as-judge)</h2>
+<p>Khi tiêu chí &quot;đúng&quot; phức tạp hơn khớp từ hay khớp số (văn phong, tính đầy đủ, có bám sát ngữ cảnh được cung cấp hay không — độ <strong>có căn cứ</strong>/<em>faithfulness</em> nhắc ở Chương 7), một cách phổ biến là dùng <strong>một mô hình thứ hai</strong> để chấm điểm câu trả lời của mô hình thứ nhất theo tiêu chí (rubric) rõ ràng, trả <strong>JSON có cấu trúc</strong> (Chương 4):</p>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">async</span> Task&lt;PhanXu&gt; <span class="hljs-title">ChamAsync</span>(<span class="hljs-params">IChatClient giamKhao, <span class="hljs-built_in">string</span> cauHoi, <span class="hljs-built_in">string</span> ngoCanh, <span class="hljs-built_in">string</span> traLoi, CancellationToken ct = <span class="hljs-literal">default</span></span>)</span>
+{
+    <span class="hljs-built_in">string</span> heThong = <span class="hljs-string">&quot;&quot;&quot;
+        Ban la giam khao cham cau tra loi cua mot tro ly AI. Cham theo thang 1-5:
+        5 = dung hoan toan, dua tren ngu canh, day du. 3 = dung mot phan. 1 = sai hoac bia dat.
+        Tra loi CHI bang JSON: {&quot;diem&quot;:so,&quot;lyDo&quot;:&quot;...&quot;,&quot;coCanCu&quot;:true/false}
+        &quot;&quot;&quot;</span>;
+    ...
+}
+</code></pre>
+<p>Chạy mẫu (giám khảo giả theo quy tắc từ khoá, đại diện một giám khảo thật): câu trả lời <strong>có căn cứ</strong> (khớp đúng &quot;30 ngày&quot; có trong ngữ cảnh) được chấm ≥ 4 điểm; câu trả lời <strong>bịa số</strong> (&quot;50 dòng&quot; khi ngữ cảnh nói &quot;20 dòng&quot;) được chấm ≤ 2 điểm và <code>coCanCu = false</code>. Ở đây, giám khảo <strong>bắt được đúng lỗi mà bộ so khớp từ vựng ban đầu bỏ lọt</strong> — minh hoạ tại sao kết hợp nhiều phương pháp tốt hơn một.</p>
+<p>Giới hạn của LLM-as-judge (thành thật, không tô hồng):</p>
+<ul>
+<li><strong>Giám khảo cũng là một LLM</strong>: có thể thiên vị (ưa câu trả lời dài, ưa văn phong giống chính nó), có thể bị &quot;qua mặt&quot; bởi câu trả lời tự tin nhưng sai, và <strong>bản thân giám khảo cần được kiểm định</strong> (so với đánh giá của con người trên một mẫu, định kỳ).</li>
+<li>Tốn thêm <strong>một lượt gọi mô hình</strong> cho mỗi ca — nhân đôi chi phí đánh giá.</li>
+<li>Không thay thế được <strong>đánh giá của con người</strong> cho quyết định rủi ro cao; dùng giám khảo để <strong>sàng lọc quy mô lớn</strong>, con người xem lại mẫu và các trường hợp biên.</li>
+</ul>
+<h2>Prompt là mã nguồn: kiểm thử hồi quy</h2>
+<p>Một câu đổi trong system prompt có thể đổi hành vi hàng loạt (Chương 1). Đối xử với prompt như <strong>mã</strong>: lưu trong kho, và có <strong>kiểm thử phát hiện thay đổi ngoài ý muốn</strong>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">private</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> PromptDaChapNhan = <span class="hljs-string">&quot;&quot;&quot;
+    Ban la tro ly tra loi dua CHI TREN tai lieu duoc cung cap trong &lt;tai_lieu&gt;.
+    ...
+    &quot;&quot;&quot;</span>;
+
+[<span class="hljs-meta">Fact</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">SystemPrompt_KhongDoiNgoaiYMuon</span>()</span>
+{
+    Assert.Equal(PromptDaChapNhan, PromptHienTaiTrongMa);
+    <span class="hljs-comment">// Neu do: (a) vo tinh sua -&gt; sua lai; (b) co y -&gt; cap nhat hang so nay VA chay lai toan bo bo danh gia truoc khi merge</span>
+}
+</code></pre>
+<p>Đây là kiểm thử <strong>snapshot</strong> đơn giản nhất: nó không đảm bảo prompt mới <em>tốt hơn</em>, chỉ đảm bảo <strong>không ai vô tình sửa nó</strong> mà không nhận ra. Mọi thay đổi prompt <strong>có chủ đích</strong> phải kèm theo: chạy lại bộ đánh giá (golden set), so sánh tỉ lệ đạt trước/sau, và người duyệt xác nhận thay đổi tỉ lệ (tăng hoặc giảm) là chấp nhận được — quy trình gọi là <strong>eval-driven development</strong>, tương tự test-driven development nhưng đơn vị là &quot;tỉ lệ đạt&quot; thay vì &quot;pass/fail&quot;.</p>
+<h2>Đưa đánh giá vào quy trình</h2>
+<table>
+<thead>
+<tr>
+<th>Khi nào</th>
+<th>Chạy gì</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mỗi commit (CI)</td>
+<td>test tất định (mã xung quanh mô hình) + bộ giả — nhanh, miễn phí, luôn chạy</td>
+</tr>
+<tr>
+<td>Mỗi thay đổi prompt/mô hình</td>
+<td>toàn bộ golden set trên <strong>mô hình thật</strong> (hoặc mô hình rẻ đại diện) — chậm hơn, có phí, chạy khi cần</td>
+</tr>
+<tr>
+<td>Định kỳ (tuần/tháng) trên sản xuất</td>
+<td>lấy mẫu tương tác thật, đánh giá bằng giám khảo + con người — phát hiện <strong>suy giảm chất lượng theo thời gian</strong> (model drift khi nhà cung cấp cập nhật mô hình, dữ liệu thay đổi)</td>
+</tr>
+<tr>
+<td>Trước khi tăng quyền tự chủ agent (Chương 8)</td>
+<td>đánh giá tỉ lệ đề xuất đúng trên dữ liệu thật, không chỉ trên bộ giả</td>
+</tr>
+</tbody>
+</table>
+<p>Ghi lại <strong>mọi lần chạy đánh giá</strong> (phiên bản prompt, mô hình, tỉ lệ đạt, ngày) để thấy xu hướng — một bảng đơn giản còn hơn không có gì.</p>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li><code>Assert.Equal</code> trên văn bản do LLM sinh ra.</li>
+<li>Coi độ tương tự văn bản là đủ để bắt sai lệch về <strong>sự kiện/số liệu</strong> — như phát hiện thật ở trên.</li>
+<li>Golden set quá nhỏ hoặc không đại diện (chỉ toàn ca dễ) → tỉ lệ đạt cao giả tạo.</li>
+<li>Không đặt ngưỡng rõ ràng, hoặc đặt ngưỡng mà không ai chịu trách nhiệm quyết định.</li>
+<li>Test hệ thống không xác định bằng một lần chạy duy nhất.</li>
+<li>Tin tuyệt đối vào LLM-as-judge mà không kiểm định giám khảo bằng đánh giá của con người.</li>
+<li>Sửa prompt mà không chạy lại bộ đánh giá — coi prompt như &quot;chỉ là văn bản&quot;, không phải mã ảnh hưởng hành vi.</li>
+<li>Không log/lưu vết kết quả đánh giá theo thời gian → không phát hiện được suy giảm chất lượng dần dần.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm 5 ca vào <code>BoCauHoiVang</code> (kể cả một ca có số liệu) và chạy lại <code>DanhGiaTheoNguongTiLe</code> với <code>TroLyThucTe</code>; điều chỉnh ngưỡng tổng thể hợp lý.</li>
+<li>Viết thêm một chỉ số so khớp: kiểm tra <strong>mã sản phẩm</strong> (<code>[A-Z]{2}[0-9]{3}</code>) xuất hiện trong đáp án mẫu có xuất hiện đúng trong câu trả lời không, theo cùng nguyên tắc với kiểm tra số liệu.</li>
+<li>Thử nghiệm: đổi <code>PromptDaChapNhan</code> trong <code>KiemThuHoiQuyPrompt</code> (cố tình bỏ câu &quot;Nếu tài liệu không đủ...&quot;) mà <strong>không</strong> cập nhật prompt thật; xác nhận test đỏ và giải thích quy trình xử lý đúng khi gặp việc này.</li>
+<li>Với <code>TroLyKhongOnDinh</code>, thử hai <code>seed</code> khác nhau và giải thích vì sao bài test vẫn tất định dù mô phỏng hệ thống ngẫu nhiên; sau đó thử <strong>không</strong> cố định seed và quan sát test trở nên &quot;flaky&quot; — nêu lý do đây là điều cần tránh.</li>
+<li>Thiết kế (trên giấy) quy trình eval-driven development cho việc sửa prompt trợ lý kho: các bước, ai duyệt, tiêu chí chấp nhận khi tỉ lệ đạt giảm ở một golden set nhưng tăng ở golden set khác.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch08-agent.html">&larr; 8. Agent: vòng lặp suy luận và hành động</a><a class="nav-next" href="ch10-an-toan-chi-phi.html">10. An toàn, chi phí và quan sát &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

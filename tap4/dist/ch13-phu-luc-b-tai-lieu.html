@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phụ lục B — Tài liệu tham khảo — C# và .NET — Tập 4</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và .NET — Tập 4</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-llm-co-ban.html">1. Mô hình ngôn ngữ lớn cho lập trình viên .NET</a></li><li><a class="chapter-link" href="ch02-goi-api-truc-tiep.html">2. Gọi API LLM bằng HttpClient</a></li><li><a class="chapter-link" href="ch03-extensions-ai.html">3. Microsoft.Extensions.AI: IChatClient và middleware</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Kỹ thuật cốt lõi</div><ul class="chapter-list"><li><a class="chapter-link" href="ch04-structured-output.html">4. Đầu ra có cấu trúc</a></li><li><a class="chapter-link" href="ch05-tool-calling.html">5. Tool calling (function calling)</a></li><li><a class="chapter-link" href="ch06-embeddings-vector.html">6. Embeddings và tìm kiếm vector</a></li><li><a class="chapter-link" href="ch07-rag.html">7. RAG: truy xuất rồi sinh</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Đưa vào sản xuất</div><ul class="chapter-list"><li><a class="chapter-link" href="ch08-agent.html">8. Agent: vòng lặp suy luận và hành động</a></li><li><a class="chapter-link" href="ch09-danh-gia-kiem-thu.html">9. Đánh giá và kiểm thử ứng dụng LLM</a></li><li><a class="chapter-link" href="ch10-an-toan-chi-phi.html">10. An toàn, chi phí và quan sát</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-du-an-tro-ly-kho.html">11. Dự án: Trợ lý kho hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-phu-luc-a-loi-thuong-gap.html">12. Phụ lục A — Lỗi và bẫy thường gặp</a></li><li><a class="chapter-link active" href="ch13-phu-luc-b-tai-lieu.html">13. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch14-phu-luc-c-cheat-sheet.html">14. Phụ lục C — Cheat sheet</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Phụ lục B — Tài liệu tham khảo</h1>
+<p>Lĩnh vực này thay đổi nhanh: tên mô hình, giá, gói NuGet và API đều đổi theo tháng. Hãy luôn đối chiếu <strong>tài liệu hiện hành</strong>; phần dưới chỉ là điểm bắt đầu.</p>
+<h2>Tài liệu chính thức</h2>
+<ul>
+<li><strong>.NET và AI</strong>: mục &quot;AI&quot; trên <code>learn.microsoft.com/dotnet/ai</code> — <code>Microsoft.Extensions.AI</code>, <code>Microsoft.Extensions.VectorData</code>, hướng dẫn RAG/agent cho .NET.</li>
+<li><strong><a href="http://Microsoft.Extensions.AI">Microsoft.Extensions.AI</a></strong>: kho <code>github.com/dotnet/extensions</code> (mã nguồn, ghi chú phát hành, ví dụ).</li>
+<li><strong>Anthropic</strong>: <code>docs.anthropic.com</code> — Messages API, tool use, streaming, prompt caching, batch, bảng giá và danh sách mô hình hiện hành.</li>
+<li><strong>OpenAI / Azure OpenAI, Google Gemini, Ollama</strong>: tài liệu của từng nhà cung cấp (định dạng request, giới hạn, giá).</li>
+<li><strong>Model Context Protocol (MCP)</strong>: <code>modelcontextprotocol.io</code> và SDK C# chính thức.</li>
+<li><strong>OpenTelemetry GenAI semantic conventions</strong>: <code>opentelemetry.io</code> (mục semantic conventions).</li>
+<li><strong>OWASP Top 10 for LLM Applications</strong>: danh mục rủi ro (prompt injection, rò rỉ dữ liệu, xử lý đầu ra không an toàn, &quot;excessive agency&quot;...).</li>
+<li><strong>Bảo vệ dữ liệu</strong>: Nghị định 13/2023/NĐ-CP (Việt Nam); GDPR nếu phục vụ EU; điều khoản xử lý dữ liệu của nhà cung cấp LLM bạn dùng.</li>
+</ul>
+<h2>Sách và tài liệu nền</h2>
+<table>
+<thead>
+<tr>
+<th>Nguồn</th>
+<th>Chủ đề</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Designing Machine Learning Systems</em> — Chip Huyen</td>
+<td>hệ thống ML/AI trong sản xuất, đánh giá, giám sát</td>
+</tr>
+<tr>
+<td><em>AI Engineering</em> — Chip Huyen</td>
+<td>xây ứng dụng trên mô hình nền: prompt, RAG, agent, đánh giá</td>
+</tr>
+<tr>
+<td><em>Building LLMs for Production</em></td>
+<td>kỹ thuật ứng dụng LLM</td>
+</tr>
+<tr>
+<td><em>Speech and Language Processing</em> — Jurafsky &amp; Martin</td>
+<td>nền tảng NLP (miễn phí trực tuyến)</td>
+</tr>
+<tr>
+<td><em>Release It!</em> — Michael Nygard</td>
+<td>ổn định hệ thống (áp dụng cho phụ thuộc LLM chậm/lỗi)</td>
+</tr>
+</tbody>
+</table>
+<h2>Thư viện và công cụ nhắc trong Tập 4</h2>
+<table>
+<thead>
+<tr>
+<th>Nhu cầu</th>
+<th>Công cụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abstraction LLM</td>
+<td><code>Microsoft.Extensions.AI</code> (<code>IChatClient</code>, <code>IEmbeddingGenerator</code>)</td>
+</tr>
+<tr>
+<td>Framework agent/điều phối</td>
+<td>Semantic Kernel, Microsoft Agent Framework</td>
+</tr>
+<tr>
+<td>Kho vector</td>
+<td><code>Microsoft.Extensions.VectorData</code>; pgvector, Qdrant, Azure AI Search, Weaviate, Milvus</td>
+</tr>
+<tr>
+<td>Tính toán vector</td>
+<td><code>System.Numerics.Tensors</code> (<code>TensorPrimitives</code>)</td>
+</tr>
+<tr>
+<td>Mô hình cục bộ</td>
+<td>Ollama, LM Studio, ONNX Runtime</td>
+</tr>
+<tr>
+<td>Đánh giá</td>
+<td>tự xây golden set + xUnit (Chương 9); các bộ đánh giá LLM mã nguồn mở</td>
+</tr>
+<tr>
+<td>Quan sát</td>
+<td>OpenTelemetry, Grafana, Application Insights</td>
+</tr>
+<tr>
+<td>Kiểm duyệt nội dung</td>
+<td>moderation API của nhà cung cấp; dịch vụ an toàn nội dung của đám mây</td>
+</tr>
+<tr>
+<td>Đọc tài liệu (PDF/Office) cho RAG</td>
+<td>thư viện trích văn bản; dịch vụ document intelligence</td>
+</tr>
+</tbody>
+</table>
+<h2>Ba tập trước</h2>
+<ul>
+<li><strong>Tập 1</strong> — C# và .NET nền tảng (bất đồng bộ, JSON, kiểm thử).</li>
+<li><strong>Tập 2</strong> — <a href="http://ASP.NET">ASP.NET</a> Core, EF Core, xác thực, dự án tổng hợp.</li>
+<li><strong>Tập 3</strong> — Clean Architecture, CQRS, outbox, idempotency, quan sát, triển khai — nền của <code>kho-clean</code>, hệ thống mà Chương 11 gắn trợ lý AI lên.</li>
+</ul>
+<h2>Lời nhắc về độ tin cậy của thông tin</h2>
+<p>Mọi số liệu về <strong>giá, giới hạn, tên mô hình, khả năng</strong> trong tài liệu (kể cả sách này) đều có thể lỗi thời. Sách này cố ý dùng <strong>mô hình giả</strong> ở mọi ví dụ chạy được: chúng kiểm chứng <em>mã của bạn</em>, không kiểm chứng <em>chất lượng mô hình</em>. Trước khi quyết định kiến trúc hay chi phí, hãy <strong>tự đo</strong> trên mô hình và dữ liệu thật của bạn.</p>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch12-phu-luc-a-loi-thuong-gap.html">&larr; 12. Phụ lục A — Lỗi và bẫy thường gặp</a><a class="nav-next" href="ch14-phu-luc-c-cheat-sheet.html">14. Phụ lục C — Cheat sheet &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phụ lục A — Lỗi và bẫy thường gặp — C# và .NET — Tập 4</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và .NET — Tập 4</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-llm-co-ban.html">1. Mô hình ngôn ngữ lớn cho lập trình viên .NET</a></li><li><a class="chapter-link" href="ch02-goi-api-truc-tiep.html">2. Gọi API LLM bằng HttpClient</a></li><li><a class="chapter-link" href="ch03-extensions-ai.html">3. Microsoft.Extensions.AI: IChatClient và middleware</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Kỹ thuật cốt lõi</div><ul class="chapter-list"><li><a class="chapter-link" href="ch04-structured-output.html">4. Đầu ra có cấu trúc</a></li><li><a class="chapter-link" href="ch05-tool-calling.html">5. Tool calling (function calling)</a></li><li><a class="chapter-link" href="ch06-embeddings-vector.html">6. Embeddings và tìm kiếm vector</a></li><li><a class="chapter-link" href="ch07-rag.html">7. RAG: truy xuất rồi sinh</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Đưa vào sản xuất</div><ul class="chapter-list"><li><a class="chapter-link" href="ch08-agent.html">8. Agent: vòng lặp suy luận và hành động</a></li><li><a class="chapter-link" href="ch09-danh-gia-kiem-thu.html">9. Đánh giá và kiểm thử ứng dụng LLM</a></li><li><a class="chapter-link" href="ch10-an-toan-chi-phi.html">10. An toàn, chi phí và quan sát</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-du-an-tro-ly-kho.html">11. Dự án: Trợ lý kho hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch12-phu-luc-a-loi-thuong-gap.html">12. Phụ lục A — Lỗi và bẫy thường gặp</a></li><li><a class="chapter-link" href="ch13-phu-luc-b-tai-lieu.html">13. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch14-phu-luc-c-cheat-sheet.html">14. Phụ lục C — Cheat sheet</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Phụ lục A — Lỗi và bẫy thường gặp</h1>
+<p>Bảng tra nhanh cho Tập 4. Số trong ngoặc là chương liên quan.</p>
+<h2>Nền tảng và gọi API (1–3)</h2>
+<table>
+<thead>
+<tr>
+<th>Bẫy</th>
+<th>Hậu quả</th>
+<th>Cách xử lý</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coi LLM là hàm tất định; <code>Assert.Equal</code> trên văn bản</td>
+<td>test chập chờn</td>
+<td>đánh giá theo ngưỡng (9)</td>
+</tr>
+<tr>
+<td>Tin đầu ra cho quyết định quan trọng</td>
+<td>hallucination gây hại</td>
+<td>nguồn thật (RAG), kiểm chứng, người duyệt</td>
+</tr>
+<tr>
+<td>Không gửi lại lịch sử hội thoại</td>
+<td>mô hình &quot;quên&quot;</td>
+<td>giữ <code>List&lt;ChatMessage&gt;</code>, nhớ thêm câu trả lời (1)</td>
+</tr>
+<tr>
+<td>Gửi lịch sử vô hạn</td>
+<td>tràn ngữ cảnh, tốn tiền</td>
+<td>cắt/tóm tắt (1)</td>
+</tr>
+<tr>
+<td>Không đặt <code>max_tokens</code></td>
+<td>API từ chối hoặc chi phí không kiểm soát</td>
+<td>luôn đặt trần (2)</td>
+</tr>
+<tr>
+<td>Bỏ qua <code>stop_reason = max_tokens</code></td>
+<td>trả câu cụt lủn</td>
+<td>phát hiện và xử lý (2)</td>
+</tr>
+<tr>
+<td>Coi <code>content</code> là chuỗi</td>
+<td>mất khối <code>tool_use</code></td>
+<td>duyệt mảng khối (2)</td>
+</tr>
+<tr>
+<td>Streaming không dùng <code>ResponseHeadersRead</code></td>
+<td>chờ hết câu mới thấy chữ</td>
+<td>(2)</td>
+</tr>
+<tr>
+<td>Thử lại cả 4xx, không backoff/jitter</td>
+<td>lãng phí, &quot;bão thử lại&quot;</td>
+<td>chỉ 429/5xx, có <code>Retry-After</code> (2)</td>
+</tr>
+<tr>
+<td>Quên <code>CancellationToken</code></td>
+<td>tiếp tục sinh (và trả tiền) khi người dùng đã đi</td>
+<td>truyền xuyên suốt</td>
+</tr>
+<tr>
+<td><code>new HttpClient()</code> mỗi lần; khoá API trong mã</td>
+<td>cạn socket; lộ khoá</td>
+<td><code>IHttpClientFactory</code>; secret/Key Vault</td>
+</tr>
+<tr>
+<td>Gọi API từ client (trình duyệt/mobile)</td>
+<td>lộ khoá</td>
+<td>luôn qua backend</td>
+</tr>
+<tr>
+<td>Sai thứ tự middleware (đếm token ngoài cache)</td>
+<td>số liệu chi phí sai (đã gặp: 60/24 thay vì 30/12)</td>
+<td>hỏi &quot;lớp này cần thấy mọi lời gọi hay chỉ lời gọi thật?&quot; (3)</td>
+</tr>
+<tr>
+<td>Chỉ override <code>GetResponseAsync</code></td>
+<td>streaming bỏ qua middleware</td>
+<td>override cả hai (3)</td>
+</tr>
+<tr>
+<td>Cache khi <code>Temperature &gt; 0</code> hoặc khoá thiếu tham số</td>
+<td>trả nhầm câu trả lời</td>
+<td>cache có điều kiện, khoá đầy đủ (3)</td>
+</tr>
+<tr>
+<td>Log ở mức Trace ở production</td>
+<td>rò rỉ nội dung hội thoại</td>
+<td>Debug trở xuống (3, 10)</td>
+</tr>
+</tbody>
+</table>
+<h2>Kỹ thuật cốt lõi (4–7)</h2>
+<table>
+<thead>
+<tr>
+<th>Bẫy</th>
+<th>Cách xử lý</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tin JSON &quot;hợp lệ&quot; mà không kiểm quy tắc nghiệp vụ</td>
+<td>kiểm chứng bằng chính quy tắc miền (4)</td>
+</tr>
+<tr>
+<td>Trường bắt buộc không có lối &quot;không biết&quot; → mô hình bịa</td>
+<td>cho phép <code>null</code>/enum <code>KhongRo</code> (4)</td>
+</tr>
+<tr>
+<td>Vòng lặp sửa lỗi không giới hạn</td>
+<td>tối đa 1–2 lần; thất bại là kết quả hợp lệ (4)</td>
+</tr>
+<tr>
+<td>&quot;Sửa ngầm&quot; dữ liệu sai bằng đoán</td>
+<td>báo lỗi, đừng đổi nghĩa (4)</td>
+</tr>
+<tr>
+<td>Mô tả công cụ mơ hồ; quá nhiều công cụ chồng lấn</td>
+<td>5–15 công cụ, mô tả nói rõ khi nào dùng/không dùng (5)</td>
+</tr>
+<tr>
+<td>Công cụ ghi chạy thẳng theo ý mô hình</td>
+<td>đề xuất → người duyệt (5, 8)</td>
+</tr>
+<tr>
+<td>Không kiểm chứng đầu vào <strong>trong</strong> công cụ</td>
+<td>tham số của mô hình = đầu vào không tin cậy (5)</td>
+</tr>
+<tr>
+<td>Chạy công cụ bằng quyền dịch vụ</td>
+<td>quyền của người dùng đang hỏi (5)</td>
+</tr>
+<tr>
+<td>Quên <code>MaximumIterationsPerRequest</code></td>
+<td>vòng lặp công cụ vô hạn (5)</td>
+</tr>
+<tr>
+<td>So embedding của hai mô hình khác nhau</td>
+<td>cùng một mô hình cho cả tài liệu và truy vấn (6)</td>
+</tr>
+<tr>
+<td>Không đặt ngưỡng điểm</td>
+<td>trả kết quả &quot;gần nhất&quot; không liên quan (6)</td>
+</tr>
+<tr>
+<td>Không lọc quyền truy cập trong truy xuất</td>
+<td>rò rỉ dữ liệu giữa người dùng/tenant (6, 7)</td>
+</tr>
+<tr>
+<td>Chia đoạn quá lớn/nhỏ; không cập nhật khi nguồn đổi</td>
+<td>dữ liệu lỗi thời (6)</td>
+</tr>
+<tr>
+<td>Nhét cả tài liệu vào prompt &quot;cho chắc&quot;</td>
+<td>tốn tiền, mô hình lạc hướng (7)</td>
+</tr>
+<tr>
+<td>Không yêu cầu trích nguồn</td>
+<td>không kiểm chứng được (7)</td>
+</tr>
+<tr>
+<td>Tin &quot;có RAG là không sai&quot;</td>
+<td>vẫn cần đánh giá truy xuất và câu trả lời (7)</td>
+</tr>
+</tbody>
+</table>
+<h2>Sản xuất (8–10)</h2>
+<ul>
+<li><strong>Agent</strong>: không giới hạn bước/thời gian/chi phí; cho hành động ghi thật từ đầu; không lưu vết từng bước; dùng agent cho quy trình vốn tất định (8).</li>
+<li><strong>Đánh giá</strong>: golden set nhỏ/toàn ca dễ; dùng độ tương tự văn bản để bắt lỗi số liệu (đã gặp thật: &quot;50 dòng&quot; vs &quot;20 dòng&quot; lọt qua); tin LLM-as-judge mà không kiểm định bằng người; sửa prompt không chạy lại đánh giá (9).</li>
+<li><strong>An toàn</strong>: nghĩ &quot;dặn trong system prompt&quot; là đủ chống injection; danh sách từ khoá là lớp phòng thủ duy nhất; gửi PII không cần thiết; không có ngân sách/giới hạn tốc độ; không có cách tắt nhanh (10).</li>
+<li><strong>Chi phí</strong>: tính bằng ước lượng thay vì <code>Usage</code>; chỉ theo dõi CPU/RAM mà quên chi phí, tỉ lệ từ chối, độ trễ mô hình (10).</li>
+</ul>
+<h2>Nguyên tắc gỡ lỗi ứng dụng LLM</h2>
+<ol>
+<li>Tách <strong>phần tất định</strong> (dựng prompt, parse, công cụ) khỏi <strong>phần mô hình</strong>; kiểm thử phần đầu bằng <code>IChatClient</code> giả.</li>
+<li>Ghi lại <strong>toàn bộ vết</strong>: prompt gửi đi, phản hồi, công cụ, kết quả, token, mô hình/phiên bản prompt.</li>
+<li>Tái hiện bằng <code>Temperature = 0</code> và cùng đầu vào; vẫn không đảm bảo giống hệt.</li>
+<li>Đổi <strong>một</strong> thứ mỗi lần (prompt, mô hình, tham số) và <strong>đo lại</strong> bằng golden set.</li>
+<li>Nghi ngờ <strong>dữ liệu đưa vào ngữ cảnh</strong> (truy xuất kém, kết quả công cụ lạ) trước khi đổ lỗi cho mô hình.</li>
+<li>Nếu môi trường (chính sách hệ điều hành, hạn mức API) chặn, báo người có quyền — đừng lách.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch11-du-an-tro-ly-kho.html">&larr; 11. Dự án: Trợ lý kho hàng</a><a class="nav-next" href="ch13-phu-luc-b-tai-lieu.html">13. Phụ lục B — Tài liệu tham khảo &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>

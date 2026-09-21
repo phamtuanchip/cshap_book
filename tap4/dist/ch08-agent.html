@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chương 8 — Agent: vòng lặp suy luận và hành động — C# và .NET — Tập 4</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar"><div class="sidebar-title">C# và .NET — Tập 4</div><ul class="part-list"><li class="part"><div class="part-title">Phần 0 — Nền tảng</div><ul class="chapter-list"><li><a class="chapter-link" href="ch01-llm-co-ban.html">1. Mô hình ngôn ngữ lớn cho lập trình viên .NET</a></li><li><a class="chapter-link" href="ch02-goi-api-truc-tiep.html">2. Gọi API LLM bằng HttpClient</a></li><li><a class="chapter-link" href="ch03-extensions-ai.html">3. Microsoft.Extensions.AI: IChatClient và middleware</a></li></ul></li><li class="part"><div class="part-title">Phần 1 — Kỹ thuật cốt lõi</div><ul class="chapter-list"><li><a class="chapter-link" href="ch04-structured-output.html">4. Đầu ra có cấu trúc</a></li><li><a class="chapter-link" href="ch05-tool-calling.html">5. Tool calling (function calling)</a></li><li><a class="chapter-link" href="ch06-embeddings-vector.html">6. Embeddings và tìm kiếm vector</a></li><li><a class="chapter-link" href="ch07-rag.html">7. RAG: truy xuất rồi sinh</a></li></ul></li><li class="part"><div class="part-title">Phần 2 — Đưa vào sản xuất</div><ul class="chapter-list"><li><a class="chapter-link active" href="ch08-agent.html">8. Agent: vòng lặp suy luận và hành động</a></li><li><a class="chapter-link" href="ch09-danh-gia-kiem-thu.html">9. Đánh giá và kiểm thử ứng dụng LLM</a></li><li><a class="chapter-link" href="ch10-an-toan-chi-phi.html">10. An toàn, chi phí và quan sát</a></li></ul></li><li class="part"><div class="part-title">Phần 3 — Dự án tổng hợp</div><ul class="chapter-list"><li><a class="chapter-link" href="ch11-du-an-tro-ly-kho.html">11. Dự án: Trợ lý kho hàng</a></li></ul></li><li class="part"><div class="part-title">Phụ lục</div><ul class="chapter-list"><li><a class="chapter-link" href="ch12-phu-luc-a-loi-thuong-gap.html">12. Phụ lục A — Lỗi và bẫy thường gặp</a></li><li><a class="chapter-link" href="ch13-phu-luc-b-tai-lieu.html">13. Phụ lục B — Tài liệu tham khảo</a></li><li><a class="chapter-link" href="ch14-phu-luc-c-cheat-sheet.html">14. Phụ lục C — Cheat sheet</a></li></ul></li></ul></nav>
+<main class="content">
+<article>
+<h1>Chương 8 — Agent: vòng lặp suy luận và hành động</h1>
+<h2>Mục tiêu học</h2>
+<p>Sau chương này, bạn sẽ:</p>
+<ul>
+<li>Hiểu <strong>agent</strong> là gì trong ngữ cảnh LLM: không phải một API mới, mà là <strong>cách dùng</strong> tool calling (Chương 5) lặp nhiều bước để đạt một mục tiêu.</li>
+<li>Tự viết một <strong>vòng lặp agent</strong> tối thiểu: quan sát → suy luận → hành động → lặp, với <strong>giới hạn bước bắt buộc</strong>.</li>
+<li>Phân biệt hành động <strong>chỉ đọc/đề xuất</strong> (agent tự làm) với hành động <strong>có tác dụng phụ thật</strong> (cần người duyệt).</li>
+<li>Biết khi nào agent là công cụ đúng, và khi nào một <strong>quy trình tất định</strong> vẫn tốt hơn.</li>
+</ul>
+<p>Code: <a href="code/ch08-agent/"><code>code/ch08-agent/</code></a> — mô hình giả mô phỏng một chuỗi quyết định hợp lý; agent tự viết bằng vòng lặp thường (không dùng framework).</p>
+<blockquote>
+<p><strong>Trung thực về kiểm chứng:</strong> mô hình giả trong ví dụ <strong>được lập trình sẵn</strong> để đưa ra đúng chuỗi hành động hợp lý (tìm → tra từng mã → đề xuất nhập). Nó chứng minh <strong>cơ chế vòng lặp, giới hạn bước, và ranh giới đề xuất/hành động thật</strong> hoạt động đúng. Nó <strong>không</strong> chứng minh một LLM thật sẽ luôn suy luận đúng chuỗi bước cho một nhiệm vụ mở — đó là năng lực suy luận nhiều bước của mô hình, khác nhau rất nhiều giữa các mô hình, và phải được đo bằng đánh giá thật (Chương 9). Đây cũng là lý do sách không dùng framework agent (Semantic Kernel, Microsoft Agent Framework) làm ví dụ chính: bạn cần hiểu vòng lặp trần trụi trước khi tin tưởng một framework che nó đi.</p>
+</blockquote>
+<h2>Agent là gì (và không phải là gì)</h2>
+<p>Ở Chương 5, mỗi lượt gọi mô hình có thể <strong>yêu cầu một hoặc vài công cụ</strong>, ứng dụng chạy, gửi kết quả lại, xong. Đó là &quot;single-turn tool use&quot;. <strong>Agent</strong> khác ở chỗ: mô hình được cho quyền <strong>lặp lại nhiều lượt</strong>, tự quyết định <strong>bước tiếp theo dựa trên kết quả bước trước</strong>, cho tới khi (theo đánh giá của chính nó) đạt được mục tiêu — hoặc cho tới khi <strong>ứng dụng chặn nó lại</strong>.</p>
+<pre class="mermaid">flowchart LR
+    U[Mục tiêu] --&gt; Q[Quan sát trạng thái hiện tại]
+    Q --&gt; S[Mô hình suy luận: bước tiếp theo là gì?]
+    S --&gt;|gọi công cụ| H[Ứng dụng thực thi công cụ]
+    H --&gt; Q
+    S --&gt;|đã đủ, kết luận| K[Trả lời cuối]
+    S -.-&gt;|vượt giới hạn bước| D[Ứng dụng CHỦ ĐỘNG dừng]
+</pre>
+<p><strong>Agent không phải là một API hay framework cụ thể</strong> — nó là một <strong>mẫu hình sử dụng</strong> LLM + tool calling + vòng lặp. Framework (Semantic Kernel, Microsoft Agent Framework, LangGraph...) cung cấp sẵn cấu trúc cho mẫu hình này (quản lý trạng thái, nhiều agent phối hợp, bộ nhớ dài hạn) — hữu ích khi hệ thống phức tạp, nhưng <strong>vòng lặp cốt lõi rất đơn giản</strong> và đáng để tự viết một lần cho hiểu, như chương này làm.</p>
+<h2>Vòng lặp agent tối thiểu</h2>
+<pre class="hljs"><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;KetQuaAgent&gt; <span class="hljs-title">ChayAsync</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> nhiemVu, CancellationToken ct = <span class="hljs-literal">default</span></span>)</span>
+{
+    <span class="hljs-keyword">var</span> lichSu = <span class="hljs-keyword">new</span> List&lt;ChatMessage&gt; { <span class="hljs-keyword">new</span>(ChatRole.System, HeThong), <span class="hljs-keyword">new</span>(ChatRole.User, nhiemVu) };
+    <span class="hljs-keyword">var</span> opt = <span class="hljs-keyword">new</span> ChatOptions { Tools = congCu, Temperature = <span class="hljs-number">0</span> };
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> i = <span class="hljs-number">1</span>; i &lt;= toiDaBuoc; i++)                                   <span class="hljs-comment">// GIỚI HẠN BƯỚC — không phải tuỳ chọn</span>
+    {
+        <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">await</span> client.GetResponseAsync(lichSu, opt, ct);
+        lichSu.AddRange(res.Messages);
+
+        <span class="hljs-keyword">var</span> goiTool = res.Messages.SelectMany(m =&gt; m.Contents).OfType&lt;FunctionCallContent&gt;().ToList();
+        <span class="hljs-keyword">if</span> (goiTool.Count == <span class="hljs-number">0</span>)                                            <span class="hljs-comment">// không còn yêu cầu công cụ nào -&gt; coi là &quot;xong&quot;</span>
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span>(res.Text, i, <span class="hljs-string">&quot;hoan thanh&quot;</span>, buoc);
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span>(<span class="hljs-string">&quot;(dừng do vượt giới hạn)&quot;</span>, toiDaBuoc, <span class="hljs-string">&quot;vuot gioi han buoc toi da&quot;</span>, buoc);
+}
+</code></pre>
+<p>(<code>UseFunctionInvocation</code> từ Chương 5 tự chạy công cụ <strong>trong một lượt gọi</strong>; ở đây agent tự quản <strong>nhiều lượt gọi</strong>, mỗi lượt có thể chứa một hoặc nhiều lần gọi công cụ do middleware xử lý.) Điều mô hình &quot;quyết định&quot; chỉ là: gọi tiếp công cụ, hay dừng và trả lời bằng văn bản. Ứng dụng đọc tín hiệu đó (<code>goiTool.Count == 0</code>) để biết khi nào kết luận.</p>
+<h2>Chạy thử: nhiệm vụ nhiều bước</h2>
+<p>Nhiệm vụ: <em>&quot;Kiểm tra tồn kho nhóm 'điện tử' và đề xuất nhập thêm cho sản phẩm nào sắp hết (tồn ≤ 5).&quot;</em> — không thể trả lời bằng một lần gọi công cụ, vì <strong>số lượng sản phẩm cần tra chưa biết trước</strong> (phải tìm danh sách trước, rồi tra từng mã).</p>
+<pre class="hljs"><code>--- Vet (trace) tung buoc suy luan - hanh dong ---
+  [CongCu] goi tim_san_pham(nhom=dien tu)
+  [CongCu] goi tra_ton_kho(ma=LT001)
+  [CongCu] goi tra_ton_kho(ma=DT002)
+  [CongCu] goi tra_ton_kho(ma=TV003)
+  [CongCu] goi de_xuat_nhap_hang(ma=LT001, soLuongDeXuat=20)
+  [CongCu] goi de_xuat_nhap_hang(ma=TV003, soLuongDeXuat=20)
+  [SuyNghi] khong con hanh dong nao can lam, ket luan
+
+--- Ket qua cuoi (2 buoc, dung vi: hoan thanh) ---
+Da kiem tra 3 san pham nhom dien tu. Da de xuat nhap hang cho: LT001 (ton 3); TV003 (ton 2).
+</code></pre>
+<p>Agent tự: tìm 3 mã trong nhóm, tra tồn <strong>từng mã một</strong>, nhận ra 2 mã dưới ngưỡng, gọi công cụ đề xuất cho đúng 2 mã đó, rồi <strong>tự dừng</strong> khi không còn gì cần làm — tất cả trong 2 lượt gọi mô hình (nhiều lệnh gọi công cụ có thể dồn vào ít lượt nhờ <code>UseFunctionInvocation</code>). <strong>Vết (trace) đầy đủ từng bước</strong> là thứ bạn cần lưu lại trong production — nó là bằng chứng để gỡ lỗi và kiểm toán khi agent làm sai.</p>
+<h2>Giới hạn bước là bắt buộc, không phải tuỳ chọn</h2>
+<pre class="hljs"><code>=== Kich ban 2: nhiem vu khong bao gio 'xong' ===
+Dung sau 4 buoc vi: vuot gioi han buoc toi da
+</code></pre>
+<p>Với một mô hình cố tình (trong ví dụ) hoặc lỡ hiểu sai nhiệm vụ và <strong>cứ gọi mãi một công cụ</strong>, vòng lặp sẽ <strong>không bao giờ tự dừng</strong> nếu không có giới hạn phía ứng dụng. Đây không phải tình huống hiếm: mô hình thật cũng có thể &quot;kẹt&quot; khi công cụ trả kết quả không như mong đợi, khi nhiệm vụ mơ hồ, hoặc khi có lỗi logic. Không giống một bug thông thường (chạy vô hạn nhưng miễn phí CPU), <strong>mỗi vòng lặp agent tốn tiền thật</strong> (một lượt gọi LLM). Do đó:</p>
+<ul>
+<li><strong>Luôn đặt trần số bước</strong> phù hợp độ phức tạp nhiệm vụ (không phải một hằng số vạn năng).</li>
+<li><strong>Luôn đặt trần thời gian chạy tổng</strong> (timeout) độc lập với số bước.</li>
+<li><strong>Luôn đặt trần chi phí/token tổng</strong> cho một lần chạy agent.</li>
+<li>Khi chạm giới hạn, <strong>trả về trạng thái dở dang một cách rõ ràng</strong> (như ví dụ: liệt kê những gì đã làm được), không phải lỗi mù mờ.</li>
+<li>Cân nhắc phát hiện <strong>lặp y hệt</strong> (cùng công cụ, cùng tham số nhiều lần liên tiếp) để dừng sớm hơn giới hạn cứng.</li>
+</ul>
+<h2>Ranh giới đề xuất và hành động thật</h2>
+<p>Công cụ <code>de_xuat_nhap_hang</code> trong ví dụ <strong>không ghi gì vào hệ thống thật</strong> — nó chỉ tạo một bản ghi <code>{&quot;trangThai&quot;:&quot;cho_duyet&quot;}</code>. Đây là <strong>thiết kế an toàn cố ý</strong>, nối tiếp nguyên tắc phân loại rủi ro công cụ ở Chương 5:</p>
+<table>
+<thead>
+<tr>
+<th>Cấp độ tự chủ</th>
+<th>Agent được phép</th>
+<th>Ví dụ trong hệ thống kho</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Chỉ đọc</strong></td>
+<td>tự làm, không giới hạn thêm</td>
+<td>tra tồn, tìm sản phẩm, tổng hợp báo cáo</td>
+</tr>
+<tr>
+<td><strong>Đề xuất</strong></td>
+<td>tự tạo đề xuất, <strong>không tự thực thi</strong></td>
+<td>&quot;đề xuất nhập hàng&quot;, &quot;đề xuất huỷ đơn nghi ngờ gian lận&quot;</td>
+</tr>
+<tr>
+<td><strong>Thực thi có xác nhận</strong></td>
+<td>thực thi sau khi <strong>người cụ thể</strong> duyệt từng đề xuất</td>
+<td>nhập kho thật, gửi email cho nhà cung cấp</td>
+</tr>
+<tr>
+<td><strong>Tự chủ hoàn toàn</strong></td>
+<td>agent tự thực thi không cần duyệt</td>
+<td>chỉ với hành động <strong>rẻ, đảo ngược được, đã kiểm chứng độ tin cậy qua thời gian</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Bắt đầu ở cấp thấp và <strong>tăng dần cùng bằng chứng</strong>: chạy agent ở chế độ &quot;chỉ đề xuất&quot; trong sản xuất một thời gian, đo tỉ lệ đề xuất đúng (Chương 9), rồi mới cân nhắc tự động hoá thêm cho các hành động rủi ro thấp cụ thể. Không có agent nào nên được cấp quyền &quot;tự chủ hoàn toàn&quot; cho hành động tài chính/không đảo ngược chỉ vì demo chạy tốt vài lần.</p>
+<h2>Khi nào dùng agent — và khi nào không</h2>
+<p>Agent (nhiều bước, mô hình tự quyết định trình tự) phù hợp khi:</p>
+<ul>
+<li>Trình tự thao tác <strong>không biết trước</strong> (phụ thuộc dữ liệu thực tế, như ví dụ trên).</li>
+<li>Số bước/tham số <strong>thay đổi theo từng trường hợp</strong>.</li>
+<li>Chấp nhận được đôi khi cần <strong>nhiều lượt gọi mô hình hơn</strong> (chi phí, độ trễ) để đổi lấy tính linh hoạt.</li>
+</ul>
+<p><strong>Đừng dùng agent</strong> khi trình tự đã biết trước và cố định — đó là lúc <strong>quy trình tất định</strong> (mã thường, hoặc pipeline/mediator của Tập 3) làm tốt hơn: nhanh hơn, rẻ hơn, kiểm thử được 100%, không có rủi ro &quot;mô hình chọn sai bước&quot;. Câu hỏi kiểm tra: <em>&quot;Nếu tôi biết trước chính xác các bước, tại sao lại để mô hình quyết định chúng?&quot;</em> Nếu không trả lời được, quay lại mã tất định.</p>
+<h2>Quan sát và kiểm soát agent trong sản xuất</h2>
+<ul>
+<li>Ghi lại <strong>toàn bộ vết</strong> (mọi lượt gọi mô hình, mọi công cụ, mọi tham số, mọi kết quả) — không chỉ câu trả lời cuối. Đây là dữ liệu để gỡ lỗi <em>và</em> để đánh giá (Chương 9).</li>
+<li>Mỗi lượt/công cụ là một <strong>span</strong> (Tập 3, Chương 11); toàn bộ phiên chạy agent là một trace.</li>
+<li>Đặt <strong>ngân sách theo phiên</strong> (số bước, token, tiền) và <strong>cảnh báo</strong> khi agent chạm giới hạn thường xuyên (dấu hiệu prompt/mô hình có vấn đề).</li>
+<li>Cho phép <strong>con người can thiệp giữa chừng</strong> (tạm dừng, huỷ) với agent chạy dài.</li>
+</ul>
+<h2>Lỗi thường gặp</h2>
+<ul>
+<li>Không đặt giới hạn bước/thời gian/chi phí → agent kẹt chạy tới khi hết ngân sách API hoặc mãi mãi.</li>
+<li>Cho agent hành động ghi có tác dụng phụ <strong>thật</strong> ngay từ đầu, không qua giai đoạn &quot;chỉ đề xuất&quot;.</li>
+<li>Không log vết từng bước → không thể điều tra khi agent làm sai.</li>
+<li>Dùng agent cho quy trình vốn đã tất định — tốn kém và kém tin cậy hơn mã thường.</li>
+<li>Đo &quot;agent chạy xong không lỗi&quot; mà không đo <strong>agent có làm đúng việc không</strong> (Chương 9).</li>
+<li>Quên rằng công cụ vẫn phải tự kiểm chứng đầu vào (Chương 5) — agent không miễn trừ nguyên tắc đó.</li>
+</ul>
+<h2>Bài tập</h2>
+<ol>
+<li>Thêm phát hiện <strong>lặp y hệt</strong>: nếu agent gọi cùng công cụ với cùng tham số 2 lần liên tiếp, dừng sớm và báo &quot;agent bị kẹt&quot; thay vì chờ hết giới hạn bước.</li>
+<li>Thêm ngân sách <strong>token</strong> cho một phiên agent (cộng dồn <code>Usage</code> mỗi lượt như Chương 3) và dừng khi vượt trần, độc lập với số bước.</li>
+<li>Thiết kế bước &quot;xác nhận&quot;: sửa <code>AgentKho</code> để khi gặp <code>de_xuat_nhap_hang</code>, dừng vòng lặp, trả danh sách đề xuất cho người dùng, và chỉ tiếp tục (gọi công cụ thực thi thật) sau khi nhận được danh sách đã duyệt.</li>
+<li>Viết một nhiệm vụ mới (&quot;tìm sản phẩm nhóm X, so sánh với nhóm Y, đề xuất sản phẩm nên ngừng bán nếu tồn &gt; 3 lần mức cảnh báo&quot;) và một mô hình giả tương ứng; xác nhận agent tự suy ra đúng trình tự bước.</li>
+<li>So sánh bằng lời: với nhiệm vụ &quot;xuất kho 5 sản phẩm theo danh sách cho trước&quot;, giải thích vì sao dùng agent ở đây là lựa chọn tệ hơn gọi thẳng usecase <code>DatHangCommand</code> (Tập 3, Chương 18) trong vòng lặp <code>foreach</code> thông thường.</li>
+</ol>
+
+</article>
+<div class="chapter-nav"><a class="nav-prev" href="ch07-rag.html">&larr; 7. RAG: truy xuất rồi sinh</a><a class="nav-next" href="ch09-danh-gia-kiem-thu.html">9. Đánh giá và kiểm thử ứng dụng LLM &rarr;</a></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: 'neutral' }); }</script>
+</body>
+</html>
